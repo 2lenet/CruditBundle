@@ -1,0 +1,5 @@
+services:
+  Lle\CruditBundle\EventListener\KernelControllerListener:
+    arguments: ['@twig', '@Lle\CruditBundle\Provider\DefaultLayoutProvider']
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller }

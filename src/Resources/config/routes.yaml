@@ -1,0 +1,10 @@
+
+crudit_routes:
+    resource: '@LleCruditBundle/Controller/'
+    type: annotation
+    prefix: /
+
+crudit_dashboard:
+    resource: '@LleCruditBundle/Controller/DashboardController.php'
+    type: annotation
+    prefix: /

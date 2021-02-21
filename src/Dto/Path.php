@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Lle\CruditBundle\Dto;
+
+class Path
+{
+
+    /** @var string */
+    private $route;
+
+    /** @var array  */
+    private $params;
+
+    public static function new(string $route, array $params = []): self
+    {
+        return new self($route, $params);
+    }
+
+    public function __construct(string $route, array $params = [])
+    {
+        $this->route = $route;
+        $this->params = $params;
+    }
+
+    public function getRoute(): string
+    {
+        return $this->route;
+    }
+
+    public function getParams(array $params = []): array
+    {
+        return array_merge($this->params, $params);
+    }
+}

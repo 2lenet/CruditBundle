@@ -1,0 +1,169 @@
+{
+  "datasource": {
+    "url_prefix": "contacts"
+  },
+  "fields": {
+    "name": {
+      "label": "nom",
+      "sortable": true
+    },
+    "prenom": {
+      "label": ""
+    }
+  },
+  "itemActions": [
+    {
+      "id": "SHOW",
+      "label": "Voir",
+      "icon": "plus"
+    },
+    {
+      "id": "EDIT",
+      "label": "Voir",
+      "icon": "plus"
+    },
+    {
+      "id": "DELETE",
+      "label": "Voir",
+      "icon": "plus",
+      "bulk": true,
+      "confirm": true
+    },
+    {
+      "id": "PDF_FACTURE",
+      "type": "URL",
+      "label": "PDF",
+      "icon": "plus",
+      "path": {
+        "route": "pdf_invoice"
+      }
+    }
+  ],
+  "listView": {
+    "datasource": "/factures",
+    "fields": [
+      "nom",
+      "prenom"
+    ],
+    "listActions": [
+      {
+        "type": "ADD",
+        "label": "Ajouter",
+        "icon": "plus"
+      }
+    ],
+    "itemActions": [
+      "SHOW",
+      "EDIT",
+      "DELETE"
+    ],
+    "item_per_page": 10,
+    "rupt_fields": [
+      "cp"
+    ]
+  },
+  "showView": {
+    "datasource": "/@id",
+    "fields": [
+      "nom",
+      "prenom"
+    ],
+    "itemActions": [
+      "EDIT",
+      "DELETE",
+      "PDF_FACTURE"
+    ],
+    "brick": [
+      {
+        "type": "TABLE",
+        "fields": [
+          "nom",
+          "prenom"
+        ]
+      },
+      {
+        "type": "TABS",
+        "list": [
+          {
+            "id": "sublist1",
+            "label": "Ligne facture",
+            "type": "ListComponent",
+            "options": {
+              "datasource": "/@id/facture_lignes"
+            }
+          },
+          {
+            "id": "history",
+            "label": "History",
+            "type": "HistoryComponent",
+            "options": {}
+          }
+        ]
+      }
+    ]
+  },
+  "editView": {
+    "form": {
+      schema: {
+        fields: [
+          {
+            type: 'input',
+            inputType: 'text',
+            label: 'ID (disabled text field)',
+            model: 'id',
+            readonly: true,
+            disabled: true
+          },
+          {
+            type: 'input',
+            inputType: 'text',
+            label: 'Name',
+            model: 'name',
+            placeholder: 'Your name',
+            featured: true,
+            required: true
+          },
+          {
+            type: 'input',
+            inputType: 'password',
+            label: 'Password',
+            model: 'password',
+            min: 6,
+            required: true,
+            hint: 'Minimum 6 characters',
+            validator: VueFormGenerator.validators.string
+          },
+          {
+            type: 'select',
+            label: 'Skills',
+            model: 'skills',
+            values: [
+              'Javascript',
+              'VueJS',
+              'CSS3',
+              'HTML5'
+            ]
+          },
+          {
+            type: 'input',
+            inputType: 'email',
+            label: 'E-mail',
+            model: 'email',
+            placeholder: 'User\'s e-mail address'
+          },
+          {
+            type: 'checkbox',
+            label: 'Status',
+            model: 'status',
+            default: true
+          }
+        ]
+      },
+      formOptions: {
+        validateAfterLoad: true,
+        validateAfterChanged: true,
+        validateAsync: true
+      }
+    }
+  }
+}

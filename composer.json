@@ -1,0 +1,14 @@
+{
+    "name": "2le/crudit",
+    "type": "symfony-bundle",
+    "description": "The 2LE's Crud Bundle.",
+    "license": "MIT",
+    "require": {
+	      "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lle\\CruditBundle\\": "src/"
+        }
+    }
+}

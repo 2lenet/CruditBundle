@@ -1,0 +1,61 @@
+{
+  "design": {
+    "mainTitle": "Castor V2 test"
+  },
+  "navigations": {
+    "mainNav": [
+      {
+        "label": "Homepage",
+        "route": "homepage",
+        "icon": "building",
+        "cssClass": "Bigone"
+      },
+      {
+        "label": "Contacts",
+        "route": "contacts",
+        "icon": "contact"
+      },
+      {
+        "label": "Params",
+        "icon": "setting",
+        "childrens": [
+          {
+            "label": "config",
+            "path": {
+              "route": "config",
+              "params": {
+                "type": "main"
+              }
+            },
+            "icon": "box"
+          }
+        ]
+      }
+    ],
+    "headerNav": [
+      {
+        "label": "Homepage",
+        "route": "homepage",
+        "icon": "building"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "NotificationMessage1",
+      "type": 'NotificationComponent',
+      "slot": "header",
+      "options": {}
+    },
+    {
+      "id": "ImpersonateComponent",
+      "type": 'ImpersonateComponent',
+      "slot": "header",
+      "options": {}
+    }
+  ],
+  "user": {
+    "name": "Admin user",
+    "logout_route": "logout"
+  }
+}

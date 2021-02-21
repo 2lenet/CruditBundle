@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "design": {
+      "type": "object",
+      "properties": {
+        "mainTitle": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mainTitle"
+      ]
+    },
+    "navigations": {
+      "type": "object",
+      "properties": {
+        "mainNav": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "route": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "cssClass": {
+                "type": "string"
+              },
+              "childrens": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "object",
+                      "properties": {
+                        "route": {
+                          "type": "string"
+                        },
+                        "params": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "route",
+                        "params"
+                      ]
+                    },
+                    "icon": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "path",
+                    "icon"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "label",
+              "icon"
+            ]
+          }
+        },
+        "headerNav": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "route": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "route",
+              "icon"
+            ]
+          }
+        }
+      },
+      "required": [
+        "mainNav",
+        "headerNav"
+      ]
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "slot": {
+            "type": "string",
+            "enum": [
+              "header"
+            ]
+          },
+          "options": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "slot",
+          "options"
+        ]
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "logout_route": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "logout_route"
+      ]
+    }
+  },
+  "required": [
+    "design",
+    "navigations",
+    "components",
+    "user"
+  ]
+}

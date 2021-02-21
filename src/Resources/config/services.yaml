@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        autowire: true
+        public: false
+        autoconfigure: true
+
+    Lle\CruditBundle\Controller\:
+        resource: '../../Controller'
+        tags: [ 'controller.service_arguments' ]
+
+    Lle\CruditBundle\Provider\DefaultLayoutProvider: ~
