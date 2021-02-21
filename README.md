@@ -4,11 +4,11 @@ Crudit bundle for 2le.
 
 ## Installation
 
-```composer require 2lenet/credential-bundle```
+```composer require 2lenet/crudit-bundle```
 
 ```
 npm install -g @quasar/cli
-quazar create [YOURFRONT]
+quasar create [YOURFRONT]
 ```
 since symfony project directory
 ``` ln -s vendor/2le/crudit/front/quasar/components [YOURFRONT]/src/crudit```
