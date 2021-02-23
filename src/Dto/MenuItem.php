@@ -53,7 +53,7 @@ class MenuItem
         $this->type = $type;
     }
 
-    public function getLibelle(): string
+    public function getLibelle(): ?string
     {
         return $this->libelle;
     }
@@ -73,7 +73,7 @@ class MenuItem
         $this->icon = $icon;
     }
 
-    public function getPath(): Path
+    public function getPath(): ?Path
     {
         return $this->path;
     }
@@ -86,7 +86,7 @@ class MenuItem
     /**
      * @return string[]
      */
-    public function getLabels(): array
+    public function getLabels(): ?array
     {
         return $this->labels;
     }
@@ -103,12 +103,12 @@ class MenuItem
     /**
      * @return string[]
      */
-    public function getRole(): array
+    public function getRole(): ?array
     {
         return $this->roles;
     }
 
-    public function getCssClass(): string
+    public function getCssClass(): ?string
     {
         return $this->cssClass;
     }

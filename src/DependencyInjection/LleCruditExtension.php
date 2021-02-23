@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\DependencyInjection;
 
+use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,5 +25,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $configuration = new Configuration();
         $processedConfig =  $this->processConfiguration($configuration, $configs);
         $container->setParameter('crudit.layout_provider', $processedConfig[ 'layout_provider' ]);
+
+        $container->registerForAutoconfiguration(LayoutInterface::class)->addTag('crudit.layout');
     }
 }

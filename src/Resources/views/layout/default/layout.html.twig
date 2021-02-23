@@ -12,14 +12,25 @@
     <title>{% block page_title %}{% endblock %}</title>
 
     {% block head_stylesheets %}
-        <link rel="stylesheet" href="{{ asset('bundles/easyadmin/app.css') }}">
     {% endblock %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>AdminLTE 3 | Mailbox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/bundles/llecrudit/default/app.css">
 </head>
-<body>
-{#  {{ render(controller('Lle\\CruditBundle\\Controller\\LayoutController::header')) }} #}
-    {% include crudit.menuTemplate %}
-    {%  block content %}{%  endblock %}
-{#  {{ render(controller('Lle\\CruditBundle\\Controller\\LayoutController::footer')) }}
-    {{ render(controller('Lle\\CruditBundle\\Controller\\LayoutController::right')) }} #}
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    {%  block header %}{% include crudit.headerTemplate %}{%  endblock %}
+    {%  block menu %}{% include crudit.menuTemplate %}{%  endblock %}
+    <div class="content-wrapper">
+        {%  block content %}{%  endblock %}
+    </div>
+    {%  block footer %}{% include crudit.footerTemplate %}{%  endblock %}
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+</div>
+<script src="/bundles/llecrudit/default/app.js"></script>
 </body>
 </html>

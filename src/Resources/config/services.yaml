@@ -8,4 +8,10 @@ services:
         resource: '../../Controller'
         tags: [ 'controller.service_arguments' ]
 
-    Lle\CruditBundle\Provider\DefaultLayoutProvider: ~
+    Lle\CruditBundle\Provider\LayoutProvider:
+        arguments:
+            - !tagged_iterator crudit.layout
+            - '@parameter_bag'
+
+    Lle\CruditBundle\Layout\DefaultLayout:
+        tags: ['crudit.layout']

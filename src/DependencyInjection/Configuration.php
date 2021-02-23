@@ -16,7 +16,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->children()
-            ->scalarNode('layout_provider')->defaultValue('@LleCrudit/Layout/default.html.twig')->end();
+            ->scalarNode('layout_provider')->defaultValue('default')->end();
         return $treeBuilder;
     }
 }
