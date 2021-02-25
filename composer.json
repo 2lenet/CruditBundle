@@ -1,5 +1,5 @@
 {
-    "name": "2le/crudit",
+    "name": "2lenet/credential-bundle",
     "type": "symfony-bundle",
     "description": "The 2LE's Crud Bundle.",
     "license": "MIT",
