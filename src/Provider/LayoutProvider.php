@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Provider;
 
 use Lle\CruditBundle\{
     Exception\BadConfigException,
+    Layout\AdminLteLayout,
     Layout\LayoutInterface
 };
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -41,6 +42,6 @@ class LayoutProvider
 
     private function getCurrentLayoutName(): string
     {
-        return $this->parameterBag->get('crudit.layout_provider', 'default');
+        return $this->parameterBag->get('crudit.layout_provider');
     }
 }

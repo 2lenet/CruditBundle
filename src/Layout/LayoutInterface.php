@@ -6,11 +6,11 @@ namespace Lle\CruditBundle\Layout;
 
 interface LayoutInterface
 {
-    public function getLayoutTemplate(): string;
+    public function getTemplate(string $name): string;
 
-    public function getMenuTemplate(): string;
+    public function getTemplateDirectory(): string;
 
-    public function getName(): string;
+    public static function getName(): string;
 
     public function getMenuItems(): array;
 }

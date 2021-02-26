@@ -1,10 +1,12 @@
 {
-    "name": "2le/crudit",
+    "name": "2le/crudit-bundle",
     "type": "symfony-bundle",
     "description": "The 2LE's Crud Bundle.",
     "license": "MIT",
     "require": {
-	      "php": ">=7.2"
+        "php": ">=7.2",
+        "symfony/property-info": "4.4.*",
+        "phpdocumentor/reflection-docblock": "5.2.*"
     },
     "autoload": {
         "psr-4": {

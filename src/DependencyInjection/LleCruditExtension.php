@@ -21,6 +21,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
         $loader->load('listeners.yaml');
+        $loader->load('serializers.yaml');
 
         $configuration = new Configuration();
         $processedConfig =  $this->processConfiguration($configuration, $configs);

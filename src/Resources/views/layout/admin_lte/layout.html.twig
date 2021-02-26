@@ -21,14 +21,14 @@
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    {%  block header %}{% include crudit.headerTemplate %}{%  endblock %}
-    {%  block menu %}{% include crudit.menuTemplate %}{%  endblock %}
+    {%  block header %}{% include crudit.template('header') %}{%  endblock %}
+    {%  block menu %}{% include crudit.template('menu') %}{%  endblock %}
     <div class="content-wrapper">
         {%  block content %}{%  endblock %}
     </div>
-    {%  block footer %}{% include crudit.footerTemplate %}{%  endblock %}
+    {%  block footer %}{% include crudit.template('footer') %}{%  endblock %}
     <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
+        {%  block right %}{% include crudit.template('right') %}{%  endblock %}
     </aside>
 </div>
 <script src="/bundles/llecrudit/default/app.js"></script>

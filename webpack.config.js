@@ -6,8 +6,8 @@ function basic(path, Encore){
         .setOutputPath('./src/Resources/public/' + path)
         .setPublicPath('./')
         .setManifestKeyPrefix('bundles/crudit')
-
         .cleanupOutputBeforeBuild()
+        .enableEslintLoader()
         .enableSassLoader()
         .enableSourceMaps(false)
         .enableVersioning(false)
@@ -22,8 +22,8 @@ function basic(path, Encore){
 /**
  * Config for default layout
  */
-basic('default', Encore)
-    .addEntry("app", "./assets/default/js/app.js")
+basic('adminlte', Encore)
+    .addEntry("app", "./assets/admin-lte/js/app.js")
     .copyFiles({
         from: './node_modules/admin-lte/dist/img/',
         to: 'images/[name].[ext]',

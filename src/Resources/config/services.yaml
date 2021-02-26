@@ -13,5 +13,5 @@ services:
             - !tagged_iterator crudit.layout
             - '@parameter_bag'
 
-    Lle\CruditBundle\Layout\DefaultLayout:
+    Lle\CruditBundle\Layout\AdminLteLayout:
         tags: ['crudit.layout']
