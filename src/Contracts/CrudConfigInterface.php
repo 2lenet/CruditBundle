@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Lle\CruditBundle\Contracts;
+
 interface CrudConfigInterface
 {
     public static function getDataSource(): DataSourceInterface;
-    
-    /**
-     * @return FieldInterface[]
-     * @psalm-return iterable<FieldInterface>
-     */
+
     public function configureFields(string $pageName): iterable;
-    
 }
