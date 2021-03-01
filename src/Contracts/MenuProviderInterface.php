@@ -1,8 +1,13 @@
 <?php
 
-use Lle\CruditBundle\Dto\MenuItem;
+declare(strict_types=1);
+
+namespace Lle\CruditBundle\Contracts;
+
+use Lle\CruditBundle\Dto\Layout\LayoutElementInterface;
 
 interface MenuProviderInterface
 {
-    public function getMenuEntry(): MenuItem[];
+    /** @return LayoutElementInterface[] */
+    public function getMenuEntry(): array;
 }
