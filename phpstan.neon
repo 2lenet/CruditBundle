@@ -1,0 +1,19 @@
+includes:
+  - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/phpstan/phpstan-mockery/extension.neon
+  - vendor/phpstan/phpstan-symfony/extension.neon
+  - vendor/phpstan/phpstan-symfony/rules.neon
+  - vendor/phpstan/phpstan-doctrine/extension.neon
+  - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+rules:
+  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+
+parameters:
+  level: 6
+  paths:
+    - src
+  checkMissingIterableValueType: false
+  checkGenericClassInNonGenericObjectType: false
+  doctrine:
+    objectManagerLoader: tests/object-manager.php

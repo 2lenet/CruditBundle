@@ -1,0 +1,12 @@
+services:
+  Lle\CruditBundle\Serializer\LayoutNormalizer:
+    arguments: ['@serializer.normalizer.object']
+    tags: ['serializer.normalizer']
+
+  Lle\CruditBundle\Serializer\LayoutElementNormalizer:
+    arguments: ['@serializer.normalizer.object']
+    tags: ['serializer.normalizer']
+
+  Lle\CruditBundle\Serializer\PathNormalizer:
+    arguments: ['@router.default','@serializer.normalizer.object']
+    tags: ['serializer.normalizer']

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\DependencyInjection;
 
+use Lle\CruditBundle\Layout\AdminLteLayout;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -16,7 +17,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->children()
-            ->scalarNode('layout_provider')->defaultValue('@LleCrudit/Layout/default.html.twig')->end();
+            ->scalarNode('layout_provider')->defaultValue(AdminLteLayout::getName())->end();
         return $treeBuilder;
     }
 }

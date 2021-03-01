@@ -1,0 +1,10 @@
+{
+  "entrypoints": {
+    "app": {
+      "css": [
+        "./app.css",
+        "./app.rtl.css"
+      ]
+    }
+  }
+}
