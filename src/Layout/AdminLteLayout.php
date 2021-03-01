@@ -73,7 +73,7 @@ class AdminLteLayout extends AbstractLayout
             'menu-nav' => $menuItems,
             'header-nav' => [LinkElement::new('Contact', Path::new('lle_crudit_dashboard_index'))],
             'menu-sidebar' => [UserElement::new()],
-            'menu-main-sidebar' => [TitleElement::new()],
+            'menu-main-sidebar' => [TitleElement::new('title')],
             'header-right' => [
                 TemplateElement::new('elements/_message'),
                 TemplateElement::new('elements/_notification')

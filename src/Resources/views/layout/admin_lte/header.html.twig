@@ -9,7 +9,7 @@
     </ul>
     {% include crudit.template('elements/_search') %}
     <ul class="navbar-nav ml-auto">
-        {%  for element in crudit.elements('header-nav') %}
+        {%  for element in crudit.elements('header-right') %}
             {% include crudit.template(element.template) with {'element': element, 'where': 'header-right'} %}
         {%  endfor %}
         {%  if crudit.getTemplate('right') %}

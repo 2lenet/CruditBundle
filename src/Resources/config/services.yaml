@@ -21,3 +21,8 @@ services:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: ['crudit.layout']
+
+    Lle\CruditBundle\Layout\SbAdminLayout:
+        arguments:
+            - '@Lle\CruditBundle\Registry\MenuRegistry'
+        tags: ['crudit.layout']
