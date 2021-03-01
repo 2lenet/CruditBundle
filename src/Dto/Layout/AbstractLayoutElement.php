@@ -13,6 +13,9 @@ abstract class AbstractLayoutElement implements LayoutElementInterface
     /** @var string */
     protected $cssClass;
 
+    /** @var int */
+    protected $priority = 1;
+
     /**
      * @return string[]
      */
@@ -24,5 +27,16 @@ abstract class AbstractLayoutElement implements LayoutElementInterface
     public function getCssClass(): ?string
     {
         return $this->cssClass;
+    }
+
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(int $priority): self
+    {
+        $this->priority = $priority;
+        return $this;
     }
 }

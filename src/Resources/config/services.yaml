@@ -13,5 +13,11 @@ services:
             - !tagged_iterator crudit.layout
             - '@parameter_bag'
 
+    Lle\CruditBundle\Registry\MenuRegistry:
+        arguments:
+            - !tagged_iterator crudit.menu
+
     Lle\CruditBundle\Layout\AdminLteLayout:
+        arguments:
+            - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: ['crudit.layout']
