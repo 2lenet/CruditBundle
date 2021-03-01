@@ -17,7 +17,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>AdminLTE 3 | Mailbox</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/bundles/llecrudit/default/app.css">
+        <link rel="stylesheet" href="{{ asset(crudit.asset('app.css')) }}">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -31,6 +31,6 @@
         {%  block right %}{% include crudit.template('right') %}{%  endblock %}
     </aside>
 </div>
-<script src="/bundles/llecrudit/default/app.js"></script>
+<script src="{{ asset(crudit.asset('app.js')) }}"></script>
 </body>
 </html>

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Layout;
 
+use Lle\CruditBundle\Dto\Layout\LinkElement;
+use Symfony\Component\HttpFoundation\Request;
+
 interface LayoutInterface
 {
     public function getTemplate(string $name): string;
@@ -12,5 +15,9 @@ interface LayoutInterface
 
     public static function getName(): string;
 
-    public function getMenuItems(): array;
+    public function getElements(string $name): array;
+
+    public function isActive(LinkElement $item, Request $request): bool;
+
+    public function getElementNames(): array;
 }

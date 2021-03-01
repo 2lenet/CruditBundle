@@ -24,20 +24,22 @@ class LayoutProvider
         $this->layouts = $layouts;
         $this->parameterBag = $parameterBag;
     }
-    
+
     public function getLayout(): LayoutInterface
     {
         $curentLayoutName = $this->getCurrentLayoutName();
         $layoutNames = [];
         foreach ($this->layouts as $layout) {
-            if($layout instanceof LayoutInterface) {
+            if ($layout instanceof LayoutInterface) {
                 $layoutNames[] = $layout->getName();
                 if ($layout->getName() === $curentLayoutName || get_class($layout) === $curentLayoutName) {
                     return $layout;
                 }
             }
         }
-        throw new BadConfigException("the layout $curentLayoutName  is not found. Did you mean: ". join(',',$layoutNames));
+        throw new BadConfigException(
+            "the layout $curentLayoutName  is not found. Did you mean: " . join(',', $layoutNames)
+        );
     }
 
     private function getCurrentLayoutName(): string

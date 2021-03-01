@@ -16,7 +16,7 @@ class UiController extends AbstractController
 {
     /** @var KernelInterface @ */
     private $kernel;
-    
+
     /** @var NormalizerInterface */
     private $normalizer;
 
@@ -39,9 +39,9 @@ class UiController extends AbstractController
     /**
      * @Route("/ui/crud/{resource}", name="crud_config")
      */
-    public function crudConfig($resource): Response
+    public function crudConfig(string $resource): Response
     {
-        $data = file_get_contents($this->kernel->getProjectDir().'/data/crudit/crud/'.$resource.'.json');
+        $data = file_get_contents($this->kernel->getProjectDir() . '/data/crudit/crud/' . $resource . '.json');
         if ($data === false) {
             throw new \Exception('file layout not found');
         }

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\EventListener;
 
-use Lle\CruditBundle\Provider\DefaultLayoutProvider;
 use Lle\CruditBundle\Provider\LayoutProvider;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Twig\Environment;
 
@@ -16,7 +14,7 @@ class KernelControllerListener
     /** @var Environment */
     private $twig;
 
-    /** @var DefaultLayoutProvider */
+    /** @var LayoutProvider */
     private $layoutProvider;
 
     public function __construct(Environment $twig, LayoutProvider $layoutProvider)

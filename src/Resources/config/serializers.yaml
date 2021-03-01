@@ -3,7 +3,7 @@ services:
     arguments: ['@serializer.normalizer.object']
     tags: ['serializer.normalizer']
 
-  Lle\CruditBundle\Serializer\MenuItemNormalizer:
+  Lle\CruditBundle\Serializer\LayoutElementNormalizer:
     arguments: ['@serializer.normalizer.object']
     tags: ['serializer.normalizer']
 
