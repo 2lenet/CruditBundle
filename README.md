@@ -51,3 +51,9 @@ The backend could be dispatched in many micro service each responsible for a sma
 For exemple we could build an single CRM / ERP app with part of the interface handled by a CRM micro service and the other by an ERP one.
 
 The system have to respect the separation on concern needed by the business rules.
+
+## Dependency
+
+https://startbootstrap.com/theme/sb-admin-2 ( inspired from )
+
+https://datatables.net/

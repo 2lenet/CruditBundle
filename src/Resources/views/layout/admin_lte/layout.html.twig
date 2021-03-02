@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head_metas %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, noimageindex, notranslate, nocache" />
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <meta name="generator" content="CrudIt" />
+    {% endblock head_metas %}
+
+    <title>{% block page_title %}{% endblock %}</title>
+
+    {% block head_stylesheets %}
+    {% endblock %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>AdminLTE 3 | Mailbox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ asset(crudit.asset('app.css')) }}">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    {%  block header %}{% include crudit.template('header') %}{%  endblock %}
+    {%  block menu %}{% include crudit.template('menu') %}{%  endblock %}
+    <div class="content-wrapper">
+        {%  block content %}{%  endblock %}
+    </div>
+    {%  block footer %}{% include crudit.template('footer') %}{%  endblock %}
+    <aside class="control-sidebar control-sidebar-dark">
+        {%  block right %}{% include crudit.template('right') %}{%  endblock %}
+    </aside>
+</div>
+<script src="{{ asset(crudit.asset('app.js')) }}"></script>
+</body>
+</html>
