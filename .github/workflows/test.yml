@@ -25,6 +25,8 @@ jobs:
         uses: php-actions/phpunit@v2
         with:
           php_version: '7.4'
+          php_extensions: xdebug
           version: 8
           configuration: tests/phpunit/phpunit.xml
+          bootstrap: vendor/autoload.php
           args: --coverage-text
