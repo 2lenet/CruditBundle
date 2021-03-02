@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Validate
 
 on:
   push:
@@ -25,6 +25,7 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
+
       - name: Install dependencies
         uses: php-actions/composer@v5
         with:
@@ -32,18 +33,7 @@ jobs:
           version: 2
           args: --profile --ignore-platform-reqs
 
-      - name: PHPUnit tests
-        uses: php-actions/phpunit@v2
+      - name: PHPStan Static Analysis
+        uses: php-actions/phpstan@v2
         with:
-          php_version: '7.4'
-          version: 8
-          configuration: tests/phpunit/phpunit.xml
-          bootstrap: vendor/autoload.php
-          args: --coverage-text
-
-
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-    # - name: Run test suite
-    #   run: composer run-script test
+          configuration: tests/phpstan.neon

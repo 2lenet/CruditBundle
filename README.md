@@ -1,5 +1,9 @@
 # CruditBundle
 
+
+[![Build Status](https://github.com/2lenet/CruditBundle/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/2lenet/CruditBundle/actions)
+[![Build Status](https://github.com/2lenet/CruditBundle/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/2lenet/CruditBundle/actions)
+
 Crudit bundle for 2le.
 
 ## Installation
