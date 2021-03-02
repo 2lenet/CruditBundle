@@ -1,4 +1,4 @@
-name: Validate
+name: PHP Composer
 
 on:
   push:
@@ -25,6 +25,7 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
+
       - name: Install dependencies
         uses: php-actions/composer@v5
         with:
@@ -32,7 +33,7 @@ jobs:
           version: 2
           args: --profile --ignore-platform-reqs
 
-            - name: PHPStan Static Analysis
-              uses: php-actions/phpstan@v2
-              with:
-                configuration: tests/phpstan.neon
+      - name: PHPStan Static Analysis
+        uses: php-actions/phpstan@v2
+        with:
+          configuration: tests/phpstan.neon
