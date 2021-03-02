@@ -9,6 +9,7 @@ class Icon
 
     public const TYPE_FA = 'fa';
     public const TYPE_FAR = 'far';
+    public const TYPE_IMG = 'img';
 
     /** @var string */
     private $icon;
@@ -40,5 +41,10 @@ class Icon
     public function getCssClass(): string
     {
         return $this->getType() . ' fa-' . $this->getIcon();
+    }
+
+    public function isImg(): bool
+    {
+        return ($this->getType() === static::TYPE_IMG);
     }
 }

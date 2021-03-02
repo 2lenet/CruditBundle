@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block page_title %}CrudIt{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset(crudit.asset('app.css')) }}">
+    {% endblock %}
+    {% block javascripts %}
+        <script src="{{ asset(crudit.asset('app.js')) }}"></script>
+    {% endblock %}
+</head>
+<body id="page-top">
+{% block body %}
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            {% block brand %}
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+                    <img src="/img/logo.png">
+                    <div class="sidebar-brand-text mx-3">CRUDIT</div>
+                </a>
+            {% endblock%}
+            {% include crudit.template('menu') %}
+
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                {% include crudit.template('header') %}
+                <div class="container-fluid">
+                    {% block main %}
+                        <h1 class="h3 mb-4 text-gray-800">{% block content_title %}{% endblock %}</h1>
+                        {% block content %}{% endblock %}
+                    {% endblock main %}
+
+                </div>
+            </div>
+
+            {% include crudit.template('footer') %}
+
+        </div>
+    </div>
+{% endblock %}
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+{% block body_javascript %}
+{% endblock %}
+</body>
+</html>

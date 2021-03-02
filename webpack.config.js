@@ -20,7 +20,7 @@ function basic(path, Encore){
 }
 
 /**
- * Config for default layout
+ * Config for adminlte layout
  */
 basic('adminlte', Encore)
     .addEntry("app", "./assets/admin-lte/js/app.js")
@@ -30,7 +30,21 @@ basic('adminlte', Encore)
         pattern: /\.(jpg|png)$/
     })
 ;
-const def = Encore.getWebpackConfig();
+const adminlte = Encore.getWebpackConfig();
+Encore.reset();
+
+/**
+ * Config for sb-admin layout
+ */
+basic('sbadmin', Encore)
+    .addEntry("app", "./assets/sb-admin/js/app.js")
+    .copyFiles({
+        from: './node_modules/startbootstrap-sb-admin-2/img/',
+        to: 'imgages/[name].[ext]',
+        pattern: /\.(jpg|png|svg)$/
+    })
+;
+const sbadmin = Encore.getWebpackConfig();
 Encore.reset();
 
 /**
@@ -42,4 +56,4 @@ basic('tweden', Encore)
 const tweden = Encore.getWebpackConfig();
 
 
-module.exports = [def, tweden]
+module.exports = [adminlte, sbadmin, tweden]

@@ -32,7 +32,11 @@ abstract class AbstractLayout implements LayoutInterface
         if ($item->getPath() !== null) {
             $r2 = $request->get('_route');
             $r1 = $item->getPath()->getRoute();
-            return (substr($r1, 0, strrpos($r1, '_'))) === (substr($r2, 0, strrpos($r2, '_')));
+            $p1 = (strrpos($r1, '_')) ? strrpos($r1, '_') : strlen($r1);
+            $p2 = (strrpos($r2, '_')) ? strrpos($r1, '_') : strlen($r2);
+            return
+                (substr($r1, 0, $p1)) ===
+                (substr($r2, 0, $p2));
         }
         return false;
     }

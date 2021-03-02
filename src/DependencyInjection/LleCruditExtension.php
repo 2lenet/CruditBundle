@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\DependencyInjection;
 
+use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -26,5 +27,6 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->setParameter('crudit.layout_provider', $processedConfig[ 'layout_provider' ]);
 
         $container->registerForAutoconfiguration(LayoutInterface::class)->addTag('crudit.layout');
+        $container->registerForAutoconfiguration(MenuProviderInterface::class)->addTag('crudit.menu');
     }
 }

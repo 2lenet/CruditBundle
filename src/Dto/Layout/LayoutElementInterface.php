@@ -7,4 +7,5 @@ namespace Lle\CruditBundle\Dto\Layout;
 interface LayoutElementInterface
 {
     public function getTemplate(): string;
+    public function getPriority(): int;
 }
