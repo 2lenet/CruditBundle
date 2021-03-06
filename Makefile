@@ -31,7 +31,7 @@ testjs:
 
 lint:
 	./vendor/bin/phpcs
-	./vendor/bin/phpstan analyse
+	./vendor/bin/phpstan analyse -c tests/phpstan.neon
 
 format:
 	./vendor/bin/phpcbf

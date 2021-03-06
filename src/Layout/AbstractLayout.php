@@ -30,13 +30,17 @@ abstract class AbstractLayout implements LayoutInterface
             }
         }
         if ($item->getPath() !== null) {
-            $r2 = $request->get('_route');
-            $r1 = $item->getPath()->getRoute();
-            $p1 = (strrpos($r1, '_')) ? strrpos($r1, '_') : strlen($r1);
-            $p2 = (strrpos($r2, '_')) ? strrpos($r1, '_') : strlen($r2);
+            $currentRoute = $request->get('_route');
+            $linkRoute = $item->getPath()->getRoute();
+            $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
+                (int)strrpos($currentRoute, '_') :
+                strlen($currentRoute);
+            $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
+                (int)strrpos($linkRoute, '_') :
+                strlen($linkRoute);
             return
-                (substr($r1, 0, $p1)) ===
-                (substr($r2, 0, $p2));
+                (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
+                (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
         }
         return false;
     }
