@@ -1,0 +1,5 @@
+services:
+
+  Lle\CruditBundle\Brick\ListBrick\ListItemBrick:
+    arguments: ['@doctrine.orm.default_entity_manager', '@Lle\CruditBundle\Resolver\RessourceResolver']
+    tags: [ 'crudit.brick' ]

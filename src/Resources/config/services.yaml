@@ -8,10 +8,35 @@ services:
         resource: '../../Controller'
         tags: [ 'controller.service_arguments' ]
 
+    Lle\CruditBundle\Controller\CrudController:
+        arguments: ['@Lle\CruditBundle\Provider\ConfiguratorProvider', '@Lle\CruditBundle\Builder\BrickBuilder', '@serializer']
+        tags: [ 'controller.service_arguments' ]
+
+    Lle\CruditBundle\Resolver\FieldResolver:
+        arguments: ['@doctrine.orm.default_entity_manager',  '@property_accessor']
+
+    Lle\CruditBundle\Resolver\RessourceResolver:
+        arguments: ['@doctrine.orm.default_entity_manager', '@Lle\CruditBundle\Resolver\FieldResolver', '@property_accessor']
+
     Lle\CruditBundle\Provider\LayoutProvider:
         arguments:
             - !tagged_iterator crudit.layout
             - '@parameter_bag'
+
+    Lle\CruditBundle\Provider\ConfiguratorProvider:
+        arguments:
+            - !tagged_iterator crudit.configurator
+
+    Lle\CruditBundle\Provider\BrickProvider:
+        arguments:
+            - !tagged_iterator crudit.brick
+
+    Lle\CruditBundle\Provider\MenuProvider:
+        arguments: ['@Lle\CruditBundle\Provider\ConfiguratorProvider']
+        tags: [ 'crudit.menu' ]
+
+    Lle\CruditBundle\Builder\BrickBuilder:
+        arguments: ['@Lle\CruditBundle\Provider\BrickProvider']
 
     Lle\CruditBundle\Registry\MenuRegistry:
         arguments:

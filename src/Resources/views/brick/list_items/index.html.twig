@@ -1,0 +1,72 @@
+<div class="box">
+    <div class="box-header">
+        {%  dump(view) %}
+        <div class="pull-right">{% include view.partial('_pager') with {'view': view} %}</div>
+    </div>
+
+
+    <div class="box-body"  id="{{ view.gid('body') }}">
+
+        <div class="table_overflow_fix table-responsive">
+            <table id="{{ view.gid('table') }}" class="table table-striped table-hover table-bordered table-sortable responsive">
+                <thead>
+                <tr>
+                    {% set nbCol = 0 %}
+                    {% if view.data.bulk %}
+                        {% set nbCol = nbCol + 1 %}
+                        <th style="width: 15px;">
+                            <input type="checkbox" id="{{ view.gid('all-checkbox') }}">
+                        </th>
+                    {% endif %}
+                    {% for field in view.data.fields %}
+                        {% set nbCol = nbCol + 1 %}
+                        {% set columnName = field.name %}
+                        {% set columnkey = field.header %}
+                        {% set orderDirection = field.sort %}
+                        {% set extraHeaderClass = "" %}
+                        {% if ( columnName == view.data.sort.name )%}
+                            {% if view.data.sort.direction == "DESC" %}
+                                {% set orderDirection = "ASC" %}
+                                {% set extraHeaderClass = "sorting_desc" %}
+                            {% else %}
+                                {% set extraHeaderClass = "sorting_asc" %}
+                            {% endif %}
+                        {% else %}
+                            {% set extraHeaderClass = "sorting" %}
+                        {% endif %}
+                        <th class="{{extraHeaderClass}}">
+                            {{ columnkey | trans }}
+                            {% if field.sort %}
+
+                                <a class="jsa-ajax" data-target="{{ view.id }}" data-pre-callback="jPreLoadInSelf" data-callback="jLoadInTarget" href="{{ view.url({ 'orderBy': columnName, "orderDirection": orderDirection }) }}">
+                                    {%  if type == 'string' %}
+                                        {% if orderDirection == 'DESC' %}<i class="fa fa-sort-alpha-asc"></i>{%  else %}<i class="fa fa-sort-alpha-desc"></i>{%  endif  %}
+                                    {%  else %}
+                                        {% if orderDirection == 'DESC' %}<i class="fa fa-sort-numeric-asc"></i>{%  else %}<i class="fa fa-sort-numeric-desc"></i>{%  endif  %}
+                                    {%  endif %}
+                                </a>
+                            {%  endif %}
+                        </th>
+                    {% endfor %}
+                    {% if not view.data.hideAction %}
+                        {% set nbCol = nbCol + 1 %}
+                        <th class="actions-header">{{ 'crudit.header.action'|trans }}</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                    {% for line in view.data.lines %}
+                        {% include view.partial('_line') with {'view':view ,'line':line} %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% include view.partial('_bulks') with {'view':view } %}
+
+            <div style="margin-top:5px" class="pull-right">{% include view.partial('_pager') with {'view':view} %}</div>
+
+        </div>
+
+
+    </div>
+</div>
