@@ -37,3 +37,4 @@ jobs:
         uses: php-actions/phpstan@v2
         with:
           configuration: tests/phpstan.neon
+          memory_limit: 256M
