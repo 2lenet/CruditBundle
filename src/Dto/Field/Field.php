@@ -38,7 +38,8 @@ class Field
     public function __construct(string $name, array $options = [])
     {
         $this->name = $name;
-        $this->header = ucfirst(strtolower($name));
+        //no translate ucfirst(strtolower($name)
+        $this->header = 'field.' . strtolower($name);
         $this->setOptions($options);
     }
 
