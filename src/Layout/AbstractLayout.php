@@ -29,6 +29,7 @@ abstract class AbstractLayout implements LayoutInterface
                 }
             }
         }
+
         if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
             $currentRoute = $request->get('_route');
             $linkRoute = $item->getPath()->getRoute();
@@ -43,6 +44,7 @@ abstract class AbstractLayout implements LayoutInterface
                 (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
         } elseif ($item->getPath() !== null &&  $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
             return $item->getPath()->getParams()['ressource'] === $request->get('ressource');
+
         }
         return false;
     }
