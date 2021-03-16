@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Contracts;
 
-interface BrickConfiguratorInterface
+interface BrickConfigInterface
 {
+
+    public function getConfig(): array;
 
     public function getSubjectClass(): string;
 

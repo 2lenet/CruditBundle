@@ -1,7 +1,7 @@
 {%  set index = 1  %}
-{%  if not view.data.hideAction %}
+{%  if not view.config.hidden_action %}
     <td class="actions">
-        {% for entityAction in view.data.actions %}
+        {% for entityAction in view.config.actions %}
             {% if entityAction.isShow(item) %}
                 {% set path = entityAction.getPath(item) %}
                 {% set pathline = view.path('entityreload',{'id':item.id}) %}
@@ -41,7 +41,7 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
-        {%  if view.data.detail %}
+        {%  if view.config.detail %}
             <div class="jsa-ajax pull-right btn btn-default btn-xs"
                  data-target="{{ view.gid('line')  }}-{{ item.id }}-td-detail"
                  data-show="{{ view.gid('line')  }}-{{ item.id }}-tr-detail"

@@ -12,7 +12,7 @@ interface BrickInterface
 
     //public function configureFields(string $pageName): iterable;
 
-    public function support(BrickConfiguratorInterface $brickConfigurator): bool;
+    public function support(BrickConfigInterface $brickConfigurator): bool;
 
-    public function buildView(BrickConfiguratorInterface $brickConfigurator): BrickView;
+    public function buildView(BrickConfigInterface $brickConfigurator): BrickView;
 }

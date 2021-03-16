@@ -176,7 +176,8 @@ class Pager
             'isNNext' => $this->isNNext(),
             'isPPre' => $this->isPPre(),
             'isPre' => $this->isPre(),
-            'buttons' => $this->buttons()
+            'buttons' => $this->buttons(),
+            'unlimited' => $this->isUnlimited()
         ];
     }
 }

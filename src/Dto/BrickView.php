@@ -12,6 +12,9 @@ class BrickView
     /** @var array  */
     private $data;
 
+    /** @var array */
+    private $config = [];
+
     /** @var bool  */
     private $movable;
 
@@ -21,13 +24,17 @@ class BrickView
     /** @var ?string  */
     private $cssClass;
 
-    public function __construct(string $template = null, array $data = [])
+    /** @var array  */
+    private $options;
+
+    public function __construct(string $id, string $template = null, array $data = [])
     {
         $this->template = $template;
         $this->data = $data;
         $this->movable = false;
-        $this->id = (string) 1;
+        $this->id = $id;
         $this->cssClass = null;
+        $this->options = [];
     }
 
     public function setTemplate(string $template): self
@@ -80,5 +87,26 @@ class BrickView
     public function getCssClass(): ?string
     {
         return $this->cssClass;
+    }
+
+    public function setConfig(array $config): self
+    {
+        $this->config = $config;
+        return $this;
+    }
+
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    public function getUrl(array $params): string
+    {
+        return '';
+    }
+
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 }

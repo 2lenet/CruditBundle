@@ -24,11 +24,11 @@ class FieldResolver
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    public function resolve(Field $field, object $item): FieldView
+    public function resolve(Field $field, $item): FieldView
     {
         return new FieldView(
             $field,
-            $this->propertyAccessor->getValue($item, $field->getName())
+            $this->propertyAccessor->getValue($item, (is_array($item))? '['.$field->getName().']': $field->getName())
         );
     }
 

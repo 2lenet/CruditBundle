@@ -17,7 +17,7 @@ class RessourceView
     private $fields;
 
     /** @param int|string $id */
-    public function __construct($id, object $item, array $fields)
+    public function __construct($id, $item, array $fields)
     {
         $this->id = $id;
         $this->item = $item;

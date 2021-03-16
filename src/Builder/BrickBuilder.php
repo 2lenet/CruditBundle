@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Builder;
 
+use Lle\CruditBundle\Contracts\PageConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\UnsupportedBrickConfigurationException;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,25 +26,17 @@ class BrickBuilder
     }
 
     /** @return BrickView[] */
-    public function build(CrudConfiguratorInterface $crudConfigurator, Request $request): array
+    public function build(PageConfigInterface $crudConfigurator, Request $request): array
     {
-        $this->initBrick($crudConfigurator);
-        $this->bindRequest($request);
-        return $this->bricks;
-    }
-
-    public function initBrick(CrudConfiguratorInterface $crudConfigurator): void
-    {
-        $mainClass = $crudConfigurator->getSubjectClass();
-        foreach ($crudConfigurator->getBrickConfigurators() as $brickConfigurator) {
-            $brickConfigurator->setMainSubjectClass($mainClass);
-            $brick = $this->brickProvider->getBrick($brickConfigurator);
-            if ($brick) {
-                $this->bricks[] = $brick->buildView($brickConfigurator);
+        foreach ($crudConfigurator->getBrickConfigs($request) as $brickConfigurator) {
+            $brickFactory = $this->brickProvider->getBrick($brickConfigurator);
+            if ($brickFactory) {
+                $this->bricks[] = $brickFactory->buildView($brickConfigurator);
             } else {
                 throw new UnsupportedBrickConfigurationException(get_class($brickConfigurator));
             }
         }
+        return $this->bricks;
     }
 
     public function bindRequest(Request $request): void

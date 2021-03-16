@@ -8,7 +8,7 @@ use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Dto\Path;
 
-abstract class AbstractCrudConfigurator implements CrudConfiguratorInterface
+abstract class AbstractCrudConfig implements PageConfigInterface
 {
 
     public function getController(): ?string

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick;
 
-use Lle\CruditBundle\Contracts\BrickConfiguratorInterface;
+use Lle\CruditBundle\Contracts\BrickConfigInterface;
 
-class AbstractBrickConfigurator implements BrickConfiguratorInterface
+abstract class AbstractBrickConfig implements BrickConfigInterface
 {
 
     /** @var string  */
@@ -38,5 +38,10 @@ class AbstractBrickConfigurator implements BrickConfiguratorInterface
             $this->subjectClass = $mainSubjectClass;
         }
         return $this;
+    }
+
+    public function getConfig(): array
+    {
+        return [];
     }
 }
