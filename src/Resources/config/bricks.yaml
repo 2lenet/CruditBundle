@@ -1,5 +1,5 @@
 services:
 
   Lle\CruditBundle\Brick\ListBrick\ListFactory:
-    arguments: ['@doctrine.orm.default_entity_manager', '@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack']
+    arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]
