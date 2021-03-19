@@ -12,4 +12,3 @@ Liste des composants :
     - TableComponent
     - TabComponent
     - HistoryComponent
-
