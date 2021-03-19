@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Contracts;
 
+use Symfony\Component\HttpFoundation\Request;
+
 interface CrudConfigInterface
 {
-    public static function getDataSource(): DataSourceInterface;
+    public function getBrickConfigs(Request $request): iterable;
 
-    public function configureFields(string $pageName): iterable;
+    public function getDefaultDatasource(): DataSourceInterface;
+
+    public function getController(): ?string;
+
+    public function getName(): ?string;
 }

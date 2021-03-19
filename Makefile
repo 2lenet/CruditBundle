@@ -15,6 +15,9 @@ cc:
 pub:
 	cd ../../.. && bin/console assets:install
 
+debug:
+	cd ../../.. && bin/console debug:router
+
 build-asset:
 	npm install
 	./node_modules/.bin/encore prod

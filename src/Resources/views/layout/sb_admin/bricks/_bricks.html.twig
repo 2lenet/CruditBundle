@@ -1,0 +1,9 @@
+{%  include crudit.template('_flash') %}
+
+<div  data-widget-sort-save="" class="jsa-widget-container">
+    {% for view in views %}
+        <div data-widget-id="{{ view.id }}" id="{{ view.id }}" class="{% if view.movable %}jsa-widget{% endif %}  {{ view.cssClass }}">
+            {% include view.indexTemplate with { 'view': view } only %}
+        </div>
+    {%  endfor %}
+</div>

@@ -9,5 +9,5 @@ use Lle\CruditBundle\Dto\Layout\LayoutElementInterface;
 interface MenuProviderInterface
 {
     /** @return LayoutElementInterface[] */
-    public function getMenuEntry(): array;
+    public function getMenuEntry(): iterable;
 }

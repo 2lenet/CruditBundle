@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Contracts;
 
-use Symfony\Component\HttpFoundation\Response;
-
 interface DataSourceInterface
 {
-    public function get(mixed $id): Response;
-    public function cget(): Response;
-    public function delete(mixed $id): Response;
-    public function put(mixed $id, array $data): Response;
-    public function patch(mixed $id, array $data): Response;
+
+    /** @param string|int $id */
+    public function get($id): ?object;
+
+    public function list(): iterable;
+
+    /** @param string|int $id */
+    public function delete($id): bool;
+
+    /** @param string|int $id */
+    public function put($id, array $data): ?object;
+
+    /** @param string|int $id */
+    public function patch($id, array $data): ?object;
 }
