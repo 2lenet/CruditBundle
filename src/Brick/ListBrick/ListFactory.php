@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\ListBrick;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Dto\BrickView;
@@ -15,9 +14,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ListFactory implements BrickInterface
 {
-    /** @var EntityManagerInterface  */
-    protected $entityManager;
-
     /** @var RessourceResolver  */
     protected $ressourceResolver;
 
@@ -25,12 +21,10 @@ class ListFactory implements BrickInterface
     protected $requestStack;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         RessourceResolver $ressourceResolver,
         RequestStack $requestStack
     ) {
         $this->requestStack = $requestStack;
-        $this->entityManager = $entityManager;
         $this->ressourceResolver = $ressourceResolver;
     }
 
