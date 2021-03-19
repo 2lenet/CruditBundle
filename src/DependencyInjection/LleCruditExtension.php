@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\DependencyInjection;
 
 use Lle\CruditBundle\Contracts\BrickInterface;
-use Lle\CruditBundle\Contracts\CrudConfiguratorInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -31,7 +31,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
 
         $container->registerForAutoconfiguration(LayoutInterface::class)->addTag('crudit.layout');
         $container->registerForAutoconfiguration(MenuProviderInterface::class)->addTag('crudit.menu');
-        $container->registerForAutoconfiguration(CrudConfiguratorInterface::class)->addTag('crudit.configurator');
+        $container->registerForAutoconfiguration(CrudConfigInterface::class)->addTag('crudit.config');
         $container->registerForAutoconfiguration(BrickInterface::class)->addTag('crudit.brick');
     }
 }

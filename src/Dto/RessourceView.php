@@ -10,13 +10,16 @@ class RessourceView
     /** @var int|string  */
     private $id;
 
-    /** @var object  */
+    /** @var object|array  */
     private $item;
 
     /** @var FieldView[]  */
     private $fields;
 
-    /** @param int|string $id */
+    /**
+     * @param int|string $id
+     * @param object|array $item
+     */
     public function __construct($id, $item, array $fields)
     {
         $this->id = $id;
@@ -30,8 +33,8 @@ class RessourceView
         return $this->id;
     }
 
-    /** @return ?object */
-    public function getItem(): ?object
+    /** @return array|object */
+    public function getItem()
     {
         return $this->item;
     }

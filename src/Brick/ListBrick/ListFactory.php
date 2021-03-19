@@ -10,11 +10,8 @@ use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\RessourceView;
-use Lle\CruditBundle\Lib\Pager;
 use Lle\CruditBundle\Resolver\RessourceResolver;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class ListFactory implements BrickInterface
 {
@@ -23,6 +20,9 @@ class ListFactory implements BrickInterface
 
     /** @var RessourceResolver  */
     protected $ressourceResolver;
+
+    /** @var RequestStack  */
+    protected $requestStack;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -44,28 +44,14 @@ class ListFactory implements BrickInterface
 
         $view = new BrickView(spl_object_hash($brickConfigurator));
         if ($brickConfigurator instanceof ListConfig) {
-            //$pager = $this->getPager($brickConfigurator);
             $view
                 ->setTemplate('@LleCrudit/brick/list_items')
                 ->setConfig($brickConfigurator->getConfig())
                 ->setData([
-                    //'pager' => $pager->getInfo(),
                     'lines' => $this->getLines($brickConfigurator)
                 ]);
         }
         return $view;
-    }
-
-    private function getPager(BrickConfigInterface $brickConfigurator): Pager
-    {
-        /** @var class-string $className */
-        $className = $brickConfigurator->getSubjectClass();
-        return new Pager(
-            $this->entityManager->getRepository($className)->createQueryBuilder('root'),
-            1,
-            20,
-            false
-        );
     }
 
     /** @return Field[] */
@@ -78,11 +64,11 @@ class ListFactory implements BrickInterface
     private function getLines(ListConfig $brickConfigurator): array
     {
         $lines = [];
-        foreach ($brickConfigurator->getDataSource()->list() as $item) {
-            $lines[] = $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
+        if ($brickConfigurator->getDataSource() !== null) {
+            foreach ($brickConfigurator->getDataSource()->list() as $item) {
+                $lines[] = $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
+            }
         }
         return $lines;
     }
-
-    
 }

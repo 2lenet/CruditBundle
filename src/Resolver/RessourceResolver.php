@@ -33,7 +33,7 @@ class RessourceResolver
     }
 
     /**
-     * @param mixed $item
+     * @param array|object $item
      * @param Field[] $fields
      */
     public function resolve($item, array $fields): RessourceView
@@ -45,7 +45,10 @@ class RessourceResolver
         );
     }
 
-    /** @return FieldView[] */
+    /**
+     * @param array|object $item
+     * @return FieldView[]
+     */
     private function getFieldViews(array $fields, $item): array
     {
         $fieldViews = [];
@@ -55,11 +58,14 @@ class RessourceResolver
         return $fieldViews;
     }
 
-    /** @return int|string */
+    /**
+     * @param array|object $item
+     * @return int|string
+     */
     private function getIdentifier($item)
     {
-        if(is_array($item)) {
-            return null;
+        if (is_array($item)) {
+            return md5(serialize($item));
         } else {
             $identifierField = $this
                 ->entityManager
@@ -67,6 +73,5 @@ class RessourceResolver
                 ->getSingleIdentifierColumnName();
             return $this->propertyAccessor->getValue($item, $identifierField);
         }
-
     }
 }

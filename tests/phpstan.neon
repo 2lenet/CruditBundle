@@ -18,5 +18,5 @@ parameters:
   checkGenericClassInNonGenericObjectType: false
   doctrine:
     objectManagerLoader: ../tests/object-manager.php
-  ignoreErrors:
-    - '#Call to an undefined method Doctrine\\Persistence\\ObjectRepository<[a-zA-Z]*>::[a-zA-Z]*\(\).#'
+  #ignoreErrors:
+  #  - '#Call to an undefined method Doctrine\\Persistence\\ObjectRepository<[a-zA-Z]*>::[a-zA-Z]*\(\).#'

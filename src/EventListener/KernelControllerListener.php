@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\EventListener;
 
 use Lle\CruditBundle\Controller\CrudController;
-use Lle\CruditBundle\Provider\ConfiguratorProvider;
+use Lle\CruditBundle\Provider\ConfigProvider;
 use Lle\CruditBundle\Provider\LayoutProvider;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -20,8 +20,8 @@ class KernelControllerListener
     /** @var LayoutProvider */
     private $layoutProvider;
 
-    /** @var ConfiguratorProvider  */
-    private $configuratorProvider;
+    /** @var ConfigProvider  */
+    private $configProvider;
 
     /** @var ControllerResolverInterface  */
     private $controllerResolver;
@@ -29,12 +29,12 @@ class KernelControllerListener
     public function __construct(
         Environment $twig,
         LayoutProvider $layoutProvider,
-        ConfiguratorProvider $configuratorProvider,
+        ConfigProvider $configProvider,
         ControllerResolverInterface $controllerResolver
     ) {
         $this->twig = $twig;
         $this->layoutProvider = $layoutProvider;
-        $this->configuratorProvider = $configuratorProvider;
+        $this->configProvider = $configProvider;
         $this->controllerResolver = $controllerResolver;
     }
 
@@ -47,9 +47,9 @@ class KernelControllerListener
             is_array($controller) &&
             get_class($controller[0]) === CrudController::class &&
             $event->getRequest()->attributes->has('ressource') &&
-            $this->configuratorProvider->getConfigurator($event->getRequest()->attributes->get('ressource'))
+            $this->configProvider->getConfigurator($event->getRequest()->attributes->get('ressource'))
         ) {
-            $configurator = $this->configuratorProvider
+            $configurator = $this->configProvider
                 ->getConfigurator(
                     $event->getRequest()->attributes->get('ressource')
                 );

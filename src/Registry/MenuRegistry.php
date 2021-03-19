@@ -20,11 +20,11 @@ class MenuRegistry
     public function getElements(): array
     {
         $elements = [];
-        foreach ($this->providers as $provider) {
+        foreach ($this->providers as $k => $provider) {
             if ($provider instanceof MenuProviderInterface) {
-                foreach ($provider->getMenuEntry() as $k => $element) {
+                foreach ($provider->getMenuEntry() as $kk => $element) {
                     /** @var LayoutElementInterface $element */
-                    $elements[$element->getPriority() * 1000 + $k] = $element;
+                    $elements[$element->getPriority() * 1000 + ($k * 100) + $kk] = $element;
                 }
             }
         }

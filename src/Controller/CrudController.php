@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Builder\BrickBuilder;
-use Lle\CruditBundle\Provider\ConfiguratorProvider;
+use Lle\CruditBundle\Provider\ConfigProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,8 +19,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  */
 class CrudController extends AbstractController
 {
-    /** @var ConfiguratorProvider */
-    private $configuratorProvider;
+    /** @var ConfigProvider */
+    private $configProvider;
 
     /** @var NormalizerInterface  */
     private $normalizer;
@@ -29,11 +29,11 @@ class CrudController extends AbstractController
     private $brickBuilder;
 
     public function __construct(
-        ConfiguratorProvider $configuratorProvider,
+        ConfigProvider $configProvider,
         BrickBuilder $brickBuilder,
         NormalizerInterface $normalizer
     ) {
-        $this->configuratorProvider = $configuratorProvider;
+        $this->configProvider = $configProvider;
         $this->brickBuilder = $brickBuilder;
         $this->normalizer = $normalizer;
     }
@@ -43,7 +43,7 @@ class CrudController extends AbstractController
      */
     public function index(Request $request): Response
     {
-        $configurator = $this->configuratorProvider->getConfiguratorByRequest($request);
+        $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
             $views = $this->brickBuilder->build($configurator, $request);
             return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -56,7 +56,7 @@ class CrudController extends AbstractController
      */
     public function apiIndex(Request $request): Response
     {
-        $configurator = $this->configuratorProvider->getConfiguratorByRequest($request);
+        $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
             $views = $this->brickBuilder->build($configurator, $request);
             return new JsonResponse(
@@ -69,10 +69,10 @@ class CrudController extends AbstractController
     /**
      * @Route("/api/config/{ressource}/{id}")
      */
-    public function apiConfig($id): Response
+    public function apiConfig(string $id): Response
     {
         $view = $this->brickBuilder->getView($id);
-        if($view) {
+        if ($view) {
             return new JsonResponse(
                 $view->getConfig()
             );
@@ -83,10 +83,10 @@ class CrudController extends AbstractController
     /**
      * @Route("/api/data/{ressource}/{id}")
      */
-    public function apiData($id): Response
+    public function apiData(string $id): Response
     {
         $view = $this->brickBuilder->getView($id);
-        if($view) {
+        if ($view) {
             return new JsonResponse(
                 $view->getData()
             );

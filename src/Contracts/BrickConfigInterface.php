@@ -9,9 +9,5 @@ interface BrickConfigInterface
 
     public function getConfig(): array;
 
-    public function getSubjectClass(): string;
-
-    public function getMainSubjectClass(): string;
-
-    public function setMainSubjectClass(string $mainClass): self;
+    public function setCrudConfig(CrudConfigInterface $crudConfig): self;
 }

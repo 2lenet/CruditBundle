@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\ListBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 
@@ -19,6 +20,14 @@ class ListConfig extends AbstractBrickConfig
 
     /** @var DataSourceInterface */
     private $dataSource;
+
+    public function setCrudConfig(CrudConfigInterface $crudConfig): self
+    {
+        if ($this->dataSource === null) {
+            $this->setDataSource($crudConfig->getDefaultDatasource());
+        }
+        return $this;
+    }
 
     public static function new(array $options = []): self
     {
@@ -40,8 +49,8 @@ class ListConfig extends AbstractBrickConfig
     {
         return $this->dataSource;
     }
-    
-    public function AddAction(DtoAction $action): self
+
+    public function addAction(): self
     {
         return $this;
     }
@@ -55,7 +64,7 @@ class ListConfig extends AbstractBrickConfig
     {
         return [];
     }
-    
+
     public function getConfig(): array
     {
         return [
@@ -69,9 +78,10 @@ class ListConfig extends AbstractBrickConfig
             'canModifyNbEntityPerPage' => false
         ];
     }
-    
-    public function addItemAction(){
 
+    public function addItemAction(): self
+    {
+        return $this;
     }
 
     public function add(Field $field): self
