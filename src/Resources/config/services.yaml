@@ -23,6 +23,10 @@ services:
             - !tagged_iterator crudit.layout
             - '@parameter_bag'
 
+    Lle\CruditBundle\Maker\MakeCrudit:
+        arguments: ["@maker.file_manager","@maker.doctrine_helper"]
+        tags: [maker.command]
+
     Lle\CruditBundle\Provider\ConfigProvider:
         arguments:
             - !tagged_iterator crudit.config
