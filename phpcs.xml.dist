@@ -24,6 +24,7 @@
 
 
     <file>src/</file>
+    <exclude-pattern>src/Resources/skeleton/**/*$</exclude-pattern>
 
 
 </ruleset>
