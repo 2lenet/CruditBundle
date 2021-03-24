@@ -22,8 +22,6 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig implements MenuPr
     /** @var <?= $entityClass ?>Datasource  */
     private $datasource;
 
-    private $faker;
-
     public function __construct(
         <?= $entityClass ?>Datasource $datasource
     ) {

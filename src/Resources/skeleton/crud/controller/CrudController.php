@@ -20,12 +20,12 @@ use Lle\CruditBundle\Controller\AbstractCrudController;
  */
 class <?= $entityClass ?>Controller extends AbstractCrudController
 {
-    /** @var ConfigProvider  */
-    private $configProvider;
+    /** @var <?= $entityClass ?>CrudConfig  */
+    private $config;
 
-    public function __construct(ConfigProvider $configProvider)
+    public function __construct(<?= $entityClass ?>CrudConfig $config)
     {
-        $this->configProvider = $configProvider;
+        $this->config = $config;
     }
 
     /**
@@ -33,8 +33,17 @@ class <?= $entityClass ?>Controller extends AbstractCrudController
      */
     public function index(Request $request): Response
     {
-        $views = $this->getBrickBuilder()->build($this->configProvider->get(<?= $entityClass ?>CrudConfig::class), $request);
+        $views = $this->getBrickBuilder()->build($this->config, $request);
         return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+    }
+
+    /**
+    * @Route("/{id}")
+    */
+    public function show(Request $request): Response
+    {
+      $views = $this->getBrickBuilder()->build($this->config, $request);
+      return $this->render('@LleCrudit/crud/show.html.twig', ['views' => $views]);
     }
 
     /**

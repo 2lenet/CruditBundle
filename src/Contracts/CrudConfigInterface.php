@@ -10,7 +10,7 @@ interface CrudConfigInterface
 {
     public function getBrickConfigs(Request $request): iterable;
 
-    public function getDefaultDatasource(): DataSourceInterface;
+    public function getDatasource(): DataSourceInterface;
 
     public function getController(): ?string;
 

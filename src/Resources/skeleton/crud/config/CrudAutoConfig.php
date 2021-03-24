@@ -24,7 +24,7 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
         $this->datasource = $datasource;
     }
 
-    public function getDefaultDatasource(): DataSourceInterface
+    public function getDatasource(): DataSourceInterface
     {
         return $this->datasource;
     }
