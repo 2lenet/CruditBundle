@@ -24,7 +24,7 @@ class ShowConfig extends AbstractBrickConfig
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         if ($this->dataSource === null) {
-            $this->setDataSource($crudConfig->getDefaultDatasource());
+            $this->setDataSource($crudConfig->getDatasource());
         }
         return $this;
     }

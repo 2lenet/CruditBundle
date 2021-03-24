@@ -37,7 +37,7 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig implements MenuPr
         );
     }
 
-    public function getDefaultDatasource(): DataSourceInterface
+    public function getDatasource(): DataSourceInterface
     {
         return $this->datasource;
     }

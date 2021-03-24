@@ -57,7 +57,7 @@ class ShowFactory implements BrickInterface
     private function getItem(ShowConfig $brickConfigurator, $id): array
     {
         if ($brickConfigurator->getDataSource() !== null) {
-            $item = $brickConfigurator->getDataSource()->get($id)
+            $item = $brickConfigurator->getDataSource()->get($id);
             $data = $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
         }
         return $data;
