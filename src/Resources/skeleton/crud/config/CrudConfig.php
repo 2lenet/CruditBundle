@@ -42,11 +42,17 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig implements MenuPr
         return $this->datasource;
     }
 
-    public function getBrickConfigs(Request $request): iterable
+    public function getBrickConfigs(Request $request, $pageKey): iterable
     {
-        return [
-            ListConfig::new()->addAuto([])
-        ];
+      $bricks = [
+        CrudConfigInterface::LIST => [
+          ListConfig::new()->addAuto([])
+        ],
+        CrudConfigInterface::SHOW => [
+          ShowConfig::new()->addAuto([])
+        ]
+      ];
+      return $bricks[$pageKey];
     }
 
 

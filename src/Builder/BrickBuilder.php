@@ -26,9 +26,9 @@ class BrickBuilder
     }
 
     /** @return BrickView[] */
-    public function build(CrudConfigInterface $crudConfig, Request $request): array
+    public function build(CrudConfigInterface $crudConfig, string $pageKey, Request $request): array
     {
-        foreach ($crudConfig->getBrickConfigs($request) as $brickConfig) {
+        foreach ($crudConfig->getBrickConfigs($request, $pageKey) as $brickConfig) {
             $brickConfig->setCrudConfig($crudConfig);
             $brickFactory = $this->brickProvider->getBrick($brickConfig);
             if ($brickFactory) {

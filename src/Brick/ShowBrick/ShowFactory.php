@@ -35,20 +35,21 @@ class ShowFactory implements BrickInterface
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
+        $id = $this->requestStack->getMasterRequest()->attributes->get('id');
         $view = new BrickView(spl_object_hash($brickConfigurator));
         if ($brickConfigurator instanceof ShowConfig) {
             $view
                 ->setTemplate('@LleCrudit/brick/show_item')
                 ->setConfig($brickConfigurator->getConfig())
                 ->setData([
-                    'item' => $this->getData($brickConfigurator)
+                    'item' => $this->getItem($brickConfigurator, $id)
                 ]);
         }
         return $view;
     }
 
     /** @return Field[] */
-    private function getFields(ListConfig $brickConfigurator): array
+    private function getFields(ShowConfig $brickConfigurator): array
     {
         return $brickConfigurator->getFields();
     }
@@ -60,6 +61,6 @@ class ShowFactory implements BrickInterface
             $item = $brickConfigurator->getDataSource()->get($id);
             $data = $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
         }
-        return $data;
+        return $data->getItem();
     }
 }
