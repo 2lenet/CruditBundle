@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace <?= $namespace ?>;
 
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
+use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Contracts\AbstractCrudConfig;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
@@ -15,6 +16,7 @@ use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Dto\Path;
 use Symfony\Component\HttpFoundation\Request;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig implements MenuProviderInterface
@@ -42,17 +44,17 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig implements MenuPr
         return $this->datasource;
     }
 
-    public function getBrickConfigs(Request $request, $pageKey): iterable
+    public function getBrickConfigs(Request $request, string $pageKey): iterable
     {
-      $bricks = [
-        CrudConfigInterface::LIST => [
-          ListConfig::new()->addAuto([])
-        ],
-        CrudConfigInterface::SHOW => [
-          ShowConfig::new()->addAuto([])
-        ]
-      ];
-      return $bricks[$pageKey];
+        $bricks = [
+            CrudConfigInterface::INDEX => [
+                ListConfig::new()->addAuto([<?= join(',', $fields); ?>])
+            ],
+            CrudConfigInterface::SHOW => [
+                ShowConfig::new()->addAuto([<?= join(',', $fields); ?>])
+            ]
+        ];
+        return $bricks[$pageKey];
     }
 
 

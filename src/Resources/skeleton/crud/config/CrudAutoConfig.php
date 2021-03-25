@@ -8,9 +8,11 @@ declare(strict_types=1);
 namespace <?= $namespace ?>;
 
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
+use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Contracts\AbstractCrudAutoConfig;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
@@ -29,11 +31,17 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
         return $this->datasource;
     }
 
-    public function getBrickConfigs(Request $request): iterable
+    public function getBrickConfigs(Request $request, string $pageKey): iterable
     {
-        return [
-            ListConfig::new()->addAuto([])
+        $bricks = [
+            CrudConfigInterface::INDEX => [
+                ListConfig::new()->addAuto([<?= join(',', $fields); ?>])
+            ],
+            CrudConfigInterface::SHOW => [
+                ShowConfig::new()->addAuto([<?= join(',', $fields); ?>])
+            ]
         ];
+        return $bricks[$pageKey];
     }
 
 

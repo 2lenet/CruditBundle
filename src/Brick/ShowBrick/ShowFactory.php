@@ -4,30 +4,14 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\ShowBrick;
 
+use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\RessourceView;
-use Lle\CruditBundle\Resolver\RessourceResolver;
-use Symfony\Component\HttpFoundation\RequestStack;
 
-class ShowFactory implements BrickInterface
+class ShowFactory extends AbstractBasicBrickFactory
 {
-    /** @var RessourceResolver  */
-    protected $ressourceResolver;
-
-    /** @var RequestStack  */
-    protected $requestStack;
-
-    public function __construct(
-        RessourceResolver $ressourceResolver,
-        RequestStack $requestStack
-    ) {
-        $this->requestStack = $requestStack;
-        $this->ressourceResolver = $ressourceResolver;
-    }
-
     public function support(BrickConfigInterface $brickConfigurator): bool
     {
         return (ShowConfig::class === get_class($brickConfigurator));
@@ -35,14 +19,14 @@ class ShowFactory implements BrickInterface
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
-        $id = $this->requestStack->getMasterRequest()->attributes->get('id');
+
         $view = new BrickView(spl_object_hash($brickConfigurator));
         if ($brickConfigurator instanceof ShowConfig) {
             $view
                 ->setTemplate('@LleCrudit/brick/show_item')
                 ->setConfig($brickConfigurator->getConfig())
                 ->setData([
-                    'item' => $this->getItem($brickConfigurator, $id)
+                    'item' => $this->getItem($brickConfigurator, $this->getRequest()->attributes->get('id'))
                 ]);
         }
         return $view;
@@ -54,13 +38,12 @@ class ShowFactory implements BrickInterface
         return $brickConfigurator->getFields();
     }
 
-    /** @return RessourceView */
-    private function getItem(ShowConfig $brickConfigurator, $id): array
+    private function getItem(ShowConfig $brickConfigurator, string $id): ?RessourceView
     {
-        if ($brickConfigurator->getDataSource() !== null) {
-            $item = $brickConfigurator->getDataSource()->get($id);
-            $data = $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
+        $item = $brickConfigurator->getDataSource()->get($id);
+        if ($item) {
+            return $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
         }
-        return $data->getItem();
+        return null;
     }
 }

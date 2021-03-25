@@ -45,7 +45,7 @@ class ShowConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getDataSource(): ?DataSourceInterface
+    public function getDataSource(): DataSourceInterface
     {
         return $this->dataSource;
     }
@@ -59,7 +59,7 @@ class ShowConfig extends AbstractBrickConfig
     {
         return [];
     }
-    
+
     public function getConfig(): array
     {
         return [

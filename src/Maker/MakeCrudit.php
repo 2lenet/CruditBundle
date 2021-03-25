@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Str;
+use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,8 +35,10 @@ final class MakeCrudit extends AbstractMaker
     /** @var bool */
     private $withController;
 
-    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
-    {
+    public function __construct(
+        FileManager $fileManager,
+        DoctrineHelper $entityHelper
+    ) {
         $this->fileManager = $fileManager;
         $this->entityHelper = $entityHelper;
     }
@@ -103,7 +107,7 @@ final class MakeCrudit extends AbstractMaker
 
         if (null === $input->getArgument('namespace-controller') && $input->getArgument('with-controller')) {
             $argument = $command->getDefinition()->getArgument('namespace-controller');
-            $question = new Question($argument->getDescription(), null);
+            $question = new Question($argument->getDescription(), 'Crudit');
             $finder = $this->fileManager->createFinder('src/Controller/');
             $controllerNamespaces = [null];
             foreach ($finder->directories() as $dir) {
@@ -116,8 +120,26 @@ final class MakeCrudit extends AbstractMaker
         }
     }
 
-    private function createConfigurator(InputInterface $input, ConsoleStyle $io, Generator $generator): string
-    {
+    private function createConfigurator(
+        InputInterface $input,
+        ConsoleStyle $io,
+        Generator $generator,
+        ClassNameDetails $entityClassDetail
+    ): string {
+        $fields = [];
+        $metadata = $this->entityHelper->getMetadata($entityClassDetail->getFullName());
+        if ($metadata instanceof ClassMetadata) {
+            foreach ($metadata->getFieldNames() as $fieldname) {
+                if (
+                    in_array(
+                        $metadata->getTypeOfField($fieldname),
+                        ['string', 'boolean', 'integer']
+                    )
+                ) {
+                    $fields[] = "'" . $fieldname . "'";
+                }
+            }
+        }
         $template = ($this->getBoolArgument('with-controller', $input)) ? 'Crud' : 'CrudAuto';
         $configuratorClassNameDetails = $generator->createClassNameDetails(
             $this->getStringArgument('entity-class', $input),
@@ -129,6 +151,7 @@ final class MakeCrudit extends AbstractMaker
             $this->getSkeletonTemplate('config/' . $template . 'Config.php'),
             [
                 'namespace' => 'App',
+                'fields' => $fields,
                 'entityClass' => $input->getArgument('entity-class'),
                 'strictType' => $this->getBoolArgument('use-strict-type', $input),
                 'controllerRoute' => ($input->getArgument('namespace-controller')) ?
@@ -200,7 +223,7 @@ final class MakeCrudit extends AbstractMaker
         $io->text('Creat a configurator for ' . $entityClassDetails->getFullName());
 
 
-        $this->createConfigurator($input, $io, $generator);
+        $this->createConfigurator($input, $io, $generator, $entityClassDetails);
         $this->createDatasource($input, $io, $generator);
 
         if ($input->getArgument('with-controller')) {
