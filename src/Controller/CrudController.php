@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Builder\BrickBuilder;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Provider\ConfigProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,7 +46,7 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX, $request);
             return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         }
         throw new NotFoundHttpException();
@@ -58,7 +59,7 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX, $request);
             return new JsonResponse(
                 $this->normalizer->normalize($views)
             );

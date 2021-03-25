@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Lle\CruditBundle\Brick\ListBrick;
+namespace Lle\CruditBundle\Brick\ShowBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 
-class ListConfig extends AbstractBrickConfig
+class ShowConfig extends AbstractBrickConfig
 {
 
     /** @var Field[] */
@@ -45,7 +45,7 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getDataSource(): ?DataSourceInterface
+    public function getDataSource(): DataSourceInterface
     {
         return $this->dataSource;
     }
@@ -60,22 +60,12 @@ class ListConfig extends AbstractBrickConfig
         return [];
     }
 
-    public function getItemActions(): array
-    {
-        return [];
-    }
-
     public function getConfig(): array
     {
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
-            'item_actions' => $this->getItemActions(),
-            'detail' => null,
             'hidden_action' => false,
-            'bulk' => false,
-            'sort' => ['name' => 'id', 'direction' => 'ASC'],
-            'canModifyNbEntityPerPage' => false
         ];
     }
 

@@ -8,9 +8,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface CrudConfigInterface
 {
-    public function getBrickConfigs(Request $request): iterable;
+    public const INDEX = "INDEX";
+    public const SHOW = "SHOW";
+    public const EDIT = "EDIT";
+    public const NEW = "NEW";
 
-    public function getDefaultDatasource(): DataSourceInterface;
+    public function getBrickConfigs(Request $request, string $pageKey): iterable;
+
+    public function getDatasource(): DataSourceInterface;
 
     public function getController(): ?string;
 

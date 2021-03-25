@@ -4,30 +4,14 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\ListBrick;
 
+use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\RessourceView;
-use Lle\CruditBundle\Resolver\RessourceResolver;
-use Symfony\Component\HttpFoundation\RequestStack;
 
-class ListFactory implements BrickInterface
+class ListFactory extends AbstractBasicBrickFactory
 {
-    /** @var RessourceResolver  */
-    protected $ressourceResolver;
-
-    /** @var RequestStack  */
-    protected $requestStack;
-
-    public function __construct(
-        RessourceResolver $ressourceResolver,
-        RequestStack $requestStack
-    ) {
-        $this->requestStack = $requestStack;
-        $this->ressourceResolver = $ressourceResolver;
-    }
-
     public function support(BrickConfigInterface $brickConfigurator): bool
     {
         return (ListConfig::class === get_class($brickConfigurator));
@@ -35,7 +19,6 @@ class ListFactory implements BrickInterface
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
-
         $view = new BrickView(spl_object_hash($brickConfigurator));
         if ($brickConfigurator instanceof ListConfig) {
             $view

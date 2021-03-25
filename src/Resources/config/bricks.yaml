@@ -3,3 +3,7 @@ services:
   Lle\CruditBundle\Brick\ListBrick\ListFactory:
     arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]
+
+  Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
+    arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack']
+    tags: [ 'crudit.brick' ]
