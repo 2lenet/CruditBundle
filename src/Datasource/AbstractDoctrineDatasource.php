@@ -64,9 +64,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->entityManager->getRepository($this->getClassName());
     }
 
-    public function getType(string $property): string
+    public function getType(string $property, object $ressource): string
     {
-        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+        $metadata = $this->entityManager->getClassMetadata(get_class($ressource));
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
             if ($metadata->getAssociationMapping($property)) {

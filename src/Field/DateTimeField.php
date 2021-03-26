@@ -8,6 +8,7 @@ namespace Lle\CruditBundle\Field;
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DateTimeField extends DateField
 {
@@ -18,12 +19,21 @@ class DateTimeField extends DateField
     }
 
     /** @param mixed $value */
-    public function getStringValue($value)
+    public function getStringValue($value, string $format)
     {
         if ($value instanceof \DateTime) {
-            $value = $value->format('d-m-Y H:i');
+            return $value->format($format);
         }
         return null;
+    }
+
+    public function configureOptions(Field $field): array
+    {
+        $optionResolver = new OptionsResolver();
+        $optionResolver->setDefaults([
+            'format' => 'd-m-Y H:i'
+        ])->setAllowedTypes('format', 'string');
+        return $optionResolver->resolve($field->getOptions());
     }
 
 }

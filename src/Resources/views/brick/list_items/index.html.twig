@@ -10,6 +10,9 @@
                     {% for field in view.config.fields %}
                         <th>{{ field.header |trans }}</th>
                     {% endfor %}
+                    {%  if view.data.actions|length %}
+                        <th>Actions</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -20,6 +23,13 @@
                                 {{ column.value }}
                             </td>
                         {% endfor %}
+                        {%  if view.data.actions|length %}
+                            <td>
+                            {%  for action in view.data.actions %}
+                                <a class="btn btn-primary btn-xs mr-2" href="{{ path(action.path.route, action.path.params({'id': line.id})) }}">{{ action.label }}</a>
+                            {%  endfor %}
+                            </td>
+                        {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

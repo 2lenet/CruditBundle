@@ -28,12 +28,27 @@ class FieldResolver
 
     public function resolveView(Field $field, object $item, DatasourceInterface $datasource): FieldView
     {
+        $subItem = $item;
+        $name = $field->getName();
+        if ($field->hasCascade()) {
+            $value = null;
+            $cascade = explode('.', $field->getName());
+            foreach ($cascade as $k => $name) {
+                $value = $this->propertyAccessor->getValue($subItem, $name);
+                if(\count($cascade)-1 !== $k) {
+                    $subItem = $value;
+                }
+            }
+        } else {
+            $value = $this->propertyAccessor->getValue($item, $name);
+        }
+
         if ($field->getType() === null) {
-            $field->setType($datasource->getType($field->getName()));
+            $field->setType($datasource->getType($name, $subItem));
         }
         return $this->fieldRegistry->get($field->getType())->buildView(
             $field,
-            $this->propertyAccessor->getValue($item, $field->getName())
+            $value
         );
     }
 

@@ -27,7 +27,7 @@ interface DatasourceInterface
 
     public function getClassName(): string;
 
-    public function getType(string $property): string;
+    public function getType(string $property, object $ressource): string;
 
     public function getIdentifier(object $ressource): string;
 }

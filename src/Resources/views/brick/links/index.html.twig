@@ -1,0 +1,7 @@
+<div class="row">
+        <div class="col-md-12 align-right">
+            {%  for action in view.data.actions %}
+                <a class="btn btn-primary float-right ml-2" href="{{ action.url ?? path(action.path.route, action.path.params) }}">{{ action.label }}</a>
+            {%  endfor %}
+        </div>
+</div>

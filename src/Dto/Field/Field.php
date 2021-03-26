@@ -88,6 +88,11 @@ class Field
         return $this->name;
     }
 
+    public function hasCascade(): bool
+    {
+        return \str_contains($this->getName(), '.');
+    }
+
     public function getId(): string
     {
         return str_replace('.', '_', $this->getName());
