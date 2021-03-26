@@ -25,8 +25,7 @@ class ListFactory extends AbstractBasicBrickFactory
                 ->setTemplate('@LleCrudit/brick/list_items')
                 ->setConfig($brickConfigurator->getConfig())
                 ->setData([
-                    'lines' => $this->getLines($brickConfigurator),
-                    'actions' => $brickConfigurator->getActions()
+                    'lines' => $this->getLines($brickConfigurator)
                 ]);
         }
         return $view;

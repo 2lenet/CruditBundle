@@ -20,7 +20,7 @@ class ListConfig extends AbstractBrickConfig
     private $options;
 
     /** @var ItemAction[] */
-    private $actions;
+    private $actions = [];
 
     /** @var DatasourceInterface */
     private $dataSource;
@@ -71,7 +71,6 @@ class ListConfig extends AbstractBrickConfig
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
-            'item_actions' => $this->getActions(),
             'detail' => null,
             'hidden_action' => false,
             'bulk' => false,
