@@ -37,7 +37,7 @@ class TemplateField implements FieldInterface
         );
     }
 
-    public function configureOptions(Field $field): array
+    public function configureOptions(Field $field)
     {
         $optionResolver = new OptionsResolver();
         $optionResolver->setRequired([
