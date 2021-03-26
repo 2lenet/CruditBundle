@@ -23,6 +23,7 @@ class ListConfig extends AbstractBrickConfig
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
+        parent::setCrudConfig($crudConfig);
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }

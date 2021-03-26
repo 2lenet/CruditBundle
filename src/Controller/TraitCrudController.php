@@ -26,13 +26,33 @@ trait TraitCrudController
     }
 
     /**
-     * @Route("/{id}")
+     * @Route("/show/{id}")
      */
     public function show(Request $request, $id): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW, $request);
         return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
     }
+
+
+    /**
+     * @Route("/edit/{id}")
+     */
+    public function edit(Request $request, $id): Response
+    {
+        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT, $request);
+        return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+    }
+
+    /**
+     * @Route("/new")
+     */
+    public function new(Request $request): Response
+    {
+        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW, $request);
+        return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+    }
+
 
     /**
      * @Route("/api")

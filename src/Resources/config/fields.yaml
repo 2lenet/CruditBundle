@@ -1,0 +1,10 @@
+services:
+
+  Lle\CruditBundle\Field\DateTimeField:
+    tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\DateField:
+    tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\TextField:
+    tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\DoctrineEntityField:
+    tags: [ 'crudit.field' ]

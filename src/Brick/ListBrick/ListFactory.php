@@ -43,7 +43,11 @@ class ListFactory extends AbstractBasicBrickFactory
         $lines = [];
         if ($brickConfigurator->getDataSource() !== null) {
             foreach ($brickConfigurator->getDataSource()->list() as $item) {
-                $lines[] = $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
+                $lines[] = $this->ressourceResolver->resolve(
+                    $item,
+                    $this->getFields($brickConfigurator),
+                    $brickConfigurator->getDataSource()
+                );
             }
         }
         return $lines;

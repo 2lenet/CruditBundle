@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Resolver;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\RessourceView;
@@ -16,62 +17,35 @@ class RessourceResolver
     /** @var FieldResolver */
     private $fieldResolver;
 
-    /** @var EntityManagerInterface  */
-    private $entityManager;
-
-    /** @var PropertyAccessorInterface */
-    private $propertyAccessor;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        FieldResolver $fieldResolver,
-        PropertyAccessorInterface $propertyAccessor
+        FieldResolver $fieldResolver
     ) {
         $this->fieldResolver = $fieldResolver;
-        $this->entityManager = $entityManager;
-        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
      * @param array|object $item
      * @param Field[] $fields
      */
-    public function resolve($item, array $fields): RessourceView
+    public function resolve($item, array $fields, DatasourceInterface $datasource): RessourceView
     {
         return new RessourceView(
-            $this->getIdentifier($item),
+            $datasource->getIdentifier($item),
             $item,
-            $this->getFieldViews($fields, $item)
+            $this->getFieldViews($fields, $item, $datasource)
         );
     }
 
     /**
-     * @param array|object $item
      * @return FieldView[]
      */
-    private function getFieldViews(array $fields, $item): array
+    private function getFieldViews(array $fields, object $item, DatasourceInterface $datasource): array
     {
         $fieldViews = [];
         foreach ($fields as $field) {
-            $fieldViews[] = $this->fieldResolver->resolve($field, $item);
+            $fieldViews[] = $this->fieldResolver->resolveView($field, $item, $datasource);
         }
         return $fieldViews;
     }
 
-    /**
-     * @param array|object $item
-     * @return int|string
-     */
-    private function getIdentifier($item)
-    {
-        if (is_array($item)) {
-            return md5(serialize($item));
-        } else {
-            $identifierField = $this
-                ->entityManager
-                ->getClassMetadata(get_class($item))
-                ->getSingleIdentifierColumnName();
-            return $this->propertyAccessor->getValue($item, $identifierField);
-        }
-    }
 }

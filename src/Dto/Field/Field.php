@@ -35,17 +35,20 @@ class Field
     /** @var array */
     private $options;
 
-    public function __construct(string $name, array $options = [])
+    private $type;
+
+    public function __construct(string $name, $type = null, array $options = [])
     {
         $this->name = $name;
         //no translate ucfirst(strtolower($name)
         $this->header = 'field.' . strtolower($name);
+        $this->type = $type;
         $this->setOptions($options);
     }
 
-    public static function new(string $name, array $options = []): self
+    public static function new(string $name, $type = null, array $options = []): self
     {
-        return new self($name, $options);
+        return new self($name, $type, $options);
     }
 
     public function override(Field $field): self
@@ -58,6 +61,17 @@ class Field
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
     }
 
     public function setOptions(array $options): void

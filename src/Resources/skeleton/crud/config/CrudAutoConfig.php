@@ -13,6 +13,9 @@ use Lle\CruditBundle\Contracts\AbstractCrudAutoConfig;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+<?php if($form): ?>
+    use App\Form\<?= $entityClass ?>Type;
+<?php endif; ?>
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
@@ -40,9 +43,21 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
             CrudConfigInterface::SHOW => [
                 ShowConfig::new()->addAuto([<?= join(',', $fields); ?>])
             ]
+            CrudConfigInterface::EDIT => [
+<?php if($form): ?>
+                FormConfig::new()->setForm(<?= $entityClass ?>Type::class)
+<?php else: ?>
+                FormConfig::new()->addAuto([<?= join(',', $fields); ?>]
+<?php endif; ?>
+            ],
+            CrudConfigInterface::NEW => [
+<?php if($form): ?>
+                FormConfig::new()->setForm(<?= $entityClass ?>Type::class)
+<?php else: ?>
+                FormConfig::new()->addAuto([<?= join(',', $fields); ?>]
+<?php endif; ?>
+            ]
         ];
         return $bricks[$pageKey];
     }
-
-
 }

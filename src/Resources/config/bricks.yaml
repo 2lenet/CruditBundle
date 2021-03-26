@@ -7,3 +7,7 @@ services:
   Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
     arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]
+
+  Lle\CruditBundle\Brick\FormBrick\FormFactory:
+    arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack', '@form.factory']
+    tags: [ 'crudit.brick' ]

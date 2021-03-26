@@ -15,7 +15,7 @@ class Path
 
     public static function new(string $route, array $params = []): self
     {
-        return new self($route, $params);
+        return new self(strtolower($route), $params);
     }
 
     public function __construct(string $route, array $params = [])
