@@ -9,9 +9,6 @@ use Lle\CruditBundle\Dto\Action\ListAction;
 
 class LinksConfig extends AbstractBrickConfig
 {
-
-    public const NEW = 'new';
-
     /** @var array  */
     protected $actions = [];
 
