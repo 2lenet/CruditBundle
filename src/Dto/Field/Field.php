@@ -12,7 +12,7 @@ class Field
     /**
      * @var string
      */
-    private $header;
+    private $label;
 
     /**
      * @var string
@@ -24,38 +24,26 @@ class Field
      */
     private $sort;
 
-    /**
-     * @var null|string
-     */
-    private $template;
-
     /** @var ?Path */
     private $path;
 
     /** @var array */
     private $options;
 
+    /** @var ?string */
     private $type;
 
-    public function __construct(string $name, $type = null, array $options = [])
+    public function __construct(string $name, ?string $type = null, array $options = [])
     {
         $this->name = $name;
-        //no translate ucfirst(strtolower($name)
-        $this->header = 'field.' . strtolower($name);
+        $this->label = 'field.' . strtolower(str_replace('.', '_', $name));
         $this->type = $type;
         $this->setOptions($options);
     }
 
-    public static function new(string $name, $type = null, array $options = []): self
+    public static function new(string $name, ?string $type = null, array $options = []): self
     {
         return new self($name, $type, $options);
-    }
-
-    public function override(Field $field): self
-    {
-        $options = array_merge($this->getOptions(), $field->getOptions());
-        $this->setOptions($options);
-        return $this;
     }
 
     public function getOptions(): array
@@ -63,7 +51,7 @@ class Field
         return $this->options;
     }
 
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -76,11 +64,14 @@ class Field
 
     public function setOptions(array $options): void
     {
-        $this->options = $options;
-        $this->header = (isset($options['label'])) ? $options['label'] : $this->header;
+
+        $this->label = (isset($options['label'])) ? $options['label'] : $this->label;
         $this->sort = (isset($options['sort'])) ? $options['sort'] : false;
         $this->path = (isset($options['path'])) ? $options['path'] : null;
-        $this->template = (isset($options['template'])) ? $options['template'] : null;
+        unset($options['label']);
+        unset($options['sort']);
+        unset($options['path']);
+        $this->options = $options;
     }
 
     public function getName(): string
@@ -101,18 +92,18 @@ class Field
     public function setName(string $name): self
     {
         $this->name = $name;
-        $this->header = ($this->header) ? $this->header : $this->name;
+        $this->label = ($this->label) ? $this->name : $this->label;
         return $this;
     }
 
-    public function getHeader(): string
+    public function getLabel(): string
     {
-        return $this->header;
+        return $this->label;
     }
 
-    public function setHeader(string $header): self
+    public function setLabel(string $label): self
     {
-        $this->header = $header;
+        $this->label = $label;
         return $this;
     }
 
@@ -121,20 +112,8 @@ class Field
         return $this->sort;
     }
 
-    public function getTemplate(): ?string
-    {
-        return $this->template;
-    }
-
-
     public function getPath(): ?Path
     {
         return $this->path;
-    }
-
-
-    public function getSort(): bool
-    {
-        return $this->sort;
     }
 }

@@ -16,7 +16,7 @@ interface CrudConfigInterface
 
     public function getBrickConfigs(Request $request, string $pageKey): iterable;
 
-    public function getDatasource(): DataSourceInterface;
+    public function getDatasource(): DatasourceInterface;
 
     public function getController(): ?string;
 

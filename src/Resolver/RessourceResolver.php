@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Resolver;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\RessourceView;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class RessourceResolver
 {
@@ -24,10 +22,9 @@ class RessourceResolver
     }
 
     /**
-     * @param array|object $item
      * @param Field[] $fields
      */
-    public function resolve($item, array $fields, DatasourceInterface $datasource): RessourceView
+    public function resolve(object $item, array $fields, DatasourceInterface $datasource): RessourceView
     {
         return new RessourceView(
             $datasource->getIdentifier($item),
@@ -47,5 +44,4 @@ class RessourceResolver
         }
         return $fieldViews;
     }
-
 }

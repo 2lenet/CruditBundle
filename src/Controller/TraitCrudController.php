@@ -22,7 +22,8 @@ trait TraitCrudController
     public function index(Request $request): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX, $request);
-        return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
     /**
@@ -31,7 +32,8 @@ trait TraitCrudController
     public function show(Request $request, $id): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW, $request);
-        return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
 
@@ -41,7 +43,8 @@ trait TraitCrudController
     public function edit(Request $request, $id): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT, $request);
-        return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
     /**
@@ -50,7 +53,8 @@ trait TraitCrudController
     public function new(Request $request): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW, $request);
-        return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+        return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
 

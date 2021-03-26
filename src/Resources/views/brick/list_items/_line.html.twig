@@ -2,13 +2,16 @@
 
     {% if view.config.bulk %}
         <td>
-            <input type="checkbox" name="ids[]" value="{{ item.id }}" class="lego-bulk-checkbox">
+            <input type="checkbox" name="ids[]" value="{{ line.id }}" class="lego-bulk-checkbox">
         </td>
     {% endif %}
 
     {% for column in line.fields %}
         <td>
-            {{ column.value }}
+            {% dump(column) %}
+            {%  if column.field.path %}<a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">{%  endif %}
+                {{ column.value }}
+            {%  if column.field.path %}</a>{%  endif %}
         </td>
     {% endfor %}
 

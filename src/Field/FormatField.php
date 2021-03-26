@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
@@ -41,10 +40,10 @@ class FormatField implements FieldInterface
     public function configureOptions(Field $field): array
     {
         $optionResolver = new OptionsResolver();
-        $optionResolver->setRequired([
+        $optionResolver
+            ->setRequired([
             'format'
         ])->setAllowedTypes('format', 'string');
         return $optionResolver->resolve($field->getOptions());
     }
-
 }

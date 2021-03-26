@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Brick\ShowBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 
 class ShowConfig extends AbstractBrickConfig
@@ -18,7 +18,7 @@ class ShowConfig extends AbstractBrickConfig
     /** @var array  */
     private $options;
 
-    /** @var DataSourceInterface */
+    /** @var DatasourceInterface */
     private $dataSource;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
@@ -40,13 +40,13 @@ class ShowConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function setDataSource(DataSourceInterface $dataSource): self
+    public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
         return $this;
     }
 
-    public function getDataSource(): DataSourceInterface
+    public function getDataSource(): DatasourceInterface
     {
         return $this->dataSource;
     }

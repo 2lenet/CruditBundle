@@ -9,7 +9,7 @@ services:
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\FormBrick\FormFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack', '@form.factory']
+    arguments: ['@Lle\CruditBundle\Resolver\RessourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default']
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\LinksBrick\LinksFactory:

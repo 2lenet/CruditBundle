@@ -9,12 +9,14 @@ services:
         tags: [ 'controller.service_arguments' ]
 
     Lle\CruditBundle\Controller\CrudController:
-        arguments: ['@Lle\CruditBundle\Provider\ConfigProvider', '@Lle\CruditBundle\Builder\BrickBuilder', '@serializer']
+        arguments: ['@Lle\CruditBundle\Provider\ConfigProvider', '@Lle\CruditBundle\Builder\BrickBuilder', '@serializer', '@Lle\CruditBundle\Brick\BrickResponseCollector']
         tags: [ 'controller.service_arguments' ]
 
     Lle\CruditBundle\Registry\FieldRegistry:
         arguments :
             - !tagged_iterator crudit.field
+
+    Lle\CruditBundle\Brick\BrickResponseCollector: ~
 
     Lle\CruditBundle\Resolver\FieldResolver:
         arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
@@ -37,7 +36,7 @@ class TemplateField implements FieldInterface
         );
     }
 
-    public function configureOptions(Field $field)
+    public function configureOptions(Field $field): array
     {
         $optionResolver = new OptionsResolver();
         $optionResolver->setRequired([
@@ -45,5 +44,4 @@ class TemplateField implements FieldInterface
         ])->setAllowedTypes('template', 'string');
         return $optionResolver->resolve($field->getOptions());
     }
-
 }

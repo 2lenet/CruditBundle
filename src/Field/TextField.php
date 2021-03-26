@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
@@ -26,5 +25,4 @@ class TextField implements FieldInterface
             (string) $value
         );
     }
-
 }

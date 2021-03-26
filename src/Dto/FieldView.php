@@ -35,7 +35,7 @@ class FieldView
     /** @return mixed */
     public function getRawValue()
     {
-        return $this->Value;
+        return $this->value;
     }
 
     public function getField(): Field

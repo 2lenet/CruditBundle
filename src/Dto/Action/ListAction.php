@@ -8,15 +8,18 @@ use Lle\CruditBundle\Dto\Path;
 
 class ListAction
 {
+    /** @var string  */
     protected $label;
 
+    /** @var Path  */
     protected $path;
 
+    /** @var ?string */
     protected $url;
 
-    public static function new(string $label, Path $path)
+    public static function new(string $label, Path $path): self
     {
-        return new static($label, $path);
+        return new self($label, $path);
     }
 
     public function __construct(string $label, Path $path)
@@ -26,12 +29,12 @@ class ListAction
         $this->url = null;
     }
 
-    public function getPath()
+    public function getPath(): Path
     {
         return $this->path;
     }
 
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }

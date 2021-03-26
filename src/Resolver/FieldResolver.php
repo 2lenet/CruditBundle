@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Resolver;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
@@ -35,7 +34,7 @@ class FieldResolver
             $cascade = explode('.', $field->getName());
             foreach ($cascade as $k => $name) {
                 $value = $this->propertyAccessor->getValue($subItem, $name);
-                if(\count($cascade)-1 !== $k) {
+                if (\count($cascade) - 1 !== $k) {
                     $subItem = $value;
                 }
             }
@@ -43,13 +42,16 @@ class FieldResolver
             $value = $this->propertyAccessor->getValue($item, $name);
         }
 
-        if ($field->getType() === null) {
-            $field->setType($datasource->getType($name, $subItem));
+        $type = $field->getType();
+        if ($type === null) {
+            $type = $datasource->getType($name, $subItem);
+            $field->setType($type);
         }
-        return $this->fieldRegistry->get($field->getType())->buildView(
-            $field,
-            $value
-        );
+        return $this->fieldRegistry->get($type)
+            ->buildView(
+                $field,
+                $value
+            );
     }
 
     public function toCamelCase(string $str, bool $capitaliseFirstChar = false): ?string

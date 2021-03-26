@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Brick\ListBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Field\Field;
 
@@ -22,7 +22,7 @@ class ListConfig extends AbstractBrickConfig
     /** @var ItemAction[] */
     private $actions;
 
-    /** @var DataSourceInterface */
+    /** @var DatasourceInterface */
     private $dataSource;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
@@ -44,13 +44,13 @@ class ListConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function setDataSource(DataSourceInterface $dataSource): self
+    public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
         return $this;
     }
 
-    public function getDataSource(): ?DataSourceInterface
+    public function getDataSource(): ?DatasourceInterface
     {
         return $this->dataSource;
     }

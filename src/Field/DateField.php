@@ -29,7 +29,7 @@ class DateField implements FieldInterface
     }
 
     /** @param mixed $value */
-    public function getStringValue($value, string $format)
+    public function getStringValue($value, string $format): ?string
     {
         if ($value instanceof \DateTime) {
             return  $value->format($format);
@@ -45,5 +45,4 @@ class DateField implements FieldInterface
         ])->setAllowedTypes('format', 'string');
         return $optionResolver->resolve($field->getOptions());
     }
-
 }

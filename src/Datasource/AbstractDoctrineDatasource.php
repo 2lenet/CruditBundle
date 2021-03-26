@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Field\DoctrineEntityField;
 
@@ -12,10 +13,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
     /** @var EntityManagerInterface */
     protected $entityManager;
-    
+
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->entityManager =$entityManager;
+        $this->entityManager = $entityManager;
     }
 
     public function get($id): ?object
@@ -31,17 +32,21 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function delete($id): bool
     {
         $ressource = $this->entityManager->getReference($this->getClassName(), $id);
-        $this->entityManager->remove($ressource);
+        if ($ressource) {
+            $this->entityManager->remove($ressource);
+            return true;
+        }
+        return false;
     }
 
     public function put($id, array $data): ?object
     {
-        // TODO: Implement put() method.
+        return $this->newInstance();
     }
 
     public function patch($id, array $data): ?object
     {
-        // TODO: Implement patch() method.
+        return $this->newInstance();
     }
 
     public function newInstance(): object
@@ -56,10 +61,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $this->entityManager->persist($ressource);
         $this->entityManager->flush();
     }
-    
+
+    /** @return  class-string<T> $className */
     abstract public function getClassName(): string;
 
-    private function getRepository()
+    private function getRepository(): ObjectRepository
     {
         return $this->entityManager->getRepository($this->getClassName());
     }

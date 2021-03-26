@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-
-use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\FieldView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DateTimeField extends DateField
 {
-    
+
     public function support(string $type): bool
     {
         return (in_array($type, ['datetime', self::class]));
     }
 
     /** @param mixed $value */
-    public function getStringValue($value, string $format)
+    public function getStringValue($value, string $format): ?string
     {
         if ($value instanceof \DateTime) {
             return $value->format($format);
@@ -35,5 +32,4 @@ class DateTimeField extends DateField
         ])->setAllowedTypes('format', 'string');
         return $optionResolver->resolve($field->getOptions());
     }
-
 }

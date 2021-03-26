@@ -6,17 +6,20 @@ namespace Lle\CruditBundle\Brick\FormBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\FormField;
 
 class FormConfig extends AbstractBrickConfig
 {
 
-    /** @var DataSourceInterface */
+    /** @var DatasourceInterface */
     private $dataSource;
 
     /** @var ?string */
     private $form = null;
+
+    /** @var array */
+    private $options = [];
 
     /** @var FormField[] */
     private $fields = [];
@@ -72,15 +75,14 @@ class FormConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function setDataSource(DataSourceInterface $dataSource): self
+    public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
         return $this;
     }
 
-    public function getDataSource(): ?DataSourceInterface
+    public function getDataSource(): DatasourceInterface
     {
         return $this->dataSource;
     }
-
 }

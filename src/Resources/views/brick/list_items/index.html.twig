@@ -8,10 +8,10 @@
                 <thead>
                 <tr>
                     {% for field in view.config.fields %}
-                        <th>{{ field.header |trans }}</th>
+                        <th>{{ field.label |trans }}</th>
                     {% endfor %}
                     {%  if view.data.actions|length %}
-                        <th>Actions</th>
+                        <th>{{  'crudit.action'|trans }}</th>
                     {% endif %}
                 </tr>
                 </thead>
@@ -20,13 +20,15 @@
                         <tr>
                         {% for column in line.fields %}
                             <td>
-                                {{ column.value }}
+                                {%  if column.field.path %}<a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">{%  endif %}
+                                    {{ column.value }}
+                                {%  if column.field.path %}</a>{%  endif %}
                             </td>
                         {% endfor %}
                         {%  if view.data.actions|length %}
                             <td>
                             {%  for action in view.data.actions %}
-                                <a class="btn btn-primary btn-xs mr-2" href="{{ path(action.path.route, action.path.params({'id': line.id})) }}">{{ action.label }}</a>
+                                <a class="btn btn-primary btn-xs mr-2" href="{{ path(action.path.route, action.path.params({'id': line.id})) }}">{{ action.label|trans }}</a>
                             {%  endfor %}
                             </td>
                         {% endif %}

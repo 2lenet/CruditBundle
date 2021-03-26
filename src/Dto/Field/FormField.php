@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Field;
 
-use Lle\CruditBundle\Dto\Path;
-
 class FormField
 {
     /** @var string */
     private $name;
 
-    /** @var string */
+    /** @var ?string */
     private $type = 'text';
 
-    /** @var string */
+    /** @var array */
     private $options = [];
 
-    static public function new(string $name, string $type = null, array $options = [])
+    public static function new(string $name, string $type = null, array $options = []): self
     {
         return (new self($name))
             ->setType($type)
@@ -34,7 +32,7 @@ class FormField
         return $this->name;
     }
 
-    public function setName($name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -56,11 +54,9 @@ class FormField
         return $this->options;
     }
 
-    public function setOptions($options): self
+    public function setOptions(array $options): self
     {
         $this->options = $options;
         return $this;
     }
-
-
 }

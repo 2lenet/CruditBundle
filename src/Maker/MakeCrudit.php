@@ -132,7 +132,7 @@ final class MakeCrudit extends AbstractMaker
         }
     }
 
-    private function getFields(ClassNameDetails $entityClassDetail)
+    private function getFields(ClassNameDetails $entityClassDetail): array
     {
         $fields = [];
         $metadata = $this->entityHelper->getMetadata($entityClassDetail->getFullName());
@@ -205,10 +205,10 @@ final class MakeCrudit extends AbstractMaker
         ConsoleStyle $io,
         Generator $generator,
         ClassNameDetails $entityClassDetail
-    ){
+    ): void {
         $fields = $this->getFields($entityClassDetail);
         $formTypeClassNameDetails = $generator->createClassNameDetails(
-            $input->getArgument('entity-class'),
+            $this->getStringArgument('entity-class', $input),
             'Form\\',
             'Type'
         );

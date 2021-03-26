@@ -16,6 +16,7 @@ parameters:
     - ../tests
   excludes_analyse:
     - '../src/Resources/skeleton'
+    - '../src/Datasource/AbstractDoctrineDatasource.php'
   checkMissingIterableValueType: false
   checkGenericClassInNonGenericObjectType: false
   doctrine:
