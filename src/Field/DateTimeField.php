@@ -21,7 +21,7 @@ class DateTimeField extends DateField
     public function getStringValue($value)
     {
         if ($value instanceof \DateTime) {
-            $value = $value->format('d-m-Y H:i');
+            return $value->format('d-m-Y H:i');
         }
         return null;
     }

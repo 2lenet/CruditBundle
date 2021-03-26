@@ -75,16 +75,21 @@ class ShowConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function add(Field $field): self
+    public function addField(Field $field): self
     {
         $this->fields[] = $field;
         return $this;
     }
 
+    public function add(string $name, string $type = null, array $options = []): self
+    {
+        return $this->addField(Field::new($name, $type, $options));
+    }
+
     public function addAuto(array $columns): self
     {
         foreach ($columns as $column) {
-            $this->add(Field::new($column));
+            $this->addField(Field::new($column));
         }
         return $this;
     }
