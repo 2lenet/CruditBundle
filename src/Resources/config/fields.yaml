@@ -8,6 +8,8 @@ services:
     tags: [ 'crudit.field' ]
   Lle\CruditBundle\Field\DoctrineEntityField:
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\BooleanField:
+    tags: [ 'crudit.field' ]
   Lle\CruditBundle\Field\TemplateField:
     arguments: ['@twig']
     tags: [ 'crudit.field' ]
