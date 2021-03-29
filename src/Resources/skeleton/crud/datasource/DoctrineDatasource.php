@@ -7,45 +7,13 @@ declare(strict_types=1);
 
 namespace <?= $namespace; ?>;
 
-use App\Repository\<?= $entityClass ?>Repository;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
+use App\Entity\<?= $entityClass ?>;
 
-class <?= $entityClass ?>Datasource implements DataSourceInterface
+class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
 {
-
-    /**
-     * @var <?= $entityClass ?>Repository
-     */
-    private $repository;
-
-    public function __construct(<?= $entityClass ?>Repository $repository)
+    public function getClassName(): string
     {
-        $this->repository = $repository;
-    }
-
-
-    public function get($id): ?object
-    {
-        return $this->repository->find($id);
-    }
-
-    public function list(): iterable
-    {
-        return $this->repository->findBy([]);
-    }
-
-    public function delete($id): bool
-    {
-        // TODO: Implement delete() method.
-    }
-
-    public function put($id, array $data): ?object
-    {
-        // TODO: Implement put() method.
-    }
-
-    public function patch($id, array $data): ?object
-    {
-        // TODO: Implement patch() method.
+        return <?= $entityClass ?>::class;
     }
 }

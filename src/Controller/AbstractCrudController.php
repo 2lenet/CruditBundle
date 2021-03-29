@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
+use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Builder\BrickBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,6 +20,7 @@ abstract class AbstractCrudController extends AbstractController
         $subscribeds = parent::getSubscribedServices();
         $subscribeds[BrickBuilder::class] = '?' . BrickBuilder::class;
         $subscribeds[SerializerInterface::class] = '?' . SerializerInterface::class;
+        $subscribeds[BrickResponseCollector::class] = '?' . BrickResponseCollector::class;
         return $subscribeds;
     }
 
@@ -30,5 +32,10 @@ abstract class AbstractCrudController extends AbstractController
     public function getSerializer(): object
     {
         return $this->get(SerializerInterface::class);
+    }
+
+    public function getBrickResponseCollector(): object
+    {
+        return $this->get(BrickResponseCollector::class);
     }
 }

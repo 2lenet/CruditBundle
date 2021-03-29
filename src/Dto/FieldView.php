@@ -12,18 +12,28 @@ class FieldView
     /** @var Field  */
     private $field;
 
-    /** @var int|string|null */
+    /** @var mixed */
     private $value;
 
-    /** @param int|string|null $value */
-    public function __construct(Field $field, $value)
+    /** @var ?string */
+    private $stringValue;
+
+    /** @param mixed $value */
+    public function __construct(Field $field, $value, ?string $stringValue)
     {
         $this->field = $field;
         $this->value = $value;
+        $this->stringValue = $stringValue;
     }
 
-    /** @return int|string|null */
-    public function getValue()
+
+    public function getValue(): ?string
+    {
+        return $this->stringValue;
+    }
+
+    /** @return mixed */
+    public function getRawValue()
     {
         return $this->value;
     }

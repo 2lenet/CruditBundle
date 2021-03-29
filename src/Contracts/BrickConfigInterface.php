@@ -7,7 +7,9 @@ namespace Lle\CruditBundle\Contracts;
 interface BrickConfigInterface
 {
 
-    public function getConfig(): array;
+    public function getCrudConfig(): CrudConfigInterface;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self;
+
+    public function getConfig(): array;
 }

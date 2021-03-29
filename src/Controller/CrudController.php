@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
+use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Builder\BrickBuilder;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Provider\ConfigProvider;
@@ -29,14 +30,19 @@ class CrudController extends AbstractController
     /** @var BrickBuilder */
     private $brickBuilder;
 
+    /** @var BrickResponseCollector */
+    private $brickResponseCollector;
+
     public function __construct(
         ConfigProvider $configProvider,
         BrickBuilder $brickBuilder,
-        NormalizerInterface $normalizer
+        NormalizerInterface $normalizer,
+        BrickResponseCollector $brickResponseCollector
     ) {
         $this->configProvider = $configProvider;
         $this->brickBuilder = $brickBuilder;
         $this->normalizer = $normalizer;
+        $this->brickResponseCollector = $brickResponseCollector;
     }
 
     /**
@@ -47,7 +53,50 @@ class CrudController extends AbstractController
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
             $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX, $request);
-            return $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+            $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+            return $this->brickResponseCollector->handle($request, $response);
+        }
+        throw new NotFoundHttpException();
+    }
+
+    /**
+     * @Route("/{ressource}/show/{id}")
+     */
+    public function show(Request $request): Response
+    {
+        $configurator = $this->configProvider->getConfiguratorByRequest($request);
+        if ($configurator) {
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::SHOW, $request);
+            $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+            return $this->brickResponseCollector->handle($request, $response);
+        }
+        throw new NotFoundHttpException();
+    }
+
+    /**
+     * @Route("/{ressource}/new")
+     */
+    public function new(Request $request): Response
+    {
+        $configurator = $this->configProvider->getConfiguratorByRequest($request);
+        if ($configurator) {
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::NEW, $request);
+            $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+            return $this->brickResponseCollector->handle($request, $response);
+        }
+        throw new NotFoundHttpException();
+    }
+
+    /**
+     * @Route("/{ressource}/edit/{id}")
+     */
+    public function edit(Request $request): Response
+    {
+        $configurator = $this->configProvider->getConfiguratorByRequest($request);
+        if ($configurator) {
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::EDIT, $request);
+            $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+            return $this->brickResponseCollector->handle($request, $response);
         }
         throw new NotFoundHttpException();
     }
@@ -93,13 +142,5 @@ class CrudController extends AbstractController
             );
         }
         throw new NotFoundHttpException();
-    }
-
-    /**
-     * @Route("/{ressource}/{id}")
-     */
-    public function show(string $ressource): Response
-    {
-        return new Response($ressource . 'show');
     }
 }

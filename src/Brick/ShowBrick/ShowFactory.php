@@ -42,7 +42,11 @@ class ShowFactory extends AbstractBasicBrickFactory
     {
         $item = $brickConfigurator->getDataSource()->get($id);
         if ($item) {
-            return $this->ressourceResolver->resolve($item, $this->getFields($brickConfigurator));
+            return $this->ressourceResolver->resolve(
+                $item,
+                $this->getFields($brickConfigurator),
+                $brickConfigurator->getDataSource()
+            );
         }
         return null;
     }

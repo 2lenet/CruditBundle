@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Brick\ShowBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 
 class ShowConfig extends AbstractBrickConfig
@@ -18,11 +18,12 @@ class ShowConfig extends AbstractBrickConfig
     /** @var array  */
     private $options;
 
-    /** @var DataSourceInterface */
+    /** @var DatasourceInterface */
     private $dataSource;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
+        parent::setCrudConfig($crudConfig);
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }
@@ -39,13 +40,13 @@ class ShowConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function setDataSource(DataSourceInterface $dataSource): self
+    public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
         return $this;
     }
 
-    public function getDataSource(): DataSourceInterface
+    public function getDataSource(): DatasourceInterface
     {
         return $this->dataSource;
     }
@@ -74,16 +75,21 @@ class ShowConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function add(Field $field): self
+    public function addField(Field $field): self
     {
         $this->fields[] = $field;
         return $this;
     }
 
+    public function add(string $name, string $type = null, array $options = []): self
+    {
+        return $this->addField(Field::new($name, $type, $options));
+    }
+
     public function addAuto(array $columns): self
     {
         foreach ($columns as $column) {
-            $this->add(Field::new($column));
+            $this->addField(Field::new($column));
         }
         return $this;
     }

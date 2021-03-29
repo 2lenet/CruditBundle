@@ -31,7 +31,7 @@ abstract class AbstractCrudAutoConfig extends AbstractCrudConfig implements Crud
     {
         return LinkElement::new(
             ucfirst(str_replace('-', ' ', $this->getName() ?? 'menu')),
-            Path::new('lle_crudit_crud_index', ['ressource' => $this->getName()]),
+            $this->getPath(),
             Icon::new('circle', Icon::TYPE_FAR)
         );
     }
@@ -52,5 +52,15 @@ abstract class AbstractCrudAutoConfig extends AbstractCrudConfig implements Crud
                 '-'
             )
         );
+    }
+
+    public function getRootRoute(): ?string
+    {
+        return 'lle_crudit_crud';
+    }
+
+    public function getPath(string $context = self::INDEX, array $params = []): Path
+    {
+        return Path::new($this->getRootRoute() . '_' . $context, ['ressource' => $this->getName()]);
     }
 }

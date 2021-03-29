@@ -9,14 +9,20 @@ services:
         tags: [ 'controller.service_arguments' ]
 
     Lle\CruditBundle\Controller\CrudController:
-        arguments: ['@Lle\CruditBundle\Provider\ConfigProvider', '@Lle\CruditBundle\Builder\BrickBuilder', '@serializer']
+        arguments: ['@Lle\CruditBundle\Provider\ConfigProvider', '@Lle\CruditBundle\Builder\BrickBuilder', '@serializer', '@Lle\CruditBundle\Brick\BrickResponseCollector']
         tags: [ 'controller.service_arguments' ]
 
+    Lle\CruditBundle\Registry\FieldRegistry:
+        arguments :
+            - !tagged_iterator crudit.field
+
+    Lle\CruditBundle\Brick\BrickResponseCollector: ~
+
     Lle\CruditBundle\Resolver\FieldResolver:
-        arguments: ['@doctrine.orm.default_entity_manager',  '@property_accessor']
+        arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']
 
     Lle\CruditBundle\Resolver\RessourceResolver:
-        arguments: ['@doctrine.orm.default_entity_manager', '@Lle\CruditBundle\Resolver\FieldResolver', '@property_accessor']
+        arguments: ['@Lle\CruditBundle\Resolver\FieldResolver']
 
     Lle\CruditBundle\Provider\LayoutProvider:
         arguments:
