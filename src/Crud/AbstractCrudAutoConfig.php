@@ -31,7 +31,7 @@ abstract class AbstractCrudAutoConfig extends AbstractCrudConfig implements Crud
     {
         return LinkElement::new(
             ucfirst(str_replace('-', ' ', $this->getName() ?? 'menu')),
-            Path::new('lle_crudit_crud_index', ['ressource' => $this->getName()]),
+            Path::new('lle_crudit_crud_index', ['resource' => $this->getName()]),
             Icon::new('circle', Icon::TYPE_FAR)
         );
     }

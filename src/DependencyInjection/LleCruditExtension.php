@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\DependencyInjection;
 
 use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Layout\LayoutInterface;
@@ -34,6 +35,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->registerForAutoconfiguration(LayoutInterface::class)->addTag('crudit.layout');
         $container->registerForAutoconfiguration(MenuProviderInterface::class)->addTag('crudit.menu');
         $container->registerForAutoconfiguration(CrudConfigInterface::class)->addTag('crudit.config');
+        $container->registerForAutoconfiguration(DatasourceInterface::class)->addTag('crudit.datasource');
         $container->registerForAutoconfiguration(BrickInterface::class)->addTag('crudit.brick');
         $container->registerForAutoconfiguration(FieldInterface::class)->addTag('crudit.field');
     }

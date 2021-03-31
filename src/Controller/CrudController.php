@@ -46,7 +46,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/{ressource}")
+     * @Route("/{resource}")
      */
     public function index(Request $request): Response
     {
@@ -60,7 +60,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/{ressource}/show/{id}")
+     * @Route("/{resource}/show/{id}")
      */
     public function show(Request $request): Response
     {
@@ -74,7 +74,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/{ressource}/new")
+     * @Route("/{resource}/new")
      */
     public function new(Request $request): Response
     {
@@ -88,7 +88,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/{ressource}/edit/{id}")
+     * @Route("/{resource}/edit/{id}")
      */
     public function edit(Request $request): Response
     {
@@ -102,7 +102,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/api/{ressource}")
+     * @Route("/api/{resource}")
      */
     public function apiIndex(Request $request): Response
     {
@@ -117,7 +117,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/api/config/{ressource}/{id}")
+     * @Route("/api/config/{resource}/{id}")
      */
     public function apiConfig(string $id): Response
     {
@@ -131,7 +131,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/api/data/{ressource}/{id}")
+     * @Route("/api/data/{resource}/{id}")
      */
     public function apiData(string $id): Response
     {

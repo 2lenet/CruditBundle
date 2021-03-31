@@ -8,7 +8,7 @@ use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\RessourceView;
+use Lle\CruditBundle\Dto\ResourceView;
 
 class ShowFactory extends AbstractBasicBrickFactory
 {
@@ -38,11 +38,11 @@ class ShowFactory extends AbstractBasicBrickFactory
         return $brickConfigurator->getFields();
     }
 
-    private function getItem(ShowConfig $brickConfigurator, string $id): ?RessourceView
+    private function getItem(ShowConfig $brickConfigurator, string $id): ?ResourceView
     {
         $item = $brickConfigurator->getDataSource()->get($id);
         if ($item) {
-            return $this->ressourceResolver->resolve(
+            return $this->resourceResolver->resolve(
                 $item,
                 $this->getFields($brickConfigurator),
                 $brickConfigurator->getDataSource()

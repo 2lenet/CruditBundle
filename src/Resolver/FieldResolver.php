@@ -47,11 +47,11 @@ class FieldResolver
             $type = $datasource->getType($name, $subItem);
             $field->setType($type);
         }
+        $fieldView = (new FieldView($field, $value))
+            ->setResource($item)
+            ->setParentResource($subItem);
         return $this->fieldRegistry->get($type)
-            ->buildView(
-                $field,
-                $value
-            );
+            ->buildView($fieldView, $value);
     }
 
     public function toCamelCase(string $str, bool $capitaliseFirstChar = false): ?string

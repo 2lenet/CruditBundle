@@ -29,7 +29,7 @@ class DataController extends AbstractController
     }
 
     /**
-     * @Route("/list/{ressource}")
+     * @Route("/list/{resource}")
      */
     public function index(): Response
     {
