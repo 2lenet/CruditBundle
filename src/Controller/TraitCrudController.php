@@ -21,6 +21,8 @@ trait TraitCrudController
      */
     public function index(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_LIST');
+
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX, $request);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
@@ -31,6 +33,8 @@ trait TraitCrudController
      */
     public function show(Request $request, $id): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_SHOW');
+
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW, $request);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
@@ -42,6 +46,8 @@ trait TraitCrudController
      */
     public function edit(Request $request, $id): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_EDIT');
+
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT, $request);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
@@ -52,6 +58,8 @@ trait TraitCrudController
      */
     public function new(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_NEW');
+
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW, $request);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
@@ -72,7 +80,9 @@ trait TraitCrudController
      */
     public function data(Request $request): Response
     {
-        $data = $this->config->getDefaultDatasource()->list();
+        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_LIST');
+
+        $data = $this->config->getDatasource()->list();
         return new JsonResponse($data);
     }
 }

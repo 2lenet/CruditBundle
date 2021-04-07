@@ -54,10 +54,10 @@ class SbAdminLayout extends AbstractLayout
     {
         return [
             'menu-nav' => $this->menuRegistry->getElements(),
-            'header-nav' => [SearchElement::new()],
+            'header-nav' => [],
             'header-right' => [
-                TemplateElement::new('elements/_message'),
-                TemplateElement::new('elements/_notification'),
+                //TemplateElement::new('elements/_message'),
+                //TemplateElement::new('elements/_notification'),
                 VerticalSeparatorElement::new(),
                 UserElement::new()
             ]

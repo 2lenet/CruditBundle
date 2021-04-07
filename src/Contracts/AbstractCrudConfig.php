@@ -16,7 +16,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getName(): ?string
     {
-        return null;
+        $classname = get_class($this);
+        return strtoupper(str_replace("CrudConfig","",(substr($classname, strrpos($classname, '\\') + 1))));
     }
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
