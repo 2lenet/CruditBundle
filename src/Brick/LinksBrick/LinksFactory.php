@@ -19,7 +19,7 @@ class LinksFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         /** @var LinksConfig $brickConfigurator */
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator->getId());
         $view
             ->setTemplate('@LleCrudit/brick/links')
             ->setConfig($brickConfigurator->getConfig())

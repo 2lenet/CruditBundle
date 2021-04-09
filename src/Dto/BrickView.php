@@ -27,6 +27,9 @@ class BrickView
     /** @var array  */
     private $options;
 
+    /** @var Path */
+    private $path;
+
     public function __construct(string $id, string $template = null, array $data = [])
     {
         $this->template = $template;
@@ -105,8 +108,14 @@ class BrickView
         return '';
     }
 
-    public function getOptions(): array
+    public function getPath(): Path
     {
-        return $this->options;
+        return $this->path;
+    }
+
+    public function setPath(Path $path): self
+    {
+        $this->path = $path;
+        return $this;
     }
 }

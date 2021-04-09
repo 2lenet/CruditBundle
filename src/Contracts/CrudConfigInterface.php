@@ -14,6 +14,7 @@ interface CrudConfigInterface
     public const EDIT = "EDIT";
     public const NEW = "NEW";
 
+    /** @return BrickConfigInterface[] */
     public function getBrickConfigs(Request $request, string $pageKey): iterable;
 
     public function getDatasource(): DatasourceInterface;

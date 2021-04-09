@@ -68,6 +68,24 @@ trait TraitCrudController
     }
 
     /**
+     * @Route("/brick/{pageKey}/{id}")
+     */
+    public function brick(Request $request): Response
+    {
+        $view = $this->getBrickBuilder()->getView($this->config, $request->get('pageKey'),$request, $request->get('id'));
+        return new JsonResponse($this->getSerializer()->normalize($view));
+    }
+
+    /**
+     * @Route("/brick/api/{pageKey}/{id}")
+     */
+    public function brickApi(Request $request): Response
+    {
+        $view = $this->getBrickBuilder()->getView($this->config, $request->get('pageKey'),$request, $request->get('id'));
+        return new JsonResponse($this->getSerializer()->normalize($view->getData()));
+    }
+
+    /**
      * @Route("/data")
      */
     public function data(Request $request): Response

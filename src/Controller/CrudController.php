@@ -131,7 +131,7 @@ class CrudController extends AbstractController
     }
 
     /**
-     * @Route("/api/data/{ressource}/{id}")
+     * @Route("/api/data/{resource}/{id}")
      */
     public function apiData(string $id): Response
     {

@@ -21,5 +21,10 @@
   "bundles/crudit/imgages/undraw_profile.svg": "./imgages/undraw_profile.svg",
   "bundles/crudit/imgages/undraw_profile_3.svg": "./imgages/undraw_profile_3.svg",
   "bundles/crudit/imgages/undraw_profile_2.svg": "./imgages/undraw_profile_2.svg",
-  "bundles/crudit/imgages/undraw_profile_1.svg": "./imgages/undraw_profile_1.svg"
+  "bundles/crudit/imgages/undraw_profile_1.svg": "./imgages/undraw_profile_1.svg",
+  "bundles/crudit/images/sort_both.png": "./images/sort_both.8b117faa.png",
+  "bundles/crudit/images/sort_asc.png": "./images/sort_asc.4bba5919.png",
+  "bundles/crudit/images/sort_desc.png": "./images/sort_desc.c4196d32.png",
+  "bundles/crudit/images/sort_desc_disabled.png": "./images/sort_desc_disabled.27ac5d1b.png",
+  "bundles/crudit/images/sort_asc_disabled.png": "./images/sort_asc_disabled.07c018ae.png"
 }

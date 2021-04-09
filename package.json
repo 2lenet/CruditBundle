@@ -21,6 +21,8 @@
     "build": "encore production"
   },
   "dependencies": {
+    "datatables.net": "^1.10.24",
+    "datatables.net-dt": "^1.10.24",
     "startbootstrap-sb-admin-2": "^4.1.3"
   }
 }
