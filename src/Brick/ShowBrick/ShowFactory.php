@@ -20,7 +20,7 @@ class ShowFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
 
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof ShowConfig) {
             $view
                 ->setTemplate('@LleCrudit/brick/show_item')

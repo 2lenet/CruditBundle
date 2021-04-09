@@ -20,7 +20,7 @@ class ControllerFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         /** @var ControllerConfig $brickConfigurator */
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/controller')
             ->setConfig($brickConfigurator->getConfig())

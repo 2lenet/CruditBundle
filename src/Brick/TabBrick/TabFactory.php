@@ -36,11 +36,17 @@ class TabFactory extends AbstractBasicBrickFactory
             foreach ($brickConfigurator->getTabs() as $k => $tab) {
                 $tabs[$k] = new TabView($tab->getLabel());
                 foreach ($tab->getBrick() as $brickConfig) {
-                    $tabs[$k]->add($this->brickBuilder->buildBrick($brickConfigurator->getCrudConfig(), $brickConfig));
+                    $tabs[$k]->add(
+                        $this->brickBuilder->buildBrick(
+                            $brickConfigurator->getCrudConfig(),
+                            $brickConfigurator->getPageKey(),
+                            $brickConfig
+                        )
+                    );
                 }
             }
         }
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/tab')
             ->setConfig(['tabs' => $tabs])

@@ -67,40 +67,57 @@ trait TraitCrudController
 
 
     /**
-     * @Route("/api")
+     * @Route("/api/{pageKey}")
      */
     public function api(Request $request): Response
     {
-        $views = $this->getBrickBuilder()->build($this->config, $request);
+        $views = $this->getBrickBuilder()->build($this->config, $request->get('pageKey'), $request);
         return new JsonResponse($this->getSerializer()->normalize($views));
     }
 
     /**
-     * @Route("/brick/{pageKey}/{id}")
+     * @Route("/brick/{pageKey}/{id}.{_format}", format="json", requirements={"_format": "html|json"})
      */
     public function brick(Request $request): Response
     {
-        $view = $this->getBrickBuilder()->getView($this->config, $request->get('pageKey'),$request, $request->get('id'));
-        return new JsonResponse($this->getSerializer()->normalize($view));
+        $view = $this->getBrickBuilder()->getView(
+            $this->config,
+            $request->get('pageKey'),
+            $request,
+            $request->get('id')
+        );
+        if ($request->get('_format') === 'json') {
+            return new JsonResponse($this->getSerializer()->normalize($view));
+        } else {
+            return $this->render($view->getIndexTemplate(), ['view' => $view]);
+        }
     }
 
     /**
-     * @Route("/brick/api/{pageKey}/{id}")
+     * @Route("/brick/data/{pageKey}/{id}")
      */
-    public function brickApi(Request $request): Response
+    public function brickData(Request $request): Response
     {
-        $view = $this->getBrickBuilder()->getView($this->config, $request->get('pageKey'),$request, $request->get('id'));
+        $view = $this->getBrickBuilder()->getView(
+            $this->config,
+            $request->get('pageKey'),
+            $request,
+            $request->get('id')
+        );
         return new JsonResponse($this->getSerializer()->normalize($view->getData()));
     }
 
     /**
-     * @Route("/data")
+     * @Route("/brick/config/{pageKey}/{id}")
      */
-    public function data(Request $request): Response
+    public function brickConfig(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_LIST');
-
-        $data = $this->config->getDatasource()->list();
-        return new JsonResponse($data);
+        $view = $this->getBrickBuilder()->getView(
+            $this->config,
+            $request->get('pageKey'),
+            $request,
+            $request->get('id')
+        );
+        return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
     }
 }

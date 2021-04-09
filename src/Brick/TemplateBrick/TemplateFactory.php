@@ -20,7 +20,7 @@ class TemplateFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         /** @var TemplateConfig $brickConfigurator */
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/template')
             ->setConfig($brickConfigurator->getConfig())

@@ -34,15 +34,9 @@ class ListFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
-        $view = new BrickView($brickConfigurator->getId());
+        $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof ListConfig) {
             $view
-                ->setPath(
-                    $brickConfigurator->getCrudConfig()->getPath('brickapi', [
-                        'id' => $brickConfigurator->getId(),
-                        'pageKey' => $brickConfigurator->getPageKey()
-                    ])
-                )
                 ->setTemplate('@LleCrudit/brick/list_items')
                 ->setConfig($brickConfigurator->getConfig())
                 ->setData([

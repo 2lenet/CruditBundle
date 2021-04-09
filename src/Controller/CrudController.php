@@ -115,32 +115,4 @@ class CrudController extends AbstractController
         }
         throw new NotFoundHttpException();
     }
-
-    /**
-     * @Route("/api/config/{resource}/{id}")
-     */
-    public function apiConfig(string $id): Response
-    {
-        $view = $this->brickBuilder->getView($id);
-        if ($view) {
-            return new JsonResponse(
-                $view->getConfig()
-            );
-        }
-        throw new NotFoundHttpException();
-    }
-
-    /**
-     * @Route("/api/data/{resource}/{id}")
-     */
-    public function apiData(string $id): Response
-    {
-        $view = $this->brickBuilder->getView($id);
-        if ($view) {
-            return new JsonResponse(
-                $view->getData()
-            );
-        }
-        throw new NotFoundHttpException();
-    }
 }

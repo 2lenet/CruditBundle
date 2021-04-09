@@ -30,16 +30,24 @@ class BrickBuilder
     public function build(CrudConfigInterface $crudConfig, string $pageKey, Request $request): array
     {
         foreach ($crudConfig->getBrickConfigs($request, $pageKey) as $brickConfig) {
-            $brickConfig->setCrudConfig($crudConfig);
-            $brickConfig->setPageKey($pageKey);
-            $brickFactory = $this->brickProvider->getBrick($brickConfig);
-            if ($brickFactory) {
-                $this->bricks[] = $brickFactory->buildView($brickConfig);
-            } else {
-                throw new UnsupportedBrickConfigurationException(get_class($brickConfig));
-            }
+            $this->bricks[] = $this->buildBrick($crudConfig, $pageKey, $brickConfig);
         }
         return $this->bricks;
+    }
+
+    public function buildBrick(
+        CrudConfigInterface $crudConfig,
+        string $pageKey,
+        BrickConfigInterface $brickConfig
+    ): BrickView {
+        $brickConfig->setCrudConfig($crudConfig);
+        $brickConfig->setPageKey($pageKey);
+        $brickFactory = $this->brickProvider->getBrick($brickConfig);
+        if ($brickFactory) {
+            return $brickFactory->buildView($brickConfig);
+        } else {
+            throw new UnsupportedBrickConfigurationException(get_class($brickConfig));
+        }
     }
 
     public function getView(CrudConfigInterface $crudConfig, string $pageKey, Request $request, string $id): ?BrickView
@@ -48,8 +56,7 @@ class BrickBuilder
             $brickConfig->setCrudConfig($crudConfig);
             $brickConfig->setPageKey($pageKey);
             if ($brickConfig->getId() === $id) {
-                $brickFactory = $this->brickProvider->getBrick($brickConfig);
-                return  $brickFactory->buildView($brickConfig);
+                return $this->buildBrick($crudConfig, $pageKey, $brickConfig);
             }
         }
         return null;

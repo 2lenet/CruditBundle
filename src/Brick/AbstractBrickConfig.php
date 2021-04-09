@@ -50,6 +50,6 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
 
     public function getId(): string
     {
-        return md5(static::class . get_class($this->getCrudConfig()));
+        return md5(static::class . $this->getPageKey());
     }
 }
