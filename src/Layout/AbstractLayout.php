@@ -43,7 +43,7 @@ abstract class AbstractLayout implements LayoutInterface
                 (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
                 (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
         } elseif ($item->getPath() !== null &&  $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
-            return $item->getPath()->getParams()['ressource'] === $request->get('ressource');
+            return $item->getPath()->getParams()['resource'] === $request->get('resource');
         }
         return false;
     }

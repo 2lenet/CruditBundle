@@ -18,14 +18,46 @@ class FieldView
     /** @var ?string */
     private $stringValue;
 
+    /** @var ?object */
+    private $resource = null;
+
+    /** @var ?object */
+    private $parentResource = null;
+
     /** @param mixed $value */
-    public function __construct(Field $field, $value, ?string $stringValue)
+    public function __construct(Field $field, $value)
     {
         $this->field = $field;
         $this->value = $value;
-        $this->stringValue = $stringValue;
     }
 
+    public function setResource(object $resource): self
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    public function setParentResource(object $resource): self
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    public function getResource(): ?object
+    {
+        return $this->resource;
+    }
+
+    public function getParentResource(): ?object
+    {
+        return $this->parentResource;
+    }
+
+    public function setStringValue(?string $stringValue): self
+    {
+        $this->stringValue = $stringValue;
+        return $this;
+    }
 
     public function getValue(): ?string
     {

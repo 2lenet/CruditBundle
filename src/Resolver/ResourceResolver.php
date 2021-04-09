@@ -7,9 +7,9 @@ namespace Lle\CruditBundle\Resolver;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
-use Lle\CruditBundle\Dto\RessourceView;
+use Lle\CruditBundle\Dto\ResourceView;
 
-class RessourceResolver
+class ResourceResolver
 {
 
     /** @var FieldResolver */
@@ -24,9 +24,9 @@ class RessourceResolver
     /**
      * @param Field[] $fields
      */
-    public function resolve(object $item, array $fields, DatasourceInterface $datasource): RessourceView
+    public function resolve(object $item, array $fields, DatasourceInterface $datasource): ResourceView
     {
-        return new RessourceView(
+        return new ResourceView(
             $datasource->getIdentifier($item),
             $item,
             $this->getFieldViews($fields, $item, $datasource)

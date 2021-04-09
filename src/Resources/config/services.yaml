@@ -21,7 +21,7 @@ services:
     Lle\CruditBundle\Resolver\FieldResolver:
         arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']
 
-    Lle\CruditBundle\Resolver\RessourceResolver:
+    Lle\CruditBundle\Resolver\ResourceResolver:
         arguments: ['@Lle\CruditBundle\Resolver\FieldResolver']
 
     Lle\CruditBundle\Provider\LayoutProvider:
@@ -47,6 +47,10 @@ services:
     Lle\CruditBundle\Registry\MenuRegistry:
         arguments:
             - !tagged_iterator crudit.menu
+
+    Lle\CruditBundle\Registry\DatasourceRegistry:
+        arguments:
+            - !tagged_iterator crudit.datasource
 
     Lle\CruditBundle\Layout\AdminLteLayout:
         arguments:

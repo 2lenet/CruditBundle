@@ -61,6 +61,6 @@ abstract class AbstractCrudAutoConfig extends AbstractCrudConfig implements Crud
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
-        return Path::new($this->getRootRoute() . '_' . $context, ['ressource' => $this->getName()]);
+        return Path::new($this->getRootRoute() . '_' . $context, ['resource' => $this->getName()]);
     }
 }

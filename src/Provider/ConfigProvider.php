@@ -29,10 +29,10 @@ class ConfigProvider
         return $this->configurators[$classname] ?? null;
     }
 
-    public function getConfigurator(string $ressource): ?CrudConfigInterface
+    public function getConfigurator(string $resource): ?CrudConfigInterface
     {
         foreach ($this->configurators as $configurator) {
-            if ($configurator->getName() === $ressource) {
+            if ($configurator->getName() === $resource) {
                 return $configurator;
             }
         }
@@ -46,6 +46,6 @@ class ConfigProvider
 
     public function getConfiguratorByRequest(Request $request): ?CrudConfigInterface
     {
-        return $this->getConfigurator($request->attributes->get('ressource'));
+        return $this->getConfigurator($request->attributes->get('resource'));
     }
 }

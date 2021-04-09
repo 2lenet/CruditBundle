@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Datasource;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Field\DoctrineEntityField;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
@@ -31,9 +32,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function delete($id): bool
     {
-        $ressource = $this->entityManager->getReference($this->getClassName(), $id);
-        if ($ressource) {
-            $this->entityManager->remove($ressource);
+        $resource = $this->entityManager->getReference($this->getClassName(), $id);
+        if ($resource) {
+            $this->entityManager->remove($resource);
             return true;
         }
         return false;
@@ -56,9 +57,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             ->newInstance();
     }
 
-    public function save(object $ressource): void
+    public function save(object $resource): void
     {
-        $this->entityManager->persist($ressource);
+        $this->entityManager->persist($resource);
         $this->entityManager->flush();
     }
 
@@ -70,9 +71,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->entityManager->getRepository($this->getClassName());
     }
 
-    public function getType(string $property, object $ressource): string
+    public function getType(string $property, object $resource): string
     {
-        $metadata = $this->entityManager->getClassMetadata(get_class($ressource));
+        $metadata = $this->entityManager->getClassMetadata(get_class($resource));
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
             if ($metadata->getAssociationMapping($property)) {
@@ -82,13 +83,30 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $type;
     }
 
-    public function getIdentifier(object $ressource): string
+    //todometadata
+    public function getIdentifier(object $resource): string
     {
         $identifierValue = '';
-        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+        $metadata = $this->entityManager->getClassMetadata(get_class($resource));
         foreach ($metadata->getIdentifier() as $identifier) {
-            $identifierValue .= $metadata->getIdentifierValues($ressource)[$identifier];
+            $identifierValue .= $metadata->getIdentifierValues($resource)[$identifier];
         }
         return $identifierValue;
+    }
+
+    public function getAssociationFieldName(string $classname): ?string
+    {
+        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+        foreach ($metadata->getAssociationMappings() as $associationMapping) {
+            if ($associationMapping['targetEntity'] === $classname) {
+                return $associationMapping['fieldName'];
+            }
+        }
+        return null;
+    }
+
+    public function createQuery(string $alias): QueryAdapterInterface
+    {
+        return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
     }
 }

@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Brick;
 
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 
 abstract class AbstractBrickConfig implements BrickConfigInterface
 {
@@ -35,6 +36,11 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     {
         $this->pageKey = $pageKey;
         return $this;
+    }
+
+    public function getDatasource(): DatasourceInterface
+    {
+        return $this->crudConfig->getDatasource();
     }
 
     public function getConfig(): array
