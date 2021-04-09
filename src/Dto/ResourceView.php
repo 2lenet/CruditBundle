@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto;
 
-class RessourceView
+class ResourceView
 {
 
     /** @var int|string  */

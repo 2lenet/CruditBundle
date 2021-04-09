@@ -1,0 +1,19 @@
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+        {% for tab in view.config.tabs %}
+            <li class="nav-item {% if(loop.first) %}active{%  endif %}">
+                <a class="nav-link" href="#_{{ tab.id }}" data-toggle="tab">{{ tab.label|trans }}</a>
+            </li>
+        {%  endfor %}
+    </ul>
+
+    <div class="tab-content">
+        {% for tab in view.config.tabs %}
+                <div id="_{{ tab.id }}" class="tab-pane {% if(loop.first) %}active{%  endif %}">
+                    {%  for view in tab.views %}
+                        {% include view.indexTemplate with { 'view': view } only %}
+                    {%  endfor %}
+                </div>
+        {%  endfor %}
+    </div>
+</div>

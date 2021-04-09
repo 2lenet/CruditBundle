@@ -18,14 +18,10 @@ class DateField implements FieldInterface
     }
 
     /** @param mixed $value */
-    public function buildView(Field $field, $value): FieldView
+    public function buildView(FieldView $fieldView, $value): FieldView
     {
-        $options = $this->configureOptions($field);
-        return new FieldView(
-            $field,
-            $value,
-            $this->getStringValue($value, $options['format'])
-        );
+        $options = $this->configureOptions($fieldView->getField());
+        return $fieldView->setStringValue($this->getStringValue($value, $options['format']));
     }
 
     /** @param mixed $value */
