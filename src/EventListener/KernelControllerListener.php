@@ -46,12 +46,12 @@ class KernelControllerListener
         if (
             is_array($controller) &&
             get_class($controller[0]) === CrudController::class &&
-            $event->getRequest()->attributes->has('ressource') &&
-            $this->configProvider->getConfigurator($event->getRequest()->attributes->get('ressource'))
+            $event->getRequest()->attributes->has('resource') &&
+            $this->configProvider->getConfigurator($event->getRequest()->attributes->get('resource'))
         ) {
             $configurator = $this->configProvider
                 ->getConfigurator(
-                    $event->getRequest()->attributes->get('ressource')
+                    $event->getRequest()->attributes->get('resource')
                 );
             if ($configurator && \is_callable($configurator->getController() . '::' . $controller[1])) {
                 $request->attributes->set('_controller', $configurator->getController() . '::' . $controller[1]);

@@ -26,14 +26,14 @@ class TemplateField implements FieldInterface
     }
 
     /** @param mixed $value */
-    public function buildView(Field $field, $value): FieldView
+    public function buildView(FieldView $fieldView, $value): FieldView
     {
-        $options = $this->configureOptions($field);
-        return new FieldView(
-            $field,
-            $value,
-            $this->twig->render($options['template'], ['value' => $value])
-        );
+        $options = $this->configureOptions($fieldView->getField());
+        return $fieldView->setStringValue($this->twig->render($options['template'], [
+            'value' => $value,
+            'view' => $fieldView,
+            'resource' => $fieldView->getResource()
+        ]));
     }
 
     public function configureOptions(Field $field): array

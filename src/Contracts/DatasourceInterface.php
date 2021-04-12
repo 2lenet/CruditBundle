@@ -23,11 +23,15 @@ interface DatasourceInterface
 
     public function newInstance(): object;
 
-    public function save(object $ressource): void;
+    public function save(object $resource): void;
 
     public function getClassName(): string;
 
-    public function getType(string $property, object $ressource): string;
+    public function getType(string $property, object $resource): string;
 
-    public function getIdentifier(object $ressource): string;
+    public function getIdentifier(object $resource): string;
+
+    public function createQuery(string $alias): QueryAdapterInterface;
+
+    public function getAssociationFieldName(string $classname): ?string;
 }

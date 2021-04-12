@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Field;
 
 use Lle\CruditBundle\Contracts\FieldInterface;
-use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 
 class DoctrineEntityField implements FieldInterface
@@ -17,12 +16,8 @@ class DoctrineEntityField implements FieldInterface
     }
 
     /** @param mixed $value */
-    public function buildView(Field $field, $value): FieldView
+    public function buildView(FieldView $fieldView, $value): FieldView
     {
-        return new FieldView(
-            $field,
-            $value,
-            (string) $value
-        );
+        return $fieldView->setStringValue((string) $value);
     }
 }

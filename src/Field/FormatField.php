@@ -26,15 +26,15 @@ class FormatField implements FieldInterface
     }
 
     /** @param mixed $value */
-    public function buildView(Field $field, $value): FieldView
+    public function buildView(FieldView $fieldView, $value): FieldView
     {
-        $options = $this->configureOptions($field);
+        $options = $this->configureOptions($fieldView->getField());
         $template = $this->twig->createTemplate($options['format']);
-        return new FieldView(
-            $field,
-            $value,
-            $template->render(['value' => $value])
-        );
+        return $fieldView->setStringValue($template->render([
+            'value' => $value,
+            'view' => $fieldView,
+            'resource' => $fieldView->getResource()
+        ]));
     }
 
     public function configureOptions(Field $field): array

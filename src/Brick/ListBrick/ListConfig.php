@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Brick\ListBrick;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Field\Field;
 
@@ -23,13 +24,22 @@ class ListConfig extends AbstractBrickConfig
     private $actions = [];
 
     /** @var DatasourceInterface */
-    private $dataSource;
+    private $datasource;
+
+    /** @var string */
+    private $className;
+
+    /** @var string */
+    private $fieldNameAssociation = null;
+
+    /** @var ?callable */
+    private $catchQueryAssociationCallback = null;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
-        if ($this->dataSource === null) {
-            $this->setDataSource($crudConfig->getDatasource());
+        if ($this->datasource === null) {
+            $this->setDatasource($crudConfig->getDatasource());
         }
         return $this;
     }
@@ -44,15 +54,15 @@ class ListConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function setDataSource(DatasourceInterface $dataSource): self
+    public function setDatasource(DatasourceInterface $datasource): self
     {
-        $this->dataSource = $dataSource;
+        $this->datasource = $datasource;
         return $this;
     }
 
-    public function getDataSource(): ?DatasourceInterface
+    public function getDatasource(): DatasourceInterface
     {
-        return $this->dataSource;
+        return $this->datasource ?? $this->getDatasource();
     }
 
     public function addAction(ItemAction $action): self
@@ -98,9 +108,50 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
+    public function setClassName(string $className): self
+    {
+        $this->className = $className;
+        return $this;
+    }
+
+    public function getClassName(): ?string
+    {
+        return $this->className;
+    }
+
     /** @return Field[] */
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    public function hasCatchQueryAssociation(): bool
+    {
+        return $this->catchQueryAssociationCallback !== null;
+    }
+
+    public function catchQueryAssociation(QueryAdapterInterface $query, string $alias): QueryAdapterInterface
+    {
+        if ($this->hasCatchQueryAssociation() && is_callable($this->catchQueryAssociationCallback)) {
+            return \call_user_func($this->catchQueryAssociationCallback, $query, $alias);
+        }
+        return $query;
+    }
+
+    public function getFieldNameAssociation(): ?string
+    {
+        return $this->fieldNameAssociation;
+    }
+
+    public function setCatchQueryAssociation(callable $callback): self
+    {
+        $this->catchQueryAssociationCallback = $callback;
+        return $this;
+    }
+
+    public function setFieldNameAssociation(string $fieldNameAssociation): self
+    {
+        $this->fieldNameAssociation = $fieldNameAssociation;
+        return $this;
     }
 }

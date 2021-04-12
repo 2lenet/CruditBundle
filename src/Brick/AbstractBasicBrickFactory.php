@@ -6,24 +6,24 @@ namespace Lle\CruditBundle\Brick;
 
 use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Exception\CruditException;
-use Lle\CruditBundle\Resolver\RessourceResolver;
+use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 abstract class AbstractBasicBrickFactory implements BrickInterface
 {
-    /** @var RessourceResolver  */
-    protected $ressourceResolver;
+    /** @var ResourceResolver  */
+    protected $resourceResolver;
 
     /** @var RequestStack  */
     protected $requestStack;
 
     public function __construct(
-        RessourceResolver $ressourceResolver,
+        ResourceResolver $resourceResolver,
         RequestStack $requestStack
     ) {
         $this->requestStack = $requestStack;
-        $this->ressourceResolver = $ressourceResolver;
+        $this->resourceResolver = $resourceResolver;
     }
 
     protected function getRequest(): Request
