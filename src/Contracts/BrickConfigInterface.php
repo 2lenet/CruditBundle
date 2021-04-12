@@ -18,4 +18,9 @@ interface BrickConfigInterface
     public function getConfig(): array;
 
     public function getId(): string;
+
+    public function setId(string $id): self;
+
+    /** @return BrickConfigInterface[] */
+    public function getChildren(): array;
 }

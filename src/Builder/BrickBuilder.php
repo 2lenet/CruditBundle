@@ -26,10 +26,25 @@ class BrickBuilder
         $this->brickProvider = $brickProvider;
     }
 
+    private function init(
+        CrudConfigInterface $crudConfig,
+        string $pageKey,
+        int $position,
+        BrickConfigInterface $brickConfig
+    ): void {
+        foreach (array_merge([$brickConfig], $brickConfig->getChildren()) as $k => $brick) {
+            $brick->setCrudConfig($crudConfig);
+            $brick->setPageKey($pageKey);
+            $brick->setId(md5(get_class($crudConfig) . '-' . $pageKey . '-' . $position . '-' . $k));
+        }
+    }
+
     /** @return BrickView[] */
-    public function build(CrudConfigInterface $crudConfig, string $pageKey, Request $request): array
+    public function build(CrudConfigInterface $crudConfig, string $pageKey): array
     {
-        foreach ($crudConfig->getBrickConfigs($request, $pageKey) as $brickConfig) {
+        $bricks = $crudConfig->getBrickConfigs();
+        foreach ($bricks[$pageKey] as $k => $brickConfig) {
+            $this->init($crudConfig, $pageKey, $k, $brickConfig);
             $this->bricks[] = $this->buildBrick($crudConfig, $pageKey, $brickConfig);
         }
         return $this->bricks;
@@ -40,8 +55,6 @@ class BrickBuilder
         string $pageKey,
         BrickConfigInterface $brickConfig
     ): BrickView {
-        $brickConfig->setCrudConfig($crudConfig);
-        $brickConfig->setPageKey($pageKey);
         $brickFactory = $this->brickProvider->getBrick($brickConfig);
         if ($brickFactory) {
             return $brickFactory->buildView($brickConfig);
@@ -50,13 +63,19 @@ class BrickBuilder
         }
     }
 
-    public function getView(CrudConfigInterface $crudConfig, string $pageKey, Request $request, string $id): ?BrickView
+    public function getView(CrudConfigInterface $crudConfig, string $id): ?BrickView
     {
-        foreach ($crudConfig->getBrickConfigs($request, $pageKey) as $brickConfig) {
-            $brickConfig->setCrudConfig($crudConfig);
-            $brickConfig->setPageKey($pageKey);
-            if ($brickConfig->getId() === $id) {
-                return $this->buildBrick($crudConfig, $pageKey, $brickConfig);
+        foreach ($crudConfig->getBrickConfigs() as $pageKey => $page) {
+            foreach ($page as $k => $brickConfig) {
+                    $this->init($crudConfig, $pageKey, $k, $brickConfig);
+                if ($brickConfig->getId() === $id) {
+                    return $this->buildBrick($crudConfig, $pageKey, $brickConfig);
+                }
+                foreach ($brickConfig->getChildren() as $brickChild) {
+                    if ($brickChild->getId() === $id) {
+                        return $this->buildBrick($crudConfig, $pageKey, $brickChild);
+                    }
+                }
             }
         }
         return null;

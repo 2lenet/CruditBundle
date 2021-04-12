@@ -41,8 +41,7 @@ class BrickView
         $this->cssClass = null;
         $this->options = [];
         $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
-            'id' => $brickConfig->getId(),
-            'pageKey' => $brickConfig->getPageKey()
+            'idBrick' => $brickConfig->getId()
         ]));
     }
 

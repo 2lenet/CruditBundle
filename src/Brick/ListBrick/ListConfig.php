@@ -62,7 +62,7 @@ class ListConfig extends AbstractBrickConfig
 
     public function getDatasource(): DatasourceInterface
     {
-        return $this->datasource ?? $this->getDatasource();
+        return $this->datasource ?? $this->getCrudConfig()->getDatasource();
     }
 
     public function addAction(ItemAction $action): self

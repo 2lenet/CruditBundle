@@ -23,7 +23,7 @@ trait TraitCrudController
     {
         $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_LIST');
 
-        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX, $request);
+        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
@@ -35,7 +35,7 @@ trait TraitCrudController
     {
         $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_SHOW');
 
-        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW, $request);
+        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
@@ -48,7 +48,7 @@ trait TraitCrudController
     {
         $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_EDIT');
 
-        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT, $request);
+        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
@@ -60,7 +60,7 @@ trait TraitCrudController
     {
         $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_NEW');
 
-        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW, $request);
+        $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
@@ -71,20 +71,18 @@ trait TraitCrudController
      */
     public function api(Request $request): Response
     {
-        $views = $this->getBrickBuilder()->build($this->config, $request->get('pageKey'), $request);
+        $views = $this->getBrickBuilder()->build($this->config, $request->get('pageKey'));
         return new JsonResponse($this->getSerializer()->normalize($views));
     }
 
     /**
-     * @Route("/brick/{pageKey}/{id}.{_format}", format="json", requirements={"_format": "html|json"})
+     * @Route("/brick/{idBrick}.{_format}", format="json", requirements={"_format": "html|json"})
      */
     public function brick(Request $request): Response
     {
         $view = $this->getBrickBuilder()->getView(
             $this->config,
-            $request->get('pageKey'),
-            $request,
-            $request->get('id')
+            $request->get('idBrick')
         );
         if ($request->get('_format') === 'json') {
             return new JsonResponse($this->getSerializer()->normalize($view));
@@ -94,29 +92,25 @@ trait TraitCrudController
     }
 
     /**
-     * @Route("/brick/data/{pageKey}/{id}")
+     * @Route("/brick/data/{idBrick}")
      */
     public function brickData(Request $request): Response
     {
         $view = $this->getBrickBuilder()->getView(
             $this->config,
-            $request->get('pageKey'),
-            $request,
-            $request->get('id')
+            $request->get('idBrick')
         );
         return new JsonResponse($this->getSerializer()->normalize($view->getData()));
     }
 
     /**
-     * @Route("/brick/config/{pageKey}/{id}")
+     * @Route("/brick/config/{idBrick}")
      */
     public function brickConfig(Request $request): Response
     {
         $view = $this->getBrickBuilder()->getView(
             $this->config,
-            $request->get('pageKey'),
-            $request,
-            $request->get('id')
+            $request->get('idBrick')
         );
         return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
     }

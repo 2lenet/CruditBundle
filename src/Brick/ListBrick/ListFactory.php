@@ -8,6 +8,7 @@ use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Registry\DatasourceRegistry;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -39,11 +40,25 @@ class ListFactory extends AbstractBasicBrickFactory
             $view
                 ->setTemplate('@LleCrudit/brick/list_items')
                 ->setConfig($brickConfigurator->getConfig())
+                ->setPath($this->getPath($brickConfigurator))
                 ->setData([
                     'lines' => $this->getLines($brickConfigurator)
                 ]);
         }
         return $view;
+    }
+
+    public function getRequestParametersScop(): array
+    {
+        return ['id'];
+    }
+
+    public function getPath(BrickConfigInterface $brickConfig): Path
+    {
+        return $brickConfig->getCrudConfig()->getPath(
+            'brick',
+            array_merge($this->getRequestParameters(), ['idBrick' => $brickConfig->getId(), '_format' => 'html'])
+        );
     }
 
     /** @return Field[] */
@@ -72,17 +87,17 @@ class ListFactory extends AbstractBasicBrickFactory
                         ->where('assoc. ' . $fieldName . ' = :id')
                         ->setParameter('id', $this->getRequest()->get('id'));
                 }
-                foreach ($query->execute() as $item) {
+                foreach ($query->execute() as $resource) {
                     $lines[] = $this->resourceResolver->resolve(
-                        $item,
+                        $resource,
                         $this->getFields($brickConfigurator),
                         $datasource
                     );
                 }
             } else {
-                foreach ($brickConfigurator->getDataSource()->list() as $item) {
+                foreach ($brickConfigurator->getDataSource()->list() as $resource) {
                     $lines[] = $this->resourceResolver->resolve(
-                        $item,
+                        $resource,
                         $this->getFields($brickConfigurator),
                         $brickConfigurator->getDataSource()
                     );

@@ -10,8 +10,8 @@ class ResourceView
     /** @var int|string  */
     private $id;
 
-    /** @var object|array  */
-    private $item;
+    /** @var object */
+    private $resource;
 
     /** @var FieldView[]  */
     private $fields;
@@ -19,10 +19,10 @@ class ResourceView
     /**
      * @param int|string $id
      */
-    public function __construct($id, object $item, array $fields)
+    public function __construct($id, object $resource, array $fields)
     {
         $this->id = $id;
-        $this->item = $item;
+        $this->resource = $resource;
         $this->fields = $fields;
     }
 
@@ -32,10 +32,10 @@ class ResourceView
         return $this->id;
     }
 
-    /** @return array|object */
-    public function getItem()
+    /** @return object */
+    public function getResource(): object
     {
-        return $this->item;
+        return $this->resource;
     }
 
     /** @return FieldView[] */

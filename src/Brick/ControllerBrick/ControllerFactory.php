@@ -30,10 +30,10 @@ class ControllerFactory extends AbstractBasicBrickFactory
 
     private function getResourceView(ControllerConfig $brickConfigurator): ?ResourceView
     {
-        $item = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
-        if ($item) {
+        $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+        if ($resource) {
             return $this->resourceResolver->resolve(
-                $item,
+                $resource,
                 [],
                 $brickConfigurator->getDataSource()
             );

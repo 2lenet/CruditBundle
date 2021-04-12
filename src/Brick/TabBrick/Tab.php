@@ -45,7 +45,7 @@ class Tab
     }
 
     /** @return BrickConfigInterface[] */
-    public function getBrick(): array
+    public function getBricks(): array
     {
         return $this->bricks;
     }

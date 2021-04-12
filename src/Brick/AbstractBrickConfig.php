@@ -16,6 +16,9 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /** @var string */
     protected $pageKey;
 
+    /** @var string */
+    protected $id;
+
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         $this->crudConfig = $crudConfig;
@@ -50,6 +53,18 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
 
     public function getId(): string
     {
-        return md5(static::class . $this->getPageKey());
+        return $this->id;
+    }
+
+    public function setId(string $id): BrickConfigInterface
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /** @return BrickConfigInterface[] */
+    public function getChildren(): array
+    {
+        return [];
     }
 }

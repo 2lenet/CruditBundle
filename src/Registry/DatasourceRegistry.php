@@ -27,14 +27,14 @@ class DatasourceRegistry
         throw new CruditException('datasource ' . $datasourceClassname . ' not found');
     }
 
-    /** @param string $classname */
-    public function getByClass(string $classname): DatasourceInterface
+    /** @param string $className */
+    public function getByClass(string $className): DatasourceInterface
     {
         foreach ($this->datasources as $datasource) {
-            if ($datasource->getClassName() === $classname) {
+            if ($datasource->getClassName() === $className) {
                 return $datasource;
             }
         }
-        throw new CruditException('datasource for class ' . $classname . ' not found');
+        throw new CruditException('datasource for class ' . $className . ' not found');
     }
 }
