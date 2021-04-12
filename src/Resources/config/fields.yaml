@@ -10,6 +10,7 @@ services:
     tags: [ 'crudit.field' ]
   Lle\CruditBundle\Field\BooleanField:
     tags: [ 'crudit.field' ]
+    arguments: ['@translator.default']
   Lle\CruditBundle\Field\TemplateField:
     arguments: ['@twig']
     tags: [ 'crudit.field' ]
