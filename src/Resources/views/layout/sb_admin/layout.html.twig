@@ -15,12 +15,8 @@
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            {% block brand %}
-                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-                    <img src="/img/logo.png">
-                    <div class="sidebar-brand-text mx-3">CRUDIT</div>
-                </a>
-            {% endblock%}
+            {% include crudit.template('brand') %}
+
             {% include crudit.template('menu') %}
 
         </ul>
