@@ -94,11 +94,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $identifierValue;
     }
 
-    public function getAssociationFieldName(string $classname): ?string
+    public function getAssociationFieldName(string $className): ?string
     {
         $metadata = $this->entityManager->getClassMetadata($this->getClassName());
         foreach ($metadata->getAssociationMappings() as $associationMapping) {
-            if ($associationMapping['targetEntity'] === $classname) {
+            if ($associationMapping['targetEntity'] === $className) {
                 return $associationMapping['fieldName'];
             }
         }

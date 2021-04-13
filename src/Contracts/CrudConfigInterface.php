@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Dto\Path;
-use Symfony\Component\HttpFoundation\Request;
 
 interface CrudConfigInterface
 {
@@ -14,7 +13,8 @@ interface CrudConfigInterface
     public const EDIT = "EDIT";
     public const NEW = "NEW";
 
-    public function getBrickConfigs(Request $request, string $pageKey): iterable;
+    /** @return BrickConfigInterface[][] */
+    public function getBrickConfigs(): array;
 
     public function getDatasource(): DatasourceInterface;
 

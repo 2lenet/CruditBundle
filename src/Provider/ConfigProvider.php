@@ -24,9 +24,9 @@ class ConfigProvider
         }
     }
 
-    public function get(string $classname): ?CrudConfigInterface
+    public function get(string $className): ?CrudConfigInterface
     {
-        return $this->configurators[$classname] ?? null;
+        return $this->configurators[$className] ?? null;
     }
 
     public function getConfigurator(string $resource): ?CrudConfigInterface

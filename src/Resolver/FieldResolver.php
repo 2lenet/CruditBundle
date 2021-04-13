@@ -25,31 +25,31 @@ class FieldResolver
         $this->fieldRegistry = $fieldRegistry;
     }
 
-    public function resolveView(Field $field, object $item, DatasourceInterface $datasource): FieldView
+    public function resolveView(Field $field, object $resource, DatasourceInterface $datasource): FieldView
     {
-        $subItem = $item;
+        $subResource = $resource;
         $name = $field->getName();
         if ($field->hasCascade()) {
             $value = null;
             $cascade = explode('.', $field->getName());
             foreach ($cascade as $k => $name) {
-                $value = $this->propertyAccessor->getValue($subItem, $name);
+                $value = $this->propertyAccessor->getValue($subResource, $name);
                 if (\count($cascade) - 1 !== $k) {
-                    $subItem = $value;
+                    $subResource = $value;
                 }
             }
         } else {
-            $value = $this->propertyAccessor->getValue($item, $name);
+            $value = $this->propertyAccessor->getValue($resource, $name);
         }
 
         $type = $field->getType();
         if ($type === null) {
-            $type = $datasource->getType($name, $subItem);
+            $type = $datasource->getType($name, $subResource);
             $field->setType($type);
         }
         $fieldView = (new FieldView($field, $value))
-            ->setResource($item)
-            ->setParentResource($subItem);
+            ->setResource($resource)
+            ->setParentResource($subResource);
         return $this->fieldRegistry->get($type)
             ->buildView($fieldView, $value);
     }

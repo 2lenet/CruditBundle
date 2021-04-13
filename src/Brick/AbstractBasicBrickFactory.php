@@ -34,4 +34,20 @@ abstract class AbstractBasicBrickFactory implements BrickInterface
         }
         throw new CruditException('current request not found');
     }
+
+    public function getRequestParametersScop(): array
+    {
+        return [];
+    }
+
+    protected function getRequestParameters(): array
+    {
+        $parameters = [];
+        foreach ($this->getRequestParametersScop() as $keyName) {
+            if ($this->getRequest()->get($keyName)) {
+                $parameters[$keyName] = $this->getRequest()->get($keyName);
+            }
+        }
+        return $parameters;
+    }
 }

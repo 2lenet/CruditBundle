@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto;
 
+use Lle\CruditBundle\Contracts\BrickConfigInterface;
+
 class BrickView
 {
     /** @var string|null  */
@@ -27,14 +29,20 @@ class BrickView
     /** @var array  */
     private $options;
 
-    public function __construct(string $id, string $template = null, array $data = [])
+    /** @var ?Path */
+    private $path;
+
+    public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])
     {
         $this->template = $template;
         $this->data = $data;
         $this->movable = false;
-        $this->id = $id;
+        $this->id = $brickConfig->getId();
         $this->cssClass = null;
         $this->options = [];
+        $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
+            'idBrick' => $brickConfig->getId()
+        ]));
     }
 
     public function setTemplate(string $template): self
@@ -105,8 +113,14 @@ class BrickView
         return '';
     }
 
-    public function getOptions(): array
+    public function getPath(): ?Path
     {
-        return $this->options;
+        return $this->path;
+    }
+
+    public function setPath(?Path $path): self
+    {
+        $this->path = $path;
+        return $this;
     }
 }

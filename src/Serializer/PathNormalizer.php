@@ -28,7 +28,7 @@ class PathNormalizer implements NormalizerInterface
     {
         /** @var array $data */
         $data = $this->normalizer->normalize($topic, $format, $context);
-        $data['url'] = $this->router->generate($data['route'], $data['params']);
+        //$data['url'] = $this->router->generate($data['route'], $data['params']);
         return $data;
     }
 

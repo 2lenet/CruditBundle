@@ -20,13 +20,13 @@ class ShowFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
 
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof ShowConfig) {
             $view
                 ->setTemplate('@LleCrudit/brick/show_item')
                 ->setConfig($brickConfigurator->getConfig())
                 ->setData([
-                    'item' => $this->getItem($brickConfigurator, $this->getRequest()->attributes->get('id'))
+                    'resource' => $this->getResourceView($brickConfigurator)
                 ]);
         }
         return $view;
@@ -38,12 +38,12 @@ class ShowFactory extends AbstractBasicBrickFactory
         return $brickConfigurator->getFields();
     }
 
-    private function getItem(ShowConfig $brickConfigurator, string $id): ?ResourceView
+    private function getResourceView(ShowConfig $brickConfigurator): ?ResourceView
     {
-        $item = $brickConfigurator->getDataSource()->get($id);
-        if ($item) {
+        $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+        if ($resource) {
             return $this->resourceResolver->resolve(
-                $item,
+                $resource,
                 $this->getFields($brickConfigurator),
                 $brickConfigurator->getDataSource()
             );

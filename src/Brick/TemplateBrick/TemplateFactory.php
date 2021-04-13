@@ -20,7 +20,7 @@ class TemplateFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         /** @var TemplateConfig $brickConfigurator */
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/template')
             ->setConfig($brickConfigurator->getConfig())
@@ -30,10 +30,10 @@ class TemplateFactory extends AbstractBasicBrickFactory
 
     private function getResourceView(TemplateConfig $brickConfigurator): ?ResourceView
     {
-        $item = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
-        if ($item) {
+        $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+        if ($resource) {
             return $this->resourceResolver->resolve(
-                $item,
+                $resource,
                 [],
                 $brickConfigurator->getDataSource()
             );

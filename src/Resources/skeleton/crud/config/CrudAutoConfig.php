@@ -38,9 +38,9 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
         return $this->datasource;
     }
 
-    public function getBrickConfigs(Request $request, string $pageKey): iterable
+    public function getBrickConfigs(): iterable
     {
-        $bricks = [
+        return [
             CrudConfigInterface::INDEX => [
                 LinksConfig::new()->addAction(ListAction::new('add', $this->getPath(CrudConfigInterface::NEW))),
                 ListConfig::new()->addAuto([<?= join(',', $fields); ?>])
@@ -68,6 +68,5 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudAutoConfig
 <?php endif; ?>
             ]
         ];
-        return $bricks[$pageKey];
     }
 }

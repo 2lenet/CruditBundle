@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Layout;
 
-use Lle\CruditBundle\Dto\Layout\SearchElement;
-use Lle\CruditBundle\Dto\Layout\TemplateElement;
 use Lle\CruditBundle\Dto\Layout\UserElement;
 use Lle\CruditBundle\Dto\Layout\VerticalSeparatorElement;
 use Lle\CruditBundle\Registry\MenuRegistry;

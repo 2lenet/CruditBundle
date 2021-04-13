@@ -11,5 +11,16 @@ interface BrickConfigInterface
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self;
 
+    public function setPageKey(string $pageKey): self;
+
+    public function getPageKey(): string;
+
     public function getConfig(): array;
+
+    public function getId(): string;
+
+    public function setId(string $id): self;
+
+    /** @return BrickConfigInterface[] */
+    public function getChildren(): array;
 }

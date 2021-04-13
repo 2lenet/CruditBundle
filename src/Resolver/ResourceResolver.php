@@ -24,23 +24,23 @@ class ResourceResolver
     /**
      * @param Field[] $fields
      */
-    public function resolve(object $item, array $fields, DatasourceInterface $datasource): ResourceView
+    public function resolve(object $resource, array $fields, DatasourceInterface $datasource): ResourceView
     {
         return new ResourceView(
-            $datasource->getIdentifier($item),
-            $item,
-            $this->getFieldViews($fields, $item, $datasource)
+            $datasource->getIdentifier($resource),
+            $resource,
+            $this->getFieldViews($fields, $resource, $datasource)
         );
     }
 
     /**
      * @return FieldView[]
      */
-    private function getFieldViews(array $fields, object $item, DatasourceInterface $datasource): array
+    private function getFieldViews(array $fields, object $resource, DatasourceInterface $datasource): array
     {
         $fieldViews = [];
         foreach ($fields as $field) {
-            $fieldViews[] = $this->fieldResolver->resolveView($field, $item, $datasource);
+            $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource);
         }
         return $fieldViews;
     }

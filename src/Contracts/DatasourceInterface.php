@@ -33,5 +33,5 @@ interface DatasourceInterface
 
     public function createQuery(string $alias): QueryAdapterInterface;
 
-    public function getAssociationFieldName(string $classname): ?string;
+    public function getAssociationFieldName(string $className): ?string;
 }

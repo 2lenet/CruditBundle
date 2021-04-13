@@ -52,7 +52,7 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX);
             $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
             return $this->brickResponseCollector->handle($request, $response);
         }
@@ -66,7 +66,7 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::SHOW, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::SHOW);
             $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
             return $this->brickResponseCollector->handle($request, $response);
         }
@@ -80,7 +80,7 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::NEW, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::NEW);
             $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
             return $this->brickResponseCollector->handle($request, $response);
         }
@@ -94,7 +94,7 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::EDIT, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::EDIT);
             $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
             return $this->brickResponseCollector->handle($request, $response);
         }
@@ -108,37 +108,9 @@ class CrudController extends AbstractController
     {
         $configurator = $this->configProvider->getConfiguratorByRequest($request);
         if ($configurator) {
-            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX, $request);
+            $views = $this->brickBuilder->build($configurator, CrudConfigInterface::INDEX);
             return new JsonResponse(
                 $this->normalizer->normalize($views)
-            );
-        }
-        throw new NotFoundHttpException();
-    }
-
-    /**
-     * @Route("/api/config/{resource}/{id}")
-     */
-    public function apiConfig(string $id): Response
-    {
-        $view = $this->brickBuilder->getView($id);
-        if ($view) {
-            return new JsonResponse(
-                $view->getConfig()
-            );
-        }
-        throw new NotFoundHttpException();
-    }
-
-    /**
-     * @Route("/api/data/{resource}/{id}")
-     */
-    public function apiData(string $id): Response
-    {
-        $view = $this->brickBuilder->getView($id);
-        if ($view) {
-            return new JsonResponse(
-                $view->getData()
             );
         }
         throw new NotFoundHttpException();

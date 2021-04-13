@@ -46,4 +46,18 @@ class TabConfig extends AbstractBrickConfig
         $this->tabs[] = $tab;
         return $this;
     }
+
+    public function getChildren(): array
+    {
+        $brickConfigs = [];
+        foreach ($this->tabs as $tab) {
+            foreach ($tab->getBricks() as $brick) {
+                $brickConfigs[] = $brick;
+                foreach ($brick->getChildren() as $childBrick) {
+                    $brickConfigs[] = $childBrick;
+                }
+            }
+        }
+        return $brickConfigs;
+    }
 }

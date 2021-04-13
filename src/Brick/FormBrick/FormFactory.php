@@ -55,7 +55,7 @@ class FormFactory extends AbstractBasicBrickFactory
         $form = $this->generateForm($brickConfigurator, $resource);
         $this->bindRequest($form, $brickConfigurator, $resource);
         /** @var FormConfig $brickConfigurator */
-        $view = new BrickView(spl_object_hash($brickConfigurator));
+        $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/form')
             ->setConfig($brickConfigurator->getConfig())
@@ -70,17 +70,17 @@ class FormFactory extends AbstractBasicBrickFactory
             if ($form->isValid()) {
                 $brickConfig->getDataSource()->save($resource);
                 $this->brickResponseCollector->add(
-                    new FlashBrickResponse(FlashBrickResponse::SUCCESS, 'crudis.message.success')
+                    new FlashBrickResponse(FlashBrickResponse::SUCCESS, $brickConfig->getMessageSuccess())
                 );
                 $this->brickResponseCollector->add(new RedirectBrickResponse(
                     $this->urlGenerator->generate(
-                        $brickConfig->getCrudConfig()->getPath()->getRoute(),
-                        $brickConfig->getCrudConfig()->getPath()->getParams()
+                        $brickConfig->getSuccessRedirectPath()->getRoute(),
+                        $brickConfig->getSuccessRedirectPath()->getParams()
                     )
                 ));
             } else {
                 $this->brickResponseCollector->add(
-                    new FlashBrickResponse(FlashBrickResponse::ERROR, 'crudis.message.serror')
+                    new FlashBrickResponse(FlashBrickResponse::ERROR, $brickConfig->getMessageError())
                 );
             }
         }
