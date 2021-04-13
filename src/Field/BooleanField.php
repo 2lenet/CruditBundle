@@ -30,7 +30,7 @@ class BooleanField implements FieldInterface
     }
 
 
-    protected function trans($asset)
+    protected function trans(string $asset): string
     {
         return $this->translator->trans($asset);
     }
