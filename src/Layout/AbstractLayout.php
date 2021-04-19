@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Layout;
 
+use Lle\CruditBundle\Dto\Layout\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -20,9 +21,8 @@ abstract class AbstractLayout implements LayoutInterface
         return $this->getTemplate('layout');
     }
 
-    public function isActive(LinkElement $item, Request $request): bool
+    public function isActive(LayoutElementInterface $item, Request $request): bool
     {
-
         if (\count($item->getChildren()) > 0) {
             foreach ($item->getChildren() as $child) {
                 if ($this->isActive($child, $request)) {
@@ -31,20 +31,22 @@ abstract class AbstractLayout implements LayoutInterface
             }
         }
 
-        if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
-            $currentRoute = $request->get('_route');
-            $linkRoute = $item->getPath()->getRoute();
-            $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
-                (int)strrpos($currentRoute, '_') :
-                strlen($currentRoute);
-            $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
-                (int)strrpos($linkRoute, '_') :
-                strlen($linkRoute);
-            return
-                (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
-                (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
-        } elseif ($item->getPath() !== null &&  $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
-            return $item->getPath()->getParams()['resource'] === $request->get('resource');
+        if ($item instanceof LinkElement) {
+            if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
+                $currentRoute = $request->get('_route');
+                $linkRoute = $item->getPath()->getRoute();
+                $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
+                    (int)strrpos($currentRoute, '_') :
+                    strlen($currentRoute);
+                $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
+                    (int)strrpos($linkRoute, '_') :
+                    strlen($linkRoute);
+                return
+                    (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
+                    (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
+            } elseif ($item->getPath() !== null && $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
+                return $item->getPath()->getParams()['resource'] === $request->get('resource');
+            }
         }
         return false;
     }

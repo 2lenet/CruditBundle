@@ -11,7 +11,6 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
     "use strict"; // Start of use strict
     // Toggle the side navigation
     $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-        console.log(e);
         $("body").toggleClass("sidebar-toggled");
         $(".sidebar").toggleClass("toggled");
         if ($(".sidebar").hasClass("toggled")) {
@@ -60,6 +59,34 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
             scrollTop: ($($anchor.attr('href')).offset().top)
         }, 1000, 'easeInOutExpo');
         e.preventDefault();
+    });
+
+
+    $('a.active').find('.show-toggle').each(function (e, el) {
+        let elm = $(el);
+        if(elm && elm.attr('data-toggle')) {
+            let target = $(elm.attr('data-toggle'));
+            target.addClass('show')
+        }
+    });
+    $(document).on('click','.show-toggle', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        let elm = $(e.currentTarget);
+        console.log(elm.attr('data-toggle'))
+
+
+        console.log(elm.attr('data-toggle'));
+        if(elm.attr('data-toggle')) {
+
+            let target = $(elm.attr('data-toggle'));
+            console.log(target);
+            if (target.hasClass('show')) {
+                target.removeClass('show');
+            } else {
+                target.addClass('show')
+            }
+        }
     });
 
 })(jquery); // End of use strict
