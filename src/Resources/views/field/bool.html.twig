@@ -1,0 +1,5 @@
+{%  if value == true %}
+    {{ 'crudit.yes'|trans }}
+{%  elseif value is same as(false) or (not value and options.nullToFalse == true) %}
+    {{ 'crudit.no'|trans }} {% dump(value) %}
+{%  endif %}

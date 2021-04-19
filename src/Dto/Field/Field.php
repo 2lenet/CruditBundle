@@ -33,6 +33,9 @@ class Field
     /** @var ?string */
     private $type;
 
+    /** @var ?string */
+    private $template;
+
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
         $this->name = $name;
@@ -64,13 +67,14 @@ class Field
 
     public function setOptions(array $options): void
     {
-
-        $this->label = (isset($options['label'])) ? $options['label'] : $this->label;
-        $this->sort = (isset($options['sort'])) ? $options['sort'] : false;
-        $this->path = (isset($options['path'])) ? $options['path'] : null;
+        $this->label = $options['label'] ?? $this->label;
+        $this->sort = $options['sort'] ?? false;
+        $this->path = $options['path'] ?? $options['link_to'] ?? null;
+        $this->template = (isset($options['template'])) ? $options['template'] : null;
         unset($options['label']);
         unset($options['sort']);
         unset($options['path']);
+        unset($options['template']);
         $this->options = $options;
     }
 
@@ -112,8 +116,25 @@ class Field
         return $this->sort;
     }
 
+    public function linkTo(Path $path): self
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    public function setTemplate(string $template): self
+    {
+        $this->template = $template;
+        return $this;
+    }
+
     public function getPath(): ?Path
     {
         return $this->path;
+    }
+
+    public function getTemplate(): ?string
+    {
+        return $this->template;
     }
 }

@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-use Lle\CruditBundle\Contracts\FieldInterface;
-use Lle\CruditBundle\Dto\FieldView;
-
-class DoctrineEntityField implements FieldInterface
+class DoctrineEntityField extends AbstractField
 {
 
     public function support(string $type): bool
@@ -15,9 +12,8 @@ class DoctrineEntityField implements FieldInterface
         return (in_array($type, [self::class]));
     }
 
-    /** @param mixed $value */
-    public function buildView(FieldView $fieldView, $value): FieldView
+    public function getDefaultTemplate(): ?string
     {
-        return $fieldView->setStringValue((string) $value);
+        return '@LleCrudit/field/doctrine_entity.html.twig';
     }
 }

@@ -15,15 +15,6 @@ class DateTimeField extends DateField
         return (in_array($type, ['datetime', self::class]));
     }
 
-    /** @param mixed $value */
-    public function getStringValue($value, string $format): ?string
-    {
-        if ($value instanceof \DateTime) {
-            return $value->format($format);
-        }
-        return null;
-    }
-
     public function configureOptions(Field $field): array
     {
         $optionResolver = new OptionsResolver();
@@ -31,5 +22,10 @@ class DateTimeField extends DateField
             'format' => 'd-m-Y H:i'
         ])->setAllowedTypes('format', 'string');
         return $optionResolver->resolve($field->getOptions());
+    }
+
+    public function getDefaultTemplate(): ?string
+    {
+        return '@LleCrudit/field/datetime.html.twig';
     }
 }

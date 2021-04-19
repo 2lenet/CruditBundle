@@ -4,34 +4,27 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-use Lle\CruditBundle\Contracts\FieldInterface;
-use Lle\CruditBundle\Dto\FieldView;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
+use Lle\CruditBundle\Dto\Field\Field;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class BooleanField implements FieldInterface
+class BooleanField extends AbstractField
 {
-    /** @var Translator  */
-    private $translator;
-
-    public function __construct(Translator $translator)
-    {
-        $this->translator = $translator;
-    }
-    
     public function support(string $type): bool
     {
         return (in_array($type, ['boolean', 'bool', self::class]));
     }
 
-    /** @param mixed $value */
-    public function buildView(FieldView $fieldView, $value): FieldView
+    public function getDefaultTemplate(): ?string
     {
-        return $fieldView->setStringValue(($value) ? $this->trans('crudit.yes') : $this->trans('crudit.no'));
+        return '@LleCrudit/field/bool.html.twig';
     }
 
-
-    protected function trans(string $asset): string
+    public function configureOptions(Field $field): array
     {
-        return $this->translator->trans($asset);
+        $optionResolver = new OptionsResolver();
+        $optionResolver->setDefaults([
+           'nullToFalse' => false
+        ]);
+        return $optionResolver->resolve($field->getOptions());
     }
 }
