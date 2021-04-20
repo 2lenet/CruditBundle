@@ -21,7 +21,7 @@ trait TraitCrudController
      */
     public function index(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_LIST');
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_LIST');
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -33,7 +33,7 @@ trait TraitCrudController
      */
     public function show(Request $request, $id): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_SHOW');
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_SHOW');
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -46,7 +46,7 @@ trait TraitCrudController
      */
     public function edit(Request $request, $id): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_EDIT');
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -58,7 +58,7 @@ trait TraitCrudController
      */
     public function new(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_'.$this->config->getName().'_NEW');
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_NEW');
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
