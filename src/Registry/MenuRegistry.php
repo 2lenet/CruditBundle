@@ -17,14 +17,33 @@ class MenuRegistry
         $this->providers = $providers;
     }
 
+    /** @param LayoutElementInterface[] $entries */
+    public function getElement(iterable $entries, string $id): ?LayoutElementInterface
+    {
+        foreach ($entries as $element) {
+            if ($element->getId() === $id) {
+                return $element;
+            }
+        }
+        return null;
+    }
+
     public function getElements(): array
     {
         $elements = [];
         foreach ($this->providers as $k => $provider) {
             if ($provider instanceof MenuProviderInterface) {
-                foreach ($provider->getMenuEntry() as $kk => $element) {
+                $entries = $provider->getMenuEntry();
+                foreach ($entries as $kk => $element) {
                     /** @var LayoutElementInterface $element */
-                    $elements[$element->getPriority() * 1000 + ($k * 100) + $kk] = $element;
+                    if ($element->getParent() !== null) {
+                        $parent = $this->getElement($entries, $element->getParent());
+                        if ($parent) {
+                            $parent->addChild($element);
+                        }
+                    } else {
+                        $elements[$element->getPriority() * 1000 + ($k * 100) + $kk] = $element;
+                    }
                 }
             }
         }

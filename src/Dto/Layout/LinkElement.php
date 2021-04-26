@@ -115,10 +115,4 @@ class LinkElement extends AbstractLayoutElement
     {
         $this->children[] = $element;
     }
-
-    /** @return LinkElement[] */
-    public function getChildren(): array
-    {
-        return $this->children;
-    }
 }

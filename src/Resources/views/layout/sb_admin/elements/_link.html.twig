@@ -6,7 +6,9 @@
     </li>
 {%  else %}
     <li class="nav-item {%  if element.children|length %}has-treeview{% endif%} {{ element.cssClass }}">
-        <a href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{%  endif %}" class="nav-link {%  if crudit.isActive(element, app.request) %}active{%  endif %}">
+        <a
+            href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{%  endif %}"
+            class="nav-link  {%  if crudit.isActive(element, app.request) %}active{%  endif %}">
             {%  if element.icon and element.icon.img %}
                 <img src="{{ element.icon.icon }}" class="img-thumbnail"/>
             {%  elseif element.icon  %}
@@ -16,7 +18,9 @@
                 {{ element.libelle|trans }}
 
                 {%  if element.children|length %}
-                    <i class="right fas fa-angle-left"></i>
+                    <div class="float-right show-toggle" data-toggle="#{{ element.libelle|replace({'.': '-'}) }}">
+                        <i class="right fas fa-angle-left" ></i>
+                    </div>
                 {%  endif %}
 
                 {%  if element.badges|length %}
@@ -27,8 +31,9 @@
 
             </span>
         </a>
+
         {%  if element.children %}
-            <ul class="nav nav-treeview">
+            <ul class="list-children collapse" id="{{ element.libelle|replace({'.': '-'}) }}">
                 {%  for child in element.children %}
                     {% include crudit.template(element.template) with {'element': child} %}
                 {%  endfor %}
