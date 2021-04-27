@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Exception\CruditException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -81,22 +82,8 @@ trait TraitCrudController
         $dataSource = $this->config->getDatasource();
         $resource = $this->getResource($request, false);
 
-        $canDelete = true;
-        if (method_exists($resource, $this->getDeleteCallback())) {
-            $canDelete = $resource->{$this->getDeleteCallback()}();
-        }
-
-        if ($canDelete === true) {
-            $dataSource->delete($dataSource->getIdentifier($resource));
-            $dataSource->flush();
-        }
-
-        // it may be an array of reasons why it can't be deleted
-        if (is_array($canDelete)) {
-            foreach ($canDelete as $reason) {
-                $this->addFlash("error", $reason);
-            }
-        }
+        $dataSource->delete($dataSource->getIdentifier($resource));
+        $dataSource->flush();
 
         return $this->redirectToReferrer($request);
     }
@@ -174,11 +161,6 @@ trait TraitCrudController
         }
 
         return $resource;
-    }
-
-    protected function getDeleteCallback()
-    {
-        return "canDelete";
     }
 
     protected function redirectToReferrer(Request $request, $default = "/"): RedirectResponse

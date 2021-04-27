@@ -35,8 +35,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $resource = $this->entityManager->getReference($this->getClassName(), $id);
         if ($resource) {
             $this->entityManager->remove($resource);
+            $this->entityManager->flush();
+
             return true;
         }
+
         return false;
     }
 
@@ -108,10 +111,5 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function createQuery(string $alias): QueryAdapterInterface
     {
         return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
-    }
-
-    public function flush(): void
-    {
-        $this->entityManager->flush();
     }
 }
