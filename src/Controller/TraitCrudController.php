@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Exception\CruditException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 trait TraitCrudController
 {
@@ -25,6 +26,7 @@ trait TraitCrudController
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
@@ -37,6 +39,7 @@ trait TraitCrudController
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
@@ -50,6 +53,7 @@ trait TraitCrudController
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
@@ -62,9 +66,24 @@ trait TraitCrudController
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::NEW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
+
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
+    /**
+     * @Route("/delete/{id}")
+     */
+    public function delete(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_DELETE');
+
+        $dataSource = $this->config->getDatasource();
+        $resource = $this->getResource($request, false);
+        $dataSource->delete($dataSource->getIdentifier($resource));
+        $dataSource->flush();
+
+        return $this->index($request);
+    }
 
     /**
      * @Route("/api/{pageKey}")
@@ -72,6 +91,7 @@ trait TraitCrudController
     public function api(Request $request): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, $request->get('pageKey'));
+
         return new JsonResponse($this->getSerializer()->normalize($views));
     }
 
@@ -100,6 +120,7 @@ trait TraitCrudController
             $this->config,
             $request->get('idBrick')
         );
+
         return new JsonResponse($this->getSerializer()->normalize($view->getData()));
     }
 
@@ -112,6 +133,30 @@ trait TraitCrudController
             $this->config,
             $request->get('idBrick')
         );
+
         return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
+    }
+
+    private function getResource(Request $request, $allowCreate = true): object
+    {
+        $dataSource = $this->config->getDatasource();
+        $resource = null;
+
+        if ($request->get("id")) {
+            $resource = $dataSource->get($request->get("id"));
+
+        } else if ($allowCreate) {
+            $resource = $dataSource->newInstance();
+        }
+
+        if ($resource === null) {
+            throw new CruditException(
+                sprintf("Resource %s of class %s not found",
+                    $request->get("id", "NO_ID"),
+                    $dataSource->getClassName())
+            );
+        }
+
+        return $resource;
     }
 }

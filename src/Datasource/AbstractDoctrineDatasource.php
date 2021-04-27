@@ -109,4 +109,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
     }
+
+    public function flush(): void
+    {
+        $this->entityManager->flush();
+    }
 }
