@@ -27,7 +27,7 @@ class ItemAction
     /** @var bool */
     protected $hideLabel = false;
 
-    /** @var object */
+    /** @var ?object */
     protected $resource = null;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
@@ -37,7 +37,7 @@ class ItemAction
             ->setHideLabel(false);
     }
 
-    public function __construct(string $label, Path $path)
+    final public function __construct(string $label, Path $path)
     {
         $this->label = $label;
         $this->path = $path;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Exception\CruditException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -147,16 +146,17 @@ trait TraitCrudController
 
         if ($request->get("id")) {
             $resource = $dataSource->get($request->get("id"));
-
-        } else if ($allowCreate) {
+        } elseif ($allowCreate) {
             $resource = $dataSource->newInstance();
         }
 
         if ($resource === null) {
             throw new CruditException(
-                sprintf("Resource %s of class %s not found",
+                sprintf(
+                    "Resource %s of class %s not found",
                     $request->get("id", "NO_ID"),
-                    $dataSource->getClassName())
+                    $dataSource->getClassName()
+                )
             );
         }
 

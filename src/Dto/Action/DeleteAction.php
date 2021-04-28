@@ -1,10 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Action;
-
-
-use Lle\CruditBundle\Dto\Path;
 
 class DeleteAction extends ItemAction
 {
@@ -12,13 +10,15 @@ class DeleteAction extends ItemAction
 
     public function getTitle(): string
     {
-        $canDelete = true;
-        if (method_exists($this->getResource(), static::CALLBACK)) {
-            $canDelete = $this->getResource()->{static::CALLBACK}();
-        }
+        if ($this->getResource() !== null) {
+            $canDelete = true;
+            if (method_exists($this->getResource(), static::CALLBACK)) {
+                $canDelete = $this->getResource()->{static::CALLBACK}();
+            }
 
-        if (is_string($canDelete)) {
-            return $canDelete;
+            if (is_string($canDelete)) {
+                return $canDelete;
+            }
         }
 
         return parent::getLabel();
@@ -26,11 +26,15 @@ class DeleteAction extends ItemAction
 
     public function isDisabled(): bool
     {
-        $canDelete = true;
-        if (method_exists($this->getResource(), static::CALLBACK)) {
-            $canDelete = $this->getResource()->{static::CALLBACK}();
+        if ($this->getResource() !== null) {
+            $canDelete = true;
+            if (method_exists($this->getResource(), static::CALLBACK)) {
+                $canDelete = $this->getResource()->{static::CALLBACK}();
+            }
+
+            return $canDelete !== true;
         }
 
-        return $canDelete !== true;
+        return false;
     }
 }
