@@ -1,7 +1,7 @@
 <div class="row">
         <div class="col-md-12 d-flex justify-content-end mb-2">
             {%  for action in view.data.actions %}
-                <a title="{{ action.label|trans }}" class="{{ action.cssClass ?? 'btn btn-primary ml-2' }}" href="{{ action.url ?? path(action.path.route, action.path.params) }}">
+                <a title="{{ action.label|trans }}" class="{{ action.cssClass ?? 'btn btn-sm btn-primary ml-2' }}" href="{{ action.url ?? path(action.path.route, action.path.params) }}">
                         {%  if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{%  endif %}
                         {%  if not action.hideLabel %}{{ action.label|trans }}{%  endif %}
                 </a>
