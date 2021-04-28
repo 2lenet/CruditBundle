@@ -15,6 +15,7 @@ use Lle\CruditBundle\Contracts\AbstractCrudAutoConfig;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
+use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use App\Form\CollecteType;
@@ -50,6 +51,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions = [];
         $actions[] = ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW));
         $actions[] = ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT));
+        $actions[] = DeleteAction::new('delete', $this->getPath(CrudConfigInterface::DELETE), Icon::new('trash-alt'));
+
         return $actions;
     }
     
