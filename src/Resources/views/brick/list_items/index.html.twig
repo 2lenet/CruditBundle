@@ -27,12 +27,17 @@
                         {% endfor %}
                         {%  if view.config.actions|length %}
                             <td>
-                            {%  for action in view.config.actions %}
-
-                                <a title="{{ action.label|trans }}" class="{{ action.cssClass ?? 'btn btn-primary btn-xs mr-2' }}" href="{{ path(action.path.route, action.path.params({'id': line.id})) }}">
-                                    {%  if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{%  endif %}
-                                    {%  if not action.hideLabel %}{{ action.label|trans }}{%  endif %}
-                                </a>
+                            {% for action in view.config.actions %}
+                                {% do action.setResource(line.resource) %}
+                                <span title="{{ action.title|trans }}" > {# span around link otherwise title may not show #}
+                                    <a
+                                            class="{{ action.cssClass ?? 'btn btn-primary btn-xs mr-2' }}{% if action.disabled %} disabled {% endif %}"
+                                            {% if not action.disabled %}href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"{% endif %}
+                                    >
+                                        {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                        {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
+                                    </a>
+                                </span>
                             {%  endfor %}
                             </td>
                         {% endif %}

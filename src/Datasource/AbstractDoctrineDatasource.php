@@ -35,8 +35,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $resource = $this->entityManager->getReference($this->getClassName(), $id);
         if ($resource) {
             $this->entityManager->remove($resource);
+            $this->entityManager->flush();
+
             return true;
         }
+
         return false;
     }
 
