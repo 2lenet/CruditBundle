@@ -82,7 +82,6 @@ trait TraitCrudController
         $resource = $this->getResource($request, false);
 
         $dataSource->delete($dataSource->getIdentifier($resource));
-        $dataSource->flush();
 
         return $this->redirectToReferrer($request);
     }
