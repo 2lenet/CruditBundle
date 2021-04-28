@@ -81,12 +81,6 @@ class ShowConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function add(string $name, string $type = null, array $options = []): self
-    {
-        return $this->addField(Field::new($name, $type, $options));
-    }
-
-    // duplicate @TODO Faire un abstract
     public function addFields(array $fields): self
     {
         foreach ($fields as $field) {
@@ -95,6 +89,11 @@ class ShowConfig extends AbstractBrickConfig
         return $this;
     }
 
+    public function add(string $name, string $type = null, array $options = []): self
+    {
+        return $this->addField(Field::new($name, $type, $options));
+    }
+    
     /** @return Field[] */
     public function getFields(): array
     {

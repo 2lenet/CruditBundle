@@ -1,10 +1,14 @@
 
+{%  for element in crudit.elements('menu-nav') %}
+    {% include crudit.template(element.template) with {'element': element, 'where': 'menu-nav'} %}
+{%  endfor %}
 
-    {%  for element in crudit.elements('menu-nav') %}
-        {% include crudit.template(element.template) with {'element': element, 'where': 'menu-nav'} %}
-    {%  endfor %}
+<div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+</div>
+<script>
+    $(function(){
 
-    <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-    </div>
+    })
+</script>
 

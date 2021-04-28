@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Contracts;
 
 interface DatasourceInterface
 {
-
     /** @param string|int $id */
     public function get($id): ?object;
 

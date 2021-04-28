@@ -101,11 +101,6 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function add(string $name, string $type = null, array $options = []): self
-    {
-        return $this->addField(Field::new($name, $type, $options));
-    }
-
     public function addFields(array $fields): self
     {
         foreach ($fields as $field) {
@@ -114,6 +109,11 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
+    public function add(string $name, string $type = null, array $options = []): self
+    {
+        return $this->addField(Field::new($name, $type, $options));
+    }
+    
     public function setClassName(string $className): self
     {
         $this->className = $className;

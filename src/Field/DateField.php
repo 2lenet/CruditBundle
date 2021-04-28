@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\FieldView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DateField implements FieldInterface
+class DateField extends AbstractField
 {
 
     public function support(string $type): bool
@@ -17,20 +15,9 @@ class DateField implements FieldInterface
         return (in_array($type, ['date', self::class]));
     }
 
-    /** @param mixed $value */
-    public function buildView(FieldView $fieldView, $value): FieldView
+    public function getDefaultTemplate(): ?string
     {
-        $options = $this->configureOptions($fieldView->getField());
-        return $fieldView->setStringValue($this->getStringValue($value, $options['format']));
-    }
-
-    /** @param mixed $value */
-    public function getStringValue($value, string $format): ?string
-    {
-        if ($value instanceof \DateTime) {
-            return  $value->format($format);
-        }
-        return null;
+        return '@LleCrudit/field/date.html.twig';
     }
 
     public function configureOptions(Field $field): array

@@ -31,7 +31,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         }
         return $fields;
     }
-
+    
+    protected function getFormType(string $pageKey): ?string
+    {
+        return str_replace('App\Crudit\Config','App\Form',
+            str_replace('CrudConfig','Type',get_class($this)));
+    }
+    
     public function getListActions(): array
     {
         $actions = [];
@@ -83,11 +89,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ],
             CrudConfigInterface::EDIT => [
                 LinksConfig::new()->addBack(),
-                FormConfig::new()->setForm(CollecteType::class)
+                FormConfig::new()->setForm($this->getFormType(CrudConfigInterface::EDIT))
             ],
             CrudConfigInterface::NEW => [
                 LinksConfig::new()->addBack(),
-                FormConfig::new()->setForm(CollecteType::class)
+                FormConfig::new()->setForm($this->getFormType(CrudConfigInterface::NEW))
             ]
         ];
     }

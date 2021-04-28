@@ -9,7 +9,6 @@ use Lle\CruditBundle\Dto\Path;
 
 class ItemAction
 {
-
     /** @var string  */
     protected $label;
 
@@ -28,14 +27,17 @@ class ItemAction
     /** @var bool */
     protected $hideLabel = false;
 
+    /** @var ?object */
+    protected $resource = null;
+
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
-        return (new ItemAction($label, $path))
+        return (new static($label, $path))
             ->setIcon($icon)
             ->setHideLabel(false);
     }
 
-    public function __construct(string $label, Path $path)
+    final public function __construct(string $label, Path $path)
     {
         $this->label = $label;
         $this->path = $path;
@@ -94,5 +96,28 @@ class ItemAction
     {
         $this->hideLabel = $hideLabel;
         return $this;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->getLabel();
+    }
+
+    /** exists only when rendering */
+    public function getResource(): ?object
+    {
+        return $this->resource;
+    }
+
+    public function setResource(?object $resource): self
+    {
+        $this->resource = $resource;
+
+        return $this;
+    }
+
+    public function isDisabled(): bool
+    {
+        return false;
     }
 }
