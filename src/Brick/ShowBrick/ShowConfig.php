@@ -86,10 +86,11 @@ class ShowConfig extends AbstractBrickConfig
         return $this->addField(Field::new($name, $type, $options));
     }
 
-    public function addAuto(array $columns): self
+    // duplicate @TODO Faire un abstract
+    public function addFields(array $fields): self
     {
-        foreach ($columns as $column) {
-            $this->addField(Field::new($column));
+        foreach ($fields as $field) {
+            $this->addField($field);
         }
         return $this;
     }

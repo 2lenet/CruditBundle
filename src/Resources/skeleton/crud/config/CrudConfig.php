@@ -11,7 +11,7 @@ use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
-use Lle\CruditBundle\Contracts\AbstractCrudConfig;
+use Lle\CruditBundle\Crud\AbstractCrudConfig;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;

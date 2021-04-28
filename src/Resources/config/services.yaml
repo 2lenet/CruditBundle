@@ -8,10 +8,6 @@ services:
         resource: '../../Controller'
         tags: [ 'controller.service_arguments' ]
 
-    Lle\CruditBundle\Controller\CrudController:
-        arguments: ['@Lle\CruditBundle\Provider\ConfigProvider', '@Lle\CruditBundle\Builder\BrickBuilder', '@serializer', '@Lle\CruditBundle\Brick\BrickResponseCollector']
-        tags: [ 'controller.service_arguments' ]
-
     Lle\CruditBundle\Registry\FieldRegistry:
         arguments :
             - !tagged_iterator crudit.field

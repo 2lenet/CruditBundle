@@ -50,4 +50,10 @@ class LinksConfig extends AbstractBrickConfig
     {
         return $this->actions;
     }
+
+    public function setActions($actions): self
+    {
+        $this->actions = $actions;
+        return $this;
+    }
 }
