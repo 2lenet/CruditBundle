@@ -49,8 +49,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getItemActions(): array
     {
         $actions = [];
-        $actions[] = ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW));
-        $actions[] = ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT));
+        $actions[] = ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW), Icon::new('search'));
+        $actions[] = ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT), Icon::new('edit'));
         $actions[] = DeleteAction::new('delete', $this->getPath(CrudConfigInterface::DELETE), Icon::new('trash-alt'));
 
         return $actions;

@@ -4,8 +4,8 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered" id="{{ view.id }}_table" width="100%" cellspacing="0">
-                <thead>
+            <table class="table table-sm table-hover" id="{{ view.id }}_table" width="100%" cellspacing="0">
+                <thead class="thead-light">
                 <tr>
                     {% for field in view.config.fields %}
                         <th>{{ field.label |trans }}</th>
@@ -27,18 +27,20 @@
                         {% endfor %}
                         {%  if view.config.actions|length %}
                             <td>
-                            {% for action in view.config.actions %}
-                                {% do action.setResource(line.resource) %}
-                                <span title="{{ action.title|trans }}" > {# span around link otherwise title may not show #}
-                                    <a
-                                            class="{{ action.cssClass ?? 'btn btn-primary btn-xs mr-2' }}{% if action.disabled %} disabled {% endif %}"
-                                            {% if not action.disabled %}href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"{% endif %}
-                                    >
-                                        {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                        {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
-                                    </a>
-                                </span>
-                            {%  endfor %}
+                                <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                                    {% for action in view.config.actions %}
+                                        {% do action.setResource(line.resource) %}
+                                        <span title="{{ action.title|trans }}" > {# span around link otherwise title may not show #}
+                                            <a
+                                                    class="{{ action.cssClass ?? 'btn btn-primary btn-sm mr-2' }}{% if action.disabled %} disabled {% endif %}"
+                                                    {% if not action.disabled %}href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"{% endif %}
+                                            >
+                                                {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                                {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
+                                            </a>
+                                        </span>
+                                    {%  endfor %}
+                                </div>
                             </td>
                         {% endif %}
                         </tr>
