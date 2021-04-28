@@ -23,6 +23,8 @@ interface CrudConfigInterface
 
     public function getName(): ?string;
 
+    public function getTitle(): ?string;
+
     public function getRootRoute(): ?string;
 
     public function getPath(string $context = self::INDEX, array $params = []): Path;

@@ -87,6 +87,7 @@ class ListConfig extends AbstractBrickConfig
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
+            'title' => $this->getCrudConfig()->getTitle(),
             'detail' => null,
             'hidden_action' => false,
             'bulk' => false,

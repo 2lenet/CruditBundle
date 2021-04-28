@@ -1,6 +1,6 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">{#  {{ view.config.title }} #}</h6>
+        <h6 class="m-0 font-weight-bold text-primary">{{ view.config.title }}</h6>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -32,7 +32,7 @@
                                         {% do action.setResource(line.resource) %}
                                         <span title="{{ action.title|trans }}" > {# span around link otherwise title may not show #}
                                             <a
-                                                    class="{{ action.cssClass ?? 'btn btn-primary btn-sm mr-2' }}{% if action.disabled %} disabled {% endif %}"
+                                                    class="{{ action.cssClass ?? 'btn btn-sm' }}{% if action.disabled %} disabled {% endif %}"
                                                     {% if not action.disabled %}href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"{% endif %}
                                             >
                                                 {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}

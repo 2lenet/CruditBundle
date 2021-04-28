@@ -49,9 +49,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getItemActions(): array
     {
         $actions = [];
-        $actions[] = ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW), Icon::new('search'));
-        $actions[] = ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT), Icon::new('edit'));
-        $actions[] = DeleteAction::new('delete', $this->getPath(CrudConfigInterface::DELETE), Icon::new('trash-alt'));
+        $actions[] = ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW), Icon::new('search'))->setCssClass('btn btn-primary btn-sm mr-1');
+        $actions[] = ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT), Icon::new('edit'))->setCssClass('btn btn-secondary btn-sm mr-1');
+        $actions[] = DeleteAction::new('delete', $this->getPath(CrudConfigInterface::DELETE), Icon::new('trash-alt'))->setCssClass('btn btn-danger btn-sm mr-1');
 
         return $actions;
     }
@@ -72,6 +72,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return strtoupper(str_replace("CrudConfig", "", (substr($className, strrpos($className, '\\') + 1))));
     }
 
+    public function getTitle(): ?string
+    {
+        return 'crud.title.'.strtolower($this->getName());
+    }
+    
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
         return Path::new($this->getRootRoute() . '_' . $context, $params);
