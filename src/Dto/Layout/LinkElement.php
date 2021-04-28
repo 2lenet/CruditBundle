@@ -37,7 +37,7 @@ class LinkElement extends AbstractLayoutElement
     /** @var LinkElement[] */
     protected $children;
 
-    public static function new(string $libelle, Path $path, Icon $icon = null, array $roles = []): self
+    public static function new(string $libelle, ?Path $path, Icon $icon = null, array $roles = []): self
     {
         return new self($libelle, $path, $icon, $roles);
     }
@@ -47,7 +47,7 @@ class LinkElement extends AbstractLayoutElement
         return 'elements/_link';
     }
 
-    public function __construct(string $libelle, Path $path, Icon $icon = null, array $roles = [])
+    public function __construct(string $libelle, ?Path $path, Icon $icon = null, array $roles = [])
     {
         $this->libelle = $libelle;
         $this->icon = $icon;
