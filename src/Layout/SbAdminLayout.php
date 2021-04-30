@@ -11,7 +11,7 @@ use Lle\CruditBundle\Registry\MenuRegistry;
 class SbAdminLayout extends AbstractLayout
 {
     /** @var MenuRegistry  */
-    private $menuRegistry;
+    protected $menuRegistry;
 
     public function __construct(MenuRegistry $menuRegistry)
     {
