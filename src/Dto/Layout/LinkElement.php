@@ -37,9 +37,9 @@ class LinkElement extends AbstractLayoutElement
     /** @var LinkElement[] */
     protected $children;
 
-    public static function new(string $libelle, ?Path $path, Icon $icon = null, array $roles = []): self
+    public static function new(string $libelle, ?Path $path = null, ?Icon $icon = null, array $roles = [], array $childrens = []): self
     {
-        return new self($libelle, $path, $icon, $roles);
+        return new self($libelle, $path, $icon, $roles, $childrens);
     }
 
     public function getTemplate(): string
@@ -47,14 +47,14 @@ class LinkElement extends AbstractLayoutElement
         return 'elements/_link';
     }
 
-    public function __construct(string $libelle, ?Path $path, Icon $icon = null, array $roles = [])
+    public function __construct(string $libelle, ?Path $path = null, ?Icon $icon = null, array $roles = [], array $childrens = [])
     {
         $this->libelle = $libelle;
         $this->icon = $icon;
         $this->path = $path;
         $this->roles = $roles;
         $this->badges = [];
-        $this->children = [];
+        $this->children = $childrens;
     }
 
     public function getType(): ?string
