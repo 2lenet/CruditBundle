@@ -39,18 +39,18 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 
     public function getFields($key): array
     {
+        if (!in_array($key, [CrudConfigInterface::INDEX, CrudConfigInterface::SHOW])) {
+            return [];
+        }
 <?php foreach ($fields as $field) { ?>
         $<?php echo $field?> = Field::new('<?php echo $field?>');
 <?php } ?>
         // you can return different fields based on the block key
-        if ($key == CrudConfigInterface::INDEX || $key == CrudConfigInterface::SHOW) {
-            return [
+        return [
 <?php foreach ($fields as $field) { ?>
               $<?= $field?>,
 <?php } ?>
-            ];
-        }
-        return [];
+        ];
     }
 
     public function getRootRoute(): string
@@ -58,7 +58,7 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         return 'app_<?= strtolower($controllerRoute) ?>';
     }
 
-    /* can be surcharged 
+    /* can be surcharged
     public function getBrickConfigs(): array
     {
         return [
