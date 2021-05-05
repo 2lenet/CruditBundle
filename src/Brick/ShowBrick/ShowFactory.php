@@ -24,7 +24,7 @@ class ShowFactory extends AbstractBasicBrickFactory
         if ($brickConfigurator instanceof ShowConfig) {
             $view
                 ->setTemplate('@LleCrudit/brick/show_item')
-                ->setConfig($brickConfigurator->getConfig())
+                ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData([
                     'resource' => $this->getResourceView($brickConfigurator)
                 ]);

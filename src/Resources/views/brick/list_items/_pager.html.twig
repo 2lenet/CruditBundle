@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-sm-12 col-md-5">
+        <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
+            item {{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }} sur {{ view.config.datasource_params.count }}
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-7">
+        <nav aria-label="navigation">
+            <ul class="pagination">
+                {%  if view.config.datasource_params.previous %}
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                {%  for page in view.config.datasource_params.pages %}
+                    {% set merge_params = { ((view.config.name|lower)~'_offset'): (page-1)*view.config.datasource_params.limit} %}
+                    {% set parameters = app.request.query.all()|merge(merge_params) %}
+                    {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
+                    {% set current = view.config.datasource_params.current(page) %}
+
+                    <li class="page-item {% if current %}active{% endif %}"><a class="page-link" href="{{ url }}">{{ page }}</a></li>
+                {% endfor %}
+                {%  if view.config.datasource_params.next %}
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>

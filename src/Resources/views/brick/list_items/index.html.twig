@@ -49,19 +49,7 @@
             </table>
         </div>
     </div>
+    <div class="card-footer py-3">
+        {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
+    </div>
 </div>
-<script>
-    $(function(){
-        $.ajax("{{ path(view.path.route, view.path.params) }}").then(function(data){
-            /*let datatable = [];
-            data.lines.forEach(function(line){
-                let resource = {};
-                line.fields.forEach(function(field){
-                    resource[field.field.label] = field.value
-                })
-                datatable.push(resource)
-            })
-            $('#{{ view.id }}_table').DataTable({data: datatable, columns: [{data: 'field.abreviation'}]});*/
-        })
-    });
-</script>

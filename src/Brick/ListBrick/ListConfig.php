@@ -8,8 +8,10 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Field\Field;
+use Symfony\Component\HttpFoundation\Request;
 
 class ListConfig extends AbstractBrickConfig
 {
@@ -25,7 +27,10 @@ class ListConfig extends AbstractBrickConfig
 
     /** @var DatasourceInterface */
     private $datasource;
-
+    
+    /** @var DatasourceParams */
+    private $datasourceParams;
+    
     /** @var string */
     private $className;
 
@@ -64,7 +69,17 @@ class ListConfig extends AbstractBrickConfig
     {
         return $this->datasource ?? $this->getCrudConfig()->getDatasource();
     }
-
+    
+    public function getDatasourceParams(): DatasourceParams
+    {
+        return $this->datasourceParams;
+    }
+    
+    public function setDatasourceParams(DatasourceParams $datasourceParams): self {
+        $this->datasourceParams = $datasourceParams;
+        return $this;
+    }
+    
     public function addAction(ItemAction $action): self
     {
         $this->actions[] = $action;
@@ -82,12 +97,17 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getConfig(): array
+    public function getConfig(Request $request): array
     {
+        // beurk
+        $this->setDatasourceParams($this->getCrudConfig()->getDatasourceParams($request));
+
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
-            'title' => $this->getCrudConfig()->getTitle(),
+            'name' => $this->getCrudConfig()->getName(),
+            'title' => $this->getCrudConfig()->getTitle('list'),
+            'datasource_params' =>$this->getDatasourceParams(),
             'detail' => null,
             'hidden_action' => false,
             'bulk' => false,

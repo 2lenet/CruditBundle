@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Field\Field;
@@ -60,6 +61,14 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return $this->datasource;
     }
+    
+    public function getDatasourceParams(Request $request): DatasourceParams
+    {
+        $limit = $request->query->get(strtolower($this->getName()).'_limit',30);
+        $offset = $request->query->get(strtolower($this->getName()).'_offset',0);
+        $ds_params = new DatasourceParams(intval($limit),intval($offset),[],[]);
+        return $ds_params;
+    }
 
     public function getController(): ?string
     {
@@ -72,9 +81,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return strtoupper(str_replace("CrudConfig", "", (substr($className, strrpos($className, '\\') + 1))));
     }
 
-    public function getTitle(): ?string
+    public function getTitle(string $key): ?string
     {
-        return 'crud.title.'.strtolower($this->getName());
+        return "crud.title.$key.".strtolower($this->getName());
     }
     
     public function getPath(string $context = self::INDEX, array $params = []): Path

@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Contracts;
 
+use Lle\CruditBundle\Datasource\DatasourceParams;
+
 interface DatasourceInterface
 {
     /** @param string|int $id */
     public function get($id): ?object;
 
-    public function list(): iterable;
+    public function list(?DataSourceParams $requestParams): iterable;
+
+    public function count(?DataSourceParams $requestParams): int;
 
     /** @param string|int $id */
     public function delete($id): bool;

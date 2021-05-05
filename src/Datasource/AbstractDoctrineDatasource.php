@@ -25,11 +25,28 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->getRepository()->find($id);
     }
 
-    public function list(): iterable
+    public function list(?DataSourceParams $requestParams): iterable
     {
-        return $this->getRepository()->findAll();
+        $qb = $this->buildQueryBuilder($requestParams);
+
+        if ($requestParams->getLimit()) {
+            $qb->setMaxResults($requestParams->getLimit());
+        }
+
+        if ($requestParams->getOffset()) {
+            $qb->setFirstResult($requestParams->getOffset());
+        }
+
+        return $qb->getQuery()->execute();
     }
 
+    public function count(?DataSourceParams $requestParams): int
+    {
+        $qb = $this->buildQueryBuilder($requestParams);
+        $qb->select('count(root.id)');
+        return intval($qb->getQuery()->getSingleScalarResult());
+    }
+    
     public function delete($id): bool
     {
         $resource = $this->entityManager->getReference($this->getClassName(), $id);
@@ -111,5 +128,23 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function createQuery(string $alias): QueryAdapterInterface
     {
         return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
+    }
+
+    /**
+     * @param DataSourceParams|null $requestParams
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function buildQueryBuilder(?DataSourceParams $requestParams): \Doctrine\ORM\QueryBuilder
+    {
+        $qb = $this->getRepository()->createQueryBuilder('root');
+
+        foreach ($requestParams->sorts as $sort) {
+            $qb->addOrderBy($sort[0], $sort[1]);
+        }
+        foreach ($requestParams->filters as $filter) {
+            $alias = $filter->getAlias() ?? 'root';
+            $qb->andWhere($alias . '.' . $filter->getField() . $filter->getOperator() . $filter->getValue());
+        }
+        return $qb;
     }
 }

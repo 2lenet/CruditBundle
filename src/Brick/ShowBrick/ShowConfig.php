@@ -8,6 +8,7 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
+use Symfony\Component\HttpFoundation\Request;
 
 class ShowConfig extends AbstractBrickConfig
 {
@@ -61,11 +62,13 @@ class ShowConfig extends AbstractBrickConfig
         return [];
     }
 
-    public function getConfig(): array
+    public function getConfig(Request $request): array
     {
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
+            'name' => $this->getCrudConfig()->getName(),
+            'title' => $this->getCrudConfig()->getTitle('show'),
             'hidden_action' => false,
         ];
     }

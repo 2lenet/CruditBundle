@@ -23,7 +23,7 @@ interface CrudConfigInterface
 
     public function getName(): ?string;
 
-    public function getTitle(): ?string;
+    public function getTitle(string $key): ?string;
 
     public function getRootRoute(): ?string;
 

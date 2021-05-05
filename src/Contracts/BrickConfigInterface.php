@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Contracts;
 
+use Symfony\Component\HttpFoundation\Request;
+
 interface BrickConfigInterface
 {
 
@@ -15,7 +17,7 @@ interface BrickConfigInterface
 
     public function getPageKey(): string;
 
-    public function getConfig(): array;
+    public function getConfig(Request $request): array;
 
     public function getId(): string;
 

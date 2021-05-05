@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Brick\ListBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
@@ -39,7 +40,7 @@ class ListFactory extends AbstractBasicBrickFactory
         if ($brickConfigurator instanceof ListConfig) {
             $view
                 ->setTemplate('@LleCrudit/brick/list_items')
-                ->setConfig($brickConfigurator->getConfig())
+                ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
                     'lines' => $this->getLines($brickConfigurator)
@@ -95,7 +96,9 @@ class ListFactory extends AbstractBasicBrickFactory
                     );
                 }
             } else {
-                foreach ($brickConfigurator->getDataSource()->list() as $resource) {
+                $dsParams = $brickConfigurator->getDatasourceParams();
+                $dsParams->setCount($brickConfigurator->getDataSource()->count($dsParams));
+                foreach ($brickConfigurator->getDataSource()->list($dsParams) as $resource) {
                     $lines[] = $this->resourceResolver->resolve(
                         $resource,
                         $this->getFields($brickConfigurator),

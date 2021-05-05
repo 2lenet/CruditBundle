@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Brick;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractBrickConfig implements BrickConfigInterface
 {
@@ -46,7 +47,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
         return $this->crudConfig->getDatasource();
     }
 
-    public function getConfig(): array
+    public function getConfig(Request $request): array
     {
         return [];
     }
