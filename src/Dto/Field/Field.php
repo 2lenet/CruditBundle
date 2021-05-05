@@ -24,6 +24,8 @@ class Field
      */
     private $sort;
 
+
+
     /** @var ?Path */
     private $path;
 
@@ -68,7 +70,7 @@ class Field
     public function setOptions(array $options): void
     {
         $this->label = $options['label'] ?? $this->label;
-        $this->sort = $options['sort'] ?? false;
+        $this->sort = $options['sort'] ?? true;
         $this->path = $options['path'] ?? $options['link_to'] ?? null;
         $this->template = (isset($options['template'])) ? $options['template'] : null;
         unset($options['label']);
@@ -114,6 +116,12 @@ class Field
     public function isSortable(): bool
     {
         return $this->sort;
+    }
+
+    public function setSortable(bool $sort): self
+    {
+        $this->sort = $sort;
+        return $this;
     }
 
     public function linkTo(Path $path): self

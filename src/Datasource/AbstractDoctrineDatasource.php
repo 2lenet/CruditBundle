@@ -33,6 +33,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             $qb->setMaxResults($requestParams->getLimit());
         }
 
+        foreach ($requestParams->sorts as $sort) {
+            $qb->addOrderBy('root.'.$sort[0], $sort[1]);
+        }
+
         if ($requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
@@ -138,9 +142,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->getRepository()->createQueryBuilder('root');
 
-        foreach ($requestParams->sorts as $sort) {
-            $qb->addOrderBy($sort[0], $sort[1]);
-        }
+
         foreach ($requestParams->filters as $filter) {
             $alias = $filter->getAlias() ?? 'root';
             $qb->andWhere($alias . '.' . $filter->getField() . $filter->getOperator() . $filter->getValue());

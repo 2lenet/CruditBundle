@@ -66,7 +66,16 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $limit = $request->query->get(strtolower($this->getName()).'_limit',30);
         $offset = $request->query->get(strtolower($this->getName()).'_offset',0);
-        $ds_params = new DatasourceParams(intval($limit),intval($offset),[],[]);
+
+        $sort_field = $request->query->get(strtolower($this->getName()).'_sort',"");
+        $sort_order = $request->query->get(strtolower($this->getName()).'_sort_order',"");
+
+        $sort_array = [];
+        if ($sort_field) {
+            $sort_array = [ [$sort_field, $sort_order] ];
+        }
+
+        $ds_params = new DatasourceParams(intval($limit),intval($offset),$sort_array,[]);
         return $ds_params;
     }
 
