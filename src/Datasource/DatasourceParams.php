@@ -26,11 +26,11 @@ class DatasourceParams
     }
 
     function getFrom(): int {
-        return $this->offset;
+        return $this->offset+1;
     }
 
     function getTo(): int {
-        return $this->offset+ $this->limit-1;
+        return min($this->offset + $this->limit, $this->count);
     }
 
     function hasPrevious(): bool {

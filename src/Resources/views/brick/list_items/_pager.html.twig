@@ -1,7 +1,11 @@
 <div class="row">
     <div class="col-sm-12 col-md-5">
         <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-            item {{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }} sur {{ view.config.datasource_params.count }}
+            {% if  view.config.datasource_params.count >0 %}
+                item {{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }} sur {{ view.config.datasource_params.count }}
+            {% else %}
+                Aucun item trouvé
+            {% endif %}
         </div>
     </div>
     <div class="col-sm-12 col-md-7">
