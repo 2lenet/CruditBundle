@@ -10,14 +10,12 @@ Crudit bundle for 2le.
 
 ```composer require 2lenet/crudit-bundle```
 
-```
-npm install -g @quasar/cli
-quasar create [YOURFRONT]
-```
-since symfony project directory
-``` ln -s vendor/2le/crudit/front/quasar/components [YOURFRONT]/src/crudit```
+## Reciepe
 
-## Documentation
+- [submenu](doc/submenu.md)
+
+
+## Design architecture
 
 Crudit is a standard RAD specification to create business applications. 
 These application are naively composed by crud screen assembled by a layout and linked together.
