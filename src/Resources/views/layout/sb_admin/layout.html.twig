@@ -6,9 +6,13 @@
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset(crudit.asset('app.css')) }}">
     {% endblock %}
+    {% block head_stylesheets %}{% endblock %}
+
     {% block javascripts %}
         <script src="{{ asset(crudit.asset('app.js')) }}"></script>
     {% endblock %}
+    {% block head_javascript %}{% endblock %}
+
 </head>
 <body id="page-top">
 {% block body %}
