@@ -5,7 +5,7 @@
         </a>
     </li>
 {%  elseif submenu|default(false) %}
-    <a class="collapse-item"
+    <a class="collapse-item m-0"
        href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{%  endif %}"
        >
         {%  if element.icon and element.icon.img %}
@@ -14,20 +14,12 @@
             <i class="nav-icon {{  element.icon.cssClass }}"></i>
         {%  endif %}
          <span>
-                {{ element.libelle|trans }}
-
-             {%  if element.children|length %}
-                 <div class="float-right show-toggle" data-toggle="#{{ element.libelle|replace({'.': '-'}) }}">
-                        <i class="right fas fa-angle-left" ></i>
-                    </div>
-             {%  endif %}
-
+             {{ element.libelle|trans }}
              {%  if element.badges|length %}
                  {%  for badge in element.badges %}
                      <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
                  {%  endfor %}
              {%  endif %}
-
             </span>
     </a>
 {%  else %}
@@ -57,23 +49,15 @@
             {%  endif %}
             <span>
                 {{ element.libelle|trans }}
-
-                {%  if element.children|length %}
-                    <div class="float-right show-toggle" data-toggle="#{{ element.libelle|replace({'.': '-'}) }}">
-                        <i class="right fas fa-angle-left" ></i>
-                    </div>
-                {%  endif %}
-
                 {%  if element.badges|length %}
                     {%  for badge in element.badges %}
                         <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
                     {%  endfor %}
                 {%  endif %}
-
             </span>
         </a>
         {%  if element.children|length %}
-        <div id="collapse{{ element.id }}" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
+        <div id="collapse{{ element.id }}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
             <div class="bg-white py-2 collapse-inner rounded">
                 {%  for child in element.children %}
                     {% include crudit.template(child.template) with {'element': child, 'submenu': true} %}
