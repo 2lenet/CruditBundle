@@ -73,7 +73,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         if ($sort_field) {
             $sort_array = [ [$sort_field, $sort_order] ];
         } else {
-            $sort_array = [$this->getDefaultSort()];
+            $sort_array = $this->getDefaultSort();
         }
 
         $ds_params = new DatasourceParams(intval($limit),intval($offset),$sort_array,[]);
@@ -129,9 +129,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $fields = $this->getFields(self::INDEX);
 
-        return count($fields) > 0 ? [
+        return count($fields) > 0 ? [[
             $fields[0]->getName(),
             "ASC",
-        ] : [];
+        ]] : [];
     }
 }
