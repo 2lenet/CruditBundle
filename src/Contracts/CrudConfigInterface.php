@@ -28,4 +28,6 @@ interface CrudConfigInterface
     public function getRootRoute(): ?string;
 
     public function getPath(string $context = self::INDEX, array $params = []): Path;
+
+    public function getDefaultSort(): array;
 }
