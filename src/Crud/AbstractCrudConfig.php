@@ -70,9 +70,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $sort_field = $request->query->get(strtolower($this->getName()).'_sort',"");
         $sort_order = $request->query->get(strtolower($this->getName()).'_sort_order',"");
 
-        $sort_array = [];
         if ($sort_field) {
             $sort_array = [ [$sort_field, $sort_order] ];
+        } else {
+            $sort_array = [$this->getDefaultSort()];
         }
 
         $ds_params = new DatasourceParams(intval($limit),intval($offset),$sort_array,[]);
@@ -124,4 +125,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         ];
     }
 
+    public function getDefaultSort(): array
+    {
+        $fields = $this->getFields(self::INDEX);
+
+        return count($fields) > 0 ? [
+            $fields[0]->getName(),
+            "ASC",
+        ] : [];
+    }
 }
