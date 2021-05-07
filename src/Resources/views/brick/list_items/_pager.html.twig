@@ -1,39 +1,62 @@
 <div class="row">
-    <div class="col-sm-12 col-md-5">
-        <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-            {% if  view.config.datasource_params.count >0 %}
-                item {{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }} sur {{ view.config.datasource_params.count }}
-            {% else %}
-                Aucun item trouvé
-            {% endif %}
-        </div>
+    <div class="col-sm-12 col-md-5" role="status" aria-live="polite">
+        {% if view.config.datasource_params.count > 0 %}
+            Items
+            <b>{{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }}</b> sur {{ view.config.datasource_params.count }}
+        {% else %}
+            Aucun item trouvé
+        {% endif %}
     </div>
-    <div class="col-sm-12 col-md-7">
-        <nav aria-label="navigation">
-            <ul class="pagination">
-                {%  if view.config.datasource_params.previous %}
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-                {%  for page in view.config.datasource_params.pages %}
-                    {% set merge_params = { ((view.config.name|lower)~'_offset'): (page-1)*view.config.datasource_params.limit} %}
-                    {% set parameters = app.request.query.all()|merge(merge_params) %}
-                    {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
-                    {% set current = view.config.datasource_params.current(page) %}
 
-                    <li class="page-item {% if current %}active{% endif %}"><a class="page-link" href="{{ url }}">{{ page }}</a></li>
-                {% endfor %}
-                {%  if view.config.datasource_params.next %}
+    <nav class="col-sm-12 col-md-7" aria-label="navigation">
+        <ul class="pagination">
+            {% if view.config.datasource_params.previous %}
+                {% set merge_params = {(view.config.name|lower~'_offset'): 0} %}
+                {% set parameters = app.request.query.all()|merge(merge_params) %}
+                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.firstPage'|trans }}" aria-label="{{ 'crudit.first'|trans }}">
+                        <i class="fa fa-angle-double-left"></i>
                     </a>
                 </li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
+                {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage-2)} %}
+                {% set parameters = app.request.query.all()|merge(merge_params) %}
+                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.previousPage'|trans }}" aria-label="{{ 'crudit.previous'|trans }}">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page in view.config.datasource_params.pages %}
+                {% set merge_params = {(view.config.name|lower~'_offset'): (page-1)*view.config.datasource_params.limit} %}
+                {% set parameters = app.request.query.all()|merge(merge_params) %}
+                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                {% set current = view.config.datasource_params.current(page) %}
+                <li class="page-item {% if current %}active{% endif %}">
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.goToPage'|trans({page}) }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+
+            {% if view.config.datasource_params.next %}
+                {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage)} %}
+                {% set parameters = app.request.query.all()|merge(merge_params) %}
+                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.nextPage'|trans }}" aria-label="{{ 'crudit.next'|trans }}">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </li>
+                {% set merge_params = {(view.config.name|lower~'_offset'): ((view.config.datasource_params.count/view.config.datasource_params.limit)|round(0, 'ceil')-1)*view.config.datasource_params.limit} %}
+                {% set parameters = app.request.query.all()|merge(merge_params) %}
+                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.lastPage'|trans }}" aria-label="{{ 'crudit.last'|trans }}">
+                        <i class="fa fa-angle-double-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
