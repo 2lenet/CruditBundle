@@ -34,11 +34,11 @@ class DatasourceParams
     }
 
     function hasPrevious(): bool {
-        return $this->offset >0;
+        return $this->offset > 0;
     }
 
     function hasNext(): bool {
-        return true;
+        return $this->getCurrentPage() < $this->getNbPages();
     }
 
     function getNbPages(): int {
@@ -47,29 +47,34 @@ class DatasourceParams
     }
 
     function getCurrentPage(): int {
-       return intdiv($this->offset, $this->limit)+1;
+        return intdiv($this->offset, $this->limit)+1;
     }
 
     function getPages(): array {
         $current = $this->getCurrentPage();
         $max = $this->getNbPages();
-        $pages = [1];
-        if ($current>2) {
-            $pages[] = $current-1;
-            $pages[] = $current;
+        $pages = [];
+        if ($current > 2) {
+            $pages[] = $current-2;
         }
-        if ($current+1 < $max) {
+        if ($current > 1) {
+            $pages[] = $current-1;
+        }
+        $pages[] = $current;
+        if ($current+1 <= $max) {
             $pages[] = $current+1;
         }
-        if ($current < $max) {
-            $pages[] = $max;
+        if ($current+2 <= $max) {
+            $pages[] = $current+2;
         }
+        
         return $pages;
     }
 
     function isCurrent($page): bool {
         return (intdiv($this->offset, $this->limit )+1) == $page;
     }
+    
     /**
      * @return array
      */
