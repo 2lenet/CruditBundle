@@ -23,7 +23,7 @@ class ControllerFactory extends AbstractBasicBrickFactory
         $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/controller')
-            ->setConfig($brickConfigurator->getConfig())
+            ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData(['resource' => $this->getResourceView($brickConfigurator)]);
         return $view;
     }

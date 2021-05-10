@@ -23,7 +23,7 @@ class TemplateFactory extends AbstractBasicBrickFactory
         $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/template')
-            ->setConfig($brickConfigurator->getConfig())
+            ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData(['resource' => $this->getResourceView($brickConfigurator)]);
         return $view;
     }

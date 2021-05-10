@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\ControllerBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
+use Symfony\Component\HttpFoundation\Request;
 
 class ControllerConfig extends AbstractBrickConfig
 {
@@ -21,7 +22,7 @@ class ControllerConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function getConfig(): array
+    public function getConfig(Request $request): array
     {
         return $this->options;
     }
