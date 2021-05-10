@@ -17,13 +17,13 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
             $('.sidebar .collapse').collapse('hide');
         }
     });
-
+    
     // Close any open menu accordions when window is resized below 768px
     $(window).resize(function() {
         if ($(window).width() < 768) {
             $('.sidebar .collapse').collapse('hide');
         }
-
+        
         // Toggle the side navigation when window is resized below 480px
         if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
             $("body").addClass("sidebar-toggled");
@@ -31,7 +31,7 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
             $('.sidebar .collapse').collapse('hide');
         }
     });
-
+    
     // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
     $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
         if ($(window).width() > 768) {
@@ -41,7 +41,7 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
             e.preventDefault();
         }
     });
-
+    
     // Scroll to top button appear
     $(document).on('scroll', function() {
         var scrollDistance = $(this).scrollTop();
@@ -51,7 +51,7 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
             $('.scroll-to-top').fadeOut();
         }
     });
-
+    
     // Smooth scrolling using jQuery easing
     $(document).on('click', 'a.scroll-to-top', function(e) {
         var $anchor = $(this);
@@ -60,33 +60,5 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
         }, 1000, 'easeInOutExpo');
         e.preventDefault();
     });
-
-
-    $('a.active').find('.show-toggle').each(function (e, el) {
-        let elm = $(el);
-        if(elm && elm.attr('data-toggle')) {
-            let target = $(elm.attr('data-toggle'));
-            target.addClass('show')
-        }
-    });
-    $(document).on('click','.show-toggle', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        let elm = $(e.currentTarget);
-        console.log(elm.attr('data-toggle'))
-
-
-        console.log(elm.attr('data-toggle'));
-        if(elm.attr('data-toggle')) {
-
-            let target = $(elm.attr('data-toggle'));
-            console.log(target);
-            if (target.hasClass('show')) {
-                target.removeClass('show');
-            } else {
-                target.addClass('show')
-            }
-        }
-    });
-
+    
 })(jquery); // End of use strict

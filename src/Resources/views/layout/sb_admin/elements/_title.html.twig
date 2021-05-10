@@ -1,11 +1,8 @@
 <li class="sidebar-heading">
-    <span class="show-toggle" data-toggle="#{{ element.libelle|replace({'.': '-'}) }}">{{ element.libelle | trans }}</span>
-
+    <span class="show-toggle">{{ element.libelle|trans }}</span>
 </li>
-{%  if element.children %}
-    <div class="collapse" id="{{ element.libelle|replace({'.': '-'}) }}">
-        {%  for child in element.children %}
-            {% include crudit.template(child.template) with {'element': child} %}
-        {%  endfor %}
-    </div>
-{%  endif %}
+{% if element.children %}
+    {% for child in element.children %}
+        {% include crudit.template(child.template) with {'element': child} %}
+    {% endfor %}
+{% endif %}
