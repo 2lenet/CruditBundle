@@ -1,24 +1,2 @@
 @import "variables.scss";
-
-@import "~bootstrap/scss/bootstrap";
-
-@import "~datatables.net-dt/css/jquery.dataTables.css";
-
-
-// Import Custom SB Admin 2 Mixins and Components
-@import "mixins.scss";
-@import "global.scss";
-@import "utilities.scss";
-
-// Custom Components
-@import "dropdowns.scss";
-@import "navs.scss";
-@import "buttons.scss";
-@import "cards.scss";
-@import "charts.scss";
-@import "login.scss";
-@import "error.scss";
-@import "footer.scss";
-
-@import "~@fortawesome/fontawesome-free/css/all.css";
-@import "~@fortawesome/fontawesome-free/css/v4-shims.css";
+@import "main.scss";

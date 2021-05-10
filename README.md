@@ -54,4 +54,14 @@ The system have to respect the separation on concern needed by the business rule
 
 https://startbootstrap.com/theme/sb-admin-2 ( inspired from )
 
-https://datatables.net/
+## js / css Developpement
+
+To update the js or the css please run 
+
+`npm install`
+
+and 
+
+`npm run build` or `npm run watch`
+
+in the bundle

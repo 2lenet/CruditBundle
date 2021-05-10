@@ -10,7 +10,7 @@ import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
 (function($) {
     "use strict"; // Start of use strict
     // Toggle the side navigation
-    $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
+    $("#sidebarToggle, #sidebarToggleTop").on('click', function() {
         $("body").toggleClass("sidebar-toggled");
         $(".sidebar").toggleClass("toggled");
         if ($(".sidebar").hasClass("toggled")) {

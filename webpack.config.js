@@ -40,20 +40,11 @@ basic('sbadmin', Encore)
     .addEntry("app", "./assets/sb-admin/js/app.js")
     .copyFiles({
         from: './node_modules/startbootstrap-sb-admin-2/img/',
-        to: 'imgages/[name].[ext]',
+        to: 'images/[name].[ext]',
         pattern: /\.(jpg|png|svg)$/
     })
 ;
 const sbadmin = Encore.getWebpackConfig();
 Encore.reset();
 
-/**
- * Config for tweden layout
- */
-basic('tweden', Encore)
-    .addStyleEntry("app", "./assets/tweden/css/app.scss")
-;
-const tweden = Encore.getWebpackConfig();
-
-
-module.exports = [adminlte, sbadmin, tweden]
+module.exports = [sbadmin]
