@@ -1,69 +1,60 @@
-{%  if where == 'header-nav' %}
+{% if where == 'header-nav' %}
     <li class="nav-item">
-        <a href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{%  endif %}" class="nav-link {%  if crudit.isActive(element, app.request) %}active{%  endif %}">
+        {% if element.path %}
+            {% set path = path(element.path.route, element.path.params) %}
+        {% else %}
+            {% set path = '#' %}
+        {% endif %}
+        <a href="{{ path }}" class="nav-link py-3 {% if crudit.isActive(element, app.request) %}active{% endif %}">
             {{ element.libelle|trans }}
         </a>
     </li>
-{%  elseif submenu|default(false) %}
-    <a class="collapse-item m-0"
-       href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{%  endif %}"
-       >
-        {%  if element.icon and element.icon.img %}
-            <img src="{{ element.icon.icon }}" class="img-thumbnail"/>
-        {%  elseif element.icon  %}
-            <i class="nav-icon {{  element.icon.cssClass }}"></i>
-        {%  endif %}
-         <span>
+{% elseif submenu|default(false) %}
+    <a class="collapse-item m-0" href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{% endif %}">
+        {% if element.icon and element.icon.img %}
+            <img src="{{ element.icon.icon }}" class="img-thumbnail mr-1" />
+        {% elseif element.icon %}
+            <i class="nav-icon {{ element.icon.cssClass }}"></i>
+        {% endif %}
+        <span>
              {{ element.libelle|trans }}
-             {%  if element.badges|length %}
-                 {%  for badge in element.badges %}
-                     <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
-                 {%  endfor %}
-             {%  endif %}
-            </span>
+            {% if element.badges|length %}
+                {% for badge in element.badges %}
+                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
+                {% endfor %}
+            {% endif %}
+         </span>
     </a>
-{%  else %}
-    {#  <li class="nav-item">
-            <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>Components</span>
-            </a>
-            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="buttons.html">Buttons</a>
-                    <a class="collapse-item" href="cards.html">Cards</a>
-                </div>
-            </div>
-    </li>
-    #}
+{% else %}
     <li class="nav-item {{ element.cssClass }}">
-        <a
-            href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{%  endif %}"
-            class="nav-link  {%  if crudit.isActive(element, app.request) %}active{%  endif %}"
-                {%  if element.children|length %}data-toggle="collapse" data-target="#collapse{{ element.id }}" {% endif %}
-        >
-            {%  if element.icon and element.icon.img %}
-                <img src="{{ element.icon.icon }}" class="img-thumbnail"/>
-            {%  elseif element.icon  %}
-                <i class="nav-icon {{  element.icon.cssClass }}"></i>
-            {%  endif %}
+        {% if element.path %}
+            {% set path = path(element.path.route, element.path.params) %}
+        {% else %}
+            {% set path = '#' %}
+        {% endif %}
+        <a href="{{ path }}" id="heading-{{ element.id }}" class="nav-link collapsed py-3 {% if crudit.isActive(element, app.request) %}active{% endif %}" {% if element.children|length %}data-toggle="collapse" data-target="#collapse-{{ element.id|lower }}"{% endif %}>
+            {% if element.icon and element.icon.img %}
+                <img src="{{ element.icon.icon }}" class="img-thumbnail mr-1" />
+            {% elseif element.icon %}
+                <i class="nav-icon {{ element.icon.cssClass }}"></i>
+            {% endif %}
             <span>
                 {{ element.libelle|trans }}
-                {%  if element.badges|length %}
-                    {%  for badge in element.badges %}
+                {% if element.badges|length %}
+                    {% for badge in element.badges %}
                         <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
-                    {%  endfor %}
-                {%  endif %}
+                    {% endfor %}
+                {% endif %}
             </span>
         </a>
-        {%  if element.children|length %}
-        <div id="collapse{{ element.id }}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
-            <div class="bg-white py-2 collapse-inner rounded">
-                {%  for child in element.children %}
-                    {% include crudit.template(child.template) with {'element': child, 'submenu': true} %}
-                {%  endfor %}
+        {% if element.children|length %}
+            <div id="collapse-{{ element.id|lower }}" class="collapse">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    {% for child in element.children %}
+                        {% include crudit.template(child.template) with {'element': child, 'submenu': true} %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        {%  endif %}
+        {% endif %}
     </li>
-{%  endif %}
+{% endif %}

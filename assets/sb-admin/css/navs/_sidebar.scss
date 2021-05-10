@@ -1,4 +1,6 @@
 // Sidebar
+$icon-width: 32px;
+
 .sidebar {
     width: $sidebar-collapsed-width;
     min-height: 100vh;
@@ -6,7 +8,7 @@
     .nav-item {
         position: relative;
         img {
-            height: 32px;
+            height: $icon-width;
         }
         &:last-child {
             margin-bottom: 1rem;
@@ -68,13 +70,12 @@
                 }
 
                 .collapse-item {
-                    padding: 0.5rem 1rem;
+                    display: flex;
                     margin: 0 0.5rem;
-                    display: block;
+                    padding: 0.5rem 1rem;
                     color: $gray-900;
                     text-decoration: none;
                     border-radius: $border-radius;
-                    white-space: nowrap;
 
                     &:hover {
                         background-color: $gray-200;
