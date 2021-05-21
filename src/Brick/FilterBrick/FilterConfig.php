@@ -44,7 +44,7 @@ class FilterConfig extends AbstractBrickConfig
         ];
     }
 
-    public function setFilterset(FilterSetInterface $filterset): self
+    public function setFilterset(?FilterSetInterface $filterset): self
     {
         $this->filterset = $filterset;
         return $this;
@@ -61,7 +61,7 @@ class FilterConfig extends AbstractBrickConfig
         return $this->className;
     }
 
-    public function getFilterset(): FilterSetInterface
+    public function getFilterset(): ?FilterSetInterface
     {
         return $this->filterset;
     }
