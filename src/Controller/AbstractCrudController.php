@@ -7,7 +7,6 @@ namespace Lle\CruditBundle\Controller;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Builder\BrickBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 abstract class AbstractCrudController extends AbstractController

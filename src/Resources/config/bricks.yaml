@@ -4,6 +4,10 @@ services:
     arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Registry\DatasourceRegistry']
     tags: [ 'crudit.brick' ]
 
+  Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState']
+    tags: [ 'crudit.brick' ]
+
   Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
     arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]

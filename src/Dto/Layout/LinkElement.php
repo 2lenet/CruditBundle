@@ -40,7 +40,7 @@ class LinkElement extends AbstractLayoutElement
     public static function new(string $libelle, ?Path $path, Icon $icon = null, array $roles = []): self
     {
         $item = new self($libelle, $path, $icon, $roles);
-        $item->setId(str_replace('menu.','',$libelle));
+        $item->setId(str_replace('menu.', '', $libelle));
         return $item;
     }
 

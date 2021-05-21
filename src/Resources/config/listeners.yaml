@@ -3,3 +3,8 @@ services:
     arguments: ['@twig', '@Lle\CruditBundle\Provider\LayoutProvider', '@Lle\CruditBundle\Provider\ConfigProvider', '@controller_resolver']
     tags:
       - { name: kernel.event_listener, event: kernel.controller }
+
+  Lle\CruditBundle\EventListener\KernelFilterListener:
+    arguments: ['@Lle\CruditBundle\Filter\FilterState']
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller }

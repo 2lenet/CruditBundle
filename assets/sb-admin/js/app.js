@@ -1,11 +1,12 @@
 import "../css/app.scss";
 import jquery from "jquery"
-import dt from "datatables.net"
+
 
 global.$ = global.jQuery = global.jquery = jquery;
-global.dt = dt;
 import "bootstrap";
 import "startbootstrap-sb-admin-2/js/sb-admin-2.js";
+import * as mdb from 'mdb-ui-kit'; // lib
+import { Input } from 'mdb-ui-kit'; // module
 
 (function($) {
     "use strict"; // Start of use strict

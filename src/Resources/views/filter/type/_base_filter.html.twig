@@ -1,0 +1,34 @@
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        {% block operator %}
+        <select class="form-select select2" name="{{ id }}_op">
+            <option {% if data and data.op=='contains' %}selected="selected"{% endif %} value="contains">
+                <i title="Contient" class="fa fa-text-width contains"></i>
+                {{ "crudit.filter.operators.contains"|trans({}, 'LleCruditBundle')  }}
+            </option>
+            <option {% if  data and data.op=='startswith' %}selected="selected"{% endif %} value="startswith">
+                <i title="Commence par" class="far fa-caret-square-right startswith"></i>
+                {{ "crudit.filter.operators.startswith"|trans({}, 'LleCruditBundle')  }}
+            </option>
+            <option {% if  data and data.op=='endswith' %}selected="selected"{% endif %} value="endswith">
+                <i title="Termine par" class="far fa-caret-square-left endswith"></i>
+                {{ "crudit.filter.operators.endswith"|trans({}, 'LleCruditBundle')  }}
+            </option>
+            <option {% if  data and data.op=='isnull' %}selected="selected"{% endif %} value="isnull">
+                <i title="Est vide" class="far fa-square isnull"></i>
+                {{ "crudit.filter.operators.isnull"|trans({}, 'LleCruditBundle')  }}
+            </option>
+            <option {% if  data and data.op=='isnotnull' %}selected="selected"{% endif %} value="isnotnull">
+                <i title="Est non vide" class="fas fa-square isnotnull"></i>
+                {{ "crudit.filter.operators.isnotnull"|trans({}, 'LleCruditBundle')  }}
+            </option>
+        </select>
+        {% endblock %}
+    </div>
+    {% block input %}
+            <label id="label_{{ id }}" for="input_{{ id }}" class="control-label text-nowrap">
+                {{ filter.filterLabel|trans() }}
+            </label>
+            <input type="text" id="input_{{ id }}" class="form-control" aria-label="" value="{{ data['value'] |default('') }}" name="{{ id }}_value">
+    {% endblock %}
+</div>

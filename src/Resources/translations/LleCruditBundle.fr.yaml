@@ -1,0 +1,53 @@
+crudit:
+    title:
+        filters: "Filtrer les items"
+    filter:
+        reset: "Effacer"
+        filter: "Filtrer"
+        operators:
+            contains: "Contient"
+            startswith: "Débute par"
+            endswith: "Termine par"
+            isnull: "Est vide"
+            isnotnull: "N'est pas vide"
+
+        show_less: "Moins de filtres"
+        show_more: "Plus de filtres"
+        auto_complete:
+            placeholder: "Sélectionnez une valeur"
+        boolean:
+            yes: "Oui"
+            no: "Non"
+            all: "Tous"
+        date:
+            on: "Le"
+            before: "Avant le"
+            after: "Après le"
+        date_time:
+            on: "Le"
+            before: "Avant le"
+            after: "Après le"
+        enumeration:
+            contains: "contient"
+            does_not_contain: "ne contient pas"
+        exact_string:
+            is_null: "Est vide"
+            equals: "Égal"
+        not_null:
+            all: "Tous"
+            filled: "Renseigné"
+            not_filled: "Non renseigné"
+        number:
+            is_equal: "Est égal à"
+            is_not_equal: "N'est pas égal à"
+            lesser_than: "Plus petit que"
+            greater_than: "Plus grand que"
+        string:
+            contains: "Contient"
+            starts_with: "Commence par"
+            ends_with: "Termine par"
+            is_empty: "Est vide"
+            is_not_empty: "Est non vide"
+        periode:
+            from: "du"
+            to: "au"

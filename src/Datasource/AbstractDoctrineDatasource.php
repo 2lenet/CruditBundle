@@ -7,17 +7,23 @@ namespace Lle\CruditBundle\Datasource;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Field\DoctrineEntityField;
+use Lle\CruditBundle\Filter\FilterState;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
     /** @var EntityManagerInterface */
     protected $entityManager;
+    protected ?FilterSetInterface $filterset;
+    private FilterState $filterState;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
     {
         $this->entityManager = $entityManager;
+        $this->filterset = null;
+        $this->filterState = $filterState;
     }
 
     public function get($id): ?object
@@ -29,12 +35,16 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->buildQueryBuilder($requestParams);
 
+        if ($this->filterset) {
+            $this->applyFilters($qb);
+        }
+
         if ($requestParams->getLimit()) {
             $qb->setMaxResults($requestParams->getLimit());
         }
 
         foreach ($requestParams->sorts as $sort) {
-            $qb->addOrderBy('root.'.$sort[0], $sort[1]);
+            $qb->addOrderBy('root.' . $sort[0], $sort[1]);
         }
 
         if ($requestParams->getOffset()) {
@@ -50,7 +60,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb->select('count(root.id)');
         return intval($qb->getQuery()->getSingleScalarResult());
     }
-    
+
     public function delete($id): bool
     {
         $resource = $this->entityManager->getReference($this->getClassName(), $id);
@@ -149,4 +159,21 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
         return $qb;
     }
+
+    /**
+     * @return FilterSetInterface|null
+     */
+    public function getFilterset(): ?FilterSetInterface
+    {
+        return $this->filterset;
+    }
+
+    private function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
+    {
+        foreach ($this->filterset->getFilters() as $filter) {
+            $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId() ));
+            $filter->apply($qb);
+        }
+    }
+
 }

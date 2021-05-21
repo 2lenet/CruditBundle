@@ -8,6 +8,7 @@ use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FieldInterface;
+use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -38,5 +39,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->registerForAutoconfiguration(DatasourceInterface::class)->addTag('crudit.datasource');
         $container->registerForAutoconfiguration(BrickInterface::class)->addTag('crudit.brick');
         $container->registerForAutoconfiguration(FieldInterface::class)->addTag('crudit.field');
+        $container->registerForAutoconfiguration(FilterSetInterface::class)->addTag('crudit.filterset');
+
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Provider\LayoutProvider;
-use phpDocumentor\Reflection\DocBlock\Tags\Deprecated;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

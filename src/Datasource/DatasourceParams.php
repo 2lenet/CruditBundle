@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Lle\CruditBundle\Datasource;
-
 
 class DatasourceParams
 {
@@ -17,64 +15,74 @@ class DatasourceParams
         $this->filters = $filters;
     }
 
-    function setCount($count) {
+    public function setCount($count)
+    {
         $this->count = $count;
     }
-    
-    function getCount() {
+
+    public function getCount()
+    {
         return $this->count;
     }
 
-    function getFrom(): int {
-        return $this->offset+1;
+    public function getFrom(): int
+    {
+        return $this->offset + 1;
     }
 
-    function getTo(): int {
+    public function getTo(): int
+    {
         return min($this->offset + $this->limit, $this->count);
     }
 
-    function hasPrevious(): bool {
+    public function hasPrevious(): bool
+    {
         return $this->offset > 0;
     }
 
-    function hasNext(): bool {
+    public function hasNext(): bool
+    {
         return $this->getCurrentPage() < $this->getNbPages();
     }
 
-    function getNbPages(): int {
-        $rest = $this->count % $this->limit? 1:0;
-        return intdiv($this->count , $this->limit)+$rest;
+    public function getNbPages(): int
+    {
+        $rest = $this->count % $this->limit ? 1 : 0;
+        return intdiv($this->count, $this->limit) + $rest;
     }
 
-    function getCurrentPage(): int {
-        return intdiv($this->offset, $this->limit)+1;
+    public function getCurrentPage(): int
+    {
+        return intdiv($this->offset, $this->limit) + 1;
     }
 
-    function getPages(): array {
+    public function getPages(): array
+    {
         $current = $this->getCurrentPage();
         $max = $this->getNbPages();
         $pages = [];
         if ($current > 2) {
-            $pages[] = $current-2;
+            $pages[] = $current - 2;
         }
         if ($current > 1) {
-            $pages[] = $current-1;
+            $pages[] = $current - 1;
         }
         $pages[] = $current;
-        if ($current+1 <= $max) {
-            $pages[] = $current+1;
+        if ($current + 1 <= $max) {
+            $pages[] = $current + 1;
         }
-        if ($current+2 <= $max) {
-            $pages[] = $current+2;
+        if ($current + 2 <= $max) {
+            $pages[] = $current + 2;
         }
-        
+
         return $pages;
     }
 
-    function isCurrent($page): bool {
-        return (intdiv($this->offset, $this->limit )+1) == $page;
+    public function isCurrent($page): bool
+    {
+        return (intdiv($this->offset, $this->limit) + 1) == $page;
     }
-    
+
     /**
      * @return array
      */
@@ -147,5 +155,4 @@ class DatasourceParams
         $this->sorts = $sorts;
         return $this;
     }
-
 }

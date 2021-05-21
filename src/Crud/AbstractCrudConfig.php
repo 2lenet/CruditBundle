@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
+use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\Icon;
@@ -12,72 +13,89 @@ use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
-use Lle\CruditBundle\Contracts\AbstractCrudAutoConfig;
+use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
 use Lle\CruditBundle\Contracts\DataSourceInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use App\Form\CollecteType;
-use App\Crudit\Datasource\CollecteDatasource;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
-    public abstract function getFields($key): array;
+    abstract public function getFields($key): array;
 
-    public function autoFields($fieldnames): array {
+    public function autoFields($fieldnames): array
+    {
         $fields = [];
         foreach ($fieldnames as $field) {
             $fields[] = Field::new($field);
         }
         return $fields;
     }
-    
+
+    public function getFilterset(): FilterSetInterface {
+        return $this->getDatasource()->getFilterset();
+    }
+
     protected function getFormType(string $pageKey): ?string
     {
-        return str_replace('App\Crudit\Config','App\Form',
-            str_replace('CrudConfig','Type',get_class($this)));
+        return str_replace(
+            'App\Crudit\Config',
+            'App\Form',
+            str_replace('CrudConfig', 'Type', get_class($this))
+        );
     }
-    
+
     public function getListActions(): array
     {
         $actions = [];
         $actions[] = ListAction::new('add', $this->getPath(CrudConfigInterface::NEW), Icon::new('plus'));
         return $actions;
     }
-    
+
     public function getItemActions(): array
     {
         $actions = [];
-        $actions[] = ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW), Icon::new('search'))->setCssClass('btn btn-primary btn-sm mr-1');
-        $actions[] = ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT), Icon::new('edit'))->setCssClass('btn btn-secondary btn-sm mr-1');
-        $actions[] = DeleteAction::new('delete', $this->getPath(CrudConfigInterface::DELETE), Icon::new('trash-alt'))->setCssClass('btn btn-danger btn-sm mr-1');
+        $actions[] = ItemAction::new(
+            'show',
+            $this->getPath(CrudConfigInterface::SHOW),
+            Icon::new('search')
+        )->setCssClass('btn btn-primary btn-sm mr-1');
+        $actions[] = ItemAction::new(
+            'edit',
+            $this->getPath(CrudConfigInterface::EDIT),
+            Icon::new('edit')
+        )->setCssClass('btn btn-secondary btn-sm mr-1');
+        $actions[] = DeleteAction::new(
+            'delete',
+            $this->getPath(CrudConfigInterface::DELETE),
+            Icon::new('trash-alt')
+        )->setCssClass('btn btn-danger btn-sm mr-1');
 
         return $actions;
     }
-    
+
     public function getDatasource(): DataSourceInterface
     {
         return $this->datasource;
     }
-    
+
     public function getDatasourceParams(Request $request): DatasourceParams
     {
-        $limit = $request->query->get(strtolower($this->getName()).'_limit',30);
-        $offset = $request->query->get(strtolower($this->getName()).'_offset',0);
+        $limit = $request->query->get(strtolower($this->getName()) . '_limit', 30);
+        $offset = $request->query->get(strtolower($this->getName()) . '_offset', 0);
 
-        $sort_field = $request->query->get(strtolower($this->getName()).'_sort',"");
-        $sort_order = $request->query->get(strtolower($this->getName()).'_sort_order',"");
+        $sortField = $request->query->get(strtolower($this->getName()) . '_sort', "");
+        $sortOrder = $request->query->get(strtolower($this->getName()) . '_sort_order', "");
 
-        if ($sort_field) {
-            $sort_array = [ [$sort_field, $sort_order] ];
+        if ($sortField) {
+            $sortArray = [[$sortField, $sortOrder]];
         } else {
-            $sort_array = $this->getDefaultSort();
+            $sortArray = $this->getDefaultSort();
         }
 
-        $ds_params = new DatasourceParams(intval($limit),intval($offset),$sort_array,[]);
-        return $ds_params;
+        return new DatasourceParams(intval($limit), intval($offset), $sortArray, []);
     }
 
     public function getController(): ?string
@@ -93,9 +111,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getTitle(string $key): ?string
     {
-        return "crud.title.$key.".strtolower($this->getName());
+        return "crud.title.$key." . strtolower($this->getName());
     }
-    
+
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
         return Path::new($this->getRootRoute() . '_' . $context, $params);
@@ -103,10 +121,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getBrickConfigs(): array
     {
-        return  [
+        return [
             CrudConfigInterface::INDEX => [
                 LinksConfig::new()
                     ->setActions($this->getListActions()),
+                FilterConfig::new()
+                    ->setFilterset($this->getFilterset()),
                 ListConfig::new()->addFields($this->getFields(CrudConfigInterface::INDEX))
                     ->setActions($this->getItemActions())
             ],

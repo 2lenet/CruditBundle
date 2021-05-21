@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Brick\ListBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;

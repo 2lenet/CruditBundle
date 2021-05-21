@@ -27,10 +27,10 @@ class ListConfig extends AbstractBrickConfig
 
     /** @var DatasourceInterface */
     private $datasource;
-    
+
     /** @var DatasourceParams */
     private $datasourceParams;
-    
+
     /** @var string */
     private $className;
 
@@ -69,17 +69,18 @@ class ListConfig extends AbstractBrickConfig
     {
         return $this->datasource ?? $this->getCrudConfig()->getDatasource();
     }
-    
+
     public function getDatasourceParams(): DatasourceParams
     {
         return $this->datasourceParams;
     }
-    
-    public function setDatasourceParams(DatasourceParams $datasourceParams): self {
+
+    public function setDatasourceParams(DatasourceParams $datasourceParams): self
+    {
         $this->datasourceParams = $datasourceParams;
         return $this;
     }
-    
+
     public function addAction(ItemAction $action): self
     {
         $this->actions[] = $action;
@@ -90,7 +91,7 @@ class ListConfig extends AbstractBrickConfig
     {
         return $this->actions;
     }
-    
+
     public function setActions($actions): self
     {
         $this->actions = $actions;
@@ -107,7 +108,7 @@ class ListConfig extends AbstractBrickConfig
             'actions' => $this->getActions(),
             'name' => $this->getCrudConfig()->getName(),
             'title' => $this->getCrudConfig()->getTitle('list'),
-            'datasource_params' =>$this->getDatasourceParams(),
+            'datasource_params' => $this->getDatasourceParams(),
             'detail' => null,
             'hidden_action' => false,
             'bulk' => false,
@@ -134,7 +135,7 @@ class ListConfig extends AbstractBrickConfig
     {
         return $this->addField(Field::new($name, $type, $options));
     }
-    
+
     public function setClassName(string $className): self
     {
         $this->className = $className;

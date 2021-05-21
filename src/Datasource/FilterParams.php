@@ -1,17 +1,16 @@
 <?php
 
-
 namespace Lle\CruditBundle\Datasource;
-
 
 class FilterParams
 {
     protected $field;
     protected $operator;
     protected $value;
-    protected $alias=null;
-    
-    public function __construct(string $id, $operator, $value) {
+    protected $alias = null;
+
+    public function __construct(string $id, $operator, $value)
+    {
         $this->field = $field;
         $this->operator = $operator;
         $this->value = $value;

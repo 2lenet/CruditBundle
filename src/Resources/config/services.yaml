@@ -14,6 +14,11 @@ services:
 
     Lle\CruditBundle\Brick\BrickResponseCollector: ~
 
+    Lle\CruditBundle\Filter\FilterState:
+        arguments:
+            - !tagged_iterator crudit.filterset
+            - '@session'
+
     Lle\CruditBundle\Resolver\FieldResolver:
         arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']
 

@@ -100,7 +100,7 @@ final class MakeCrudit extends AbstractMaker
             $value = $io->askQuestion($question);
             $input->setArgument('use-strict-type', $value);
         }
-        
+
         if (null === $input->getArgument('namespace-controller')) {
             $argument = $command->getDefinition()->getArgument('namespace-controller');
             $question = new Question($argument->getDescription(), 'Crudit');

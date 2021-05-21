@@ -96,7 +96,7 @@ class ShowConfig extends AbstractBrickConfig
     {
         return $this->addField(Field::new($name, $type, $options));
     }
-    
+
     /** @return Field[] */
     public function getFields(): array
     {

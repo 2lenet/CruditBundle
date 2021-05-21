@@ -10,9 +10,10 @@
     "node-sass": "^4.9.4",
     "prettier": "^2.2.1",
     "sass-loader": "^11.0.1",
-    "webpack-rtl-plugin": "^2.0.0"
+    "webpack-rtl-plugin": "^2.0.0",
+    "mdb-ui-kit": "^3.6.0"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev-server": "encore dev-server",
@@ -21,8 +22,6 @@
     "build": "encore production"
   },
   "dependencies": {
-    "datatables.net": "^1.10.24",
-    "datatables.net-dt": "^1.10.24",
     "startbootstrap-sb-admin-2": "^4.1.3"
   }
 }

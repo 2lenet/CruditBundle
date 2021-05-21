@@ -11,9 +11,9 @@ interface DatasourceInterface
     /** @param string|int $id */
     public function get($id): ?object;
 
-    public function list(?DataSourceParams $requestParams): iterable;
+    public function list(?DatasourceParams $requestParams): iterable;
 
-    public function count(?DataSourceParams $requestParams): int;
+    public function count(?DatasourceParams $requestParams): int;
 
     /** @param string|int $id */
     public function delete($id): bool;

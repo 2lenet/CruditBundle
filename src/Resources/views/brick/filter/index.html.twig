@@ -1,0 +1,48 @@
+<form>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+
+        <h6 class="m-2 font-weight-bold float-start text-primary">
+            <i class="icon fa fa-search"></i>
+            {{ "crudit.title.filters"|trans({}, 'LleCruditBundle')}}
+        </h6>
+        {% for id, filter in view.data.filters %}
+            {% set vars = {
+                'data': filter.data,
+                'id': id,
+                'filtertype':filter}
+            %}
+            {% include filter.stateTemplate with vars %}
+        {% endfor %}
+        <i class="fa fa-chevron-down float-end d-bloc" aria-expanded="true" aria-controls="collapse-filter" data-toggle="collapse" href="#collapse-filter"></i>
+
+    </div>
+    <div id="collapse-filter" class="collapse show card-body">
+        <div class="row">
+            {% for id, filter in view.data.filters %}
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 " style="min-height:50px; {%  if filter.hidden %}display:none;{% endif %}">
+                    <div class="form-group">
+                        {% set vars = {
+                            'data': filter.data,
+                            'id': 'filter_'~ id,
+                            'filtertype':filter}
+                        %}
+                        {% include filter.template with vars %}
+                    </div> <!-- form group -->
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-sm btn-primary apply_filter" name="filter" value="filter" type="submit">
+        <i class="fa fa-filter"></i>
+            {{'crudit.filter.filter'|trans({}, 'LleCruditBundle') }}
+        </button>
+        <button class="btn btn-sm btn-default" name="{{ view.data.filterset.id}}_reset" value="reset" type="submit">
+            <i class="fa fa-window-close"></i>
+            {{'crudit.filter.reset'|trans({}, 'LleCruditBundle') }}
+        </button>
+    </div>
+</div>
+</form>
