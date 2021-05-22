@@ -66,6 +66,17 @@ abstract class AbstractFilterType implements FilterTypeInterface
         ];
     }
 
+    public function getOperators()
+    {
+        return [
+            "startswith" => ["icon" => "far fa-caret-square-right"],
+            "contains" => ["icon" => "fa fa-text-width"],
+            "endswith" => ["icon" => "far fa-caret-square-left"],
+            "isnull" => ["icon" => "far fa-square"],
+            "isnotnull" => ["icon" => "fas fa-square"],
+        ];
+    }
+
     public function configure(array $config = [])
     {
         $this->hidden = $config['hidden'] ?? false;
