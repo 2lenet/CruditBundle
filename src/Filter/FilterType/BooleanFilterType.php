@@ -7,13 +7,24 @@ namespace Lle\CruditBundle\Filter\FilterType;
  */
 class BooleanFilterType extends AbstractFilterType
 {
+    public static function new(string $fieldname): self
+    {
+        return new self($fieldname);
+    }
+
+    public function __construct($fieldname)
+    {
+        $this->columnName = $fieldname;
+        $this->id = $fieldname;
+        $this->label = "field.".$fieldname;
+        $this->alias = "root.";
+    }
 
     public function configure(array $config = [])
     {
         parent::configure($config);
         $this->defaults['value'] = $config['default_value'] ?? 'all';
     }
-
 
     public function apply($queryBuilder)
     {
