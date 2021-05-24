@@ -1,9 +1,7 @@
-{% if  data['value'] is defined and data['value'] is not empty %}
-    <span class="filter-state">
-        <small>{{ filtertype.filterLabel |trans }}</small>
-        {% for val in data['value'] %}
-            {% set label = filtertype.getItemLabel(val) %}
-            <span class="badge">{{ label }}</span>
-        {% endfor %}
-    </span>
-{% endif %}
+{% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
+{% block value %}
+    {% for val in data['value']|split(",") %}
+        {% set label = val |split("|")|last %}
+        <span class="badge bg-secondary">{{ label }}</span>
+    {% endfor %}
+{% endblock %}

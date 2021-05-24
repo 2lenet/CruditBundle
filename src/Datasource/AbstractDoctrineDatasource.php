@@ -18,12 +18,31 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     protected $entityManager;
     protected ?FilterSetInterface $filterset;
     private FilterState $filterState;
+    protected array $searchFields = [];
 
     public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
     {
         $this->entityManager = $entityManager;
         $this->filterset = null;
         $this->filterState = $filterState;
+
+        $entityClass = $this->getClassName();
+
+        if (property_exists( $entityClass , 'libelle')) {
+            $this->searchFields[] = "libelle";
+        }
+
+        if (property_exists( $entityClass , 'code')) {
+            $this->searchFields[] = "code";
+        }
+
+        if (property_exists( $entityClass , 'name')) {
+            $this->searchFields[] = "name";
+        }
+
+        if (property_exists( $entityClass , 'nom')) {
+            $this->searchFields[] = "nom";
+        }
     }
 
     public function get($id): ?object
@@ -31,7 +50,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->getRepository()->find($id);
     }
 
-    public function list(?DataSourceParams $requestParams): iterable
+    public function list(?DatasourceParams $requestParams): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
 
@@ -51,6 +70,19 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             $qb->setFirstResult($requestParams->getOffset());
         }
 
+        return $qb->getQuery()->execute();
+    }
+
+    public function query(string $queryColumn, $queryTerm): iterable
+    {
+        $qb = $this->buildQueryBuilder(null);
+        $orStatements = $qb->expr()->orX();
+        foreach ($this->searchFields as $field) {
+            $orStatements->add(
+                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm.'%'))
+            );
+        }
+        $qb->andWhere($orStatements);
         return $qb->getQuery()->execute();
     }
 
@@ -85,6 +117,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function patch($id, array $data): ?object
     {
         return $this->newInstance();
+    }
+
+    public function setSearchFields(array $fields) {
+        $this->searchFields = $fields;
     }
 
     public function newInstance(): object
@@ -155,10 +191,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->getRepository()->createQueryBuilder('root');
 
-
-        foreach ($requestParams->filters as $filter) {
-            $alias = $filter->getAlias() ?? 'root';
-            $qb->andWhere($alias . '.' . $filter->getField() . $filter->getOperator() . $filter->getValue());
+        if ($requestParams) {
+            foreach ($requestParams->filters as $filter) {
+                $alias = $filter->getAlias() ?? 'root';
+                $qb->andWhere($alias . '.' . $filter->getField() . $filter->getOperator() . $filter->getValue());
+            }
         }
         return $qb;
     }
@@ -174,7 +211,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     private function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
     {
         foreach ($this->filterset->getFilters() as $filter) {
-            $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId() ));
+            $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
             $filter->apply($qb);
         }
     }

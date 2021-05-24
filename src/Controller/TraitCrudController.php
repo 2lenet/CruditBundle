@@ -87,6 +87,20 @@ trait TraitCrudController
     }
 
     /**
+     * @Route("/autocomplete")
+     */
+    public function autocomplete(Request $request): Response
+    {
+        $dataSource = $this->config->getDatasource();
+        $res = [];
+        $items = $dataSource->query('libelle', $request->query->get("q",""));
+        foreach ($items as $item) {
+            $res[] = ["id"=>$item->getId()."|".$item, "text"=>(string)$item];
+        }
+        return new JsonResponse(["total_count"=>count($res), "incomplete_results"=>false, "items"=>$res]);
+    }
+
+    /**
      * @Route("/api/{pageKey}")
      */
     public function api(Request $request): Response

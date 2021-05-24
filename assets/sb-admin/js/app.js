@@ -1,7 +1,7 @@
 import "bootstrap";
 import TomSelect from "tom-select/dist/js/tom-select.complete";
 
-window.addEventListener('load',function() {
+window.addEventListener('load',function () {
 
     document.querySelectorAll(".valuesetter").forEach(choice => {
         choice.addEventListener("click", (e) => {
@@ -27,12 +27,28 @@ window.addEventListener('load',function() {
     });
 
     document.querySelectorAll(".entity-select").forEach(select => {
+        const dataurl = select.dataset.url;
         new TomSelect('#' + select.id, {
-            options: [
-                {value: 1, text: 'DIY'},
-                {value: 2, text: 'Google'},
-                {value: 3, text: 'Yahoo'},
+            valueField: 'id',
+            labelField: 'text',
+            searchField: 'text',
+            plugins: [
+                'checkbox_options',
+                'remove_button'
             ],
+            onChange: function(value) {
+                console.log("change", value)
+            },
+            load: function (query, callback) {
+                var url = dataurl + encodeURIComponent(query);
+                fetch(url)
+                    .then(response => response.json())
+                    .then(json => {
+                        callback(json.items);
+                    }).catch(() => {
+                        callback();
+                    });
+            },
         });
     });
 });

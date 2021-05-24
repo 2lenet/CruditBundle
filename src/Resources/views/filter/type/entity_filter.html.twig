@@ -3,7 +3,7 @@
 {% block input %}
 
     <div class="form-floating">
-        <input class="form-control entity-select" id="input_{{ id }}"  name="{{ id }}_value" placeholder=""/>
+        <input class="form-control entity-select" data-url="{{ path(filter.dataRoute) }}?q=" id="input_{{ id }}"  name="{{ id }}_value" placeholder=""/>
         <label for="input_{{ id }}">
             {{ filter.filterLabel|trans() }}
         </label>
