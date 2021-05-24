@@ -1,10 +1,11 @@
-{% if data['value'] is defined and data['value'] and data['value'] != filtertype.defaults['value'] %}
-    <span class="filter-state">
-        <small>{{ filtertype.filterLabel |trans }}</small>
-        <span class="badge">
-            {% if data['value']=='true' %}{{ 'filter.boolean.yes' | trans({}, 'EasyAdminPlusBundle') }}{% endif %}
-            {% if data['value']=='false' %}{{ 'filter.boolean.no' | trans({}, 'EasyAdminPlusBundle') }}{% endif %}
-            {% if data['value']=='all' %}{{ 'filter.boolean.all' | trans({}, 'EasyAdminPlusBundle') }}{% endif %}
-        </span>
-    </span>
-{% endif %}
+{% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
+
+{% block value %}
+    {% if data['value'] is iterable %}
+        {% for val in data['value'] %}
+            <span class="badge bg-secondary">{{ val }}</span>
+        {% endfor %}
+    {% else %}
+        <span class="badge bg-secondary">{{ data['value']|trans({}, 'LleCruditBundle') }}</span>
+    {% endif %}
+{% endblock %}
