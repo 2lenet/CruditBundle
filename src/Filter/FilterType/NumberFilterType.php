@@ -20,6 +20,20 @@ class NumberFilterType extends AbstractFilterType
         return new self($fieldname);
     }
 
+    public function getOperators()
+    {
+        return [
+            "eq" => ["icon" => "fas fa-equals"],
+            "neq" => ["icon" => "fas fa-not-equal"],
+            "lt" => ["icon" => "fas fa-less-than"],
+            "lte" => ["icon" => "fas fa-less-than-equal"],
+            "gt" => ["icon" => "fas fa-greater-than"],
+            "gte" => ["icon" => "fas fa-greater-than-equal"],
+            "isnull" => ["icon" => "far fa-square"],
+            "isnotnull" => ["icon" => "fas fa-square"],
+        ];
+    }
+
     public function apply($queryBuilder)
     {
         if (isset($this->data['value']) && $this->data['value']) {
@@ -48,10 +62,10 @@ class NumberFilterType extends AbstractFilterType
 
                 case 'isnull':
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
-                    return;
+                    break;
                 case 'isnotnull':
                     $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
-                    return;
+                    break;
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
