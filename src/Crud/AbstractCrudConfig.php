@@ -34,7 +34,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return $fields;
     }
 
-    public function getFilterset(): FilterSetInterface {
+    public function getFilterset(): ?FilterSetInterface {
         return $this->getDatasource()->getFilterset();
     }
 
@@ -121,15 +121,19 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getBrickConfigs(): array
     {
+        $indexBricks = [];
+        $indexBricks[] =  LinksConfig::new()->setActions($this->getListActions());
+
+        if ($this->getFilterset()) {
+            $indexBricks[] = FilterConfig::new()
+                ->setFilterset($this->getFilterset());
+        }
+
+        $indexBricks[] =  ListConfig::new()
+            ->addFields($this->getFields(CrudConfigInterface::INDEX))
+            ->setActions($this->getItemActions());
         return [
-            CrudConfigInterface::INDEX => [
-                LinksConfig::new()
-                    ->setActions($this->getListActions()),
-                FilterConfig::new()
-                    ->setFilterset($this->getFilterset()),
-                ListConfig::new()->addFields($this->getFields(CrudConfigInterface::INDEX))
-                    ->setActions($this->getItemActions())
-            ],
+            CrudConfigInterface::INDEX => $indexBricks,
             CrudConfigInterface::SHOW => [
                 LinksConfig::new()->addBack(),
                 ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW))

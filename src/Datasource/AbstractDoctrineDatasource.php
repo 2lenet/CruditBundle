@@ -58,6 +58,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->select('count(root.id)');
+        if ($this->filterset) {
+            $this->applyFilters($qb);
+        }
         return intval($qb->getQuery()->getSingleScalarResult());
     }
 

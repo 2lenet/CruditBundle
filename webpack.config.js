@@ -4,7 +4,7 @@ const WebpackRTLPlugin = require('webpack-rtl-plugin');
 function basic(path, Encore){
     return Encore
         .setOutputPath('./src/Resources/public/' + path)
-        .setPublicPath('./')
+        .setPublicPath('/')
         .setManifestKeyPrefix('bundles/crudit')
         .cleanupOutputBeforeBuild()
         .enableEslintLoader()

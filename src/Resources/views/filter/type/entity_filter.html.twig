@@ -1,18 +1,11 @@
-{% set current_grouplabel = '' %}
-<select name="{{nameprefix}}value{{namesuffix}}{% if filtertype.multiple %}[]{% endif %}" data-widget="select2" class="form-control " {% if filtertype.multiple %} multiple {% endif %}>
-    {% if not filtertype.multiple %}<option value=""></option>{% endif %}
-    {% set entities = filtertype.entities(data) %}
-    {% for entity in entities %}
-        {% if filtertype.groupby %}
-            {% set optgroup_label = filtertype.getLabelForOptGroup(entity) %}
-            {% if optgroup_label != current_grouplabel %}
-                {% set current_grouplabel = optgroup_label %}
-                {% if loop.first == false %}</optgroup>{% endif %}
-                <optgroup label="{{ optgroup_label }}">
-            {% endif %}
-        {% endif %}
-        {% set label = filtertype.getLabel(entity) %}
-        <option value="{{ entity.id }}" {% if data['value'] is defined and filtertype.isSelected(data,entity) %} selected {% endif %}>{{ label }}</option>
-    {% endfor %}
-    {% if filtertype.groupby  %}</optgroup>{% endif %}
-</select>
+{% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
+
+{% block input %}
+
+    <div class="form-floating">
+        <input class="form-control entity-select" id="input_{{ id }}"  name="{{ id }}_value" placeholder=""/>
+        <label for="input_{{ id }}">
+            {{ filter.filterLabel|trans() }}
+        </label>
+    </div>
+{% endblock %}

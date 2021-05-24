@@ -62,3 +62,11 @@ services:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: ['crudit.layout']
+
+
+    Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser: ~
+
+    # this replaces the old DoctrineOrmTypeGuesser definition with the new one, the
+    # old definition is lost
+    form.type_guesser.doctrine:
+        class: Lle\CruditBundle\Form\DoctrineOrmTypeGuesser

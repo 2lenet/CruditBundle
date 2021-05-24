@@ -1,34 +1,37 @@
-<div class="input-group mb-3">
+<div class="input-group flex-nowrap mb-3">
     <div class="input-group-prepend">
         {% block operator %}
-        <select class="form-select select2" name="{{ id }}_op">
-            <option {% if data and data.op=='contains' %}selected="selected"{% endif %} value="contains">
-                <i title="Contient" class="fa fa-text-width contains"></i>
-                {{ "crudit.filter.operators.contains"|trans({}, 'LleCruditBundle')  }}
-            </option>
-            <option {% if  data and data.op=='startswith' %}selected="selected"{% endif %} value="startswith">
-                <i title="Commence par" class="far fa-caret-square-right startswith"></i>
-                {{ "crudit.filter.operators.startswith"|trans({}, 'LleCruditBundle')  }}
-            </option>
-            <option {% if  data and data.op=='endswith' %}selected="selected"{% endif %} value="endswith">
-                <i title="Termine par" class="far fa-caret-square-left endswith"></i>
-                {{ "crudit.filter.operators.endswith"|trans({}, 'LleCruditBundle')  }}
-            </option>
-            <option {% if  data and data.op=='isnull' %}selected="selected"{% endif %} value="isnull">
-                <i title="Est vide" class="far fa-square isnull"></i>
-                {{ "crudit.filter.operators.isnull"|trans({}, 'LleCruditBundle')  }}
-            </option>
-            <option {% if  data and data.op=='isnotnull' %}selected="selected"{% endif %} value="isnotnull">
-                <i title="Est non vide" class="fas fa-square isnotnull"></i>
-                {{ "crudit.filter.operators.isnotnull"|trans({}, 'LleCruditBundle')  }}
-            </option>
-        </select>
+            <input type="hidden" name="{{ id }}_op" id="{{ id }}_op" value="{{ data['op']|default('startswith') }}">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                {% set found = 0 %}
+                {% for k, options in filter.operators %}
+                    {% if data and data.op and k == data.op %}
+                        {% set found = 1 %}
+                        <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}"></i>
+                    {% endif %}
+                {% endfor %}
+                {% if found == 0  %}
+                    {% set k = filter.operators|keys|first %}
+                    {% set options = filter.operators|first %}
+                    <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}"></i>
+                {% endif %}
+            </button>
+            <div class="dropdown-menu">
+                {% for k, options in filter.operators %}
+                    <a class="dropdown-item valuesetter" href="#" data-value="{{ k }}" data-valueid="{{ id }}_op">
+                        <i class="{{ options['icon'] }}"></i>&nbsp;
+                        {{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}
+                    </a>
+                {% endfor %}
+            </div>
         {% endblock %}
     </div>
     {% block input %}
-            <label id="label_{{ id }}" for="input_{{ id }}" class="control-label text-nowrap">
+        <div class="form-floating">
+            <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value" value="{{ data['value']|default('') }}" placeholder="" />
+            <label for="input_{{ id }}">
                 {{ filter.filterLabel|trans() }}
             </label>
-            <input type="text" id="input_{{ id }}" class="form-control" aria-label="" value="{{ data['value'] |default('') }}" name="{{ id }}_value">
+        </div>
     {% endblock %}
 </div>

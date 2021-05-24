@@ -12,48 +12,21 @@ class StringFilterType extends AbstractFilterType
      */
     private $defaultValue;
 
-    /**
-     * @var string
-     */
-    private $defaultop;
-
-    /**
-     * @var array
-     */
-    private $additionalProperties;
-
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
     }
 
-    public function __construct($fieldname)
+    public function getOperators()
     {
-        $this->columnName = $fieldname;
-        $this->id = $fieldname;
-        $this->label = "field.".$fieldname;
-        $this->alias = "root.";
-    }
-
-    /**
-     * @param string $columnName The column name
-     * @param string $alias      The alias
-     */
-    public function configure(array $config = [])
-    {
-        parent::configure($config);
-        $this->defaults = [
-            'value' => $config['defaultValue'] ?? "",
-            'op' => $config['defaultop'] ?? "contains"
+        return [
+            "startswith" => ["icon" => "far fa-caret-square-right"],
+            "contains" => ["icon" => "fa fa-text-width"],
+            "endswith" => ["icon" => "far fa-caret-square-left"],
+            "isnull" => ["icon" => "far fa-square"],
+            "isnotnull" => ["icon" => "fas fa-square"],
         ];
-        $this->additionalProperties = $config['additionalProperties'] ?? [];
-
-        // must be an array
-        if (!is_array($this->additionalProperties)) {
-            $this->additionalProperties = [];
-        }
     }
-
 
     public function apply($queryBuilder)
     {

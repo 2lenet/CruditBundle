@@ -14,6 +14,14 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
 abstract class AbstractFilterType implements FilterTypeInterface
 {
 
+    public function __construct($fieldname)
+    {
+        $this->columnName = $fieldname;
+        $this->id = $fieldname;
+        $this->label = "field.".$fieldname;
+        $this->alias = "root.";
+    }
+
     /**
      *
      * @var null|string
@@ -63,6 +71,17 @@ abstract class AbstractFilterType implements FilterTypeInterface
         $this->data_keys = [
             'op',
             'value'
+        ];
+    }
+
+    public function getOperators()
+    {
+        return [
+            "startswith" => ["icon" => "far fa-caret-square-right"],
+            "contains" => ["icon" => "fa fa-text-width"],
+            "endswith" => ["icon" => "far fa-caret-square-left"],
+            "isnull" => ["icon" => "far fa-square"],
+            "isnotnull" => ["icon" => "fas fa-square"],
         ];
     }
 
