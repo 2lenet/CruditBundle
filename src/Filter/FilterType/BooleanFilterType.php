@@ -20,12 +20,6 @@ class BooleanFilterType extends AbstractFilterType
         return new self($fieldname);
     }
 
-    public function configure(array $config = [])
-    {
-        parent::configure($config);
-        $this->defaults['value'] = $config['default_value'] ?? 'all';
-    }
-
     public function apply($queryBuilder)
     {
         if (isset($this->data['value']) && $this->data['value']) {
@@ -36,7 +30,9 @@ class BooleanFilterType extends AbstractFilterType
                         $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'true'));
                         break;
                     case 'false':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'))
+                            ->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName))
+                        ;
                         break;
                 }
             }
