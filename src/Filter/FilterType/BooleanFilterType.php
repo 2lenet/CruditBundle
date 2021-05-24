@@ -30,7 +30,9 @@ class BooleanFilterType extends AbstractFilterType
                         $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'true'));
                         break;
                     case 'false':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'))
+                            ->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName))
+                        ;
                         break;
                 }
             }

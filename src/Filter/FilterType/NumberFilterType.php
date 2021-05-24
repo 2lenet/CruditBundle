@@ -59,7 +59,6 @@ class NumberFilterType extends AbstractFilterType
                     $queryBuilder->andWhere($this->alias . $this->columnName . ' >= :var_' . $this->id);
                     $queryBuilder->setParameter('var_' . $this->id, '%' . $this->data['value'] . '%');
                     break;
-
                 case 'isnull':
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
                     break;
