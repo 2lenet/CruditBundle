@@ -1,10 +1,7 @@
 {% if data and data.value is defined and data.value %}
     <button type="button" class="btn disabled btn-sm btn-primary">
-        {% for k, options in filter.operators %}
-            {% if k == data.op %}
-                <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}"></i>
-            {% endif %}
-        {% endfor %}
+        {% set options = filter.operators[data.op] %}
+        <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
 
         {{ filtertype.filterLabel|trans }}
 
