@@ -16,9 +16,9 @@ class EntityFilterType extends AbstractFilterType
     protected $method_label;
     protected $em;
 
-    public function __construct(EntityManagerInterface $em)
+    public static function new(string $fieldname): self
     {
-        $this->em = $em;
+        return new self($fieldname);
     }
 
     public function configure(array $config = [])
@@ -36,12 +36,12 @@ class EntityFilterType extends AbstractFilterType
     {
         if (isset($this->data['value'])) {
             if ($this->getMultiple()) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             } else {
-                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
             }
 
-            $queryBuilder->setParameter('var_' . $this->uniqueId, $this->data['value']);
+            $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
         }
     }
 

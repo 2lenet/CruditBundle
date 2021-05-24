@@ -1,4 +1,5 @@
 import "bootstrap";
+import TomSelect from "tom-select/dist/js/tom-select.complete";
 
 window.addEventListener('load',function() {
 
@@ -23,6 +24,18 @@ window.addEventListener('load',function() {
         /*if ($(".sidebar").hasClass("toggled")) {
             $('.sidebar .collapse').collapse('hide');
         }*/
+    });
+
+    document.querySelectorAll(".entity-select").forEach(select => {
+        new TomSelect('#' + select.id, {
+            valueField: 'id',
+            searchField: 'title',
+            options: [
+                {id: 1, title: 'DIY', url: 'https://diy.org'},
+                {id: 2, title: 'Google', url: 'http://google.com'},
+                {id: 3, title: 'Yahoo', url: 'http://yahoo.com'},
+            ],
+        });
     });
 });
 
