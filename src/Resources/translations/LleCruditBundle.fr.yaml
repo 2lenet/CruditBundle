@@ -10,6 +10,12 @@ crudit:
             endswith: "Termine par"
             isnull: "Est vide"
             isnotnull: "N'est pas vide"
+            eq: "Egal à"
+            neq: "Différent de"
+            lt: "Inférieur à"
+            lte: "Inférieur ou égal à"
+            gt: "Supérieur à"
+            gte: "Supérieur ou égal à"
 
         show_less: "Moins de filtres"
         show_more: "Plus de filtres"
@@ -51,3 +57,6 @@ crudit:
         periode:
             from: "du"
             to: "au"
+    true: "Oui"
+    false: "Non"
+    all: "Tout"
