@@ -28,12 +28,10 @@ window.addEventListener('load',function() {
 
     document.querySelectorAll(".entity-select").forEach(select => {
         new TomSelect('#' + select.id, {
-            valueField: 'id',
-            searchField: 'title',
             options: [
-                {id: 1, title: 'DIY', url: 'https://diy.org'},
-                {id: 2, title: 'Google', url: 'http://google.com'},
-                {id: 3, title: 'Yahoo', url: 'http://yahoo.com'},
+                {value: 1, text: 'DIY'},
+                {value: 2, text: 'Google'},
+                {value: 3, text: 'Yahoo'},
             ],
         });
     });

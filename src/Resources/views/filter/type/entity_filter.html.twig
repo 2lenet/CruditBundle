@@ -1,13 +1,11 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
 {% block input %}
-<div class="form-floating">
 
-    <label for="input_{{ id }}">
-        {{ filter.filterLabel|trans() }}
-    </label>
-    <select class="form-control entity-select" id="input_{{ id }}"  name="{{ id }}_value">
-
-    </select>
-</div>
+    <div class="form-floating">
+        <input class="form-control entity-select" id="input_{{ id }}"  name="{{ id }}_value" placeholder=""/>
+        <label for="input_{{ id }}">
+            {{ filter.filterLabel|trans() }}
+        </label>
+    </div>
 {% endblock %}
