@@ -32,12 +32,7 @@ class EntityFilterType extends AbstractFilterType
     public function apply($queryBuilder)
     {
         if (isset($this->data['value'])) {
-            $ids = [];
-            $vals = explode(',', $this->data['value']);
-            foreach ($vals as $val) {
-                list($id, $label) = explode('|', $val);
-                $ids[] = $id;
-            }
+            $ids = explode(',', $this->data['value']);
             $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             $queryBuilder->setParameter('var_' . $this->id, $ids);
         }

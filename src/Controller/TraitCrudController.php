@@ -95,7 +95,7 @@ trait TraitCrudController
         $res = [];
         $items = $dataSource->query('libelle', $request->query->get("q",""));
         foreach ($items as $item) {
-            $res[] = ["id"=>$item->getId()."|".$item, "text"=>(string)$item];
+            $res[] = ["id"=>$item->getId(), "text"=>(string)$item];
         }
         return new JsonResponse(["total_count"=>count($res), "incomplete_results"=>false, "items"=>$res]);
     }
