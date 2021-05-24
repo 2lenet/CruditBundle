@@ -13,6 +13,7 @@ Crudit bundle for 2le.
 ## Reciepe
 
 - [submenu](doc/submenu.md)
+- [filters](doc/filter.md)
 
 
 ## Design architecture
