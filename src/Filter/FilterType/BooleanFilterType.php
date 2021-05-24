@@ -20,12 +20,6 @@ class BooleanFilterType extends AbstractFilterType
         return new self($fieldname);
     }
 
-    public function configure(array $config = [])
-    {
-        parent::configure($config);
-        $this->defaults['value'] = $config['default_value'] ?? 'all';
-    }
-
     public function apply($queryBuilder)
     {
         if (isset($this->data['value']) && $this->data['value']) {
