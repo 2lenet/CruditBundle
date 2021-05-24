@@ -11,6 +11,15 @@ class ChoiceFilterType extends AbstractFilterType
     private $choices;
     private $multiple;
 
+    public function __construct($fieldname, array $config = [])
+    {
+        parent::__construct($fieldname);
+        $this->configure($config);
+    }
+
+    public static function new(string $fieldname, array $config = []) {
+        return new ChoiceFilterType($fieldname, $config);
+    }
 
      /**
      * @param string $columnName The column name
@@ -35,11 +44,11 @@ class ChoiceFilterType extends AbstractFilterType
         if (isset($this->data['value'])) {
             $qb = $queryBuilder;
             if ($this->getMultiple()) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             } else {
-                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
             }
-            $queryBuilder->setParameter('var_' . $this->uniqueId, $this->data['value']);
+            $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
         }
     }
 
