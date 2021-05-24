@@ -57,6 +57,6 @@ crudit:
         periode:
             from: "du"
             to: "au"
-    true: "Oui"
-    false: "Non"
-    all: "Tout"
+    "true": "Oui"
+    "false": "Non"
+    "all": "Tout"
