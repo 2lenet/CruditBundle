@@ -2,18 +2,17 @@
     <div class="input-group-prepend">
         {% block operator %}
             <input type="hidden" name="{{ id }}_op" id="{{ id }}_op" value="{{ data['op']|default('startswith') }}">
-            <button class="btn btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                {% set found=0 %}
+            <button class="btn btn-outline-light dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                {% set found = 0 %}
                 {% for k, options in filter.operators %}
-                    {% if data and data.op and k==data.op %}
-                        {% set found=1 %}
-                       <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}"></i>
+                    {% if data and data.op and k == data.op %}
+                        {% set found = 1 %}
+                        <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}"></i>
                     {% endif %}
                 {% endfor %}
-                {%  if found == 0  %}
+                {% if found == 0  %}
                     {% set k = filter.operators|keys|first %}
                     {% set options = filter.operators|first %}
-
                     <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~k)|trans({}, 'LleCruditBundle') }}"></i>
                 {% endif %}
             </button>
