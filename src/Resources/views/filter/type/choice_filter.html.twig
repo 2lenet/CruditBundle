@@ -1,5 +1,15 @@
-<select class="form-control select2" data-widget="select2"  {% if filtertype.multiple %} multiple {% endif %}  name="{{nameprefix}}value{{namesuffix}}{% if filtertype.multiple %}[]{% endif %}">
-    {% for k,v in filtertype.choices %}
-        <option value="{{ k }}" {% if data['value'] is defined and filtertype.isSelected(data,k) %} selected {% endif %}>{{ v }}</option>
-    {% endfor %}
-</select>
+{% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
+{% block operator %}{% endblock %}
+{% block input %}
+    <div class="form-floating">
+        <select class="form-control tom-select" data-widget="select2" {% if filtertype.multiple %} multiple {% endif %}
+                name="{{ id }}_value{% if filtertype.multiple %}[]{% endif %}">
+            {% for k,v in filtertype.choices %}
+                <option value="{{ k }}" {% if data['value'] is defined and filtertype.isSelected(data,k) %} selected {% endif %}>{{ v }}</option>
+            {% endfor %}
+        </select>
+        <label for="input_{{ id }}">
+            {{ filter.filterLabel|trans() }}
+        </label>
+    </div>
+{% endblock %}

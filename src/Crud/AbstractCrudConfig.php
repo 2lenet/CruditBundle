@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
-use Lle\CruditBundle\Contracts\FilterSetInterface;
-use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Dto\Path;
-use Lle\CruditBundle\Dto\Icon;
-use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
+use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
-use Lle\CruditBundle\Brick\FormBrick\FormConfig;
-use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
-use Lle\CruditBundle\Dto\Action\ListAction;
-use Lle\CruditBundle\Dto\Action\ItemAction;
-use Lle\CruditBundle\Dto\Action\DeleteAction;
-use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\FilterSetInterface;
+use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\Action\DeleteAction;
+use Lle\CruditBundle\Dto\Action\ItemAction;
+use Lle\CruditBundle\Dto\Action\ListAction;
+use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Dto\Icon;
+use Lle\CruditBundle\Dto\Path;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
@@ -34,7 +34,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return $fields;
     }
 
-    public function getFilterset(): ?FilterSetInterface {
+    public function getFilterset(): ?FilterSetInterface
+    {
         return $this->getDatasource()->getFilterset();
     }
 
@@ -122,14 +123,14 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getBrickConfigs(): array
     {
         $indexBricks = [];
-        $indexBricks[] =  LinksConfig::new()->setActions($this->getListActions());
+        $indexBricks[] = LinksConfig::new()->setActions($this->getListActions());
 
         if ($this->getFilterset()) {
             $indexBricks[] = FilterConfig::new()
                 ->setFilterset($this->getFilterset());
         }
 
-        $indexBricks[] =  ListConfig::new()
+        $indexBricks[] = ListConfig::new()
             ->addFields($this->getFields(CrudConfigInterface::INDEX))
             ->setActions($this->getItemActions());
         return [

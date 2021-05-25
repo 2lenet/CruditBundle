@@ -3,7 +3,8 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 /**
- * StringFilterType
+ * Class ChoiceFilterType
+ * @package Lle\CruditBundle\Filter\FilterType
  */
 class ChoiceFilterType extends AbstractFilterType
 {
@@ -11,23 +12,45 @@ class ChoiceFilterType extends AbstractFilterType
     private $choices;
     private $multiple;
 
-
-     /**
-     * @param string $columnName The column name
-     * @param string $alias      The alias
-     */
-    public function configure(array $config = [])
+    public function __construct($fieldname, array $choices, bool $isMultiple = false)
     {
-        parent::configure($config);
+        parent::__construct($fieldname);
+        $this->setChoices($choices);
+        $this->setMultiple($isMultiple);
+    }
+
+    /**
+     * @param string $fieldname
+     * @param array $choices
+     * @param bool $isMultiple
+     * @return ChoiceFilterType
+     */
+    public static function new(string $fieldname, array $choices, bool $isMultiple = false): ChoiceFilterType
+    {
+        return new self($fieldname, $choices, $isMultiple);
+    }
+
+    /**
+     * @param array $choices
+     */
+    public function setChoices(array $choices): void
+    {
         $this->choices = [];
-        if (!$this->isAssoc($config['choices'])) {
-            foreach ($config['choices'] as $value) {
-                $this->choices[$value] = $value;
+        if (!$this->isAssoc($choices)) {
+            foreach ($choices as $choice) {
+                $this->choices[$choice] = $choice;
             }
         } else {
-            $this->choices = $config['choices'];
+            $this->choices = $choices;
         }
-        $this->multiple = (isset($config['multiple'])) ? $config['multiple'] : true;
+    }
+
+    /**
+     * @param bool $isMultiple
+     */
+    public function setMultiple(bool $isMultiple): void
+    {
+        $this->multiple = $isMultiple;
     }
 
     public function apply($queryBuilder)
@@ -35,15 +58,15 @@ class ChoiceFilterType extends AbstractFilterType
         if (isset($this->data['value'])) {
             $qb = $queryBuilder;
             if ($this->getMultiple()) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             } else {
-                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
             }
-            $queryBuilder->setParameter('var_' . $this->uniqueId, $this->data['value']);
+            $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
         }
     }
 
-    public function getChoices()
+    public function getChoices(): array
     {
         return $this->choices;
     }
@@ -59,7 +82,7 @@ class ChoiceFilterType extends AbstractFilterType
     }
 
 
-    public function getMultiple()
+    public function getMultiple(): bool
     {
         return $this->multiple;
     }
