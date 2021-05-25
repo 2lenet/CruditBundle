@@ -10,16 +10,17 @@ Crudit bundle for 2le.
 
 ```composer require 2lenet/crudit-bundle```
 
-## Reciepe
+## Recipe
 
-- [submenu](doc/submenu.md)
-- [filters](doc/filter.md)
+- [Submenu](doc/submenu.md)
+- [Filters](doc/filter.md)
+- [Form types](doc/form_types.md)
 
 
 ## Design architecture
 
 Crudit is a standard RAD specification to create business applications. 
-These application are naively composed by crud screen assembled by a layout and linked together.
+These applications are naively composed by crud screen assembled by a layout and linked together.
 
 There is a lot of tools to generate such screen in multiple technologies. But each techno redefines some vocabulary, redevelops some concept and design.
 Maybe some reflexion could be mutualized.

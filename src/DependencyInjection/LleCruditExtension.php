@@ -28,6 +28,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $loader->load('serializers.yaml');
         $loader->load('bricks.yaml');
         $loader->load('fields.yaml');
+        $loader->load('form.yaml');
 
         $configuration = new Configuration();
         $processedConfig =  $this->processConfiguration($configuration, $configs);
@@ -41,5 +42,12 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->registerForAutoconfiguration(FieldInterface::class)->addTag('crudit.field');
         $container->registerForAutoconfiguration(FilterSetInterface::class)->addTag('crudit.filterset');
 
+        // Load the templates for the Crudit form types
+        if ($container->hasParameter('twig.form.resources')) {
+            $container->setParameter('twig.form.resources', array_merge(
+                ['@LleCrudit/form/custom_types.html.twig'],
+                $container->getParameter('twig.form.resources')
+            ));
+        }
     }
 }
