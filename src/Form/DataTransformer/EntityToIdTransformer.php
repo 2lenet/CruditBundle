@@ -2,7 +2,6 @@
 
 namespace Lle\CruditBundle\Form\DataTransformer;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;

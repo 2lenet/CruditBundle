@@ -9,7 +9,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -52,17 +51,17 @@ class AutocompleteType extends AbstractType
         // Gestion URL autocomplete
         if ($route = $options["route"]) {
             $url = $this->router->generate($route);
-        } else if ($options["url"]) {
+        } elseif ($options["url"]) {
             $url = $options["url"];
         } else {
-
             if (!$classFqcn) {
-                throw new CruditException(sprintf("You must set the 'class' option in %s",
+                throw new CruditException(sprintf(
+                    "You must set the 'class' option in %s",
                     self::class
                 ));
             }
 
-            $class = strtolower(str_replace("App\\Entity\\","", $classFqcn));
+            $class = strtolower(str_replace("App\\Entity\\", "", $classFqcn));
             $url = $this->router->generate(
                 sprintf(self::DEFAULT_AUTOCOMPLETE_ROUTE, $class)
             );
@@ -72,7 +71,6 @@ class AutocompleteType extends AbstractType
 
         // Gestion valeur déjà existante
         if ($id = $view->vars["value"]) {
-
             if ($options["multiple"]) {
                 $entities = $this->em
                     ->getRepository($classFqcn)
@@ -105,7 +103,7 @@ class AutocompleteType extends AbstractType
             "url" => null,
             "route" => null,
             "multiple" => false,
-            // ne pas enlever
+            // do not remove this option
             "compound" => false,
         ]);
 
