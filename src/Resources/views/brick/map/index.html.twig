@@ -1,0 +1,11 @@
+
+{% set site = view.data.resource.resource %}
+<div id="sitecollectemap"
+     data-lat="{{ site.centreLat | default(47.74) }}"
+     data-lng="{{ site.centreLng | default(7.34) }}"
+     data-zoom="14"
+        {% if site.commune %}
+            data-commune="{{ site.commune.id }}"
+        {% endif %}
+>
+</div>
