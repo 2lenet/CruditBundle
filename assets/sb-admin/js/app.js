@@ -1,12 +1,12 @@
 import "bootstrap";
 import TomSelect from "tom-select/dist/js/tom-select.complete";
 
-window.addEventListener('load',function () {
+window.addEventListener('load', function () {
 
     document.querySelectorAll(".valuesetter").forEach(choice => {
         choice.addEventListener("click", (e) => {
             console.log(e.target.dataset);
-            const hidden =  document.getElementById(e.target.dataset.valueid);
+            const hidden = document.getElementById(e.target.dataset.valueid);
             hidden.value = e.target.dataset.value;
             /*
                 TODO: SET the right icon when selected ( maybe use real svg ? )
@@ -28,16 +28,22 @@ window.addEventListener('load',function () {
 
     document.querySelectorAll(".entity-select").forEach(select => {
         const dataurl = select.dataset.url;
+        const inioptions = JSON.parse(select.dataset.options);
         new TomSelect('#' + select.id, {
             valueField: 'id',
             labelField: 'text',
             searchField: 'text',
+            options: inioptions,
             plugins: [
-                'checkbox_options',
-                'remove_button'
-            ],
-            onChange: function(value) {
-                console.log("change", value)
+                    'checkbox_options',
+                    'remove_button'
+                ],
+            onChange: function (value) {
+                let items = [];
+                value.split(',').forEach(v=>{
+                    items.push({id: v, text: this.options[v].text});
+                })
+                document.getElementById(select.id+"_items").value=JSON.stringify(items);
             },
             load: function (query, callback) {
                 var url = dataurl + encodeURIComponent(query);
@@ -45,11 +51,13 @@ window.addEventListener('load',function () {
                     .then(response => response.json())
                     .then(json => {
                         callback(json.items);
-                    }).catch(() => {
-                        callback();
-                    });
-            },
-        });
+                        }).catch(() => {
+                            callback();
+                        });
+            }
+                ,
+            })
+        ;
     });
 });
 

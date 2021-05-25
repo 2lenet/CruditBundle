@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Lib\QueryHelper;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
@@ -13,7 +14,6 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
  */
 abstract class AbstractFilterType implements FilterTypeInterface
 {
-
     public function __construct($fieldname)
     {
         $this->columnName = $fieldname;
@@ -29,6 +29,9 @@ abstract class AbstractFilterType implements FilterTypeInterface
     protected $columnName = null;
 
     protected $hidden = false;
+
+    protected $additionnal_keys = [];
+
 
     /**
      *
@@ -77,14 +80,25 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getOperators()
     {
         return [
-            "startswith" => ["icon" => "far fa-caret-square-right"],
-            "contains" => ["icon" => "fa fa-text-width"],
-            "endswith" => ["icon" => "far fa-caret-square-left"],
-            "isnull" => ["icon" => "far fa-square"],
-            "isnotnull" => ["icon" => "fas fa-square"],
         ];
     }
+    /**
+     * @return array
+     */
+    public function getAdditionnalKeys(): array
+    {
+        return $this->additionnal_keys;
+    }
 
+    /**
+     * @param array $additionnal_keys
+     * @return AbstractFilterType
+     */
+    public function setAdditionnalKeys(array $additionnal_keys): AbstractFilterType
+    {
+        $this->additionnal_keys = $additionnal_keys;
+        return $this;
+    }
     public function configure(array $config = [])
     {
         $this->hidden = $config['hidden'] ?? false;
@@ -179,15 +193,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getStateTemplate()
     {
         return '@LleCrudit/filter/state/string_filter.html.twig';
-    }
-
-    public function __sleep()
-    {
-        return array(
-            'columnName',
-            'alias',
-            'data'
-        );
     }
 
     /**

@@ -1,7 +1,8 @@
 {% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
 {% block value %}
-    {% for val in data['value']|split(",") %}
-        {% set label = val |split("|")|last %}
+    {%  set items = data['items']|json_decode %}
+    {% for val in items %}
+        {% set label = val.text %}
         <span class="badge bg-secondary">{{ label }}</span>
     {% endfor %}
 {% endblock %}

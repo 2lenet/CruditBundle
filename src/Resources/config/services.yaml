@@ -63,6 +63,11 @@ services:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: ['crudit.layout']
 
+    Lle\CruditBundle\Twig\CruditExtension:
+        tags: [twig.extension]
+
+    # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
+    # And guess the good type
 
     Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser: ~
 

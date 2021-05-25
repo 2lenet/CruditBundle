@@ -52,6 +52,12 @@ class FilterState
                     if ($op) {
                         $filterdata[$filterId][$filterType->getId()]['op'] = $op;
                     }
+                    foreach ($filterType->getAdditionnalKeys() as $addProps) {
+                        $add_data = $request->query->get($key . '_'.$addProps);
+                        if ($add_data) {
+                            $filterdata[$filterId][$filterType->getId()][$addProps] = $add_data;
+                        }
+                    }
                 }
             }
         }

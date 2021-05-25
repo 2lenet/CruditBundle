@@ -14,6 +14,7 @@ class EntityFilterType extends AbstractFilterType
     {
         $f = new self($fieldname);
         $f->setEntityClass($entityClass);
+        $f->setAdditionnalKeys(['items']);
         return $f;
     }
 

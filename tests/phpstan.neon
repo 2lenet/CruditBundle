@@ -6,8 +6,8 @@ includes:
   - ../vendor/phpstan/phpstan-doctrine/extension.neon
   - ../vendor/phpstan/phpstan-deprecation-rules/rules.neon
 
-rules:
-  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+#rules:
+#  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
 
 parameters:
   level: 5
