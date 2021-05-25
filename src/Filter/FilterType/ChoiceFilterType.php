@@ -3,7 +3,8 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 /**
- * StringFilterType
+ * Class ChoiceFilterType
+ * @package Lle\CruditBundle\Filter\FilterType
  */
 class ChoiceFilterType extends AbstractFilterType
 {
@@ -18,11 +19,20 @@ class ChoiceFilterType extends AbstractFilterType
         $this->setMultiple($isMultiple);
     }
 
-    public static function new(string $fieldname, array $choices, bool $isMultiple = false): self
+    /**
+     * @param string $fieldname
+     * @param array $choices
+     * @param bool $isMultiple
+     * @return ChoiceFilterType
+     */
+    public static function new(string $fieldname, array $choices, bool $isMultiple = false): ChoiceFilterType
     {
         return new self($fieldname, $choices, $isMultiple);
     }
 
+    /**
+     * @param array $choices
+     */
     public function setChoices(array $choices): void
     {
         $this->choices = [];
@@ -35,6 +45,9 @@ class ChoiceFilterType extends AbstractFilterType
         }
     }
 
+    /**
+     * @param bool $isMultiple
+     */
     public function setMultiple(bool $isMultiple): void
     {
         $this->multiple = $isMultiple;

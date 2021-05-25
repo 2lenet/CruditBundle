@@ -2,7 +2,7 @@
 {% block operator %}{% endblock %}
 {% block input %}
     <div class="form-floating">
-        <select class="form-control select2" data-widget="select2" {% if filtertype.multiple %} multiple {% endif %}
+        <select class="form-control tom-select" data-widget="select2" {% if filtertype.multiple %} multiple {% endif %}
                 name="{{ id }}_value{% if filtertype.multiple %}[]{% endif %}">
             {% for k,v in filtertype.choices %}
                 <option value="{{ k }}" {% if data['value'] is defined and filtertype.isSelected(data,k) %} selected {% endif %}>{{ v }}</option>
