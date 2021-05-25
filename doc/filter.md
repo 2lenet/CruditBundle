@@ -41,3 +41,4 @@ In the getFilters() method, you can declare the desired filters
 - NumberFilterType
 - BooleanFilterType
 - ChoiceFilterType
+- EntityFilterType
