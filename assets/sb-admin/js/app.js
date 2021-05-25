@@ -33,6 +33,7 @@ window.addEventListener('load', function () {
             valueField: 'id',
             labelField: 'text',
             searchField: 'text',
+            maxItems: select.dataset.maxitems,
             options: inioptions,
             plugins: [
                     'checkbox_options',

@@ -1,0 +1,13 @@
+{% block autocomplete_widget %}
+    <input type="hidden" id="{{ id }}_items" name="{{ id }}_items">
+    <div class="form-floating">
+        <input class="form-control entity-select"
+               data-url="{{ url }}?q="
+               data-options="{{ items | default('[]') | escape('html_attr') }}"
+               data-maxitems="{{ multiple ? 'null' : '1' }}"
+               id="{{ id }}"
+               name="{{ full_name }}"
+               value="{{ value | default('') }}"
+        />
+    </div>
+{% endblock %}
