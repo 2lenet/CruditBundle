@@ -1,15 +1,16 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
 {% block input %}
-<input type="hidden" id="input_{{ id }}_items" name="{{ id }}_items">
     <div class="form-floating">
-        <input class="form-control entity-select"
-               data-url="{{ path(filter.dataRoute) }}?q="
-               data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
-               id="input_{{ id }}"
-               name="{{ id }}_value"
-               value="{{ data['value']|default('') }}"
-               />
+        <input type="hidden" id="input_{{ id }}_items" name="{{ id }}_items" />
+        <input id="input_{{ id }}"
+                class="form-control entity-select"
+                name="{{ id }}_value"
+                value="{{ data['value']|default('') }}"
+                placeholder=""
+                data-url="{{ path(filter.dataRoute) }}?q="
+                data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
+        />
         <label>{{ filter.filterLabel|trans() }}</label>
     </div>
 {% endblock %}
