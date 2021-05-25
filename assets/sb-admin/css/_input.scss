@@ -7,10 +7,54 @@
     }
 
     & + .form-floating {
-        input {
+        width: 220px;
+        input, .entity-select {
+            border: solid 1px $gray-400;
             border-left: none;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+        }
+
+        .entity-select {
+            & .ts-input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                flex-direction: column;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                align-items: flex-start;
+                height: 100%;
+                background-color: transparent;
+                border: none;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                &.focus, &:focus {
+                    box-shadow: 0 0 0 0.2rem $input-btn-focus-color;
+                }
+
+                input {
+                    margin-top: 10px !important;
+                }
+
+                .item {
+                    align-items: flex-start;
+                    max-width: 50%;
+                    max-height: 20px;
+                    margin-top: 10px;
+                    background: $gray-200;
+                    font-size: 13px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    &.active {
+                        background: $gray-200;
+                    }
+                }
+            }
+
+            & .ts-dropdown {
+                margin: 0;
+            }
         }
     }
 }

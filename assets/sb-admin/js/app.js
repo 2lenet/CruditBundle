@@ -26,6 +26,7 @@ window.addEventListener('load', function () {
         }*/
     });
 
+    // Entity filter
     document.querySelectorAll(".entity-select").forEach(select => {
         const dataurl = select.dataset.url;
         const inioptions = JSON.parse(select.dataset.options);
@@ -35,9 +36,9 @@ window.addEventListener('load', function () {
             searchField: 'text',
             options: inioptions,
             plugins: [
-                    'checkbox_options',
-                    'remove_button'
-                ],
+                'checkbox_options',
+                'remove_button'
+            ],
             onChange: function (value) {
                 let items = [];
                 value.split(',').forEach(v=>{
@@ -51,13 +52,10 @@ window.addEventListener('load', function () {
                     .then(response => response.json())
                     .then(json => {
                         callback(json.items);
-                        }).catch(() => {
+                    }).catch(() => {
                             callback();
-                        });
+                    });
             }
-                ,
-            })
-        ;
+        });
     });
 });
-
