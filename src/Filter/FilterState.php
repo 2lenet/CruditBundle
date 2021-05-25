@@ -2,17 +2,14 @@
 
 namespace Lle\CruditBundle\Filter;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class FilterState
 {
-    /** @var iterable */
-    private $filtersets;
+    private iterable $filtersets;
     private SessionInterface $session;
-    /**
-     * @var null
-     */
-    private $filterdata;
+    private ?array $filterdata;
 
     public function __construct(iterable $filtersets, SessionInterface $session)
     {
@@ -21,17 +18,7 @@ class FilterState
         $this->filterdata = null;
     }
 
-    public function isFilterLink($request)
-    {
-        foreach ($request->query->all() as $k => $val) {
-            if (strrpos($k, 'filter_') === 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function handleRequest($request)
+    public function handleRequest(Request $request):void
     {
         $filterdata = $this->session->get('crudit_filters');
         foreach ($this->filtersets as $filterset) {
@@ -65,17 +52,12 @@ class FilterState
         $this->session->set('crudit_filters', $filterdata);
     }
 
-    public function getFilters($crudKey)
-    {
-        return $this->filters[$crudKey] ?? [];
-    }
-
-    public function getData($set_id, $filter_id) {
+    public function getData($set_id, $filter_id): ?array {
         $this->loadData();
         return $this->filterdata[$set_id][$filter_id] ?? null;
     }
 
-    protected function loadData() {
+    protected function loadData(): void {
         if (!$this->filterdata) {
             $this->filterdata = $this->session->get('crudit_filters');
         }

@@ -4,7 +4,6 @@ namespace Lle\CruditBundle\Filter\FilterType;
 
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Lle\CruditBundle\Lib\QueryHelper;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
@@ -19,63 +18,23 @@ abstract class AbstractFilterType implements FilterTypeInterface
         $this->columnName = $fieldname;
         $this->id = $fieldname;
         $this->label = "field.".$fieldname;
-        $this->alias = "root.";
     }
 
-    /**
-     *
-     * @var null|string
-     */
-    protected $columnName = null;
+    protected string $columnName;
 
-    protected $hidden = false;
+    protected bool $hidden = false;
 
-    protected $additionnal_keys = [];
+    protected array $additionnal_keys = [];
 
+    protected string $alias = 'root.';
 
-    /**
-     *
-     * @var null|string
-     */
-    protected $alias = null;
+    protected string $id;
 
-    protected $id = null;
+    protected string $label = "";
 
-    protected $label = null;
+    protected ?array $data = null;
 
-    protected $request = null;
-
-    protected $data = null;
-
-    protected $data_keys = [];
-
-    protected $defaults = [];
-
-    /**
-     *
-     * @var bool
-     */
-    protected $head = false;
-
-    /**
-     *
-     * @param string $columnName
-     *            The column name
-     * @param string $alias
-     *            The alias
-     */
-    public function init($columnName, $label = null, $alias = 'entity')
-    {
-        $this->columnName = $columnName;
-        $this->id = str_replace('.', '_', $columnName);
-        $this->alias = $alias;
-        $this->label = $label ?? "label." . $columnName;
-        $this->data = [];
-        $this->data_keys = [
-            'op',
-            'value'
-        ];
-    }
+    protected array $defaults = [];
 
     public function getOperators()
     {
@@ -99,20 +58,10 @@ abstract class AbstractFilterType implements FilterTypeInterface
         $this->additionnal_keys = $additionnal_keys;
         return $this;
     }
-    public function configure(array $config = [])
-    {
-        $this->hidden = $config['hidden'] ?? false;
-        $this->head = $config['head'] ?? false;
-    }
 
     public function getFilterLabel()
     {
         return $this->label;
-    }
-
-    public function getCode()
-    {
-        return $this->columnName;
     }
 
     public function getId()
@@ -120,8 +69,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->id;
     }
 
-
-    public function addJoin($queryBuilder)
+    /*public function addJoin($queryBuilder)
     {
         $queryHelper = new QueryHelper();
         [
@@ -130,7 +78,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         ] = $queryHelper->getPath($queryBuilder, $queryBuilder->getRootAlias(), $this->columnName);
         $this->alias = $alias;
         $this->columnName = $col;
-    }
+    }*/
 
     /**
      * Returns empty string if no alias, otherwise make sure the alias has just one '.' after it.
@@ -150,34 +98,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function setHidden($hidden)
     {
         $this->hidden = $hidden;
-    }
-
-    /**
-     *
-     * @return bool
-     */
-    public function isHead()
-    {
-        return $this->head;
-    }
-
-    /**
-     *
-     * @param bool $head
-     */
-    public function setHead($head)
-    {
-        $this->head = $head;
-    }
-
-    public function setRequest($request)
-    {
-        $this->request = $request;
-    }
-
-    public function getRequest(): Request
-    {
-        return $this->request;
     }
 
     public function setData($data)
@@ -205,8 +125,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     /**
      * Set the value of defaults
-     *
-     * @return self
      */
     public function setDefaults($defaults)
     {
