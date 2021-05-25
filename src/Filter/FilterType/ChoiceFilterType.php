@@ -11,32 +11,33 @@ class ChoiceFilterType extends AbstractFilterType
     private $choices;
     private $multiple;
 
-    public function __construct($fieldname, array $config = [])
+    public function __construct($fieldname, array $choices, bool $isMultiple = false)
     {
         parent::__construct($fieldname);
-        $this->configure($config);
+        $this->setChoices($choices);
+        $this->setMultiple($isMultiple);
     }
 
-    public static function new(string $fieldname, array $config = []) {
-        return new ChoiceFilterType($fieldname, $config);
-    }
-
-     /**
-     * @param string $columnName The column name
-     * @param string $alias      The alias
-     */
-    public function configure(array $config = [])
+    public static function new(string $fieldname, array $choices, bool $isMultiple = false): self
     {
-        parent::configure($config);
+        return new self($fieldname, $choices, $isMultiple);
+    }
+
+    public function setChoices(array $choices): void
+    {
         $this->choices = [];
-        if (!$this->isAssoc($config['choices'])) {
-            foreach ($config['choices'] as $value) {
-                $this->choices[$value] = $value;
+        if (!$this->isAssoc($choices)) {
+            foreach ($choices as $choice) {
+                $this->choices[$choice] = $choice;
             }
         } else {
-            $this->choices = $config['choices'];
+            $this->choices = $choices;
         }
-        $this->multiple = (isset($config['multiple'])) ? $config['multiple'] : true;
+    }
+
+    public function setMultiple(bool $isMultiple): void
+    {
+        $this->multiple = $isMultiple;
     }
 
     public function apply($queryBuilder)
@@ -52,7 +53,7 @@ class ChoiceFilterType extends AbstractFilterType
         }
     }
 
-    public function getChoices()
+    public function getChoices(): array
     {
         return $this->choices;
     }
@@ -68,7 +69,7 @@ class ChoiceFilterType extends AbstractFilterType
     }
 
 
-    public function getMultiple()
+    public function getMultiple(): bool
     {
         return $this->multiple;
     }
