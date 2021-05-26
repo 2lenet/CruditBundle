@@ -73,7 +73,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    public function query(string $queryColumn, $queryTerm): iterable
+    public function query(string $queryColumn, $queryTerm, array $sorts): iterable
     {
         $qb = $this->buildQueryBuilder(null);
         $orStatements = $qb->expr()->orX();
@@ -83,6 +83,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             );
         }
         $qb->andWhere($orStatements);
+
+        foreach ($sorts as $sort) {
+            $qb->addOrderBy('root.' . $sort[0], $sort[1]);
+        }
+
         return $qb->getQuery()->execute();
     }
 
