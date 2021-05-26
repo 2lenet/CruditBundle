@@ -30,33 +30,36 @@ window.addEventListener('load', function () {
     document.querySelectorAll(".entity-select").forEach(select => {
         const dataurl = select.dataset.url;
         const inioptions = JSON.parse(select.dataset.options);
-        new TomSelect('#' + select.id, {
-            valueField: 'id',
-            labelField: 'text',
-            searchField: 'text',
-            maxItems: select.dataset.maxitems,
-            options: inioptions,
-            plugins: [
-                'checkbox_options',
-                'remove_button'
-            ],
-            onChange: function (value) {
-                let items = [];
-                value.split(',').forEach(v=>{
-                    items.push({id: v, text: this.options[v].text});
-                })
-                document.getElementById(select.id+"_items").value=JSON.stringify(items);
-            },
-            load: function (query, callback) {
-                var url = dataurl + encodeURIComponent(query);
-                fetch(url)
-                    .then(response => response.json())
-                    .then(json => {
-                        callback(json.items);
-                    }).catch(() => {
-                            callback();
-                    });
+        new TomSelect('#' + select.id,
+            {
+                valueField: 'id',
+                labelField: 'text',
+                searchField: 'text',
+                maxItems: select.dataset.maxitems,
+                preload: true,
+                options: inioptions,
+                plugins: [
+                        'checkbox_options',
+                        'remove_button'
+                    ],
+                onChange: function (value) {
+                    let items = [];
+                    value.split(',').forEach(v=>{
+                        items.push({id: v, text: this.options[v].text});
+                    })
+                    document.getElementById(select.id+"_items").value=JSON.stringify(items);
+                },
+                load: function (query, callback) {
+                    let url = dataurl + encodeURIComponent(query);
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(json => {
+                            callback(json.items);
+                            }).catch(() => {
+                                callback();
+                            });
+                }
             }
-        });
+        );
     });
 });
