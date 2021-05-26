@@ -16,4 +16,12 @@ class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
     {
         return <?= $entityClass ?>::class;
     }
+
+    /**
+    * @required
+    */
+    public function setFilterset(<?= $entityClass ?>FilterSet $filterSet)
+    {
+         $this->filterset = $filterSet;
+    }
 }

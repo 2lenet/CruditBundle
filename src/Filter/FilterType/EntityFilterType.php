@@ -25,8 +25,8 @@ class EntityFilterType extends AbstractFilterType
     public function getOperators()
     {
         return [
-            "equal" => ["icon" => "fas fa-equals"],
-            "not_equal" => ["icon" => "fas fa-not-equal"],
+            "eq" => ["icon" => "fas fa-equals"],
+            "neq" => ["icon" => "fas fa-not-equal"],
         ];
     }
 
