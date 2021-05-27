@@ -1,10 +1,13 @@
-<div class="row">
-        <div class="col-md-12 d-flex justify-content-end mb-2">
-            {%  for action in view.data.actions %}
-                <a title="{{ action.label|trans }}" class="{{ action.cssClass ?? 'btn btn-sm btn-primary ml-2' }}" href="{{ action.url ?? path(action.path.route, action.path.params) }}">
-                        {%  if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{%  endif %}
-                        {%  if not action.hideLabel %}{{ action.label|trans }}{%  endif %}
-                </a>
-            {%  endfor %}
-        </div>
-</div>
+<nav class="navbar navbar-light bg-light mb-4 shadow ">
+
+    <span class="navbar-brand text-primary">
+        <h4>{{ view.config.title|trans({'%entity%':view.data.entity}) }}</h4></span>
+          {%  for action in view.data.actions %}
+                  <a title="{{ action.label|trans }}" class="{{ action.cssClass ?? 'btn btn-sm btn-primary ml-2' }}" href="{{ action.url ?? path(action.path.route, action.path.params) }}">
+                          {%  if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{%  endif %}
+                          {%  if not action.hideLabel %}{{ action.label|trans }}{%  endif %}
+                  </a>
+          {%  endfor %}
+
+</nav>
+

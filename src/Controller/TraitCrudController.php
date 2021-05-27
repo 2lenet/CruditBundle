@@ -93,11 +93,26 @@ trait TraitCrudController
     {
         $dataSource = $this->config->getDatasource();
         $res = [];
-        $items = $dataSource->query('libelle', $request->query->get("q",""));
+        $items = $dataSource->query(
+            "libelle",
+            $request->query->get("q",""),
+            $this->config->getDefaultSort()
+        );
+
         foreach ($items as $item) {
-            $res[] = ["id"=>$item->getId(), "text"=>(string)$item];
+            $res[] = [
+                "id" => $item->getId(),
+                "text" => (string)$item,
+            ];
         }
-        return new JsonResponse(["total_count"=>count($res), "incomplete_results"=>false, "items"=>$res]);
+
+        return new JsonResponse(
+            [
+                "total_count" => count($res),
+                "incomplete_results" => false,
+                "items" => $res,
+            ]
+        );
     }
 
     /**

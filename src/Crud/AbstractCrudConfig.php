@@ -112,7 +112,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getTitle(string $key): ?string
     {
-        return "crud.title.$key." . strtolower($this->getName());
+        return "crud.title.".strtolower($key).".".strtolower($this->getName());
     }
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
@@ -123,7 +123,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getBrickConfigs(): array
     {
         $indexBricks = [];
-        $indexBricks[] = LinksConfig::new()->setActions($this->getListActions());
+        $indexBricks[] = LinksConfig::new(['title'=>$this->getTitle('list')])->setActions($this->getListActions());
 
         if ($this->getFilterset()) {
             $indexBricks[] = FilterConfig::new()
@@ -136,7 +136,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return [
             CrudConfigInterface::INDEX => $indexBricks,
             CrudConfigInterface::SHOW => [
-                LinksConfig::new()->addBack(),
+                LinksConfig::new(['title'=>$this->getTitle('show')])->addBack(),
                 ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW))
             ],
             CrudConfigInterface::EDIT => [

@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use mysql_xdevapi\Exception;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\FileManager;
@@ -38,10 +39,12 @@ final class MakeCrudit extends AbstractMaker
     public function __construct(
         FileManager $fileManager,
         DoctrineHelper $entityHelper
-    ) {
+    )
+    {
         $this->fileManager = $fileManager;
         $this->entityHelper = $entityHelper;
     }
+
     public static function getCommandName(): string
     {
         return 'make:crudit';
@@ -70,17 +73,23 @@ final class MakeCrudit extends AbstractMaker
                 sprintf('Do you want custom your FormType ?')
             )
             ->addArgument(
+                'filter',
+                InputArgument::OPTIONAL,
+                sprintf('Do you want some filters ?')
+            )
+            ->addArgument(
                 'use-strict-type',
                 InputArgument::OPTIONAL,
                 sprintf('Do you use strict type ?')
             )
-            ->setHelp((string) file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'))
-        ;
+            ->setHelp((string)file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'));
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('use-strict-type');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
         $inputConfig->setArgumentAsNonInteractive('form');
+        $inputConfig->setArgumentAsNonInteractive('filter');
+
     }
 
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
@@ -121,6 +130,12 @@ final class MakeCrudit extends AbstractMaker
             $value = $io->askQuestion($question);
             $input->setArgument('form', $value);
         }
+        if (null === $input->getArgument('filter')) {
+            $argument = $command->getDefinition()->getArgument('filter');
+            $question = new ConfirmationQuestion($argument->getDescription(), true);
+            $value = $io->askQuestion($question);
+            $input->setArgument('filter', $value);
+        }
     }
 
     private function getFields(ClassNameDetails $entityClassDetail): array
@@ -140,7 +155,8 @@ final class MakeCrudit extends AbstractMaker
         ConsoleStyle $io,
         Generator $generator,
         ClassNameDetails $entityClassDetail
-    ): string {
+    ): string
+    {
         $fields = $this->getFields($entityClassDetail);
         $template = 'CrudAuto';
         $configuratorClassNameDetails = $generator->createClassNameDetails(
@@ -188,7 +204,7 @@ final class MakeCrudit extends AbstractMaker
         );
         $generator->writeChanges();
         $this->writeSuccessMessage($io);
-        return  $controllerClassNameDetails->getFullName();
+        return $controllerClassNameDetails->getFullName();
     }
 
     private function createFormType(
@@ -196,7 +212,8 @@ final class MakeCrudit extends AbstractMaker
         ConsoleStyle $io,
         Generator $generator,
         ClassNameDetails $entityClassDetail
-    ): void {
+    ): void
+    {
         $fields = $this->getFields($entityClassDetail);
         $formTypeClassNameDetails = $generator->createClassNameDetails(
             $this->getStringArgument('entity-class', $input),
@@ -206,6 +223,33 @@ final class MakeCrudit extends AbstractMaker
         $generator->generateClass(
             $formTypeClassNameDetails->getFullName(),
             $this->getSkeletonTemplate('form/EntityCruditType.php'),
+            [
+                'namespace' => 'App',
+                'entityClass' => $input->getArgument('entity-class'),
+                'fields' => $fields,
+                'strictType' => $this->getBoolArgument('use-strict-type', $input)
+            ]
+        );
+        $generator->writeChanges();
+        $this->writeSuccessMessage($io);
+    }
+
+    private function createFilterset(
+        InputInterface $input,
+        ConsoleStyle $io,
+        Generator $generator,
+        ClassNameDetails $entityClassDetail
+    ): void
+    {
+        $fields = $this->getFields($entityClassDetail);
+        $filtersetClassNameDetails = $generator->createClassNameDetails(
+            $this->getStringArgument('entity-class', $input),
+            'Crudit\Datasource\Filterset\\',
+            'FilterSet'
+        );
+        $generator->generateClass(
+            $filtersetClassNameDetails->getFullName(),
+            $this->getSkeletonTemplate('filterset/EntityFilterset.php'),
             [
                 'namespace' => 'App',
                 'entityClass' => $input->getArgument('entity-class'),
@@ -251,14 +295,39 @@ final class MakeCrudit extends AbstractMaker
 
         $io->text('Creat a configurator for ' . $entityClassDetails->getFullName());
 
-
-        $this->createConfigurator($input, $io, $generator, $entityClassDetails);
-        $this->createFormType($input, $io, $generator, $entityClassDetails);
-        $this->createDatasource($input, $io, $generator);
-        $this->createController($input, $io, $generator);
+        try {
+            $this->createConfigurator($input, $io, $generator, $entityClassDetails);
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+        }
+        
+        try {
+            $this->createFormType($input, $io, $generator, $entityClassDetails);
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+        }
+        
+        try {
+            $this->createFilterset($input, $io, $generator, $entityClassDetails);
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+        }
+        
+        try {
+            $this->createDatasource($input, $io, $generator);
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+        }
+        
+        try {
+            $this->createController($input, $io, $generator);
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+        }
     }
 
-    public function configureDependencies(DependencyBuilder $dependencies): void
+    public
+    function configureDependencies(DependencyBuilder $dependencies): void
     {
         $dependencies->addClassDependency(
             Annotation::class,
@@ -266,31 +335,35 @@ final class MakeCrudit extends AbstractMaker
         );
     }
 
-    private function getSkeletonTemplate(string $templateName): string
+    private
+    function getSkeletonTemplate(string $templateName): string
     {
         return __DIR__ . '/../Resources/skeleton/crud/' . $templateName;
     }
 
-    private function getPathOfClass(string $class): string
+    private
+    function getPathOfClass(string $class): string
     {
         if (class_exists($class)) {
-            return (string) (new \ReflectionClass($class))->getFileName();
+            return (string)(new \ReflectionClass($class))->getFileName();
         }
         throw new InvalidArgumentException('entity class ' . $class . ' not found');
     }
 
-    private function getStringArgument(string $name, InputInterface $input): string
+    private
+    function getStringArgument(string $name, InputInterface $input): string
     {
         if (is_string($input->getArgument($name)) || is_null($input->getArgument($name))) {
-            return (string) $input->getArgument($name);
+            return (string)$input->getArgument($name);
         }
         throw new InvalidArgumentException($name . ' must be string type');
     }
 
-    private function getBoolArgument(string $name, InputInterface $input): bool
+    private
+    function getBoolArgument(string $name, InputInterface $input): bool
     {
         if (is_string($input->getArgument($name)) || is_bool($input->getArgument($name))) {
-            return (bool) $input->getArgument($name);
+            return (bool)$input->getArgument($name);
         }
         throw new InvalidArgumentException($name . ' must be bool type');
     }
