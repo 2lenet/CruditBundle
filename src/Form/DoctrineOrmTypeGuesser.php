@@ -23,7 +23,7 @@ use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
 
-class DoctrineOrmTypeGuesser /*implements FormTypeGuesserInterface*/
+class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
     protected $registry;
 
@@ -39,18 +39,23 @@ class DoctrineOrmTypeGuesser /*implements FormTypeGuesserInterface*/
      */
     public function guessType(string $class, string $property)
     {
+        dump($class, $property);
         if (!$ret = $this->getMetadata($class)) {
             return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', ["label"=>"field.".$property], Guess::LOW_CONFIDENCE);
         }
+        dump($ret);
 
         [$metadata, $name] = $ret;
 
         if ($metadata->hasAssociation($property)) {
             $multiple = $metadata->isCollectionValuedAssociation($property);
             $mapping = $metadata->getAssociationMapping($property);
-            return new TypeGuess('Lle\CruditBundle\Form\Type\AutocompleteType', ['em' => $name, 'class' => $mapping['targetEntity'], 'multiple' => $multiple,"label"=>"field.".$property], Guess::HIGH_CONFIDENCE);
-        }
 
+            return new TypeGuess('Lle\CruditBundle\Form\Type\AutocompleteType', [
+                'class' => $mapping['targetEntity'],
+                'multiple' => $multiple,
+                "label"=>"field.".$property], Guess::HIGH_CONFIDENCE);
+        }
         switch ($metadata->getTypeOfField($property)) {
             case Types::ARRAY:
             case Types::SIMPLE_ARRAY:
