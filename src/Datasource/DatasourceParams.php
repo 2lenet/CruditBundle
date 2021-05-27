@@ -6,10 +6,10 @@ class DatasourceParams
 {
 
     protected $count = 100;
-    private int $limit;
-    private int $offset;
-    private array $sorts;
-    private array $filters;
+    protected int $limit;
+    protected int $offset;
+    protected array $sorts;
+    protected array $filters;
 
     public function __construct(int $limit, int $offset, array $sorts, array $filters)
     {
