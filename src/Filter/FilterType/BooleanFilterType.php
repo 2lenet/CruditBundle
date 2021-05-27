@@ -25,7 +25,7 @@ class BooleanFilterType extends AbstractFilterType
     {
         if (isset($this->data['value']) && $this->data['value']) {
             $value = $this->data['value'];
-            if (isset($value) && $value != 'all') {
+            if ($value != 'all') {
                 switch ($value) {
                     case 'true':
                         $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'true'));

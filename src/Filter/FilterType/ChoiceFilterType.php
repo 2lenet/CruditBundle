@@ -2,6 +2,8 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * Class ChoiceFilterType
  * @package Lle\CruditBundle\Filter\FilterType
@@ -53,10 +55,9 @@ class ChoiceFilterType extends AbstractFilterType
         $this->multiple = $isMultiple;
     }
 
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value'])) {
-            $qb = $queryBuilder;
             if ($this->getMultiple()) {
                 $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             } else {
@@ -81,7 +82,6 @@ class ChoiceFilterType extends AbstractFilterType
         }
     }
 
-
     public function getMultiple(): bool
     {
         return $this->multiple;
@@ -95,12 +95,12 @@ class ChoiceFilterType extends AbstractFilterType
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/choice_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/choice_filter.html.twig';
     }

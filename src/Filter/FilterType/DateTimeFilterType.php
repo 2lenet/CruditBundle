@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use DateTime;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * DateTimeFilterType
@@ -12,9 +13,9 @@ class DateTimeFilterType extends AbstractFilterType
 
     /**
      * @param array  $data     The data
-     * @param string $this->uniqueId The unique identifier
+     * @param string $this->id The unique identifier
      */
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($data['value']) && isset($data['op'])) {
             /** @var DateTime $datetime */
@@ -27,25 +28,25 @@ class DateTimeFilterType extends AbstractFilterType
             $datetime = DateTime::createFromFormat('d/m/Y H:i', $date . ' ' . $time);
             switch ($data['op']) {
                 case 'before':
-                    $this->queryBuilder->andWhere($queryBuilder->expr()->lte($alias . $col, ':var_' . $this->uniqueId));
+                    $this->queryBuilder->andWhere($queryBuilder->expr()->lte($alias . $col, ':var_' . $this->id));
                     break;
                 case 'after':
-                    $this->queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $col, ':var_' . $this->uniqueId));
+                    $this->queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $col, ':var_' . $this->id));
                     break;
                 case 'equal':
-                    $this->queryBuilder->andWhere($alias . $this->columnName . ' = :var_' . $this->uniqueId);
+                    $this->queryBuilder->andWhere($alias . $this->columnName . ' = :var_' . $this->id);
                     break;
             }
-            $this->queryBuilder->setParameter('var_' . $this->uniqueId, $datetime);
+            $this->queryBuilder->setParameter('var_' . $this->id, $datetime);
         }
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/date_time_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/date_time_filter.html.twig';
     }

@@ -13,11 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 class FilterConfig extends AbstractBrickConfig
 {
 
-    /** @var FilterSetInterface */
-    private $filterset = null;
-
-    /** @var array  */
-    private $options;
+    private ?FilterSetInterface $filterset = null;
+    private array $options;
+    private string $className;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {

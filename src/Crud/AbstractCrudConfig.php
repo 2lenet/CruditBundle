@@ -10,7 +10,7 @@ use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
@@ -23,6 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
+    protected DatasourceInterface $datasource;
+
     abstract public function getFields($key): array;
 
     public function autoFields($fieldnames): array
@@ -39,6 +41,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return $this->getDatasource()->getFilterset();
     }
 
+    /**
+     * @param string $pageKey
+     * @return string|null
+     */
     protected function getFormType(string $pageKey): ?string
     {
         return str_replace(
@@ -77,7 +83,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return $actions;
     }
 
-    public function getDatasource(): DataSourceInterface
+    public function getDatasource(): DatasourceInterface
     {
         return $this->datasource;
     }

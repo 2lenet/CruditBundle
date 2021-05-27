@@ -101,7 +101,7 @@ class EntityToIdTransformer implements DataTransformerInterface
             throw new TransformationFailedException(sprintf(
                 "Entity of class %s with id '%s' does not exist!",
                 $this->class,
-                $entityId
+                $id
             ));
         }
 

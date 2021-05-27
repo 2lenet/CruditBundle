@@ -9,7 +9,7 @@ class AbstractFilterSet implements \Lle\CruditBundle\Contracts\FilterSetInterfac
 
     public function getFilters(): array
     {
-        // TODO: Implement getFilters() method.
+        return [];
     }
 
     public function getId(): string

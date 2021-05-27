@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use DateTime;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * DateFilterType
@@ -37,28 +38,28 @@ class DateFilterType extends AbstractFilterType
 
     /**
      * @param array  $data     The data
-     * @param string $this->uniqueId The unique identifier
+     * @param string $this->id The unique identifier
      */
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             $date = DateTime::createFromFormat('d/m/Y', $this->data['value']);
             if (!$date) {
-                return false;
+                return;
             }
 
             switch ($this->data['op']) {
                 case 'equal':
-                    $queryBuilder->andWhere($queryBuilder->expr()->like($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                    $queryBuilder->andWhere($queryBuilder->expr()->like($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
                 case 'before':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lte($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lte($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
                 case 'after':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
             }
-                $queryBuilder->setParameter('var_' . $this->uniqueId, $date->format('Y-m-d') . '%');
+                $queryBuilder->setParameter('var_' . $this->id, $date->format('Y-m-d') . '%');
         }
     }
 
@@ -74,12 +75,12 @@ class DateFilterType extends AbstractFilterType
         return $options;
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/date_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/date_filter.html.twig';
     }

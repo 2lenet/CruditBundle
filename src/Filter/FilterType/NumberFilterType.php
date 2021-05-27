@@ -2,25 +2,20 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * NumberFilterType
  */
 class NumberFilterType extends AbstractFilterType
 {
-    public function __construct($fieldname)
-    {
-        $this->columnName = $fieldname;
-        $this->id = $fieldname;
-        $this->label = "field.".$fieldname;
-        $this->alias = "root.";
-    }
 
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
     }
 
-    public function getOperators()
+    public function getOperators(): array
     {
         return [
             "eq" => ["icon" => "fas fa-equals"],
@@ -34,7 +29,7 @@ class NumberFilterType extends AbstractFilterType
         ];
     }
 
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value']) && $this->data['value']) {
             switch ($this->data['op']) {
@@ -73,12 +68,12 @@ class NumberFilterType extends AbstractFilterType
         }
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/number_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/number_filter.html.twig';
     }

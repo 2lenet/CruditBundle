@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Workflow\Registry;
 
 /**
@@ -41,18 +42,18 @@ class WorkflowFilterType extends ChoiceFilterType
     }
 
 
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value'])) {
             if ($this->getMultiple()) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             } else {
-                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->uniqueId));
+                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
             }
-            $queryBuilder->setParameter('var_' . $this->uniqueId, $this->data['value']);
+            $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
         } elseif (!empty($this->excludes)) {
-            $queryBuilder->andWhere($queryBuilder->expr()->notin($this->alias . $this->columnName, ':var_' . $this->uniqueId));
-            $queryBuilder->setParameter('var_' . $this->uniqueId, $this->excludes);
+            $queryBuilder->andWhere($queryBuilder->expr()->notin($this->alias . $this->columnName, ':var_' . $this->id));
+            $queryBuilder->setParameter('var_' . $this->id, $this->excludes);
         }
     }
 
@@ -73,12 +74,12 @@ class WorkflowFilterType extends ChoiceFilterType
         }
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/workflow_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/workflow_filter.html.twig';
     }

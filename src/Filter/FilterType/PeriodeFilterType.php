@@ -3,31 +3,20 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use DateTime;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * DateFilterType
  */
 class PeriodeFilterType extends AbstractFilterType
 {
-
-    private $choices;
-    private $requestChoice;
-    private $format;
-
-
-    public function configure(array $config = [])
-    {
-        parent::configure($config);
-        $this->choices = $config['choices'] ?? null;
-        $this->format = $config['format'] ?? 'd/m/Y';
-    }
-
     /**
      * @param array  $data     The data
-     * @param string $uniqueId The unique identifier
+     * @param string $id The unique identifier
      */
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
+        /*
         if (isset($this->data['value'])) {
             $qb = $queryBuilder;
             $from = $to = null;
@@ -36,8 +25,8 @@ class PeriodeFilterType extends AbstractFilterType
                 $from = DateTime::createFromFormat($this->format, $this->data['value']['from']);
                 if ($from) {
                     $from = $from->format('Y-m-d');
-                    $qb->andWhere($c . ' >= :var_from_' . $this->uniqueId);
-                    $queryBuilder->setParameter('var_from_' . $this->uniqueId, $from);
+                    $qb->andWhere($c . ' >= :var_from_' . $this->id);
+                    $queryBuilder->setParameter('var_from_' . $this->id, $from);
                 }
             }
             if (isset($this->data['value']['to']) && $this->data['value']['to']) {
@@ -45,62 +34,20 @@ class PeriodeFilterType extends AbstractFilterType
                 if ($to) {
                     $to->modify('+1 day');
                     $to = $to->format('Y-m-d');
-                    $qb->andWhere($c . ' < :var_to_' . $this->uniqueId);
-                    $queryBuilder->setParameter('var_to_' . $this->uniqueId, $to);
+                    $qb->andWhere($c . ' < :var_to_' . $this->id);
+                    $queryBuilder->setParameter('var_to_' . $this->id, $to);
                 }
             }
         }
+        */
     }
 
-    public function getChoices()
-    {
-        $return = array();
-        if (!$this->choices) {
-            return $return;
-        }
-        foreach ($this->choices as $choice) {
-            $from = (isset($choice['from'])) ? $choice['from'] : 'getFrom';
-            $to = (isset($choice['to'])) ? $choice['to'] : 'getTo';
-            $m = (isset($choice['method'])) ? $choice['method'] : 'findAll';
-            if ($from and $to and $m and isset($choice['table'])) {
-                list($bundle,$label) = explode(':', $choice['table']);
-                $list = strtolower($label);
-                $label = (isset($choice['label'])) ? $choice['label'] : $label;
-                $elms = $this->getRepository($choice['table'])->$m();
-                $return[$label] = array('list' => $list,'items' => array());
-                foreach ($elms as $elm) {
-                    $f = $elm->$from();
-                    $t = $elm->$to();
-                    if ($f and $t) {
-                        $return[$label]['items'][] = array(
-                            'from' => $elm->$from()->format($this->format),
-                            'to' => $elm->$to()->format($this->format),
-                            'id' => $elm->getId(),
-                            'label' => $elm->__toString());
-                    }
-                }
-            } else {
-                throw new \Exception('PeriodFilter: Element dans choices invalide choices[elm[from,to,table,method,label]]');
-            }
-        }
-        return $return;
-    }
-
-    public function isSelected($list, $elm)
-    {
-        if (is_array($this->requestChoice) and isset($this->requestChoice[$list])) {
-            return ($elm['id'] == $this->requestChoice[$list]);
-        } else {
-            return false;
-        }
-    }
-
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/periode_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/periode_filter.html.twig';
     }
