@@ -2,6 +2,8 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * StringFilterType
  */
@@ -17,7 +19,7 @@ class StringFilterType extends AbstractFilterType
         return new self($fieldname);
     }
 
-    public function getOperators()
+    public function getOperators(): array
     {
         return [
             "startswith" => ["icon" => "far fa-caret-square-right"],
@@ -28,7 +30,7 @@ class StringFilterType extends AbstractFilterType
         ];
     }
 
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value']) && $this->data['value']) {
             $value = trim($this->data["value"]);
@@ -104,12 +106,12 @@ class StringFilterType extends AbstractFilterType
         return $pattern ? "(" . $pattern . ")" : null;
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/string_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/string_filter.html.twig';
     }

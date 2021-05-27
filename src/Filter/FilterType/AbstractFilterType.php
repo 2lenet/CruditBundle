@@ -37,7 +37,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     protected array $defaults = [];
 
-    public function getOperators()
+    public function getOperators(): array
     {
         return [
         ];
@@ -65,7 +65,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->label;
     }
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -111,7 +111,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->data;
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/string_filter.html.twig';
     }

@@ -2,9 +2,7 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Lle\CruditBundle\Filter\HiddenEntity;
-use function Symfony\Component\String\u;
+use Doctrine\ORM\QueryBuilder;
 
 class EntityFilterType extends AbstractFilterType
 {
@@ -22,7 +20,7 @@ class EntityFilterType extends AbstractFilterType
         $this->entityClass = $classname;
     }
 
-    public function getOperators()
+    public function getOperators() : array
     {
         return [
             "eq" => ["icon" => "fas fa-equals"],
@@ -30,7 +28,7 @@ class EntityFilterType extends AbstractFilterType
         ];
     }
 
-    public function apply($queryBuilder)
+    public function apply(QueryBuilder $queryBuilder) : void
     {
         if (isset($this->data['value'])) {
             $ids = explode(',', $this->data['value']);
@@ -39,17 +37,17 @@ class EntityFilterType extends AbstractFilterType
         }
     }
 
-    public function getDataRoute() {
+    public function getDataRoute(): string {
         $route = str_replace("App\\Entity\\","",$this->entityClass);
         return "app_crudit_".strtolower($route)."_autocomplete";
     }
 
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/entity_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/entity_filter.html.twig';
     }
