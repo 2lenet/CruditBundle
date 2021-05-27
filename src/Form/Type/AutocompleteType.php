@@ -21,26 +21,23 @@ class AutocompleteType extends AbstractType
 
     private RouterInterface $router;
 
-    private EntityToIdTransformer $transformer;
-
     private EntityManagerInterface $em;
 
     public function __construct(
         RouterInterface $router,
-        EntityToIdTransformer $transformer,
         EntityManagerInterface $em
     ) {
         $this->router = $router;
-        $this->transformer = $transformer;
         $this->em = $em;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if ($class = $options["class"]) {
-            $this->transformer->setClass($class);
-            $this->transformer->setMultiple($options["multiple"]);
-            $builder->addModelTransformer($this->transformer);
+            $transformer = new EntityToIdTransformer($this->em);
+            $transformer->setClass($class);
+            $transformer->setMultiple($options["multiple"]);
+            $builder->addModelTransformer($transformer);
         }
     }
 

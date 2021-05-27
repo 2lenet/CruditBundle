@@ -3,7 +3,6 @@ services:
         tags: [ form.type ]
         arguments:
             - "@router"
-            - "@Lle\\CruditBundle\\Form\\DataTransformer\\EntityToIdTransformer"
             - "@doctrine.orm.entity_manager"
     Lle\CruditBundle\Form\DataTransformer\EntityToIdTransformer:
         public: true
