@@ -48,8 +48,7 @@ class DoctrineOrmTypeGuesser /*implements FormTypeGuesserInterface*/
         if ($metadata->hasAssociation($property)) {
             $multiple = $metadata->isCollectionValuedAssociation($property);
             $mapping = $metadata->getAssociationMapping($property);
-
-            return new TypeGuess('Symfony\Bridge\Doctrine\Form\Type\EntityType', ['em' => $name, 'class' => $mapping['targetEntity'], 'multiple' => $multiple,"label"=>"field.".$property], Guess::HIGH_CONFIDENCE);
+            return new TypeGuess('Lle\CruditBundle\Form\Type\AutocompleteType', ['em' => $name, 'class' => $mapping['targetEntity'], 'multiple' => $multiple,"label"=>"field.".$property], Guess::HIGH_CONFIDENCE);
         }
 
         switch ($metadata->getTypeOfField($property)) {

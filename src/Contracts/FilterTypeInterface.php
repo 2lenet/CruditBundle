@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Contracts;
 
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -9,6 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface FilterTypeInterface
 {
-    public function getTemplate();
-    public function getStateTemplate();
+    public function getOperators(): array;
+
+    public function getTemplate(): string;
+
+    public function getStateTemplate(): string;
+
+    public function getId(): string;
+
+    public function apply(QueryBuilder $queryBuilder): void;
+
 }

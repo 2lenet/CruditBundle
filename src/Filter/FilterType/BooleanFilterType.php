@@ -7,8 +7,9 @@ namespace Lle\CruditBundle\Filter\FilterType;
  */
 class BooleanFilterType extends AbstractFilterType
 {
-    public function __construct($fieldname)
+    public function __construct(string $fieldname)
     {
+        parent::__construct($fieldname);
         $this->columnName = $fieldname;
         $this->id = $fieldname;
         $this->label = "field.".$fieldname;
@@ -20,7 +21,7 @@ class BooleanFilterType extends AbstractFilterType
         return new self($fieldname);
     }
 
-    public function apply($queryBuilder)
+    public function apply($queryBuilder): void
     {
         if (isset($this->data['value']) && $this->data['value']) {
             $value = $this->data['value'];
@@ -39,23 +40,12 @@ class BooleanFilterType extends AbstractFilterType
         }
     }
 
-    public function isSelected($data, $value)
-    {
-        if (! isset($data['value'])) {
-            $this->defaults = ['value' => $value];
-            return $this->defaults;
-        } else {
-            return ($data['value'] == $value);
-        }
-        return false;
-    }
-
-    public function getStateTemplate()
+    public function getStateTemplate(): string
     {
         return '@LleCrudit/filter/state/boolean_filter.html.twig';
     }
 
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return '@LleCrudit/filter/type/boolean_filter.html.twig';
     }
