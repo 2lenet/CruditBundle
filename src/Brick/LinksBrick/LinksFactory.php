@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
+use Lle\CruditBundle\Brick\TitleBrick\TitleConfig;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\BrickView;
@@ -24,7 +25,8 @@ class LinksFactory extends AbstractBasicBrickFactory
             ->setTemplate('@LleCrudit/brick/links')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
-                'actions' => $this->getActions($brickConfigurator)
+                'actions' => $this->getActions($brickConfigurator),
+                'entity' => $this->getItem($brickConfigurator)
             ]);
         return $view;
     }
@@ -41,5 +43,15 @@ class LinksFactory extends AbstractBasicBrickFactory
             $actions[] = $action;
         }
         return $actions;
+    }
+    private function getItem(LinksConfig $brickConfigurator): ?string
+    {
+        $id = $this->getRequest()->get('id');
+        if ($id) {
+            $resource = $brickConfigurator->getDataSource()->get($id);
+            return (string)$resource;
+        } else {
+            return "";
+        }
     }
 }

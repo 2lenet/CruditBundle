@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Dto\Action\ListAction;
+use Symfony\Component\HttpFoundation\Request;
 
 class LinksConfig extends AbstractBrickConfig
 {
@@ -55,5 +56,12 @@ class LinksConfig extends AbstractBrickConfig
     {
         $this->actions = $actions;
         return $this;
+    }
+
+    public function getConfig(Request $request): array
+    {
+        return [
+            'title' => $this->options['title']??"",
+        ];
     }
 }
