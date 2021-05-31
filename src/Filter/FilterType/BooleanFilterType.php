@@ -7,15 +7,6 @@ namespace Lle\CruditBundle\Filter\FilterType;
  */
 class BooleanFilterType extends AbstractFilterType
 {
-    public function __construct(string $fieldname)
-    {
-        parent::__construct($fieldname);
-        $this->columnName = $fieldname;
-        $this->id = $fieldname;
-        $this->label = "field.".$fieldname;
-        $this->alias = "root.";
-    }
-
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
@@ -38,6 +29,11 @@ class BooleanFilterType extends AbstractFilterType
                 }
             }
         }
+    }
+
+    public function isSelected($data, $value)
+    {
+        return is_array($data) ? $data["value"] === $value : false;
     }
 
     public function getStateTemplate(): string
