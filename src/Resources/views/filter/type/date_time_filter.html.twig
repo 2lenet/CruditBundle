@@ -1,43 +1,14 @@
-<div class="input-group">
-    <div class="input-group-btn">
+{% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
-
-        <button type="button" class="btn btn-default dropdown-toggle {{ nameprefix }}button{{ namesuffix }}"
-                data-toggle="dropdown" aria-expanded="false">
-
-            <i title="Avant le" class="fa fa-angle-left before"></i>
-            <i title="Après le" class="fa fa-angle-right after"></i>
-            <i title="Le" class="fa fa-calendar-o equal"></i>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#"
-                                       onclick="return lle.filter_set_button('#{{ nameprefix }}comparator{{ namesuffix }}','.{{ nameprefix }}button{{ namesuffix }}','equal');">
-                    <i class="fa fa-calendar-o"></i>{{ 'filter.date_time.on' | trans({}, 'EasyAdminPlusBundle') }}</a>
-            </li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#"
-                                       onclick="return lle.filter_set_button('#{{ nameprefix }}comparator{{ namesuffix }}','.{{ nameprefix }}button{{ namesuffix }}','before');">
-                    <i class="fa fa-angle-left"></i>{{ 'filter.date_time.before' | trans({}, 'EasyAdminPlusBundle') }}</a>
-            </li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#"
-                                       onclick="return lle.filter_set_button('#{{ nameprefix }}comparator{{ namesuffix }}','.{{ nameprefix }}button{{ namesuffix }}','after');">
-                    <i class="fa fa fa-angle-right"></i>{{ 'filter.date.after' | trans({}, 'EasyAdminPlusBundle') }}</a>
-            </li>
-
-        </ul>
-
-
-    </div><!-- /btn-group -->
-    <input type="hidden" class="form-control" id="{{ nameprefix }}comparator{{ namesuffix }}"
-           name="{{ nameprefix }}comparator{{ namesuffix }}"
-           {% if data.comparator is defined %}value="{{ data.comparator }}"{% endif %}>
-    <input type="text" class="input-small form-control form_datepicker{{ nameprefix }}{{ namesuffix }}" name="{{nameprefix}}value{{namesuffix}}[date]" {% if data.value['date'] is defined %}value="{{data.value['date']}}"{% endif %} />
-
-</div>
-
-<script>
-    $(document).ready(function() {
-        $('.form_datepicker{{ nameprefix }}{{ namesuffix }}').datetimepicker({'format' : 'dd/mm/yyyy'});
-        lle.filter_set_button('#{{ nameprefix }}comparator{{ namesuffix }}', '.{{ nameprefix }}button{{ namesuffix }}', '{% if data.comparator is defined %}{{ data.comparator }}{% else %}equal{% endif %}');
-    });
-</script>
-
+{% block input %}
+    <div>
+        <input type="date" name="{{ id }}_value"
+               class="form-control"
+               id="value_{{ id }}"
+               {% if data.value is defined %}value="{{ data.value }}"{% endif %} />
+        <input type="time" name="{{ id }}_time"
+               class="form-control"
+               id="input_{{ id }}_time"
+               {% if data.time is defined %}value="{{ data.time }}"{% endif %} />
+    </div>
+{% endblock %}

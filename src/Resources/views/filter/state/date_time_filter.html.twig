@@ -1,0 +1,10 @@
+{% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
+
+{% block value %}
+    {% if data['value'] %}
+        <span class="filter-state">
+        <small>{{ filtertype.filterLabel | trans }}</small>
+        <span class="badge">{{ data['value'] | date("d/m/Y H:i:s") }}</span>
+    </span>
+    {% endif %}
+{% endblock %}
