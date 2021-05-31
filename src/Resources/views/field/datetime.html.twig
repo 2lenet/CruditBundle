@@ -1,1 +1,3 @@
-{{ value|date(options.format) }}
+{% if value %}
+    {{ value|date(options.format) }}
+{% endif %}
