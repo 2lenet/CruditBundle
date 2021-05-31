@@ -10,7 +10,6 @@ use Doctrine\ORM\QueryBuilder;
  */
 class ChoiceFilterType extends AbstractFilterType
 {
-
     private $choices;
     private $multiple;
 
@@ -74,7 +73,6 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function isSelected($data, $value)
     {
-
         if (is_array($data['value'])) {
             return in_array($value, $data['value']);
         } else {
@@ -89,7 +87,7 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function isAssoc(array $arr)
     {
-        if (array() === $arr) {
+        if ([] === $arr) {
             return false;
         }
         return array_keys($arr) !== range(0, count($arr) - 1);

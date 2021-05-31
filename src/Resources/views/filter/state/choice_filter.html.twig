@@ -1,1 +1,11 @@
 {% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
+
+{% block value %}
+    {% if data['value'] is iterable %}
+        {% for v in data['value'] %}
+            <span class="badge bg-secondary">{{ filtertype.choices[v] }}</span>
+        {% endfor %}
+    {% else %}
+        <span class="badge bg-secondary">{{ filtertype.choices[data['value']] }}</span>
+    {% endif %}
+{% endblock %}
