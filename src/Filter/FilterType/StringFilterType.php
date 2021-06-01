@@ -32,26 +32,35 @@ class StringFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (isset($this->data['value']) && $this->data['value']) {
+        if (!isset($this->data["op"])) {
+            return;
+        }
+
+        $op = $this->data["op"];
+
+        // MAKE QUERY
+        $query = $this->getPattern($op, $this->id, $this->alias, $this->columnName);
+        /*foreach ($this->additionalProperties as $additionalCol) {
+            if (strpos($additionalCol, '.') !== false) {
+                $alias = '';
+            } else {
+                $alias = $this->alias;
+            }
+
+            $pattern = $this->getPattern($op, $this->id, $alias, $additionalCol);
+
+            if ($pattern) {
+                $query .= " OR " . $pattern;
+            }
+        }*/
+        $queryBuilder->andWhere($query);
+
+        if (
+            isset($this->data['value'])
+            && $this->data['value']
+            && !in_array($op, ["isnull", "isnotnull"])
+        ) {
             $value = trim($this->data["value"]);
-            $op = $this->data["op"];
-
-            // MAKE QUERY
-            $query = $this->getPattern($op, $this->id, $this->alias, $this->columnName);
-            /*foreach ($this->additionalProperties as $additionalCol) {
-                if (strpos($additionalCol, '.') !== false) {
-                    $alias = '';
-                } else {
-                    $alias = $this->alias;
-                }
-
-                $pattern = $this->getPattern($op, $this->id, $alias, $additionalCol);
-
-                if ($pattern) {
-                    $query .= " OR " . $pattern;
-                }
-            }*/
-            $queryBuilder->andWhere($query);
 
             // SET QUERY PARAMETERS
             switch ($op) {
