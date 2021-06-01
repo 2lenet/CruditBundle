@@ -12,6 +12,8 @@ How to make filters on lists
         $this->filterset = $filterset;
     }
 
+> :warning: **The PHPDoc `@required` is mandatory, otherwise the method will be ignored.**
+
 **2. Then, create the file CollecteFilterset.php that you declared as a parameter above**
 
 In the getFilters() method, you can declare the desired filters
