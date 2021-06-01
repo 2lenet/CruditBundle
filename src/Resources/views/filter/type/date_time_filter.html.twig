@@ -1,14 +1,24 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
 {% block input %}
-    <div>
-        <input type="date" name="{{ id }}_value"
-               class="form-control"
-               id="value_{{ id }}"
-               {% if data.value is defined %}value="{{ data.value }}"{% endif %} />
-        <input type="time" name="{{ id }}_time"
-               class="form-control"
-               id="input_{{ id }}_time"
-               {% if data.time is defined %}value="{{ data.time }}"{% endif %} />
+    <div class="form-floating">
+        <input
+                type="date"
+                name="{{ id }}_value"
+                class="form-control"
+                id="input_{{ id }}_value"
+                {% if data.value is defined %}value="{{ data.value }}"{% endif %}
+        >
+        <label for="input_{{ id }}_value">
+            {{ filter.filterLabel|trans() }}
+        </label>
+
+        <input
+                type="time"
+                name="{{ id }}_time"
+                class="form-control"
+                id="input_{{ id }}_time"
+                {% if data.time is defined %}value="{{ data.time }}"{% endif %}
+        >
     </div>
 {% endblock %}

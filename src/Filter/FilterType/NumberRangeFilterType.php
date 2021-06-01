@@ -9,21 +9,30 @@ use Doctrine\ORM\QueryBuilder;
  */
 class NumberRangeFilterType extends AbstractFilterType
 {
+    public static function new(string $fieldname): self
+    {
+        $f = new self($fieldname);
+        $f->setAdditionnalKeys(["to"]);
+
+        return $f;
+    }
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        /*
-        if (isset($data['value'][0]) or isset($data['value'][1])) {
-            if ($data['value'][0]) {
-                $queryBuilder->andWhere($this->alias . $this->columnName . ' >= :min_' . $this->id);
-                $queryBuilder->setParameter('min_' . $this->id, $data['value'][0]);
-            }
-            if ($data['value'][1]) {
-                $queryBuilder->andWhere($this->alias . $this->columnName . ' <= :max_' . $this->id);
-                $queryBuilder->setParameter('max_' . $this->id, $data['value'][1]);
-            }
+        if (isset($this->data['value'])) {
+            $queryBuilder->andWhere($this->alias . $this->columnName . ' >= :min_' . $this->id);
+            $queryBuilder->setParameter('min_' . $this->id, $this->data['value']);
         }
-        */
+
+        if (isset($this->data['to'])) {
+            $queryBuilder->andWhere($this->alias . $this->columnName . ' <= :max_' . $this->id);
+            $queryBuilder->setParameter('max_' . $this->id, $this->data['to']);
+        }
+    }
+
+    public function getStateTemplate(): string
+    {
+        return '@LleCrudit/filter/state/number_range_filter.html.twig';
     }
 
     public function getTemplate(): string
