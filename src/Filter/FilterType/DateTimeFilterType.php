@@ -2,11 +2,12 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
-use DateTime;
 use Doctrine\ORM\QueryBuilder;
 
 /**
  * DateTimeFilterType
+ *
+ * For datetimes.
  */
 class DateTimeFilterType extends AbstractFilterType
 {
@@ -27,10 +28,6 @@ class DateTimeFilterType extends AbstractFilterType
         ];
     }
 
-    /**
-     * @param array  $data     The data
-     * @param string $this->id The unique identifier
-     */
     public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value']) && isset($this->data['op'])) {
@@ -56,15 +53,5 @@ class DateTimeFilterType extends AbstractFilterType
 
             $queryBuilder->setParameter('var_' . $this->id, $datetime);
         }
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/date_time_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/date_time_filter.html.twig';
     }
 }

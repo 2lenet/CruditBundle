@@ -5,20 +5,15 @@ namespace Lle\CruditBundle\Filter\FilterType;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * Class ChoiceFilterType
- * @package Lle\CruditBundle\Filter\FilterType
+ * ChoiceFilterType
+ *
+ * For predefined select fields.
  */
 class ChoiceFilterType extends AbstractFilterType
 {
-    private $choices;
-    private $multiple;
+    protected array $choices;
 
-    public function __construct($fieldname, array $choices, bool $isMultiple = false)
-    {
-        parent::__construct($fieldname);
-        $this->setChoices($choices);
-        $this->setMultiple($isMultiple);
-    }
+    protected bool $multiple;
 
     /**
      * @param string $fieldname
@@ -28,7 +23,11 @@ class ChoiceFilterType extends AbstractFilterType
      */
     public static function new(string $fieldname, array $choices, bool $isMultiple = false): ChoiceFilterType
     {
-        return new self($fieldname, $choices, $isMultiple);
+        $f = new self($fieldname);
+        $f->setChoices($choices);
+        $f->setMultiple($isMultiple);
+
+        return $f;
     }
 
     /**
@@ -87,19 +86,10 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function isAssoc(array $arr)
     {
-        if ([] === $arr) {
+        if (empty($arr)) {
             return false;
         }
+
         return array_keys($arr) !== range(0, count($arr) - 1);
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/choice_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/choice_filter.html.twig';
     }
 }

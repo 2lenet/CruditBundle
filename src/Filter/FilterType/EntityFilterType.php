@@ -4,6 +4,11 @@ namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * EntityFilterType
+ *
+ * For entities, with an autocomplete.
+ */
 class EntityFilterType extends AbstractFilterType
 {
     protected string $entityClass;
@@ -13,6 +18,7 @@ class EntityFilterType extends AbstractFilterType
         $f = new self($fieldname);
         $f->setEntityClass($entityClass);
         $f->setAdditionnalKeys(['items']);
+
         return $f;
     }
 
@@ -23,7 +29,7 @@ class EntityFilterType extends AbstractFilterType
         return $this;
     }
 
-    public function getOperators() : array
+    public function getOperators(): array
     {
         return [
             "eq" => ["icon" => "fas fa-equals"],
@@ -31,7 +37,7 @@ class EntityFilterType extends AbstractFilterType
         ];
     }
 
-    public function apply(QueryBuilder $queryBuilder) : void
+    public function apply(QueryBuilder $queryBuilder): void
     {
         if (isset($this->data['value'])) {
             $ids = explode(',', $this->data['value']);
@@ -40,18 +46,10 @@ class EntityFilterType extends AbstractFilterType
         }
     }
 
-    public function getDataRoute(): string {
-        $route = str_replace("App\\Entity\\","", $this->entityClass);
-        return "app_crudit_".strtolower($route)."_autocomplete";
-    }
-
-    public function getStateTemplate(): string
+    public function getDataRoute(): string
     {
-        return '@LleCrudit/filter/state/entity_filter.html.twig';
-    }
+        $route = str_replace("App\\Entity\\", "", $this->entityClass);
 
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/entity_filter.html.twig';
+        return "app_crudit_" . strtolower($route) . "_autocomplete";
     }
 }

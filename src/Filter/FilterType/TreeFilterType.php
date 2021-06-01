@@ -5,14 +5,17 @@ namespace Lle\CruditBundle\Filter\FilterType;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * StringFilterType
+ * TreeFilterType
+ *
+ * For Gedmo trees.
  */
 class TreeFilterType extends EntityFilterType
 {
     public static function new(
         $fieldname,
         $entityClass
-    ): self {
+    ): self
+    {
         $f = new self($fieldname);
         $f->setAdditionnalKeys(["items"]);
         $f->setEntityClass($entityClass);

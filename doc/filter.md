@@ -38,9 +38,15 @@ In the getFilters() method, you can declare the desired filters
       }
 
 
-**The supported filter types are:** 
-- StringFilterType
-- NumberFilterType
-- BooleanFilterType
-- ChoiceFilterType
-- EntityFilterType
+**Available filter types :** 
+- StringFilterType : simple string search
+- BooleanFilterType : true/false/both values
+- ChoiceFilterType : a select
+- EntityFilterType : autocomplete select for entities
+- DateFilterType : simple dates
+- DateTimeFilterType : simple datetimes
+- PeriodeFilterType : date ranges
+- NumberFilterType : simple number search
+- NumberRangeFilterType : number ranges
+- TreeFilterType (still WIP) : for Gedmo trees (to include children)
+- WorkflowFilterType (still WIP) : for Symfony workflows

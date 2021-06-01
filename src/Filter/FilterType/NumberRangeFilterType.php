@@ -5,7 +5,9 @@ namespace Lle\CruditBundle\Filter\FilterType;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * EnumerationFilterType
+ * NumberRangeFilterType
+ *
+ * For number ranges.
  */
 class NumberRangeFilterType extends AbstractFilterType
 {
@@ -28,15 +30,5 @@ class NumberRangeFilterType extends AbstractFilterType
             $queryBuilder->andWhere($this->alias . $this->columnName . ' <= :max_' . $this->id);
             $queryBuilder->setParameter('max_' . $this->id, $this->data['to']);
         }
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/number_range_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/number_range_filter.html.twig';
     }
 }

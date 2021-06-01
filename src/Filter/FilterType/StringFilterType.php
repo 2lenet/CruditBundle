@@ -6,14 +6,11 @@ use Doctrine\ORM\QueryBuilder;
 
 /**
  * StringFilterType
+ *
+ * For strings.
  */
 class StringFilterType extends AbstractFilterType
 {
-    /**
-     * @var string
-     */
-    private $defaultValue;
-
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
@@ -85,9 +82,9 @@ class StringFilterType extends AbstractFilterType
 
 
     /**
-     * @return string
      * @param string op the op to use
      * @param string parameter the query parameter to set
+     * @return string
      */
     private function getPattern($op, $id, $alias, $col)
     {
@@ -115,15 +112,5 @@ class StringFilterType extends AbstractFilterType
         }
 
         return $pattern ? "(" . $pattern . ")" : null;
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/string_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/string_filter.html.twig';
     }
 }

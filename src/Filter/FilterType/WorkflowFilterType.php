@@ -7,17 +7,17 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Workflow\Registry;
 
 /**
- * StringFilterType
+ * WorkflowFilterType
+ *
+ * For Symfony workflows.
  */
 class WorkflowFilterType extends ChoiceFilterType
 {
-
-    private $choices;
     private $excludes;
-    private $multiple;
-    private $registry;
-    private $em;
 
+    private $registry;
+
+    private $em;
 
     public function __construct(EntityManagerInterface $em, Registry $registry)
     {
@@ -27,14 +27,14 @@ class WorkflowFilterType extends ChoiceFilterType
 
     /**
      * @param string $columnName The column name
-     * @param string $alias      The alias
+     * @param string $alias The alias
      */
     public function configure(array $config = [])
     {
         $config['choices'] = $config['choices'] ?? $this->registry->get(
-            $this->em->getClassMetadata($config['class'] ?? $config['data_class'])->newInstance(),
-            $config['name'] ?? null
-        )->getDefinition()->getPlaces();
+                $this->em->getClassMetadata($config['class'] ?? $config['data_class'])->newInstance(),
+                $config['name'] ?? null
+            )->getDefinition()->getPlaces();
         parent::configure($config);
 
         $this->excludes = $config['excludes'] ?? [];
@@ -72,15 +72,5 @@ class WorkflowFilterType extends ChoiceFilterType
         } else {
             return ($data['value'] == $value);
         }
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/workflow_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/workflow_filter.html.twig';
     }
 }

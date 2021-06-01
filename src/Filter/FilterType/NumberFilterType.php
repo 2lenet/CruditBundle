@@ -6,6 +6,8 @@ use Doctrine\ORM\QueryBuilder;
 
 /**
  * NumberFilterType
+ *
+ * For numbers.
  */
 class NumberFilterType extends AbstractFilterType
 {
@@ -63,15 +65,5 @@ class NumberFilterType extends AbstractFilterType
 
             $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
         }
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/number_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/number_filter.html.twig';
     }
 }

@@ -2,11 +2,12 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
-use DateTime;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * DateFilterType
+ * PeriodeFilterType
+ *
+ * For date ranges.
  */
 class PeriodeFilterType extends AbstractFilterType
 {

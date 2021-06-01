@@ -111,11 +111,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->data;
     }
 
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/string_filter.html.twig';
-    }
-
     /**
      * Get the value of defaults
      */
@@ -135,5 +130,33 @@ abstract class AbstractFilterType implements FilterTypeInterface
         $this->defaults = array_merge($this->defaults, $defaults);
 
         return $this;
+    }
+
+    public function getStateTemplate(): string
+    {
+        $class = (new \ReflectionClass($this))->getShortName();
+        $filename = strtolower(preg_replace(
+            "/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/",
+            "_",
+            $class)
+        );
+
+        $filename = str_replace("_type", "", $filename);
+
+        return "@LleCrudit/filter/state/$filename.html.twig";
+    }
+
+    public function getTemplate(): string
+    {
+        $class = (new \ReflectionClass($this))->getShortName();
+        $filename = strtolower(preg_replace(
+                "/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/",
+                "_",
+                $class)
+        );
+
+        $filename = str_replace("_type", "", $filename);
+
+        return "@LleCrudit/filter/type/$filename.html.twig";
     }
 }
