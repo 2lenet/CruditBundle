@@ -53,12 +53,12 @@ class StringFilterType extends AbstractFilterType
                 $query .= " OR " . $pattern;
             }
         }*/
-        $queryBuilder->andWhere($query);
 
-        if (
+        if (in_array($op, ["isnull", "isnotnull"])) {
+            $queryBuilder->andWhere($query);
+        } else if (
             isset($this->data['value'])
             && $this->data['value']
-            && !in_array($op, ["isnull", "isnotnull"])
         ) {
             $value = trim($this->data["value"]);
 
@@ -78,6 +78,8 @@ class StringFilterType extends AbstractFilterType
                 case 'notequals':
                     $queryBuilder->setParameter("val_" . $this->id, $value);
             }
+
+            $queryBuilder->andWhere($query);
         }
     }
 

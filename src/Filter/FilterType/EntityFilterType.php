@@ -6,7 +6,7 @@ use Doctrine\ORM\QueryBuilder;
 
 class EntityFilterType extends AbstractFilterType
 {
-    private string $entityClass;
+    protected string $entityClass;
 
     public static function new(string $fieldname, $entityClass): self
     {
@@ -16,8 +16,11 @@ class EntityFilterType extends AbstractFilterType
         return $f;
     }
 
-    public function setEntityClass(string $classname) {
+    public function setEntityClass(string $classname)
+    {
         $this->entityClass = $classname;
+
+        return $this;
     }
 
     public function getOperators() : array
@@ -38,7 +41,7 @@ class EntityFilterType extends AbstractFilterType
     }
 
     public function getDataRoute(): string {
-        $route = str_replace("App\\Entity\\","",$this->entityClass);
+        $route = str_replace("App\\Entity\\","", $this->entityClass);
         return "app_crudit_".strtolower($route)."_autocomplete";
     }
 
