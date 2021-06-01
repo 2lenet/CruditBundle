@@ -6,7 +6,6 @@
     <div class="form-floating">
             <input
                     type="text"
-                    placeholder="de"
                     {% if data.value is defined %} value="{{ data.value }}" {% endif %}
                     class="form-control"
                     name="{{ id }}_value"
@@ -18,7 +17,6 @@
 
             <input
                     type="text"
-                    placeholder="à"
                     {% if data.to is defined %} value="{{ data.to }}" {% endif %}
                     class="form-control"
                     name="{{ id }}_to"

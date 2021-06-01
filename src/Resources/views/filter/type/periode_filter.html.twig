@@ -1,48 +1,26 @@
-{% set choices = filtertype.getChoices() %}
-{% set isChoices = filtertype.choices|length %}
-<div class="row">
-  {% if isChoices %}
-    <div class="col-md-12">
-      {% for label,choice in choices %}
-        <select name="{{nameprefix}}choice{{namesuffix}}[{{ choice.list }}]" class="form-control {{nameprefix}}choices-from-to{{namesuffix}}">
-          <option value="">{{ label }}</option>
-          {% for item in choice.items %}
-            <option value="{{ item.id }}" data-to="{{ item.to }}" data-from="{{ item.from }}" {% if filtertype.isSelected(choice.list,item) %} selected {% endif %}>{{ item.label }}</option>
-          {% endfor %}
-        </select>
-      {% endfor %}
+{% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
+
+{% block operator %}{% endblock %}
+
+{% block input %}
+    <div class="form-floating">
+        <input
+                type="date"
+                {% if data.value is defined %} value="{{ data.value }}" {% endif %}
+                class="form-control"
+                name="{{ id }}_value"
+                id="input_{{ id }}_value"
+        >
+        <label for="input_{{ id }}_value">
+            {{ filter.filterLabel|trans() }}
+        </label>
+
+        <input
+                type="date"
+                {% if data.to is defined %} value="{{ data.to }}" {% endif %}
+                class="form-control"
+                name="{{ id }}_to"
+                id="input_{{ id }}_to"
+        >
     </div>
-  {% endif %}
-  <div class="col-md-6">
-  <input 
-    type="text" 
-    name="{{nameprefix}}value{{namesuffix}}[from]" 
-    class="form-control form_datepicker"
-    id="_{{nameprefix}}value_from{{namesuffix}}"  
-     placeholder="{{ 'filter.periode.from' | trans({}, 'EasyAdminPlusBundle') }}"
-    {% if data.value is defined and data.value.from is defined %}value="{{data.value.from}}"{% endif %} />
-  </div>
-  <div class="col-md-6">
-  <input type="text" 
-    name="{{nameprefix}}value{{namesuffix}}[to]" 
-    class="form-control form_datepicker"
-    id="_{{nameprefix}}value_to{{namesuffix}}"  
-     placeholder="{{ 'filter.periode.to' | trans({}, 'EasyAdminPlusBundle') }}"
-    {% if data.value is defined and data.value.to is defined %}value="{{data.value.to}}"{% endif %} />
-  </div>
-</div>
-<script>
-$(function(){
-    $("#_{{nameprefix}}value_from{{namesuffix}}, #_{{nameprefix}}value_to{{namesuffix}}" ).datepicker();
-});
-$('.{{nameprefix}}choices-from-to{{namesuffix}}').change(function(e){
-  var value = $(this).val();
-  $('.{{nameprefix}}choices-from-to{{namesuffix}}').val('');
-  $(this).val(value);
-  $('#_{{nameprefix}}value_from{{namesuffix}}').val($(this).find('option:selected').attr('data-from'));
-  $('#_{{nameprefix}}value_to{{namesuffix}}').val($(this).find('option:selected').attr('data-to'));
-});
-$('#_{{nameprefix}}value_from{{namesuffix}}, #_{{nameprefix}}value_to{{namesuffix}}').change(function(e) {
-    $('.{{nameprefix}}choices-from-to{{namesuffix}}').val('');
-});
-</script>
+{% endblock %}
