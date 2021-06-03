@@ -134,29 +134,25 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     public function getStateTemplate(): string
     {
-        $class = (new \ReflectionClass($this))->getShortName();
-        $filename = strtolower(preg_replace(
-            "/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/",
-            "_",
-            $class)
-        );
+        $fqcn = get_class($this);
+        $name = strtolower(preg_replace(
+            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+            '${1}',
+            $fqcn
+        ));
 
-        $filename = str_replace("_type", "", $filename);
-
-        return "@LleCrudit/filter/state/$filename.html.twig";
+        return "@LleCrudit/filter/state/{$name}_filter.html.twig";
     }
 
     public function getTemplate(): string
     {
-        $class = (new \ReflectionClass($this))->getShortName();
-        $filename = strtolower(preg_replace(
-                "/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/",
-                "_",
-                $class)
-        );
+        $fqcn = get_class($this);
+        $name = strtolower(preg_replace(
+            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+            '${1}',
+            $fqcn
+        ));
 
-        $filename = str_replace("_type", "", $filename);
-
-        return "@LleCrudit/filter/type/$filename.html.twig";
+        return "@LleCrudit/filter/type/{$name}_filter.html.twig";
     }
 }
