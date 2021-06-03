@@ -22,7 +22,7 @@ class DateTimeFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "equal" => ["icon" => "fas fa-equals"],
+            "eq" => ["icon" => "fas fa-equals"],
             "before" => ["icon" => "fas fa-less-than"],
             "after" => ["icon" => "fas fa-greater-than"],
         ];
@@ -40,7 +40,7 @@ class DateTimeFilterType extends AbstractFilterType
             }
 
             switch ($this->data['op']) {
-                case 'equal':
+                case 'eq':
                     $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
                 case 'before':
