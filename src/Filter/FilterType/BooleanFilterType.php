@@ -4,18 +4,11 @@ namespace Lle\CruditBundle\Filter\FilterType;
 
 /**
  * BooleanFilterType
+ *
+ * For boolean values.
  */
 class BooleanFilterType extends AbstractFilterType
 {
-    public function __construct(string $fieldname)
-    {
-        parent::__construct($fieldname);
-        $this->columnName = $fieldname;
-        $this->id = $fieldname;
-        $this->label = "field.".$fieldname;
-        $this->alias = "root.";
-    }
-
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
@@ -32,21 +25,15 @@ class BooleanFilterType extends AbstractFilterType
                         break;
                     case 'false':
                         $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'))
-                            ->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName))
-                        ;
+                            ->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
                         break;
                 }
             }
         }
     }
 
-    public function getStateTemplate(): string
+    public function isSelected($data, $value)
     {
-        return '@LleCrudit/filter/state/boolean_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/boolean_filter.html.twig';
+        return is_array($data) ? $data["value"] === $value : false;
     }
 }

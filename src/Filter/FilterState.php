@@ -26,22 +26,22 @@ class FilterState
             if ($request->query->get($filterId.'_reset')) {
                 $filterdata[$filterId] = [];
             } else {
-
                 foreach ($filterset->getFilters() as $filterType) {
                     $key = "filter_" . $filterId . '_' . $filterType->getId();
 
                     $data = $request->query->get($key . '_value');
-
-                    if ($data) {
+                    if ($data !== null && $data !== "") {
                         $filterdata[$filterId][$filterType->getId()]['value'] = $data;
                     }
+
                     $op = $request->query->get($key . '_op');
-                    if ($op) {
+                    if ($op !== null && $op !== "") {
                         $filterdata[$filterId][$filterType->getId()]['op'] = $op;
                     }
+
                     foreach ($filterType->getAdditionnalKeys() as $addProps) {
                         $add_data = $request->query->get($key . '_'.$addProps);
-                        if ($add_data) {
+                        if ($add_data !== null && $add_data !== "") {
                             $filterdata[$filterId][$filterType->getId()][$addProps] = $add_data;
                         }
                     }

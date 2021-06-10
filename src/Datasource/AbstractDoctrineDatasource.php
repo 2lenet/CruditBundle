@@ -98,6 +98,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($this->filterset) {
             $this->applyFilters($qb);
         }
+
         return intval($qb->getQuery()->getSingleScalarResult());
     }
 

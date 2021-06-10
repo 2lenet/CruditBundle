@@ -8,7 +8,6 @@
 
     {% for column in line.fields %}
         <td>
-            {% dump(column) %}
             {%  if column.field.path %}<a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">{%  endif %}
                 {{ column.value }}
             {%  if column.field.path %}</a>{%  endif %}

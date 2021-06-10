@@ -12,6 +12,8 @@ How to make filters on lists
         $this->filterset = $filterset;
     }
 
+> :warning: **The PHPDoc `@required` is mandatory, otherwise the method will be ignored.**
+
 **2. Then, create the file CollecteFilterset.php that you declared as a parameter above**
 
 In the getFilters() method, you can declare the desired filters
@@ -36,9 +38,15 @@ In the getFilters() method, you can declare the desired filters
       }
 
 
-**The supported filter types are:** 
-- StringFilterType
-- NumberFilterType
-- BooleanFilterType
-- ChoiceFilterType
-- EntityFilterType
+**Available filter types :** 
+- StringFilterType : simple string search
+- BooleanFilterType : true/false/both values
+- ChoiceFilterType : a select
+- EntityFilterType : autocomplete select for entities
+- DateFilterType : simple dates
+- DateTimeFilterType : simple datetimes
+- PeriodeFilterType : date ranges
+- NumberFilterType : simple number search
+- NumberRangeFilterType : number ranges
+- TreeFilterType (still WIP) : for Gedmo trees (to include children)
+- WorkflowFilterType (still WIP) : for Symfony workflows

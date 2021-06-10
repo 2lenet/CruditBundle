@@ -5,50 +5,43 @@ namespace Lle\CruditBundle\Filter\FilterType;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * StringFilterType
+ * TreeFilterType
+ *
+ * For Gedmo trees.
  */
 class TreeFilterType extends EntityFilterType
 {
-    protected $startLevel;
-
-    /**
-     * @param array  $data     The data
-     * @param string $id The unique identifier
-     */
-    public function apply(QueryBuilder $queryBuiler): void
+    public static function new(
+        $fieldname,
+        $entityClass
+    ): self
     {
-        /*
-        if (isset($data['value'])) {
-            if ($this->getMultiple()) {
-                $nodes = $this->em->getRepository($this->table)->findById($data['value']);
-                $ids = array();
-                foreach ($nodes as $node) {
-                    $ids[] = $node;
-                    $children = $this->em->getRepository($this->table)->children($node, false);
-                    foreach ($children as $child) {
-                        $ids[] = $child->getId();
-                    }
-                }
-            } else {
-                $node = $this->em->getRepository($this->table)->find($data['value']);
-                $children = $this->em->getRepository($this->table)->children($node, false);
-                $ids = array($node);
-                foreach ($children as $child) {
-                    $ids[] = $child->getId();
-                }
-            }
-            $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $col, $ids));
-        }
-        */
+        $f = new self($fieldname);
+        $f->setAdditionnalKeys(["items"]);
+        $f->setEntityClass($entityClass);
+
+        return $f;
     }
 
-    public function display($entity)
+    public function apply(QueryBuilder $queryBuilder): void
     {
-        return ($entity->getLvl() >= $this->startLevel);
+        /**
+         * TODO : make this work for trees
+         *
+         * We either need entity manager injection (then we can use Gedmo's children() method)
+         * or a nice querybuilder that can handle multiple entities without duplicates
+         */
+
+        parent::apply($queryBuilder);
+    }
+
+    public function getStateTemplate(): string
+    {
+        return '@LleCrudit/filter/state/entity_filter.html.twig';
     }
 
     public function getTemplate(): string
     {
-        return '@LleCrudit/filter/type/tree_filter.html.twig';
+        return '@LleCrudit/filter/type/entity_filter.html.twig';
     }
 }

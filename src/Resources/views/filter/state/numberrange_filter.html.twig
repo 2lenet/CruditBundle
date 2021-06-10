@@ -1,12 +1,11 @@
 {% if data and ((data.value is defined and data.value) or (data.to is defined and data.to)) %}
     <button type="button" class="btn disabled btn-sm btn-primary">
-        {{ filtertype.filterLabel | trans }}
+
+        {{ filtertype.filterLabel|trans }}
 
         {% block value %}
             <span class="badge bg-secondary">
-                {{ data.value is defined ? data.value | date('d/m/Y') : '...' }}
-                -
-                {{ data.to is defined ? data.to | date('d/m/Y') : '...' }}
+                {{ data.value | default('...') ~ ' - ' ~ data.to | default('...') }}
             </span>
         {% endblock %}
     </button>

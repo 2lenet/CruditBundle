@@ -39,11 +39,9 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessType(string $class, string $property)
     {
-        dump($class, $property);
         if (!$ret = $this->getMetadata($class)) {
             return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', ["label"=>"field.".$property], Guess::LOW_CONFIDENCE);
         }
-        dump($ret);
 
         [$metadata, $name] = $ret;
 

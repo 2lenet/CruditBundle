@@ -6,10 +6,11 @@ use Doctrine\ORM\QueryBuilder;
 
 /**
  * NumberFilterType
+ *
+ * For numbers.
  */
 class NumberFilterType extends AbstractFilterType
 {
-
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
@@ -31,12 +32,17 @@ class NumberFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (isset($this->data['value']) && $this->data['value']) {
+        if (isset($this->data["op"]) && in_array($this->data["op"], ["isnull", "isnotnull"])) {
             switch ($this->data['op']) {
-                case 'eq':
-                    $queryBuilder->andWhere($this->alias . $this->columnName . ' = :var_' . $this->id);
-                    $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
+                case 'isnotnull':
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
                     break;
+                case 'isnull':
+                default:
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
+            }
+        } else if (isset($this->data['value']) && $this->data['value']) {
+            switch ($this->data['op']) {
                 case 'neq':
                     $queryBuilder->andWhere($queryBuilder->expr()->neq($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
@@ -47,34 +53,17 @@ class NumberFilterType extends AbstractFilterType
                     $queryBuilder->andWhere($queryBuilder->expr()->lte($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
                 case 'gt':
-                    $queryBuilder->andWhere($this->alias . $this->columnName . ' > :var_' . $this->id);
-                    $queryBuilder->setParameter('var_' . $this->id, '%' . $this->data['value'] . '%');
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
                 case 'gte':
-                    $queryBuilder->andWhere($this->alias . $this->columnName . ' >= :var_' . $this->id);
-                    $queryBuilder->setParameter('var_' . $this->id, '%' . $this->data['value'] . '%');
+                    $queryBuilder->andWhere($queryBuilder->expr()->gte($this->alias . $this->columnName, ':var_' . $this->id));
                     break;
-                case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
-                    break;
-                case 'isnotnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
-                    break;
+                case 'eq':
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
-                    break;
             }
+
             $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
         }
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/number_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/number_filter.html.twig';
     }
 }

@@ -111,11 +111,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->data;
     }
 
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/string_filter.html.twig';
-    }
-
     /**
      * Get the value of defaults
      */
@@ -135,5 +130,29 @@ abstract class AbstractFilterType implements FilterTypeInterface
         $this->defaults = array_merge($this->defaults, $defaults);
 
         return $this;
+    }
+
+    public function getStateTemplate(): string
+    {
+        $fqcn = get_class($this);
+        $name = strtolower(preg_replace(
+            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+            '${1}',
+            $fqcn
+        ));
+
+        return "@LleCrudit/filter/state/{$name}_filter.html.twig";
+    }
+
+    public function getTemplate(): string
+    {
+        $fqcn = get_class($this);
+        $name = strtolower(preg_replace(
+            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+            '${1}',
+            $fqcn
+        ));
+
+        return "@LleCrudit/filter/type/{$name}_filter.html.twig";
     }
 }

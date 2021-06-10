@@ -6,14 +6,11 @@ use Doctrine\ORM\QueryBuilder;
 
 /**
  * StringFilterType
+ *
+ * For strings.
  */
 class StringFilterType extends AbstractFilterType
 {
-    /**
-     * @var string
-     */
-    private $defaultValue;
-
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
@@ -32,26 +29,35 @@ class StringFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (isset($this->data['value']) && $this->data['value']) {
-            $value = trim($this->data["value"]);
-            $op = $this->data["op"];
+        if (!isset($this->data["op"])) {
+            return;
+        }
 
-            // MAKE QUERY
-            $query = $this->getPattern($op, $this->id, $this->alias, $this->columnName);
-            /*foreach ($this->additionalProperties as $additionalCol) {
-                if (strpos($additionalCol, '.') !== false) {
-                    $alias = '';
-                } else {
-                    $alias = $this->alias;
-                }
+        $op = $this->data["op"];
 
-                $pattern = $this->getPattern($op, $this->id, $alias, $additionalCol);
+        // MAKE QUERY
+        $query = $this->getPattern($op, $this->id, $this->alias, $this->columnName);
+        /*foreach ($this->additionalProperties as $additionalCol) {
+            if (strpos($additionalCol, '.') !== false) {
+                $alias = '';
+            } else {
+                $alias = $this->alias;
+            }
 
-                if ($pattern) {
-                    $query .= " OR " . $pattern;
-                }
-            }*/
+            $pattern = $this->getPattern($op, $this->id, $alias, $additionalCol);
+
+            if ($pattern) {
+                $query .= " OR " . $pattern;
+            }
+        }*/
+
+        if (in_array($op, ["isnull", "isnotnull"])) {
             $queryBuilder->andWhere($query);
+        } else if (
+            isset($this->data['value'])
+            && $this->data['value']
+        ) {
+            $value = trim($this->data["value"]);
 
             // SET QUERY PARAMETERS
             switch ($op) {
@@ -69,14 +75,16 @@ class StringFilterType extends AbstractFilterType
                 case 'notequals':
                     $queryBuilder->setParameter("val_" . $this->id, $value);
             }
+
+            $queryBuilder->andWhere($query);
         }
     }
 
 
     /**
-     * @return string
      * @param string op the op to use
      * @param string parameter the query parameter to set
+     * @return string
      */
     private function getPattern($op, $id, $alias, $col)
     {
@@ -104,15 +112,5 @@ class StringFilterType extends AbstractFilterType
         }
 
         return $pattern ? "(" . $pattern . ")" : null;
-    }
-
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/string_filter.html.twig';
-    }
-
-    public function getTemplate(): string
-    {
-        return '@LleCrudit/filter/type/string_filter.html.twig';
     }
 }
