@@ -19,9 +19,6 @@ class ListConfig extends AbstractBrickConfig
     /** @var Field[] */
     private $fields = [];
 
-    /** @var array  */
-    private $options;
-
     /** @var ItemAction[] */
     private $actions = [];
 

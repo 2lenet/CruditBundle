@@ -20,6 +20,7 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 use Symfony\Component\HttpFoundation\Request;
+use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
@@ -139,12 +140,23 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $indexBricks[] = ListConfig::new()
             ->addFields($this->getFields(CrudConfigInterface::INDEX))
             ->setActions($this->getItemActions());
+
+        $showBricks = [];
+        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->addBack();
+        $tabs = $this->getTabs();
+        if ($tabs) {
+            $tabConf = TabConfig::new();
+            $tabConf->add( $this->getTitle('show'), ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
+            foreach ($tabs as $label => $tab) {
+                $tabConf->add($label, $tab);
+            }
+            $showBricks[] = $tabConf;
+        } else {
+            $showBricks[]  = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
+        }
         return [
             CrudConfigInterface::INDEX => $indexBricks,
-            CrudConfigInterface::SHOW => [
-                LinksConfig::new(['title'=>$this->getTitle('show')])->addBack(),
-                ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW))
-            ],
+            CrudConfigInterface::SHOW => $showBricks,
             CrudConfigInterface::EDIT => [
                 LinksConfig::new()->addBack(),
                 FormConfig::new()->setForm($this->getFormType(CrudConfigInterface::EDIT))
@@ -156,6 +168,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         ];
     }
 
+    public function getTabs():array
+    {
+        return [];
+    }
+    
     public function getDefaultSort(): array
     {
         $fields = $this->getFields(self::INDEX);

@@ -16,9 +16,6 @@ class MapConfig extends AbstractBrickConfig
     /** @var Field[] */
     private $fields = [];
 
-    /** @var array  */
-    private $options;
-
     /** @var DatasourceInterface */
     private $dataSource;
 

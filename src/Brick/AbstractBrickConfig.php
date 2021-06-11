@@ -20,6 +20,9 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /** @var string */
     protected $id;
 
+    /** @var array */
+    protected $options = [];
+
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         $this->crudConfig = $crudConfig;
@@ -68,4 +71,23 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     {
         return [];
     }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     * @return AbstractBrickConfig
+     */
+    public function setOptions(array $options): AbstractBrickConfig
+    {
+        $this->options = $options;
+        return $this;
+    }
+
 }

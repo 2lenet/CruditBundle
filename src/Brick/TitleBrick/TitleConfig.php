@@ -12,9 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TitleConfig extends AbstractBrickConfig
 {
-    
-    /** @var array  */
-    private $options;
 
     /** @var DatasourceInterface */
     private $dataSource;

@@ -14,7 +14,6 @@ class FilterConfig extends AbstractBrickConfig
 {
 
     private ?FilterSetInterface $filterset = null;
-    private array $options;
     private string $className;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self

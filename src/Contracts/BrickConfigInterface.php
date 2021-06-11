@@ -19,6 +19,8 @@ interface BrickConfigInterface
 
     public function getConfig(Request $request): array;
 
+    public function getOptions(): array;
+
     public function getId(): string;
 
     public function setId(string $id): self;

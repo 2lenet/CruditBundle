@@ -1,11 +1,12 @@
-
-{% set site = view.data.resource.resource %}
-<div id="sitecollectemap"
-     data-lat="{{ site.centreLat | default(47.74) }}"
-     data-lng="{{ site.centreLng | default(7.34) }}"
-     data-zoom="14"
-        {% if site.commune %}
-            data-commune="{{ site.commune.id }}"
-        {% endif %}
+{% set item = view.data.resource.resource %}
+{% set centrefield_lat = view.options['lat_field'] %}
+{% set centrefield_lng = view.options['lng_field'] %}
+{% set zoom = view.options['zoom'] |default(14) %}
+{% set lat = item[centrefield_lat] | default(47.74) %}
+{% set lng = item[centrefield_lng] | default(7.34) %}
+<div id="map-{{ view.id }}" class="crudit-map"
+     data-lat="{{ lat }}"
+     data-lng="{{ lng }}"
+     data-zoom="{{ zoom }}"
 >
 </div>

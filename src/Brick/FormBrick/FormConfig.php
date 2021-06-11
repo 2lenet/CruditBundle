@@ -19,9 +19,6 @@ class FormConfig extends AbstractBrickConfig
     /** @var ?string */
     private $form = null;
 
-    /** @var array */
-    private $options = [];
-
     /** @var FormField[] */
     private $fields = [];
 

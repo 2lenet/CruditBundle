@@ -27,7 +27,7 @@ class BrickView
     private $cssClass;
 
     /** @var array  */
-    private $options;
+    protected $options;
 
     /** @var ?Path */
     private $path;
@@ -39,7 +39,7 @@ class BrickView
         $this->movable = false;
         $this->id = $brickConfig->getId();
         $this->cssClass = null;
-        $this->options = [];
+        $this->options = $brickConfig->getOptions();
         $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
             'idBrick' => $brickConfig->getId()
         ]));
@@ -121,6 +121,24 @@ class BrickView
     public function setPath(?Path $path): self
     {
         $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     * @return BrickView
+     */
+    public function setOptions(array $options): BrickView
+    {
+        $this->options = $options;
         return $this;
     }
 }

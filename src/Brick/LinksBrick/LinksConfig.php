@@ -13,9 +13,6 @@ class LinksConfig extends AbstractBrickConfig
     /** @var array  */
     protected $actions = [];
 
-    /** @var array */
-    protected $options = [];
-
     /** @var bool  */
     protected $back = false;
 

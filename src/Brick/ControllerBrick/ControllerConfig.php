@@ -9,8 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ControllerConfig extends AbstractBrickConfig
 {
-    /** @var array  */
-    private $options = [];
 
     public static function new(array $options = []): self
     {

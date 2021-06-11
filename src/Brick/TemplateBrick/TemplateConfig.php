@@ -10,9 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 class TemplateConfig extends AbstractBrickConfig
 {
 
-    /** @var array  */
-    private $options = [];
-
     public static function new(array $options = []): self
     {
         return new self($options);
