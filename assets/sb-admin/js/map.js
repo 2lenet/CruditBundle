@@ -3,14 +3,23 @@ import L from 'leaflet';
 require('leaflet-easybutton');
 require('@ansur/leaflet-pulse-icon');
 require('leaflet-ajax/dist/leaflet.ajax.min');
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "/bundles/llecrudit/leaflet/images/marker-icon-2x.png",
+  iconUrl: '/bundles/llecrudit/leaflet/images/marker-icon.png',
+  shadowUrl: '/bundles/llecrudit/leaflet/images/marker-shadow.png',
+});
 
 window.addEventListener('load', function () {
 
   document.querySelectorAll(".crudit-map").forEach(map_elem => {
     let center = [map_elem.dataset.lat, map_elem.dataset.lng]
     let map = L.map(map_elem.id, {center: center, zoom: map_elem.dataset.zoom});
-
-    var marker = L.marker(center).addTo(map);
+    console.log(map_elem.dataset.with_marker);
+    //if (map_elem.dataset.with_marker) {
+      L.marker(center).addTo(map);
+    //}
 
     let osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -27,6 +36,17 @@ window.addEventListener('load', function () {
     var overlay = {
     }
     L.control.layers(baseMaps, overlay).addTo(map);
+
+    // if we are un a tab we need to recalculate size
+    var tabEls = document.querySelectorAll('a[data-bs-toggle="tab"]')
+    tabEls.forEach((tabEl) => {
+      console.log(tabEl);
+      tabEl.addEventListener('shown.bs.tab', function () {
+        console.log("show tab");
+        setTimeout(() => {map.invalidateSize()}, 100);
+      })
+    });
+
     //sites_layer_poly.addTo(this.map);
     //sites_layer_point.addTo(this.map);
     //point_layer.addTo(this.map);

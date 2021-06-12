@@ -7,6 +7,7 @@
 <div id="map-{{ view.id }}" class="crudit-map"
      data-lat="{{ lat }}"
      data-lng="{{ lng }}"
+     data-with-marker="{{ view.options['with_marker']|default(false) }}"
      data-zoom="{{ zoom }}"
 >
 </div>
