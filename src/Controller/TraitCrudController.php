@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 trait TraitCrudController
 {
@@ -113,6 +114,25 @@ trait TraitCrudController
                 "items" => $res,
             ]
         );
+    }
+
+    /**
+     * @Route("/editdata/{id}/{field}")
+     */
+    public function editdata(Request $request, $id, $field): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
+        $dataSource = $this->config->getDatasource();
+        $item = $dataSource->get($id);
+        if ($item) {
+            $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+                ->getPropertyAccessor();
+
+            $propertyAccessor->setValue($item, $field, $request->request->get('value'));
+            return new JsonResponse(["status" => "ok"]);
+        } else {
+            return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
