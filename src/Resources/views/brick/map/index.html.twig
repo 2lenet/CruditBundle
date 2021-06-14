@@ -1,13 +1,21 @@
 {% set item = view.data.resource.resource %}
 {% set centrefield_lat = view.options['lat_field'] %}
 {% set centrefield_lng = view.options['lng_field'] %}
+{% set editable = view.options['editable']|default('off') %}
 {% set zoom = view.options['zoom'] |default(14) %}
-{% set lat = item[centrefield_lat] | default(47.74) %}
-{% set lng = item[centrefield_lng] | default(7.34) %}
+{% set lat = attribute(item, centrefield_lat) %}
+{% set lng = attribute(item, centrefield_lng) %}
+
+{% set polylinefield = view.options['poly_field']|default("") %}
+{% if polylinefield %}
+    {% set polyline = attribute(item, polylinefield) %}
+{% endif %}
 <div id="map-{{ view.id }}" class="crudit-map"
      data-lat="{{ lat }}"
      data-lng="{{ lng }}"
-     data-with-marker="{{ view.options['with_marker']|default(false) }}"
+     {% if polylinefield %} data-polyline="{{ polyline }}" {% endif %}
+     data-with_marker="{{ view.options['with_marker']|default(1) }}"
      data-zoom="{{ zoom }}"
+     data-editable="{{ editable }}"
 >
 </div>
