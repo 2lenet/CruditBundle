@@ -125,3 +125,9 @@ Réinitialiser: Reset
 Actions massives: Batch actions
 Filtrer les résultats: Filter results
 form.url_auto_complet.placeholder: Choose a value
+crudit:
+    modal:
+        delete:
+            message: "Do you really wish to delete this element ? This action is irreversible."
+            delete: "Delete"
+            cancel: "Cancel"
