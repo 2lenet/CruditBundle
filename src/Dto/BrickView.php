@@ -23,9 +23,6 @@ class BrickView
     /** @var string  */
     private $id;
 
-    /** @var ?string  */
-    private $cssClass;
-
     /** @var array  */
     protected $options;
 
@@ -38,7 +35,6 @@ class BrickView
         $this->data = $data;
         $this->movable = false;
         $this->id = $brickConfig->getId();
-        $this->cssClass = null;
         $this->options = $brickConfig->getOptions();
         $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
             'idBrick' => $brickConfig->getId()
@@ -94,7 +90,11 @@ class BrickView
 
     public function getCssClass(): ?string
     {
-        return $this->cssClass;
+        if (array_key_exists('cssClass',$this->options)) {
+            return $this->options["cssClass"];
+        } else {
+            return null;
+        }
     }
 
     public function setConfig(array $config): self

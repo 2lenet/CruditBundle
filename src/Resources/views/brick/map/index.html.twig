@@ -1,21 +1,43 @@
-{% set item = view.data.resource.resource %}
-{% set centrefield_lat = view.options['lat_field'] %}
-{% set centrefield_lng = view.options['lng_field'] %}
-{% set editable = view.options['editable']|default('off') %}
-{% set zoom = view.options['zoom'] |default(14) %}
-{% set lat = attribute(item, centrefield_lat) %}
-{% set lng = attribute(item, centrefield_lng) %}
+{#  basic config : lat / lng / zoom #}
+{% set zoom = view.options['zoom'] |default(6) %}
+{% set lat = view.options['lat'] |default(46) %}
+{% set lng = view.options['lng'] |default(2.5) %}
 
-{% set polylinefield = view.options['poly_field']|default("") %}
-{% if polylinefield %}
-    {% set polyline = attribute(item, polylinefield) %}
+{# layer as geourls #}
+{% set geojsons = view.options['geojsons'] |default(null) %}
+
+{#  this map is a item map #}
+
+{% set item = view.data.resource.resource |default(null) %}
+{% if item %}
+    {% set centrefield_lat = view.options['lat_field'] %}
+    {% set centrefield_lng = view.options['lng_field'] %}
+    {% set editable = view.options['editable']|default('off') %}
+    {% set polylinefield = view.options['poly_field']|default(null) %}
+
+    {% set lat = attribute(item, centrefield_lat) %}
+    {% set lng = attribute(item, centrefield_lng) %}
+
+    {% if polylinefield %}
+        {% set polyline = attribute(item, polylinefield) %}
+        {% set edit_url = path(view.options['edit_route'],{"id": item.id, "field":polylinefield}) %}
+    {% endif %}
 {% endif %}
+
+
 <div id="map-{{ view.id }}" class="crudit-map"
      data-lat="{{ lat }}"
      data-lng="{{ lng }}"
-     {% if polylinefield %} data-polyline="{{ polyline }}" {% endif %}
-     data-with_marker="{{ view.options['with_marker']|default(1) }}"
      data-zoom="{{ zoom }}"
-     data-editable="{{ editable }}"
+
+     data-with_marker="{{ view.options['with_marker']|default(1) }}"
+
+     {% if geojsons %}data-geojsons="{{ geojsons|json_encode }}"{% endif %}
+
+     {% if item %}
+         data-editable="{{ editable }}"
+         {% if polylinefield is not null %} data-polyline="{{ polyline }}"
+         data-edit_url="{{ edit_url }}"{% endif %}
+     {% endif %}
 >
 </div>

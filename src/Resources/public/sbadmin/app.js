@@ -1874,17 +1874,86 @@ window.addEventListener('load', function () {
       center: center,
       zoom: map_elem.dataset.zoom
     });
+    var marker = null;
+    var geo = null;
+    var overlay = {};
 
-    if (map_elem.dataset.with_marker) {
-      var marker = leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker(center).addTo(map);
-      if (editable) marker.enableEdit();
+    if (map_elem.dataset.with_marker === "1") {
+      marker = leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker(center).addTo(map);
+    } // geojson layers
+
+
+    if (map_elem.dataset.geojsons) {
+      var geojsons = JSON.parse(map_elem.dataset.geojsons);
+      geojsons.forEach(function (g) {
+        console.log(g);
+        var g_layer;
+
+        if (g["icon"]) {
+          var icon = leaflet__WEBPACK_IMPORTED_MODULE_0___default().icon(g["icon"]);
+          console.log(g["icon"]);
+          g_layer = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().GeoJSON.AJAX)(g["url"], {
+            pointToLayer: function pointToLayer(geoJsonPoint, latlng) {
+              return leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker(latlng, {
+                icon: icon
+              }).bindPopup("<iframe src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>").openPopup();
+            }
+          });
+        } else {
+          g_layer = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().GeoJSON.AJAX)(g["url"], {
+            onEachFeature: function onEachFeature(feature, layer) {
+              layer.bindPopup("<iframe src=\"" + g["popup_url"] + feature.id + "\"></iframe>").openPopup();
+            }
+          });
+        }
+
+        overlay[g['libelle']] = g_layer;
+        g_layer.addTo(map);
+      });
     }
 
     if (map_elem.dataset.polyline) {
       var feat = JSON.parse(map_elem.dataset.polyline);
-      var geo = leaflet__WEBPACK_IMPORTED_MODULE_0___default().polygon(feat.coordinates);
+      geo = leaflet__WEBPACK_IMPORTED_MODULE_0___default().geoJSON(feat);
       geo.addTo(map);
-      if (editable) geo.enableEdit();
+    }
+
+    if (editable) {
+      leaflet__WEBPACK_IMPORTED_MODULE_0___default().easyButton('fa-edit', function (btn, map) {
+        if (geo) {
+          geo.getLayers().forEach(function (l) {
+            l.toggleEdit(); //l.setStyle({color: 'DarkRed'});
+          });
+        }
+
+        if (marker) {
+          marker.toggleEdit();
+        }
+      }).addTo(map); // for geojson
+
+      map.on('editable:vertex:dragend', function (event) {
+        // Note: the layer latlngs have been updated here but not the geojson geometry
+        // copy changes to geojson
+        var geometry = event.layer.toGeoJSON().geometry;
+        var url = map_elem.dataset.edit_url;
+        var formData = new FormData();
+        formData.append('value', JSON.stringify(geometry));
+        fetch(url, {
+          body: formData,
+          method: "post"
+        });
+      }); // for marker
+
+      /*map.on('editable:drawing:move', (e) => {
+          console.log(e);
+      });*/
+
+      map.on('editable:drawing:end', function (e) {
+        console.log("end", e);
+      });
+      map.on('editable:drawing:mouseup', function (e) {
+        console.log("mouseup", e);
+      });
     }
 
     var osm = leaflet__WEBPACK_IMPORTED_MODULE_0___default().tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -1899,7 +1968,6 @@ window.addEventListener('load', function () {
       "OpenStreetMap": osm,
       "Satellite": googleSat
     };
-    var overlay = {};
     leaflet__WEBPACK_IMPORTED_MODULE_0___default().control.layers(baseMaps, overlay).addTo(map); // if we are un a tab we need to recalculate size
 
     var tabEls = document.querySelectorAll('a[data-bs-toggle="tab"]');

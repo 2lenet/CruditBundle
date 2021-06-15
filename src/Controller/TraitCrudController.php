@@ -129,6 +129,7 @@ trait TraitCrudController
                 ->getPropertyAccessor();
 
             $propertyAccessor->setValue($item, $field, $request->request->get('value'));
+            $dataSource->save($item);
             return new JsonResponse(["status" => "ok"]);
         } else {
             return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
