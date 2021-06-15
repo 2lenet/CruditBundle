@@ -134,4 +134,9 @@ class ItemAction
 
         return $this;
     }
+
+    public function getId(): string
+    {
+        return "crudit_action_" . spl_object_id($this);
+    }
 }
