@@ -15,6 +15,7 @@ Crudit bundle for 2le.
 - [Submenu](doc/submenu.md)
 - [Filters](doc/filter.md)
 - [Form types](doc/form_types.md)
+- [Use a FilterSet in your own Controller](doc/filterset_controller.md)
 
 
 ## Design architecture
