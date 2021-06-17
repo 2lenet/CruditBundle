@@ -54,10 +54,17 @@
                                 <div class="btn-group btn-group-sm" role="group" aria-label="...">
                                     {% for action in view.config.actions %}
                                         {% do action.setResource(line.resource) %}
+                                        {% if action.modal %}
+                                            {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
+                                        {% endif %}
                                         <span title="{{ action.title|trans }}" > {# span around link otherwise title may not show #}
                                             <a
                                                     class="{{ action.cssClass ?? 'btn btn-sm' }}{% if action.disabled %} disabled {% endif %}"
-                                                    {% if not action.disabled %}href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"{% endif %}
+                                                    {% if action.modal %}
+                                                        data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                                                    {% elseif not action.disabled %}
+                                                        href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
+                                                    {% endif %}
                                             >
                                                 {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
                                                 {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}

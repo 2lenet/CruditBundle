@@ -61,3 +61,8 @@ crudit:
     "true": "Oui"
     "false": "Non"
     "all": "Tout"
+    modal:
+        delete:
+            message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
+            delete: "Supprimer"
+            cancel: "Annuler"

@@ -117,23 +117,36 @@ trait TraitCrudController
     }
 
     /**
-     * @Route("/editdata/{id}/{field}")
+     * @Route("/editdata/{id}")
      */
-    public function editdata(Request $request, $id, $field): Response
+    public function editdata(Request $request, $id): Response
     {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
+
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
+
         if ($item) {
             $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
                 ->getPropertyAccessor();
 
-            $propertyAccessor->setValue($item, $field, $request->request->get('value'));
+            $data = json_decode($request->request->get("data",[]), true);
+
+            foreach ($data as $field => $value) {
+
+                if ($field === "id") {
+                    continue;
+                }
+
+                $propertyAccessor->setValue($item, $field, $value);
+            }
+
             $dataSource->save($item);
+
             return new JsonResponse(["status" => "ok"]);
-        } else {
-            return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
         }
+
+        return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
     }
 
     /**

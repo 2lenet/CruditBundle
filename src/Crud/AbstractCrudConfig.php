@@ -79,7 +79,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             'delete',
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
-        )->setCssClass('btn btn-danger btn-sm mr-1');
+        )
+            ->setCssClass('btn btn-danger btn-sm mr-1')
+            ->setModal("@LleCrudit/modal/_confirm_delete.html.twig");
 
         return $actions;
     }

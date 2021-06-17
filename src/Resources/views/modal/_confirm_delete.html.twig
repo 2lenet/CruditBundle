@@ -1,0 +1,17 @@
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                {{ 'crudit.modal.delete.message' | trans({}, 'LleCruditBundle') }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {{ 'crudit.modal.delete.cancel' | trans({}, 'LleCruditBundle') }}
+                </button>
+                <a href="{{ path(action.path.route, action.path.params({'id': line.id})) }}" type="button" class="btn btn-danger">
+                    {{ 'crudit.modal.delete.delete' | trans({}, 'LleCruditBundle') }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
