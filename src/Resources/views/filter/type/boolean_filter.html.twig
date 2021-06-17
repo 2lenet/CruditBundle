@@ -6,9 +6,9 @@
 {% block input %}
     <div class="form-floating">
         <select class="form-control" name="{{ id }}_value" id="input_{{ id }}">
-            <option value="all">{{ 'filter.boolean.all' | trans({}, 'LleCruditBundle') }}</option>
-            <option value="true" {% if  filtertype.isSelected(data,"true") %} selected="selected" {% endif %}>{{ 'filter.boolean.yes' | trans({}, 'LleCruditBundle') }}</option>
-            <option value="false" {% if filtertype.isSelected(data,"false") %} selected="selected" {% endif %}>{{ 'filter.boolean.no' | trans({}, 'LleCruditBundle') }}</option>
+            <option value="all">{{ 'crudit.filter.boolean.all' | trans({}, 'LleCruditBundle') }}</option>
+            <option value="true" {% if  filtertype.isSelected(data,"true") %} selected="selected" {% endif %}>{{ 'crudit.filter.boolean.yes' | trans({}, 'LleCruditBundle') }}</option>
+            <option value="false" {% if filtertype.isSelected(data,"false") %} selected="selected" {% endif %}>{{ 'crudit.filter.boolean.no' | trans({}, 'LleCruditBundle') }}</option>
         </select>
         <label for="input_{{ id }}">
             {{ filter.filterLabel }}
