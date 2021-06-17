@@ -2,7 +2,9 @@
 (function (factory, window) {
 
     // define an AMD module that relies on 'leaflet'
+    // eslint-disable-next-line
     if (typeof define === 'function' && define.amd) {
+        // eslint-disable-next-line
         define(['leaflet'], factory);
 
 
@@ -1751,6 +1753,7 @@
 
         createEditor: function (map) {
             map = map || this._map;
+
             var tools = (this.options.editOptions || {}).editTools || map.editTools;
             if (!tools) throw Error('Unable to detect Editable instance.');
             var Klass = this.options.editorClass || this.getEditorClass(tools);

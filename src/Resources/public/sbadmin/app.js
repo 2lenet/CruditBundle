@@ -87,6 +87,291 @@
 
 /***/ }),
 
+/***/ "./assets/sb-admin/js/Leaflet.Deflate.js":
+/*!***********************************************!*\
+  !*** ./assets/sb-admin/js/Leaflet.Deflate.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
+/* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(leaflet__WEBPACK_IMPORTED_MODULE_0__);
+
+/**
+ * https://github.com/oliverroick/Leaflet.Deflate/
+ */
+
+leaflet__WEBPACK_IMPORTED_MODULE_0___default().Layer.include({
+  _originalRemove: (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Layer.prototype.remove),
+  remove: function remove() {
+    if (this.marker) {
+      this.marker.remove();
+    }
+
+    return this._originalRemove();
+  }
+});
+leaflet__WEBPACK_IMPORTED_MODULE_0___default().Map.include({
+  _originalRemoveLayer: (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Map.prototype.removeLayer),
+  removeLayer: function removeLayer(layer) {
+    if (layer.marker) {
+      layer.marker.remove();
+    }
+
+    return this._originalRemoveLayer(layer);
+  }
+});
+(leaflet__WEBPACK_IMPORTED_MODULE_0___default().Deflate) = leaflet__WEBPACK_IMPORTED_MODULE_0___default().FeatureGroup.extend({
+  options: {
+    minSize: 10,
+    markerOptions: {},
+    markerType: (leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker)
+  },
+  initialize: function initialize(options) {
+    leaflet__WEBPACK_IMPORTED_MODULE_0___default().Util.setOptions(this, options);
+    this._layers = [];
+    this._needsPrepping = [];
+    this._featureLayer = this._getFeatureLayer(options);
+  },
+  _getFeatureLayer: function _getFeatureLayer() {
+    if (this.options.markerLayer) {
+      return this.options.markerLayer;
+    }
+
+    return leaflet__WEBPACK_IMPORTED_MODULE_0___default().featureGroup(this.options);
+  },
+  _getBounds: function _getBounds(path) {
+    // L.Circle defines the radius in metres. If you want to calculate
+    // the bounding box of a circle, it needs to be projected on the map.
+    // The only way to do that at present is to add it to the map. We're
+    // removing the circle after computing the bounds because we haven't
+    // figured out wether to display the circle or the deflated marker.
+    // It's a terribly ugly solution but ¯\_(ツ)_/¯
+    if (path instanceof (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Circle)) {
+      path.addTo(this._map);
+      var bounds = path.getBounds();
+
+      this._map.removeLayer(path);
+
+      return bounds;
+    }
+
+    return path.getBounds();
+  },
+  _isCollapsed: function _isCollapsed(path, zoom) {
+    var bounds = path.computedBounds;
+
+    var northEastPixels = this._map.project(bounds.getNorthEast(), zoom);
+
+    var southWestPixels = this._map.project(bounds.getSouthWest(), zoom);
+
+    var width = Math.abs(northEastPixels.x - southWestPixels.x);
+    var height = Math.abs(southWestPixels.y - northEastPixels.y);
+    return height < this.options.minSize || width < this.options.minSize;
+  },
+  _getZoomThreshold: function _getZoomThreshold(path) {
+    var zoomThreshold;
+
+    var zoom = this._map.getZoom();
+
+    if (this._isCollapsed(path, this._map.getZoom())) {
+      while (!zoomThreshold) {
+        zoom += 1;
+
+        if (!this._isCollapsed(path, zoom)) {
+          zoomThreshold = zoom - 1;
+        }
+      }
+    } else {
+      while (!zoomThreshold) {
+        zoom -= 1;
+
+        if (this._isCollapsed(path, zoom)) {
+          zoomThreshold = zoom;
+        }
+      }
+    }
+
+    return zoomThreshold;
+  },
+  _bindInfoTools: function _bindInfoTools(marker, parentLayer) {
+    if (parentLayer._popupHandlersAdded) {
+      marker.bindPopup(parentLayer._popup._content, parentLayer._popup.options);
+    }
+
+    if (parentLayer._tooltipHandlersAdded) {
+      marker.bindTooltip(parentLayer._tooltip._content, parentLayer._tooltip.options);
+    }
+  },
+  _bindEvents: function _bindEvents(marker, parentLayer) {
+    var events = parentLayer._events;
+    var eventKeys = events ? Object.getOwnPropertyNames(events) : [];
+    var eventParents = parentLayer._eventParents;
+    var eventParentKeys = eventParents ? Object.getOwnPropertyNames(eventParents) : [];
+
+    this._bindInfoTools(marker, parentLayer);
+
+    for (var i = 0, lenI = eventKeys.length; i < lenI; i += 1) {
+      var listeners = events[eventKeys[i]];
+
+      for (var j = 0, lenJ = listeners.length; j < lenJ; j += 1) {
+        marker.on(eventKeys[i], listeners[j].fn);
+      }
+    } // For FeatureGroups we need to bind all events, tooltips and popups
+    // from the FeatureGroup to each marker
+
+
+    if (!parentLayer._eventParents) {
+      return;
+    }
+
+    for (var _i = 0, _lenI = eventParentKeys.length; _i < _lenI; _i += 1) {
+      if (!parentLayer._eventParents[eventParentKeys[_i]]._map) {
+        this._bindEvents(marker, parentLayer._eventParents[eventParentKeys[_i]]); // We're copying all layers of a FeatureGroup, so we need to bind
+        // all tooltips and popups to the original feature.
+
+
+        this._bindInfoTools(parentLayer, parentLayer._eventParents[eventParentKeys[_i]]);
+      }
+    }
+  },
+  _makeMarker: function _makeMarker(layer) {
+    var allowedMarkerTypes = [(leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker), (leaflet__WEBPACK_IMPORTED_MODULE_0___default().circleMarker)];
+
+    if (allowedMarkerTypes.indexOf(this.options.markerType) === -1) {
+      throw new Error('Invalid markerType provided. Allowed markerTypes are: L.marker and L.circleMarker');
+    }
+
+    var markerOptions = typeof this.options.markerOptions === 'function' ? this.options.markerOptions(layer) : this.options.markerOptions;
+    var marker = this.options.markerType(layer.computedBounds.getCenter(), markerOptions);
+    var markerFeature = layer.feature ? marker.toGeoJSON() : undefined;
+
+    this._bindEvents(marker, layer);
+
+    if (markerFeature) {
+      markerFeature.properties = layer.feature.properties;
+      marker.feature = markerFeature;
+    }
+
+    return marker;
+  },
+  prepLayer: function prepLayer(layer) {
+    if (layer.getBounds) {
+      layer.computedBounds = this._getBounds(layer);
+      layer.zoomThreshold = this._getZoomThreshold(layer);
+      layer.marker = this._makeMarker(layer);
+      layer.zoomState = this._map.getZoom();
+    }
+  },
+  _addToMap: function _addToMap(layer) {
+    var layerToAdd = this._map.getZoom() <= layer.zoomThreshold ? layer.marker : layer;
+
+    this._featureLayer.addLayer(layerToAdd);
+  },
+  addLayer: function addLayer(layer) {
+    var layers = layer instanceof (leaflet__WEBPACK_IMPORTED_MODULE_0___default().FeatureGroup) ? Object.getOwnPropertyNames(layer._layers) : [];
+
+    if (layers.length) {
+      for (var i = 0, len = layers.length; i < len; i += 1) {
+        this.addLayer(layer._layers[layers[i]]);
+      }
+    } else {
+      if (this._map) {
+        this.prepLayer(layer);
+
+        this._addToMap(layer);
+      } else {
+        this._needsPrepping.push(layer);
+      }
+
+      this._layers[this.getLayerId(layer)] = layer;
+    }
+  },
+  removeLayer: function removeLayer(layer) {
+    var layers = layer instanceof (leaflet__WEBPACK_IMPORTED_MODULE_0___default().FeatureGroup) ? Object.getOwnPropertyNames(layer._layers) : [];
+
+    if (layers.length) {
+      for (var i = 0, len = layers.length; i < len; i += 1) {
+        this.removeLayer(layer._layers[layers[i]]);
+      }
+    } else {
+      var layerId = layer in this._layers ? layer : this.getLayerId(layer);
+
+      this._featureLayer.removeLayer(this._layers[layerId]);
+
+      if (this._layers[layerId].marker) {
+        this._featureLayer.removeLayer(this._layers[layerId].marker);
+      }
+
+      delete this._layers[layerId];
+
+      var layerIndex = this._needsPrepping.indexOf(this._layers[layerId]);
+
+      if (layerIndex !== -1) {
+        this._needsPrepping.splice(layerIndex, 1);
+      }
+    }
+  },
+  clearLayers: function clearLayers() {
+    this._featureLayer.clearLayers();
+
+    this._layers = [];
+  },
+  _switchDisplay: function _switchDisplay(layer, showMarker) {
+    if (showMarker) {
+      this._featureLayer.removeLayer(layer);
+
+      this._featureLayer.addLayer(layer.marker);
+    } else {
+      this._featureLayer.removeLayer(layer.marker);
+
+      this._featureLayer.addLayer(layer);
+    }
+  },
+  _deflate: function _deflate() {
+    var bounds = this._map.getBounds();
+
+    var endZoom = this._map.getZoom();
+
+    this.eachLayer(function (layer) {
+      if (layer.marker && layer.zoomState !== endZoom && layer.computedBounds.intersects(bounds)) {
+        this._switchDisplay(layer, endZoom <= layer.zoomThreshold);
+
+        layer.zoomState = endZoom;
+      }
+    }, this);
+  },
+  onAdd: function onAdd(map) {
+    this._featureLayer.addTo(map);
+
+    this._map.on('zoomend', this._deflate, this);
+
+    this._map.on('moveend', this._deflate, this);
+
+    for (var i = 0, len = this._needsPrepping.length; i < len; i += 1) {
+      this.addLayer(this._needsPrepping[i]);
+    }
+
+    this._needsPrepping = [];
+
+    this._deflate();
+  },
+  onRemove: function onRemove(map) {
+    map.removeLayer(this._featureLayer);
+
+    this._map.off('zoomend', this._deflate, this);
+
+    this._map.off('moveend', this._deflate, this);
+  }
+});
+
+(leaflet__WEBPACK_IMPORTED_MODULE_0___default().deflate) = function (options) {
+  return new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Deflate)(options);
+};
+
+/***/ }),
+
 /***/ "./assets/sb-admin/js/Leaflet.Editable.js":
 /*!************************************************!*\
   !*** ./assets/sb-admin/js/Leaflet.Editable.js ***!
@@ -100,7 +385,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 (function (factory, window) {
   // define an AMD module that relies on 'leaflet'
+  // eslint-disable-next-line
   if (true) {
+    // eslint-disable-next-line
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -1858,6 +2145,8 @@ __webpack_require__(/*! @ansur/leaflet-pulse-icon */ "../../../node_modules/@ans
 
 __webpack_require__(/*! leaflet-ajax/dist/leaflet.ajax.min */ "./node_modules/leaflet-ajax/dist/leaflet.ajax.min.js");
 
+__webpack_require__(/*! ./Leaflet.Deflate */ "./assets/sb-admin/js/Leaflet.Deflate.js");
+
 __webpack_require__(/*! ./Leaflet.Editable */ "./assets/sb-admin/js/Leaflet.Editable.js"); // install icons
 
 
@@ -1913,22 +2202,53 @@ window.addEventListener('load', function () {
     }
 
     if (map_elem.dataset.polyline) {
+      var deflate = leaflet__WEBPACK_IMPORTED_MODULE_0___default().deflate({
+        minSize: 15
+      });
+      deflate.addTo(map);
       var feat = JSON.parse(map_elem.dataset.polyline);
       geo = leaflet__WEBPACK_IMPORTED_MODULE_0___default().geoJSON(feat);
-      geo.addTo(map);
+      geo.addTo(deflate);
     }
 
     if (editable) {
-      leaflet__WEBPACK_IMPORTED_MODULE_0___default().easyButton('fa-edit', function (btn, map) {
-        if (geo) {
-          geo.getLayers().forEach(function (l) {
-            l.toggleEdit(); //l.setStyle({color: 'DarkRed'});
-          });
-        }
+      leaflet__WEBPACK_IMPORTED_MODULE_0___default().easyButton({
+        states: [{
+          // Start editing
+          stateName: 'enable',
+          icon: 'fa-edit',
+          onClick: function onClick(btn) {
+            if (geo) {
+              geo.getLayers().forEach(function (l) {
+                l.createEditor(map);
+                l.enableEdit();
+              });
+            }
 
-        if (marker) {
-          marker.toggleEdit();
-        }
+            if (marker) {
+              marker.toggleEdit();
+            }
+
+            btn.state('disable');
+          }
+        }, {
+          // Stop editing
+          stateName: 'disable',
+          icon: 'fa-check',
+          onClick: function onClick(btn) {
+            if (geo) {
+              geo.getLayers().forEach(function (l) {
+                l.disableEdit();
+              });
+            }
+
+            if (marker) {
+              marker.disableEdit();
+            }
+
+            btn.state('enable');
+          }
+        }]
       }).addTo(map); // for geojson
 
       map.on('editable:vertex:dragend', function (event) {

@@ -4,6 +4,7 @@ import L from 'leaflet';
 require('leaflet-easybutton');
 require('@ansur/leaflet-pulse-icon');
 require('leaflet-ajax/dist/leaflet.ajax.min');
+require("./Leaflet.Deflate");
 require('./Leaflet.Editable');
 
 // install icons
@@ -53,29 +54,59 @@ window.addEventListener('load', function () {
                     });
                 }
 
-                overlay[g['libelle']]= g_layer
+                overlay[g['libelle']] = g_layer
                 g_layer.addTo(map);
             })
         }
 
         if (map_elem.dataset.polyline) {
+            let deflate = L.deflate({
+                minSize: 15
+            });
+
+            deflate.addTo(map);
+
             let feat = JSON.parse(map_elem.dataset.polyline);
             geo = L.geoJSON(feat);
-            geo.addTo(map);
 
+            geo.addTo(deflate);
         }
 
         if (editable) {
-            L.easyButton('fa-edit', (btn, map) => {
-                if (geo) {
-                    geo.getLayers().forEach(l => {
-                        l.toggleEdit();
-                        //l.setStyle({color: 'DarkRed'});
-                    });
-                }
-                if (marker) {
-                    marker.toggleEdit();
-                }
+            L.easyButton({
+
+                states: [{
+                    // Start editing
+                    stateName: 'enable',
+                    icon:      'fa-edit',
+                    onClick: function(btn) {
+                        if (geo) {
+                            geo.getLayers().forEach(l => {
+                                l.createEditor(map);
+                                l.enableEdit();
+                            });
+                        }
+                        if (marker) {
+                            marker.toggleEdit();
+                        }
+                        btn.state('disable');
+                    }
+                }, {
+                    // Stop editing
+                    stateName: 'disable',
+                    icon:      'fa-check',
+                    onClick: function(btn) {
+                        if (geo) {
+                            geo.getLayers().forEach(l => {
+                                l.disableEdit();
+                            });
+                        }
+                        if (marker) {
+                            marker.disableEdit();
+                        }
+                        btn.state('enable');
+                    }
+                }]
             }).addTo(map);
 
             // for geojson
