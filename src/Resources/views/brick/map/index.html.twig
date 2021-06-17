@@ -12,7 +12,12 @@
 {% if item %}
     {% set centrefield_lat = view.options['lat_field'] %}
     {% set centrefield_lng = view.options['lng_field'] %}
-    {% set editable = view.options['editable']|default('off') %}
+    {% set editable = view.options['editable']|default(false) %}
+    {% if editable %}
+        {% set edit_url = path(view.options['edit_route'], {"id": item.id}) %}
+    {% endif %}
+
+
     {% set polylinefield = view.options['poly_field']|default(null) %}
 
     {% set lat = attribute(item, centrefield_lat) %}
@@ -20,7 +25,6 @@
 
     {% if polylinefield %}
         {% set polyline = attribute(item, polylinefield) %}
-        {% set edit_url = path(view.options['edit_route'], {"id": item.id}) %}
     {% endif %}
 {% endif %}
 
@@ -29,8 +33,7 @@
      data-lng="{{ lng }}"
      data-zoom="{{ zoom }}"
 
-     data-lat_field="{{ centrefield_lat }}"
-     data-lng_field="{{ centrefield_lng }}"
+
 
      data-with_marker="{{ view.options['with_marker']|default(1) }}"
 
@@ -43,6 +46,8 @@
                 data-polyline="{{ polyline }}"
                 data-polyline_field="{{ polylinefield }}"
             {% endif %}
+            data-lat_field="{{ centrefield_lat }}"
+            data-lng_field="{{ centrefield_lng }}"
         {% endif %}
 >
 </div>
