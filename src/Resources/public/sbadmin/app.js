@@ -1848,6 +1848,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(leaflet__WEBPACK_IMPORTED_MODULE_0__);
 
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 __webpack_require__(/*! leaflet-easybutton */ "./node_modules/leaflet-easybutton/src/easy-button.js");
@@ -1886,12 +1888,10 @@ window.addEventListener('load', function () {
     if (map_elem.dataset.geojsons) {
       var geojsons = JSON.parse(map_elem.dataset.geojsons);
       geojsons.forEach(function (g) {
-        console.log(g);
         var g_layer;
 
         if (g["icon"]) {
           var icon = leaflet__WEBPACK_IMPORTED_MODULE_0___default().icon(g["icon"]);
-          console.log(g["icon"]);
           g_layer = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().GeoJSON.AJAX)(g["url"], {
             pointToLayer: function pointToLayer(geoJsonPoint, latlng) {
               return leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker(latlng, {
@@ -1937,23 +1937,31 @@ window.addEventListener('load', function () {
         var geometry = event.layer.toGeoJSON().geometry;
         var url = map_elem.dataset.edit_url;
         var formData = new FormData();
-        formData.append('value', JSON.stringify(geometry));
+
+        var data = _defineProperty({}, map_elem.dataset.polyline_field, JSON.stringify(geometry));
+
+        formData.append("data", JSON.stringify(data));
         fetch(url, {
           body: formData,
           method: "post"
         });
       }); // for marker
 
-      /*map.on('editable:drawing:move', (e) => {
-          console.log(e);
-      });*/
+      if (marker) {
+        marker.on('editable:dragend', function (event) {
+          var _data2;
 
-      map.on('editable:drawing:end', function (e) {
-        console.log("end", e);
-      });
-      map.on('editable:drawing:mouseup', function (e) {
-        console.log("mouseup", e);
-      });
+          var geometry = event.layer.toGeoJSON().geometry;
+          var url = map_elem.dataset.edit_url;
+          var formData = new FormData();
+          var data = (_data2 = {}, _defineProperty(_data2, map_elem.dataset.lng_field, geometry.coordinates[0]), _defineProperty(_data2, map_elem.dataset.lat_field, geometry.coordinates[1]), _data2);
+          formData.append("data", JSON.stringify(data));
+          fetch(url, {
+            body: formData,
+            method: "post"
+          });
+        });
+      }
     }
 
     var osm = leaflet__WEBPACK_IMPORTED_MODULE_0___default().tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -1972,9 +1980,7 @@ window.addEventListener('load', function () {
 
     var tabEls = document.querySelectorAll('a[data-bs-toggle="tab"]');
     tabEls.forEach(function (tabEl) {
-      console.log(tabEl);
       tabEl.addEventListener('shown.bs.tab', function () {
-        console.log("show tab");
         setTimeout(function () {
           map.invalidateSize();
         }, 100);

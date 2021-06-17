@@ -35,11 +35,9 @@ window.addEventListener('load', function () {
         if (map_elem.dataset.geojsons) {
             let geojsons = JSON.parse(map_elem.dataset.geojsons);
             geojsons.forEach((g) => {
-                console.log(g);
                 var g_layer;
                 if( g["icon"] ) {
                     var icon = L.icon(g["icon"]);
-                    console.log(g["icon"]);
                     g_layer = new L.GeoJSON.AJAX(g["url"], {
                         pointToLayer: function (geoJsonPoint, latlng) {
                             return L.marker(latlng, {icon: icon}).bindPopup(
@@ -87,7 +85,11 @@ window.addEventListener('load', function () {
                 let geometry = event.layer.toGeoJSON().geometry;
                 let url = map_elem.dataset.edit_url;
                 let formData = new FormData();
-                formData.append('value', JSON.stringify(geometry));
+
+                let data = {
+                    [map_elem.dataset.polyline_field]: JSON.stringify(geometry),
+                };
+                formData.append("data", JSON.stringify(data));
                 fetch(url,
                     {
                         body: formData,
@@ -95,17 +97,28 @@ window.addEventListener('load', function () {
                     }
                 );
             });
-            // for marker
-            /*map.on('editable:drawing:move', (e) => {
-                console.log(e);
-            });*/
-            map.on('editable:drawing:end', (e) => {
-                console.log("end", e);
-            });
-            map.on('editable:drawing:mouseup', (e) => {
-                console.log("mouseup", e);
-            });
 
+            // for marker
+            if (marker) {
+                marker.on('editable:dragend', (event) => {
+                    let geometry = event.layer.toGeoJSON().geometry;
+
+                    let url = map_elem.dataset.edit_url;
+                    let formData = new FormData();
+
+                    let data = {
+                        [map_elem.dataset.lng_field]: geometry.coordinates[0],
+                        [map_elem.dataset.lat_field]: geometry.coordinates[1],
+                    }
+                    formData.append("data", JSON.stringify(data));
+                    fetch(url,
+                        {
+                            body: formData,
+                            method: "post"
+                        }
+                    );
+                });
+            }
         }
         let osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -124,9 +137,7 @@ window.addEventListener('load', function () {
         // if we are un a tab we need to recalculate size
         var tabEls = document.querySelectorAll('a[data-bs-toggle="tab"]')
         tabEls.forEach((tabEl) => {
-            console.log(tabEl);
             tabEl.addEventListener('shown.bs.tab', function () {
-                console.log("show tab");
                 setTimeout(() => {
                     map.invalidateSize()
                 }, 100);
