@@ -1,20 +1,23 @@
-@import "~bootstrap/scss/bootstrap";
+@import 'settings/colors';
+@import 'settings/fonts';
+@import 'settings/borders';
+@import 'settings/sizing';
+@import 'settings/forms';
 
-// Import Custom SB Admin 2 Mixins and Components
-@import "mixins.scss";
-@import "global.scss";
-@import "utilities.scss";
+@import '~bootstrap/scss/bootstrap';
 
-// Custom Components
-@import "dropdowns.scss";
-@import "navs.scss";
-@import "buttons.scss";
-@import "input.scss";
-@import "cards.scss";
-@import "charts.scss";
-@import "login.scss";
-@import "error.scss";
-@import "footer.scss";
+@import 'global.scss';
+@import 'utilities/animation.scss';
+@import 'utilities/background.scss';
+@import 'utilities/display.scss';
+@import 'utilities/text.scss';
+@import 'utilities/border.scss';
+@import 'utilities/progress.scss';
+@import 'utilities/rotate.scss';
+@import 'navs.scss';
+@import 'buttons.scss';
+@import 'input.scss';
+@import 'footer.scss';
 
-@import "~@fortawesome/fontawesome-free/css/all.css";
-@import "~@fortawesome/fontawesome-free/css/v4-shims.css";
+@import '~@fortawesome/fontawesome-free/css/all.css';
+@import '~@fortawesome/fontawesome-free/css/v4-shims.css';
