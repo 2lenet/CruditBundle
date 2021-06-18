@@ -1,9 +1,10 @@
 .input-group-prepend {
     .dropdown-toggle, .dropdown-toggle:hover {
+        height: 100%;
         color: #000000;
         border-color: $gray-400;
-        border-top-left-radius: $border-radius !important;
-        border-bottom-left-radius: $border-radius !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
     & + .form-floating {
@@ -58,7 +59,6 @@
         }
     }
 }
-
 
 .form-floating {
     & > select.form-control:focus,
