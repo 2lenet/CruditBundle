@@ -4,76 +4,80 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-sm table-hover" id="{{ view.id }}_table" width="100%" cellspacing="0">
+            <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 <thead class="thead-light">
-                <tr>
-                    {% for field in view.config.fields %}
-                        <th class="text-nowrap">{{ field.label |trans }}
-                            {%  if field.sortable %}
-                                {% set merge_params = {
-                                    ((view.config.name|lower)~'_sort'): field.name,
-                                    ((view.config.name|lower)~'_sort_order'): 'asc'
-                                } %}
-                                {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
-                                {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
-                                {% set icon = 'fa-sort' %}
-                                {% if sorted %}
-                                    {% set icon = 'fa-sort-amount-up-alt' %}
+                    <tr>
+                        {% for field in view.config.fields %}
+                            <th class="text-nowrap">{{ field.label |trans }}
+                                {% if field.sortable %}
+                                    {% set merge_params = {
+                                        ((view.config.name|lower)~'_sort'): field.name,
+                                        ((view.config.name|lower)~'_sort_order'): 'asc'
+                                    } %}
+                                    {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
+                                    {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
+                                    {% set icon = 'fa-sort' %}
+                                    {% if sorted %}
+                                        {% set icon = 'fa-sort-amount-up-alt' %}
+                                    {% endif %}
+                                    {% if sorted and order=='asc' %}
+                                        {% set icon = 'fa-sort-amount-down-alt' %}
+                                        {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
+                                    {% endif %}
+                                    {% set parameters = app.request.query.all()|merge(merge_params) %}
+                                    {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
+                                    <span>
+                                        <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
+                                            <i class="fas {{ icon }}"></i>
+                                        </a>
+                                    </span>
                                 {% endif %}
-                                {% if sorted and order=='asc' %}
-                                    {% set icon = 'fa-sort-amount-down-alt' %}
-                                    {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                {% endif %}
-                                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
-                                <span>
-                                    <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                        <i class="fas {{ icon }}"></i>
-                                    </a>
-                                </span>
-                            {% endif %}
-                        </th>
-                    {% endfor %}
-                    {%  if view.config.actions|length %}
-                        <th>{{  'crudit.action'|trans }}</th>
-                    {% endif %}
-                </tr>
+                            </th>
+                        {% endfor %}
+                        {% if view.config.actions|length %}
+                            <th>{{ 'crudit.action'|trans }}</th>
+                        {% endif %}
+                    </tr>
                 </thead>
                 <tbody>
                     {% for line in view.data.lines %}
                         <tr>
-                        {% for column in line.fields %}
-                            <td>
-                                {%  if column.field.path %}<a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">{%  endif %}
-                                    {{ column.value | raw }}
-                                {%  if column.field.path %}</a>{%  endif %}
-                            </td>
-                        {% endfor %}
-                        {%  if view.config.actions|length %}
-                            <td>
-                                <div class="btn-group btn-group-sm" role="group" aria-label="...">
-                                    {% for action in view.config.actions %}
-                                        {% do action.setResource(line.resource) %}
-                                        {% if action.modal %}
-                                            {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
+                            {% for column in line.fields %}
+                                <td>
+                                    {% if column.field.path %}
+                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
                                         {% endif %}
-                                        <span title="{{ action.title|trans }}" > {# span around link otherwise title may not show #}
+                                        {{ column.value|raw }}
+                                        {% if column.field.path %}
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            {% if view.config.actions|length %}
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        {% for action in view.config.actions %}
+                                            {% do action.setResource(line.resource) %}
+                                            {% if action.modal %}
+                                                {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
+                                            {% endif %}
                                             <a
-                                                    class="{{ action.cssClass ?? 'btn btn-sm' }}{% if action.disabled %} disabled {% endif %}"
+                                                    class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                     {% if action.modal %}
                                                         data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
                                                     {% elseif not action.disabled %}
                                                         href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                                                     {% endif %}
+                                                    title="{{ action.title|trans }}"
                                             >
-                                                {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                                {% if action.icon %}
+                                                <i class="{{ action.icon.cssClass }}"></i>{% endif %}
                                                 {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
                                             </a>
-                                        </span>
-                                    {%  endfor %}
-                                </div>
-                            </td>
-                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>
