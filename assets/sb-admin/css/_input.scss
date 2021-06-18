@@ -58,3 +58,11 @@
         }
     }
 }
+
+
+.form-floating {
+    & > select.form-control:focus,
+    & > select.form-control:not(:placeholder-shown) {
+        padding-top: 0.9rem;
+    }
+}
