@@ -21,7 +21,7 @@
         <div id="collapse-filter" class="collapse show card-body">
             <div class="row">
                 {% for id, filter in view.data.filters %}
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 {% if filter.hidden %}d-none{% endif %}">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 {% if filter.hidden %}d-none{% endif %}">
                         <div class="form-group">
                             {% set vars = {
                                 'data': filter.data,

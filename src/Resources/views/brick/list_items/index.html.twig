@@ -46,9 +46,9 @@
                                 <td>
                                     {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                        {% endif %}
+                                    {% endif %}
                                         {{ column.value|raw }}
-                                        {% if column.field.path %}
+                                    {% if column.field.path %}
                                     </a>
                                     {% endif %}
                                 </td>
