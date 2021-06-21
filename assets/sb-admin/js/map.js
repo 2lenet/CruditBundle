@@ -144,41 +144,15 @@ window.addEventListener('load', function () {
             })
         });
 
-        //sites_layer_poly.addTo(this.map);
-        //sites_layer_point.addTo(this.map);
-        //point_layer.addTo(this.map);
-
-        /*
-        // couche geojson
-        let sites_layer_poly = new L.GeoJSON.AJAX("/api/site_collecte/poly.json", {
-          onEachFeature(feature, layer) {
-            layer.bindPopup(
-                "<iframe src=\"/api/site_collecte/" + feature.id + "/popup\"></iframe>"
-            ).openPopup();
-          }
+        // goto
+        var gotoEls = document.querySelectorAll('[data-gotomap]');
+        gotoEls.forEach((gotoElem) => {
+            gotoElem.addEventListener('click', function () {
+                let center = gotoElem.dataset.gotomap;
+                let zoom = gotoElem.dataset.gotozoom;
+                map.flyTo(center.split(","), zoom);
+            })
         });
-        let sites_layer_point = new L.GeoJSON.AJAX("/api/site_collecte/points.json");
-
-        var greenIcon = L.icon({
-          iconUrl: '/img/icons/tree_outline.svg',
-          iconSize: [32, 32] // size of the icon
-        });
-
-        let point_layer = new L.GeoJSON.AJAX("/api/point_collecte/points.json", {
-          pointToLayer: function (geoJsonPoint, latlng) {
-            return L.marker(latlng, {icon: greenIcon}).bindPopup(
-                "<iframe src=\"/api/point_collecte/" + geoJsonPoint.id + "/popup\"></iframe>"
-            ).openPopup();
-          }
-        });
-
-        let commune_layer;
-        if (communeId === undefined) {
-          commune_layer = new L.GeoJSON.AJAX("/api/communes/poly.json");
-        } else {
-          commune_layer = new L.GeoJSON.AJAX("/api/communes/" + communeId);
-        }
-        */
 
     });
 
