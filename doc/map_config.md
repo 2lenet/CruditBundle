@@ -67,3 +67,11 @@ Here is an example of a MapConfig with its options:
         ]);
 
 
+**3. Customise your Leaflet popup**
+
+If you want to apply the style of the app to the Leaflet popup, just add this to your template (the path placed into "popup_url" in MapConfig)
+
+    {{ encore_entry_link_tags('app') }}
+    <div>
+        ... Your template ...
+    </div>
