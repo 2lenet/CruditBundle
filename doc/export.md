@@ -27,6 +27,17 @@ public function getListActions(): array
             ]
         );
 }
+
+public function getFields($key): array
+{
+    if ($key === CrudConfigInterface::EXPORT) {
+        return [
+            Field::new(...)
+        ];
+    }
+
+    // if EXPORT is not filled, INDEX is used instead
+}
 ```
 
 Crudit already comes with some exporters:
