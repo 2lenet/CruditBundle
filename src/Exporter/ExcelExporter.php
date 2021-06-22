@@ -21,7 +21,7 @@ class ExcelExporter implements ExporterInterface
         return Exporter::EXCEL;
     }
 
-    public function export(iterable $resources, string $format, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params): Response
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

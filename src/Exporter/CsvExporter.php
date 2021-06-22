@@ -21,7 +21,7 @@ class CsvExporter implements ExporterInterface
         return Exporter::CSV;
     }
 
-    public function export(iterable $resources, string $format, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params): Response
     {
         $file = tmpfile();
 

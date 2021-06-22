@@ -25,7 +25,7 @@ class Exporter
         /** @var ExporterInterface $exporter */
         foreach ($this->exporters as $exporter) {
             if ($format === $exporter->getSupportedFormat()) {
-                return $exporter->export($resources, $format, $params);
+                return $exporter->export($resources, $params);
             }
         }
 
