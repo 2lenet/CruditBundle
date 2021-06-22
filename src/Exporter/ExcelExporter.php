@@ -21,7 +21,7 @@ class ExcelExporter implements ExporterInterface
         return Exporter::EXCEL;
     }
 
-    public function export($resources, $format): Response
+    public function export(iterable $resources, string $format, ExportParams $params): Response
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -33,6 +33,7 @@ class ExcelExporter implements ExporterInterface
 
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . ($i + 1);
 
+                // TODO: fix field blank spaces to remove trim
                 $sheet->setCellValue($cell, trim((string)$field->getValue()));
             }
         }
@@ -48,9 +49,10 @@ class ExcelExporter implements ExporterInterface
 
         $response->headers->set("Content-Type", "application/vnd.ms-excel");
 
+        $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "export.xls"
+            "$filename.xls"
         );
         $response->headers->set("Content-Disposition", $disposition);
 

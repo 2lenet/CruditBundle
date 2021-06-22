@@ -171,6 +171,10 @@ trait TraitCrudController
         $resources = $datasource->list($dsParams);
 
         $fields = $this->config->getFields(CrudConfigInterface::EXPORT);
+        if (empty($fields)) {
+            $fields = $this->config->getFields(CrudConfigInterface::INDEX);
+        }
+
         $generator = function() use ($resources, $datasource, $fields, $resolver) {
             foreach ($resources as $resource) {
                 yield ($resolver->resolve($resource, $fields, $datasource));
@@ -179,7 +183,11 @@ trait TraitCrudController
 
         $format = $request->get("format", "csv");
 
-        return $exporter->export($generator(), $format);
+        return $exporter->export(
+            $generator(),
+            $format,
+            $this->config->getExportParams($format)
+        );
     }
 
     /**

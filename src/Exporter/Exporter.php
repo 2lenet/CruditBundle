@@ -20,12 +20,12 @@ class Exporter
         $this->exporters = $exporters;
     }
 
-    public function export($resources, string $format): Response
+    public function export(iterable $resources, string $format, ExportParams $params): Response
     {
         /** @var ExporterInterface $exporter */
         foreach ($this->exporters as $exporter) {
             if ($format === $exporter->getSupportedFormat()) {
-                return $exporter->export($resources, $format);
+                return $exporter->export($resources, $format, $params);
             }
         }
 

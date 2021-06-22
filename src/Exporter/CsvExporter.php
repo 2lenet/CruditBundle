@@ -21,7 +21,7 @@ class CsvExporter implements ExporterInterface
         return Exporter::CSV;
     }
 
-    public function export($resources, $format): Response
+    public function export(iterable $resources, string $format, ExportParams $params): Response
     {
         $file = tmpfile();
 
@@ -39,16 +39,17 @@ class CsvExporter implements ExporterInterface
                 $line[] = (string)$field->getValue();
             }
 
-            fputcsv($file, $line, ";");
+            fputcsv($file, $line, $params->getSeparator() ?? ";");
         }
 
         $response = new Response(file_get_contents(stream_get_meta_data($file)['uri']));
 
         fclose($file);
 
+        $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            "export.csv"
+            "$filename.csv"
         );
         $response->headers->set("Content-Disposition", $disposition);
         $response->headers->set("Content-Type", "text/csv");

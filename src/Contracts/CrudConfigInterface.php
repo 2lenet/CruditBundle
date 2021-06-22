@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Exporter\ExportParams;
 
 interface CrudConfigInterface
 {
@@ -31,4 +32,6 @@ interface CrudConfigInterface
     public function getPath(string $context = self::INDEX, array $params = []): Path;
 
     public function getDefaultSort(): array;
+
+    public function getExportParams(string $format): ExportParams;
 }

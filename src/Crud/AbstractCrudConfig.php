@@ -20,6 +20,7 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\Exporter;
+use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 
@@ -208,5 +209,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $fields[0]->getName(),
             "ASC",
         ]] : [];
+    }
+
+    public function getExportParams(string $format): ExportParams
+    {
+        return ExportParams::new()
+            ->setFilename($this->getName())
+            ->setSeparator(";");
     }
 }
