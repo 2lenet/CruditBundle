@@ -43,12 +43,37 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for line in view.data.lines %}
-                        <tr>
-                            {% for column in line.fields %}
-                                {%  if column.field.ruptGroup==0 %}
-                                <td>
+                {% set ruptval1 = "" %}
+                {% set ruptval2 = "" %}
 
+                {% for line in view.data.lines %}
+                            {% for column in line.fields %}
+                                {# RUPTURE NIVEAU 1 #}
+                                {% if column.field.ruptGroup==1 %}
+                                   {% if ruptval1 != column.value %}
+                                       <tr>
+                                           <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                       </tr>
+                                       {% set ruptval2 = "" %}
+                                   {% endif %}
+                                   {%  set ruptval1 = column.value %}
+                                {% endif %}
+
+                                {# RUPTURE NIVEAU 2 #}
+                                {% if column.field.ruptGroup==2 %}
+                                    {% if ruptval2 != column.value %}
+                                        <tr>
+                                            <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                        </tr>
+                                    {% endif %}
+                                    {%  set ruptval2 = column.value %}
+                                {% endif %}
+
+                                {% if column.field.ruptGroup==0 %}
+                                    {% if loop.first %}
+                                        <tr>
+                                    {% endif %}
+                                <td>
                                     {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
                                     {% endif %}
@@ -56,9 +81,8 @@
                                     {% if column.field.path %}
                                     </a>
                                     {% endif %}
-                                {% endif %}
-
                                 </td>
+                                {% endif %}
                             {% endfor %}
                             {% if view.config.actions|length %}
                                 <td>
