@@ -6,6 +6,9 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Exception\CruditException;
+use Lle\CruditBundle\Exporter\Exporter;
+use Lle\CruditBundle\Filter\FilterState;
+use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -147,6 +150,36 @@ trait TraitCrudController
         }
 
         return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @Route("/export")
+     */
+    public function export(
+        Request $request,
+        FilterState $filterState,
+        Exporter $exporter,
+        ResourceResolver $resolver
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EXPORT');
+
+        $datasource = $this->config->getDatasource();
+        $dsParams = $this->config->getDatasourceParams($request);
+
+        // we request all of the filtered resources, so no limit
+        $dsParams->setLimit(0);
+        $resources = $datasource->list($dsParams);
+
+        $fields = $this->config->getFields(CrudConfigInterface::EXPORT);
+        $generator = function() use ($resources, $datasource, $fields, $resolver) {
+            foreach ($resources as $resource) {
+                yield ($resolver->resolve($resource, $fields, $datasource));
+            }
+        };
+
+        $format = $request->get("format", "csv");
+
+        return $exporter->export($generator(), $format);
     }
 
     /**

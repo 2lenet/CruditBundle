@@ -13,6 +13,7 @@ interface CrudConfigInterface
     public const EDIT = "EDIT";
     public const NEW = "NEW";
     public const DELETE = "DELETE";
+    public const EXPORT = "EXPORT";
 
     /** @return BrickConfigInterface[][] */
     public function getBrickConfigs(): array;

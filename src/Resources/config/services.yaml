@@ -75,3 +75,12 @@ services:
     # old definition is lost
     form.type_guesser.doctrine:
         class: Lle\CruditBundle\Form\DoctrineOrmTypeGuesser
+
+    Lle\CruditBundle\Exporter\Exporter:
+        arguments:
+            $exporters: !tagged_iterator crudit.exporter
+
+    Lle\CruditBundle\Exporter\:
+        exclude: '../../Exporter/Exporter.php'
+        resource: '../../Exporter'
+        tags: [ 'crudit.exporter' ]

@@ -137,6 +137,6 @@ class ItemAction
 
     public function getId(): string
     {
-        return "crudit_action_" . spl_object_id($this);
+        return md5("crudit_action_" . spl_object_id($this));
     }
 }
