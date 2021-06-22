@@ -8,6 +8,8 @@
                 <thead class="thead-light">
                     <tr>
                         {% for field in view.config.fields %}
+                            {% if field.ruptGroup == 0 %}
+
                             <th class="text-nowrap">{{ field.label |trans }}
                                 {% if field.sortable %}
                                     {% set merge_params = {
@@ -33,6 +35,7 @@
                                     </span>
                                 {% endif %}
                             </th>
+                            {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
                             <th>{{ 'crudit.action'|trans }}</th>
@@ -43,7 +46,9 @@
                     {% for line in view.data.lines %}
                         <tr>
                             {% for column in line.fields %}
+                                {%  if column.field.ruptGroup==0 %}
                                 <td>
+
                                     {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
                                     {% endif %}
@@ -51,6 +56,8 @@
                                     {% if column.field.path %}
                                     </a>
                                     {% endif %}
+                                {% endif %}
+
                                 </td>
                             {% endfor %}
                             {% if view.config.actions|length %}

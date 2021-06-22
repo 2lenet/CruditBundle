@@ -24,8 +24,6 @@ class Field
      */
     private $sort;
 
-
-
     /** @var ?Path */
     private $path;
 
@@ -37,6 +35,9 @@ class Field
 
     /** @var ?string */
     private $template;
+
+    /** @var ?string */
+    private $ruptGroup=0;
 
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
@@ -144,5 +145,16 @@ class Field
     public function getTemplate(): ?string
     {
         return $this->template;
+    }
+
+    public function getRuptGroup(): ?int
+    {
+        return $this->ruptGroup;
+    }
+
+    public function setRuptGroup(int $ruptGroup): self
+    {
+        $this->ruptGroup = $ruptGroup;
+        return $this;
     }
 }
