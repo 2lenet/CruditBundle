@@ -20,7 +20,6 @@
     "build": "encore production"
   },
   "dependencies": {
-    "@ansur/leaflet-pulse-icon": "^0.1.1",
     "bootstrap": "^5.0.2",
     "leaflet": "^1.7.1",
     "leaflet-ajax": "^2.1.0",
