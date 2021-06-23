@@ -23,7 +23,7 @@
                             </span>
                     {% elseif entityAction.isModal %}
                         {% include entityAction.modal %}
-                        <a href="#" data-toggle="modal" data-target="#modal-delete-{{ item.id }}" class="btn btn-xs {{ entityAction.cssClass }}"><i class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{{ entityAction.getLabelFor(item) | trans }}</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-{{ item.id }}" class="btn btn-xs {{ entityAction.cssClass }}"><i class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{{ entityAction.getLabelFor(item) | trans }}</a>
                     {% elseif entityAction.isPopup %}
                         <span
                                 data-url="{{ path(path.route,path.params)}}"

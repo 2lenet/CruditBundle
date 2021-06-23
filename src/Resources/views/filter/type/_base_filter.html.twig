@@ -2,7 +2,7 @@
     <div class="input-group-prepend">
         {% block operator %}
             <input type="hidden" name="{{ id }}_op" id="{{ id }}_op" value="{{ data['op']|default(filter.operators|keys|first) }}">
-            <button class="btn btn-outline-light dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 {% set found = 0 %}
                 {% for k, options in filter.operators %}
                     {% if data and data.op and k == data.op %}

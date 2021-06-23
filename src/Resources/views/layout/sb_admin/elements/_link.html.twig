@@ -32,7 +32,7 @@
         {% else %}
             {% set path = '#' %}
         {% endif %}
-        <a href="{{ path }}" id="heading-{{ element.id }}" class="nav-link collapsed py-3 {% if crudit.isActive(element, app.request) %}active{% endif %}" {% if element.children|length %}data-toggle="collapse" data-target="#collapse-{{ element.id|lower }}"{% endif %}>
+        <a href="{{ path }}" id="heading-{{ element.id }}" class="nav-link collapsed py-3 {% if crudit.isActive(element, app.request) %}active{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %}>
             {% if element.icon and element.icon.img %}
                 <img src="{{ element.icon.icon }}" class="img-thumbnail mr-1" />
             {% elseif element.icon %}
