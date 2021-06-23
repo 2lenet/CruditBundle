@@ -1,5 +1,5 @@
 import "bootstrap";
-import TomSelect from "tom-select/dist/js/tom-select.complete";
+import TomSelect from "tom-select/dist/js/tom-select.popular";
 import "./map";
 
 window.addEventListener('load', function () {
