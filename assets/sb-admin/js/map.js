@@ -41,14 +41,14 @@ window.addEventListener('load', function () {
                     g_layer = new L.GeoJSON.AJAX(g["url"], {
                         pointToLayer: function (geoJsonPoint, latlng) {
                             return L.marker(latlng, {icon: icon}).bindPopup(
-                                "<iframe src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>"
+                                "<iframe height=\"400px\" src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>"
                             ).openPopup();
                         }
                     });
                 } else {
                     g_layer = new L.GeoJSON.AJAX(g["url"], {
                         onEachFeature(feature, layer) {
-                            layer.bindPopup("<iframe src=\"" + g["popup_url"] + feature.id + "\"></iframe>").openPopup();
+                            layer.bindPopup("<iframe height=\"400px\" src=\"" + g["popup_url"] + feature.id + "\"></iframe>").openPopup();
                         }
                     });
                 }
