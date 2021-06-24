@@ -24,7 +24,7 @@
     "leaflet": "^1.7.1",
     "leaflet-ajax": "^2.1.0",
     "leaflet-easybutton": "^2.4.0",
-    "popper.js": "^1.16.1",
+    "@popperjs/core": "^2.9.2",
     "tom-select": "^1.7.5"
   }
 }

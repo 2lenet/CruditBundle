@@ -1,5 +1,6 @@
 import "bootstrap";
 import TomSelect from "tom-select/dist/js/tom-select.popular";
+
 import "./map";
 
 window.addEventListener('load', function () {
@@ -40,7 +41,7 @@ window.addEventListener('load', function () {
                 preload: true,
                 options: inioptions,
                 plugins: [
-                        'checkbox_options',
+                        //'checkbox_options',
                         'remove_button'
                     ],
                 onChange: function (value) {
