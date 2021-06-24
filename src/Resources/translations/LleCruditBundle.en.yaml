@@ -127,7 +127,10 @@ Filtrer les résultats: Filter results
 form.url_auto_complet.placeholder: Choose a value
 crudit:
     modal:
+        cancel: "Cancel"
         delete:
             message: "Do you really wish to delete this element ? This action is irreversible."
             delete: "Delete"
-            cancel: "Cancel"
+        export:
+            message: "Choose your export format"
+            export: "Export"

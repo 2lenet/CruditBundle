@@ -19,6 +19,8 @@ use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Exporter\Exporter;
+use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 
@@ -58,7 +60,31 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getListActions(): array
     {
         $actions = [];
-        $actions[] = ListAction::new('add', $this->getPath(CrudConfigInterface::NEW), Icon::new('plus'));
+
+        /**
+         * Create new resource action
+         */
+        $actions[] = ListAction::new(
+            'add',
+            $this->getPath(CrudConfigInterface::NEW),
+            Icon::new('plus')
+        );
+
+        /**
+         * Export filtered list action
+         */
+        $actions[] = ListAction::new(
+            "action.export",
+            $this->getPath(CrudConfigInterface::EXPORT),
+            Icon::new("file-export")
+        )
+            ->setModal("@LleCrudit/modal/_export.html.twig")
+            ->setConfig(
+                [
+                    "export" => [Exporter::CSV, Exporter::EXCEL],
+                ]
+            );
+
         return $actions;
     }
 
@@ -183,5 +209,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $fields[0]->getName(),
             "ASC",
         ]] : [];
+    }
+
+    public function getExportParams(string $format): ExportParams
+    {
+        return ExportParams::new()
+            ->setFilename($this->getName())
+            ->setSeparator(";");
     }
 }

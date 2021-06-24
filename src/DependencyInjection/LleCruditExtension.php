@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\DependencyInjection;
 use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
@@ -41,6 +42,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->registerForAutoconfiguration(BrickInterface::class)->addTag('crudit.brick');
         $container->registerForAutoconfiguration(FieldInterface::class)->addTag('crudit.field');
         $container->registerForAutoconfiguration(FilterSetInterface::class)->addTag('crudit.filterset');
+        $container->registerForAutoconfiguration(ExporterInterface::class)->addTag("crudit.exporter");
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {
