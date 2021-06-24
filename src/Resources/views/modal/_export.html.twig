@@ -8,7 +8,6 @@
             id="form_{{ id }}"
             method="GET"
             action="{{ action.url ?? path(action.path.route, action.path.params) }}"
-            target="_blank"
     >
         {% if action.config.export is defined and action.config.export is iterable %}
             <select name="format" class="form-select">

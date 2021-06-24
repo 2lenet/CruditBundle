@@ -15,6 +15,9 @@ class ExportParams
         return new self();
     }
 
+    /**
+     * Supported by: CSV, Excel
+     */
     public function getFilename()
     {
         return $this->filename;
@@ -27,6 +30,9 @@ class ExportParams
         return $this;
     }
 
+    /**
+     * Supported by: CSV
+     */
     public function getSeparator(): string
     {
         return $this->separator;

@@ -8,7 +8,6 @@ use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Exception\ExporterException;
-use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,11 +22,13 @@ class CsvExporter implements ExporterInterface
 
     public function export(iterable $resources, ExportParams $params): Response
     {
-        $file = tmpfile();
+        $path = tempnam(sys_get_temp_dir(), Exporter::CSV);
 
-        if ($file === false) {
+        if ($path === false) {
             throw new ExporterException("Unknown CSV exporter error");
         }
+
+        $file = fopen($path, "w");
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
@@ -42,9 +43,8 @@ class CsvExporter implements ExporterInterface
             fputcsv($file, $line, $params->getSeparator() ?? ";");
         }
 
-        $response = new Response(file_get_contents(stream_get_meta_data($file)['uri']));
-
-        fclose($file);
+        $response = new BinaryFileResponse($path);
+        $response->deleteFileAfterSend();
 
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
