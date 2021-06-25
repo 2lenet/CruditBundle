@@ -84,3 +84,7 @@ services:
         exclude: '../../Exporter/{Exporter.php,ExportParams.php}'
         resource: '../../Exporter'
         tags: [ 'crudit.exporter' ]
+
+    Lle\CruditBundle\Exporter\CsvExporter:
+        arguments:
+            $translator: "@translator"
