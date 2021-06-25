@@ -13,9 +13,18 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExcelExporter implements ExporterInterface
 {
+    protected TranslatorInterface $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+
+    }
+
     public function getSupportedFormat(): string
     {
         return Exporter::EXCEL;
@@ -25,17 +34,32 @@ class ExcelExporter implements ExporterInterface
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $headersAdded = false;
+        $row = 1;
 
         /** @var ResourceView $resource */
-        foreach ($resources as $i => $resource) {
+        foreach ($resources as $resource) {
+
+            if ($params->getIncludeHeaders() && !$headersAdded) {
+                $headers = $this->getHeaders($resource->getFields());
+                foreach ($headers as $j => $header) {
+                    $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
+                    $sheet->setCellValue($cell, $header);
+                }
+                $row++;
+                $headersAdded = true;
+            }
+
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
 
-                $cell = Coordinate::stringFromColumnIndex($j + 1) . ($i + 1);
+                $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
 
                 // TODO: fix field blank spaces to remove trim
                 $sheet->setCellValue($cell, trim((string)$field->getValue()));
             }
+
+            $row++;
         }
 
         foreach ($sheet->getColumnIterator("A", $sheet->getHighestColumn()) as $column) {
@@ -57,5 +81,17 @@ class ExcelExporter implements ExporterInterface
         $response->headers->set("Content-Disposition", $disposition);
 
         return $response;
+    }
+
+    protected function getHeaders($fields)
+    {
+        $result = [];
+
+        /** @var FieldView $field */
+        foreach ($fields as $field) {
+            $result[] = $this->translator->trans($field->getField()->getLabel());
+        }
+
+        return $result;
     }
 }

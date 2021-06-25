@@ -88,3 +88,7 @@ services:
     Lle\CruditBundle\Exporter\CsvExporter:
         arguments:
             $translator: "@translator"
+
+    Lle\CruditBundle\Exporter\ExcelExporter:
+        arguments:
+            $translator: "@translator"
