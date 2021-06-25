@@ -214,7 +214,6 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getExportParams(string $format): ExportParams
     {
         return ExportParams::new()
-            ->setFilename($this->getName())
-            ->setSeparator(";");
+            ->setFilename($this->getName());
     }
 }
