@@ -2,7 +2,6 @@
 import L from 'leaflet';
 
 require('leaflet-easybutton');
-require('@ansur/leaflet-pulse-icon');
 require('leaflet-ajax/dist/leaflet.ajax.min');
 require('./Leaflet.Editable');
 
@@ -17,8 +16,8 @@ L.Icon.Default.mergeOptions({
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".crudit-map").forEach(map_elem => {
-        let center = [map_elem.dataset.lat, map_elem.dataset.lng]
-        let editable = (map_elem.dataset.editable !== 'off')
+        let center = [map_elem.dataset.lat, map_elem.dataset.lng];
+        let editable = (map_elem.dataset.editable !== undefined && map_elem.dataset.editable !== "off");
         let map = L.map(map_elem.id, {
             editable: editable,
             center: center,
@@ -26,7 +25,7 @@ window.addEventListener('load', function () {
         });
         let marker = null;
         let geo = null;
-        var overlay = {}
+        var overlay = {};
 
         if (map_elem.dataset.with_marker === "1") {
             marker = L.marker(center).addTo(map);
