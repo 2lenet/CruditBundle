@@ -51,7 +51,9 @@
             <div id="collapse-{{ element.id|lower }}" class="collapse">
                 <div class="bg-white py-2 collapse-inner rounded">
                     {% for child in element.children %}
-                        {% include crudit.template(child.template) with {'element': child, 'submenu': true} %}
+                        {% if is_granted(child.role) %}
+                            {% include crudit.template(child.template) with {'element': child, 'submenu': true} %}
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
