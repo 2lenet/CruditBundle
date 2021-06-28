@@ -1,5 +1,7 @@
 {% for element in crudit.elements('menu-nav') %}
-    {% include crudit.template(element.template) with {'element': element, 'where': 'menu-nav'} %}
+    {% if is_granted(element.role) %}
+        {% include crudit.template(element.template) with {'element': element, 'where': 'menu-nav'} %}
+    {% endif %}
 {% endfor %}
 
 <div class="text-center d-none d-md-inline">

@@ -31,16 +31,14 @@ class LinkElement extends AbstractLayoutElement
     /** @var string */
     protected $cssClass;
 
-    /** @var string[] */
-    protected $roles;
-
     /** @var LinkElement[] */
     protected $children;
 
-    public static function new(string $libelle, ?Path $path, Icon $icon = null, array $roles = []): self
+    public static function new(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null): self
     {
-        $item = new self($libelle, $path, $icon, $roles);
+        $item = new self($libelle, $path, $icon, $role);
         $item->setId(str_replace('menu.', '', $libelle));
+
         return $item;
     }
 
@@ -49,12 +47,12 @@ class LinkElement extends AbstractLayoutElement
         return 'elements/_link';
     }
 
-    public function __construct(string $libelle, ?Path $path, Icon $icon = null, array $roles = [])
+    public function __construct(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null)
     {
         $this->libelle = $libelle;
         $this->icon = $icon;
         $this->path = $path;
-        $this->roles = $roles;
+        $this->role = $role;
         $this->badges = [];
         $this->children = [];
     }
