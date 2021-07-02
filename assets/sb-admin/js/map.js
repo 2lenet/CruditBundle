@@ -149,7 +149,7 @@ window.addEventListener('load', function () {
             gotoElem.addEventListener('click', function () {
                 let center = gotoElem.dataset.gotomap;
                 let zoom = gotoElem.dataset.gotozoom;
-                map.flyTo(center.split(","), zoom);
+                map.flyTo(center.split(","), zoom, {"duration":0.5});
             })
         });
 

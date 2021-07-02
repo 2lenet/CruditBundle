@@ -5006,7 +5006,9 @@ window.addEventListener('load', function () {
       gotoElem.addEventListener('click', function () {
         var center = gotoElem.dataset.gotomap;
         var zoom = gotoElem.dataset.gotozoom;
-        map.flyTo(center.split(","), zoom);
+        map.flyTo(center.split(","), zoom, {
+          "duration": 0.5
+        });
       });
     });
   });
