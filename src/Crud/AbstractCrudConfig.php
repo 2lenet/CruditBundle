@@ -111,6 +111,24 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         return $actions;
     }
+    public function getShowActions(): array
+    {
+        $actions = [];
+        $actions[] = ItemAction::new(
+            'edit',
+            $this->getPath(CrudConfigInterface::EDIT),
+            Icon::new('edit')
+        )->setCssClass('btn btn-secondary btn-sm mr-1');
+        $actions[] = DeleteAction::new(
+            'delete',
+            $this->getPath(CrudConfigInterface::DELETE),
+            Icon::new('trash-alt')
+        )
+            ->setCssClass('btn btn-danger btn-sm mr-1')
+            ->setModal("@LleCrudit/modal/_confirm_delete.html.twig");
+
+        return $actions;
+    }
 
     public function getDatasource(): DatasourceInterface
     {
@@ -170,7 +188,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setActions($this->getItemActions());
 
         $showBricks = [];
-        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->addBack();
+        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->addBack()->setActions($this->getShowActions());
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
