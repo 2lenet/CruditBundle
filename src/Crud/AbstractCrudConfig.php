@@ -65,7 +65,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
          * Create new resource action
          */
         $actions[] = ListAction::new(
-            'add',
+            'action.add',
             $this->getPath(CrudConfigInterface::NEW),
             Icon::new('plus')
         );
@@ -92,17 +92,17 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
         $actions[] = ItemAction::new(
-            'show',
+            'action.show',
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
         )->setCssClass('btn btn-primary btn-sm mr-1');
         $actions[] = ItemAction::new(
-            'edit',
+            'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
         $actions[] = DeleteAction::new(
-            'delete',
+            'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
         )
@@ -115,12 +115,18 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
         $actions[] = ItemAction::new(
-            'edit',
+            'action.list',
+            $this->getPath(CrudConfigInterface::INDEX),
+            Icon::new('list')
+        )->setCssClass('btn btn-secondary btn-sm mr-1');
+
+        $actions[] = ItemAction::new(
+            'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
         $actions[] = DeleteAction::new(
-            'delete',
+            'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
         )
@@ -194,7 +200,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setActions($this->getItemActions());
 
         $showBricks = [];
-        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->addBack()->setActions($this->getShowActions());
+        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->setActions($this->getShowActions());
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
@@ -239,5 +245,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return ExportParams::new()
             ->setFilename($this->getName());
+    }
+
+    public function getAfterEditPath(): Path
+    {
+        return $this->getPath(CrudConfigInterface::INDEX);
     }
 }

@@ -75,7 +75,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 $this->brickResponseCollector->add(new RedirectBrickResponse(
                     $this->urlGenerator->generate(
                         $brickConfig->getSuccessRedirectPath()->getRoute(),
-                        $brickConfig->getSuccessRedirectPath()->getParams()
+                        array_merge($brickConfig->getSuccessRedirectPath()->getParams(), ['id'=> $resource->getId()] )
                     )
                 ));
             } else {
