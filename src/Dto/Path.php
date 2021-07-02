@@ -6,12 +6,13 @@ namespace Lle\CruditBundle\Dto;
 
 class Path
 {
-
     /** @var string */
     private $route;
 
     /** @var array  */
     private $params;
+
+    private ?string $role = null;
 
     public static function new(string $route, array $params = []): self
     {
@@ -32,5 +33,17 @@ class Path
     public function getParams(array $params = []): array
     {
         return array_merge($this->params, $params);
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+
+        return $this;
     }
 }
