@@ -40203,12 +40203,16 @@ window.addEventListener('load', function () {
         var _this = this;
 
         var items = [];
-        value.split(',').forEach(function (v) {
-          items.push({
-            id: v,
-            text: _this.options[v].text
+
+        if (value != '') {
+          value.split(',').forEach(function (v) {
+            items.push({
+              id: v,
+              text: _this.options[v].text
+            });
           });
-        });
+        }
+
         document.getElementById(select.id + "_items").value = JSON.stringify(items);
       },
       firstUrl: function firstUrl(query) {

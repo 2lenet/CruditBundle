@@ -47,9 +47,11 @@ window.addEventListener('load', function () {
                     ],
                 onChange: function (value) {
                     let items = [];
-                    value.split(',').forEach(v=>{
-                        items.push({id: v, text: this.options[v].text});
-                    })
+                    if (value!='') {
+                        value.split(',').forEach(v => {
+                            items.push({id: v, text: this.options[v].text});
+                        })
+                    }
                     document.getElementById(select.id+"_items").value=JSON.stringify(items);
                 },
                 firstUrl: function(query){

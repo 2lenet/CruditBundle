@@ -63,7 +63,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
 
         foreach ($requestParams->getSorts() as $sort) {
-            $qb->addOrderBy('root.' . $sort[0], $sort[1]);
+            $this->addOrderBy($qb, $sort[0], $sort[1]);
         }
 
         if ($requestParams->getOffset()) {
@@ -85,7 +85,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb->andWhere($orStatements);
 
         foreach ($sorts as $sort) {
-            $qb->addOrderBy('root.' . $sort[0], $sort[1]);
+            $this->addOrderBy($qb, $sort[0], $sort[1]);
         }
         if ($requestParams) {
             if ($requestParams->getLimit()) {
@@ -184,7 +184,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $type;
     }
 
-    //todometadata
     public function getIdentifier(object $resource): string
     {
         $identifierValue = '';
@@ -241,6 +240,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         foreach ($this->filterset->getFilters() as $filter) {
             $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
             $filter->apply($qb);
+        }
+    }
+
+    private function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
+    {
+        $field = explode(".", $column);
+        if (count($field)==2) {
+            $qb->join('root.'.$field[0], $field[0]);
+            $qb->addOrderBy($field[0].'.'.$field[1], $order);
+        } else {
+            $qb->addOrderBy('root.'.$column, $order);
         }
     }
 
