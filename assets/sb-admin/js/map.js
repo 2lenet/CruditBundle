@@ -65,7 +65,7 @@ window.addEventListener('load', function () {
         }
 
         if (editable) {
-            L.easyButton('fa-edit', (btn, map) => {
+            L.easyButton('fa-edit', () => {
                 if (geo) {
                     geo.getLayers().forEach(l => {
                         l.toggleEdit();

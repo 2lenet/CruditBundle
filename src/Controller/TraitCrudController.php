@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
@@ -97,10 +98,21 @@ trait TraitCrudController
     {
         $dataSource = $this->config->getDatasource();
         $res = [];
+        $offset = intval($request->get('offset', 0));
+        $limit = intval($request->get('limit', 0));
+
+        $rqParams = new DatasourceParams(
+            $limit,
+            $offset,
+            [], []
+        );
+        $nb_items = $dataSource->count_query("libelle", $request->query->get("q", ""));
+
         $items = $dataSource->query(
             "libelle",
-            $request->query->get("q",""),
-            $this->config->getDefaultSort()
+            $request->query->get("q", ""),
+            $this->config->getDefaultSort(),
+            $rqParams
         );
 
         foreach ($items as $item) {
@@ -112,7 +124,8 @@ trait TraitCrudController
 
         return new JsonResponse(
             [
-                "total_count" => count($res),
+                "total_count" => $nb_items,
+                "next_offset" => $offset + $limit,
                 "incomplete_results" => false,
                 "items" => $res,
             ]
@@ -133,10 +146,9 @@ trait TraitCrudController
             $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
                 ->getPropertyAccessor();
 
-            $data = json_decode($request->request->get("data",[]), true);
+            $data = json_decode($request->request->get("data", []), true);
 
             foreach ($data as $field => $value) {
-
                 if ($field === "id") {
                     continue;
                 }
@@ -149,7 +161,7 @@ trait TraitCrudController
             return new JsonResponse(["status" => "ok"]);
         }
 
-        return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
+        return new JsonResponse(["status" => "ko"], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -175,7 +187,7 @@ trait TraitCrudController
             $fields = $this->config->getFields(CrudConfigInterface::INDEX);
         }
 
-        $generator = function() use ($resources, $datasource, $fields, $resolver) {
+        $generator = function () use ($resources, $datasource, $fields, $resolver) {
             foreach ($resources as $resource) {
                 yield ($resolver->resolve($resource, $fields, $datasource));
             }
