@@ -4922,6 +4922,13 @@ window.addEventListener('load', function () {
         }
 
         overlay[g['libelle']] = g_layer;
+
+        if (g["fitBounds"]) {
+          g_layer.on('data:loaded', function () {
+            map.fitBounds(g_layer.getBounds());
+          });
+        }
+
         g_layer.addTo(map);
       });
     }
