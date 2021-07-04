@@ -14,6 +14,6 @@ class UserElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return 'elements/_user';
+        return '@LleCrudit/layout/sb_admin/elements/_user.html.twig';
     }
 }

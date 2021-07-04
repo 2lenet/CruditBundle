@@ -25,11 +25,6 @@ services:
     Lle\CruditBundle\Resolver\ResourceResolver:
         arguments: ['@Lle\CruditBundle\Resolver\FieldResolver']
 
-    Lle\CruditBundle\Provider\LayoutProvider:
-        arguments:
-            - !tagged_iterator crudit.layout
-            - '@parameter_bag'
-
     Lle\CruditBundle\Maker\MakeCrudit:
         arguments: ["@maker.file_manager","@maker.doctrine_helper"]
         tags: [maker.command]
@@ -53,17 +48,9 @@ services:
         arguments:
             - !tagged_iterator crudit.datasource
 
-    Lle\CruditBundle\Layout\AdminLteLayout:
-        arguments:
-            - '@Lle\CruditBundle\Registry\MenuRegistry'
-        tags: ['crudit.layout']
-
-    Lle\CruditBundle\Layout\SbAdminLayout:
-        arguments:
-            - '@Lle\CruditBundle\Registry\MenuRegistry'
-        tags: ['crudit.layout']
-
     Lle\CruditBundle\Twig\CruditExtension:
+        arguments:
+            - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: [twig.extension]
 
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type

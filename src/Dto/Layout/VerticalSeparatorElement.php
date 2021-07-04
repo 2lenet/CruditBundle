@@ -14,6 +14,6 @@ class VerticalSeparatorElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return 'elements/_v_separator';
+        return '@LleCrudit/layout/sb_admin/elements/_v_separator.html.twig';
     }
 }

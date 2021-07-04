@@ -44,7 +44,7 @@ class LinkElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return 'elements/_link';
+        return '@LleCrudit/layout/sb_admin/elements/_link.html.twig';
     }
 
     public function __construct(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null)

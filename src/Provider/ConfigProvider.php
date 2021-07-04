@@ -6,9 +6,6 @@ namespace Lle\CruditBundle\Provider;
 
 use Lle\CruditBundle\{
     Contracts\CrudConfigInterface,
-    Exception\BadConfigException,
-    Layout\AdminLteLayout,
-    Layout\LayoutInterface
 };
 use Symfony\Component\HttpFoundation\Request;
 

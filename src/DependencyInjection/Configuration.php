@@ -16,8 +16,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('lle_crudit');
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
-            ->children()
-            ->scalarNode('layout_provider')->defaultValue(AdminLteLayout::getName())->end();
+            ->children();
         return $treeBuilder;
     }
 }

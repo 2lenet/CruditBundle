@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Layout;
 
+use Lle\CruditBundle\Contracts\LayoutElementInterface;
+
 abstract class AbstractLayoutElement implements LayoutElementInterface
 {
     /** @var string|null */

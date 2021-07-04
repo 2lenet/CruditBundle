@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
     iconUrl: '/bundles/llecrudit/leaflet/images/marker-icon.png',
     shadowUrl: '/bundles/llecrudit/leaflet/images/marker-shadow.png',
 });
-
+//let markers = {}
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".crudit-map").forEach(map_elem => {
@@ -26,6 +26,7 @@ window.addEventListener('load', function () {
         let marker = null;
         let geo = null;
         var overlay = {};
+        let fitbound = null;
 
         if (map_elem.dataset.with_marker === "1") {
             marker = L.marker(center).addTo(map);
@@ -36,10 +37,13 @@ window.addEventListener('load', function () {
             geojsons.forEach((g) => {
                 var g_layer;
                 if( g["icon"] ) {
-                    var icon = L.icon(g["icon"]);
                     g_layer = new L.GeoJSON.AJAX(g["url"], {
                         pointToLayer: function (geoJsonPoint, latlng) {
-                            return L.marker(latlng, {icon: icon}).bindPopup(
+                            g["icon"]["className"] = "mk-"+geoJsonPoint.id;
+                            var icon = L.icon(g["icon"]);
+                            console.log(icon);
+                            return L.marker(latlng, {icon: icon, title: geoJsonPoint.title})
+                                .bindPopup(
                                 "<iframe height=\"400px\" src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>"
                             ).openPopup();
                         }
@@ -55,6 +59,7 @@ window.addEventListener('load', function () {
                 overlay[g['libelle']]= g_layer
                 if (g["fitBounds"]) {
                     g_layer.on('data:loaded', function () {
+                        fitbound = g_layer.getBounds();
                         map.fitBounds(g_layer.getBounds())
                     })
                 }
@@ -66,8 +71,14 @@ window.addEventListener('load', function () {
             let feat = JSON.parse(map_elem.dataset.polyline);
             geo = L.geoJSON(feat);
             geo.addTo(map);
-
         }
+        L.easyButton('fa-map-marker', () => {
+            if (fitbound) {
+                map.fitBounds(fitbound,{animate:true});
+            } else {
+                map.flyTo(center);
+            }
+        }).addTo(map);
 
         if (editable) {
             L.easyButton('fa-edit', () => {
@@ -157,7 +168,21 @@ window.addEventListener('load', function () {
                 map.flyTo(center.split(","), zoom, {"duration":0.5});
             })
         });
+        // goto marker_id
 
+        var gotoMkEls = document.querySelectorAll('[data-gotomarker]');
+        gotoMkEls.forEach((gotoElem) => {
+            gotoElem.addEventListener('click', function () {
+                let marker_id = gotoElem.dataset.gotomarker;
+                var markers = document.querySelectorAll('img.leaflet-marker-icon');
+                markers.forEach((mkIcon) => {
+                    mkIcon.classList.remove('blinking');
+                    if (mkIcon.classList.contains(marker_id)) {
+                        mkIcon.classList.add('blinking');
+                    }
+                });
+            })
+        });
     });
 
 });

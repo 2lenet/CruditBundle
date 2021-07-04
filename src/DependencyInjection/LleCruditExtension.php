@@ -32,10 +32,8 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $loader->load('form.yaml');
 
         $configuration = new Configuration();
-        $processedConfig =  $this->processConfiguration($configuration, $configs);
-        $container->setParameter('crudit.layout_provider', $processedConfig[ 'layout_provider' ]);
+        $this->processConfiguration($configuration, $configs);
 
-        $container->registerForAutoconfiguration(LayoutInterface::class)->addTag('crudit.layout');
         $container->registerForAutoconfiguration(MenuProviderInterface::class)->addTag('crudit.menu');
         $container->registerForAutoconfiguration(CrudConfigInterface::class)->addTag('crudit.config');
         $container->registerForAutoconfiguration(DatasourceInterface::class)->addTag('crudit.datasource');

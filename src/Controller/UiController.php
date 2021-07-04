@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
-use Lle\CruditBundle\Provider\LayoutProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,22 +17,19 @@ class UiController extends AbstractController
     private $kernel;
 
     /** @var NormalizerInterface */
-    private $normalizer;
 
     public function __construct(
-        KernelInterface $kernel,
-        NormalizerInterface $normalizer
+        KernelInterface $kernel
     ) {
         $this->kernel = $kernel;
-        $this->normalizer = $normalizer;
     }
 
     /**
      * @Route("/ui/layout", name="layout_config")
      */
-    public function index(LayoutProvider $provider): Response
+    public function index(): Response
     {
-        return new JsonResponse($this->normalizer->normalize($provider->getLayout()));
+        return new JsonResponse([]);
     }
 
     /**

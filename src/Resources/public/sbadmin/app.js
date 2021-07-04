@@ -4880,7 +4880,8 @@ leaflet__WEBPACK_IMPORTED_MODULE_0___default().Icon.Default.mergeOptions({
   iconRetinaUrl: "/bundles/llecrudit/leaflet/images/marker-icon-2x.png",
   iconUrl: '/bundles/llecrudit/leaflet/images/marker-icon.png',
   shadowUrl: '/bundles/llecrudit/leaflet/images/marker-shadow.png'
-});
+}); //let markers = {}
+
 window.addEventListener('load', function () {
   document.querySelectorAll(".crudit-map").forEach(function (map_elem) {
     var center = [map_elem.dataset.lat, map_elem.dataset.lng];
@@ -4893,6 +4894,7 @@ window.addEventListener('load', function () {
     var marker = null;
     var geo = null;
     var overlay = {};
+    var fitbound = null;
 
     if (map_elem.dataset.with_marker === "1") {
       marker = leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker(center).addTo(map);
@@ -4905,11 +4907,14 @@ window.addEventListener('load', function () {
         var g_layer;
 
         if (g["icon"]) {
-          var icon = leaflet__WEBPACK_IMPORTED_MODULE_0___default().icon(g["icon"]);
           g_layer = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().GeoJSON.AJAX)(g["url"], {
             pointToLayer: function pointToLayer(geoJsonPoint, latlng) {
+              g["icon"]["className"] = "mk-" + geoJsonPoint.id;
+              var icon = leaflet__WEBPACK_IMPORTED_MODULE_0___default().icon(g["icon"]);
+              console.log(icon);
               return leaflet__WEBPACK_IMPORTED_MODULE_0___default().marker(latlng, {
-                icon: icon
+                icon: icon,
+                title: geoJsonPoint.title
               }).bindPopup("<iframe height=\"400px\" src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>").openPopup();
             }
           });
@@ -4925,6 +4930,7 @@ window.addEventListener('load', function () {
 
         if (g["fitBounds"]) {
           g_layer.on('data:loaded', function () {
+            fitbound = g_layer.getBounds();
             map.fitBounds(g_layer.getBounds());
           });
         }
@@ -4938,6 +4944,16 @@ window.addEventListener('load', function () {
       geo = leaflet__WEBPACK_IMPORTED_MODULE_0___default().geoJSON(feat);
       geo.addTo(map);
     }
+
+    leaflet__WEBPACK_IMPORTED_MODULE_0___default().easyButton('fa-map-marker', function () {
+      if (fitbound) {
+        map.fitBounds(fitbound, {
+          animate: true
+        });
+      } else {
+        map.flyTo(center);
+      }
+    }).addTo(map);
 
     if (editable) {
       leaflet__WEBPACK_IMPORTED_MODULE_0___default().easyButton('fa-edit', function () {
@@ -5015,6 +5031,21 @@ window.addEventListener('load', function () {
         var zoom = gotoElem.dataset.gotozoom;
         map.flyTo(center.split(","), zoom, {
           "duration": 0.5
+        });
+      });
+    }); // goto marker_id
+
+    var gotoMkEls = document.querySelectorAll('[data-gotomarker]');
+    gotoMkEls.forEach(function (gotoElem) {
+      gotoElem.addEventListener('click', function () {
+        var marker_id = gotoElem.dataset.gotomarker;
+        var markers = document.querySelectorAll('img.leaflet-marker-icon');
+        markers.forEach(function (mkIcon) {
+          mkIcon.classList.remove('blinking');
+
+          if (mkIcon.classList.contains(marker_id)) {
+            mkIcon.classList.add('blinking');
+          }
         });
       });
     });
