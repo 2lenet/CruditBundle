@@ -23,7 +23,7 @@
         "symfony/twig-bundle": "^5.2",
         "symfony/translation": "^5.2",
         "phpoffice/phpspreadsheet": "^1.18",
-        "symfony/workflow": "^5.3"
+        "symfony/workflow": "^5.2"
     },
     "require-dev": {
         "ergebnis/phpstan-rules": "^0.15.3",
