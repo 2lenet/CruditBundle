@@ -1,13 +1,14 @@
 {% if data and data.value is defined and data.value %}
-    <button type="button" class="btn disabled btn-sm btn-primary">
-
+    <button type="button" class="btn disabled btn-sm btn-primary mt-2 mr-2 mt-md-0">
         {{ filtertype.filterLabel|trans }}
+
         {% if data.op is defined %}
             {% set options = filter.operators[data.op]|default(null) %}
             {% if options %}
                 <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
             {% endif %}
         {% endif %}
+
         {% block value %}
             {% if data['value'] is iterable %}
                 {% for val in data['value'] %}

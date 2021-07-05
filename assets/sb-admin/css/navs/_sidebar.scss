@@ -192,6 +192,7 @@ $icon-width: 32px;
 
 @include media-breakpoint-up(md) {
     .sidebar {
+        display: flex !important;
         width: $sidebar-base-width !important;
 
         .nav-item {

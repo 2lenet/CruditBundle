@@ -1,6 +1,6 @@
-<div class="input-group flex-nowrap mb-0">
-    <div class="input-group-prepend">
-        {% block operator %}
+<div class="input-group flex-nowrap mb-3">
+    {% block operator %}
+        <div class="input-group-prepend">
             <input type="hidden" name="{{ id }}_op" id="{{ id }}_op" value="{{ data['op']|default(filter.operators|keys|first) }}">
             <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 {% set found = 0 %}
@@ -24,8 +24,8 @@
                     </a>
                 {% endfor %}
             </div>
-        {% endblock %}
-    </div>
+        </div>
+    {% endblock %}
     {% block input %}
         <div class="form-floating">
             <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value" value="{{ data['value']|default('') }}" placeholder="" />
