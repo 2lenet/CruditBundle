@@ -1,4 +1,7 @@
 crudit:
+    action:
+        save: "Enregistrer"
+        cancel: "Annuler"
     title:
         filters: "Filtrer les items"
     filter:
