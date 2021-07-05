@@ -1,4 +1,4 @@
-<div class="input-group flex-nowrap mb-3">
+<div class="input-group flex-nowrap mb-1">
     {% block operator %}
         <div class="input-group-prepend">
             <input type="hidden" name="{{ id }}_op" id="{{ id }}_op" value="{{ data['op']|default(filter.operators|keys|first) }}">
