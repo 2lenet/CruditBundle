@@ -18,6 +18,7 @@ class ShowConfig extends AbstractBrickConfig
 
     /** @var DatasourceInterface */
     private $dataSource;
+    private $actions;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
