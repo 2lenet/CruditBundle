@@ -143,7 +143,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getDatasourceParams(Request $request): DatasourceParams
     {
-        $limit = $request->query->get(strtolower($this->getName()) . '_limit', 30);
+        $limit = $request->query->get(strtolower($this->getName()) . '_limit', $this->getNbItems());
         $offset = $request->query->get(strtolower($this->getName()) . '_offset', 0);
 
         $sortField = $request->query->get(strtolower($this->getName()) . '_sort', "");
@@ -250,5 +250,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getAfterEditPath(): Path
     {
         return $this->getPath(CrudConfigInterface::INDEX);
+    }
+
+    public function getNbItems(): int
+    {
+        return 30;
     }
 }

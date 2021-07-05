@@ -5,43 +5,45 @@
     <div class="card-body">
         <div class="table-responsive">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        {% for field in view.config.fields %}
-                            {% if field.ruptGroup == 0 %}
+                {% if not view.options.noHeader|default(false) %}
+                    <thead class="thead-light">
+                        <tr>
+                            {% for field in view.config.fields %}
+                                {% if field.ruptGroup == 0 %}
 
-                            <th class="text-nowrap">{{ field.label |trans }}
-                                {% if field.sortable %}
-                                    {% set merge_params = {
-                                        ((view.config.name|lower)~'_sort'): field.name,
-                                        ((view.config.name|lower)~'_sort_order'): 'asc'
-                                    } %}
-                                    {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
-                                    {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
-                                    {% set icon = 'fa-sort' %}
-                                    {% if sorted %}
-                                        {% set icon = 'fa-sort-amount-up-alt' %}
+                                <th class="text-nowrap">{{ field.label |trans }}
+                                    {% if field.sortable %}
+                                        {% set merge_params = {
+                                            ((view.config.name|lower)~'_sort'): field.name,
+                                            ((view.config.name|lower)~'_sort_order'): 'asc'
+                                        } %}
+                                        {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
+                                        {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
+                                        {% set icon = 'fa-sort' %}
+                                        {% if sorted %}
+                                            {% set icon = 'fa-sort-amount-up-alt' %}
+                                        {% endif %}
+                                        {% if sorted and order=='asc' %}
+                                            {% set icon = 'fa-sort-amount-down-alt' %}
+                                            {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
+                                        {% endif %}
+                                        {% set parameters = app.request.query.all()|merge(merge_params) %}
+                                        {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
+                                        <span>
+                                            <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
+                                                <i class="fas {{ icon }}"></i>
+                                            </a>
+                                        </span>
                                     {% endif %}
-                                    {% if sorted and order=='asc' %}
-                                        {% set icon = 'fa-sort-amount-down-alt' %}
-                                        {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                    {% endif %}
-                                    {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                    {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
-                                    <span>
-                                        <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                            <i class="fas {{ icon }}"></i>
-                                        </a>
-                                    </span>
+                                </th>
                                 {% endif %}
-                            </th>
+                            {% endfor %}
+                            {% if view.config.actions|length %}
+                                <th>{{ 'crudit.action'|trans }}</th>
                             {% endif %}
-                        {% endfor %}
-                        {% if view.config.actions|length %}
-                            <th>{{ 'crudit.action'|trans }}</th>
-                        {% endif %}
-                    </tr>
-                </thead>
+                        </tr>
+                    </thead>
+                {% endif %}
                 <tbody>
                 {% set ruptval1 = "" %}
                 {% set ruptval2 = "" %}
