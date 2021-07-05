@@ -45,6 +45,7 @@ class ListFactory extends AbstractBasicBrickFactory
                     'lines' => $this->getLines($brickConfigurator)
                 ]);
         }
+
         return $view;
     }
 
@@ -71,41 +72,41 @@ class ListFactory extends AbstractBasicBrickFactory
     private function getLines(ListConfig $brickConfigurator): array
     {
         $lines = [];
-        if ($brickConfigurator->getDataSource() !== null) {
-            if ($this->getRequest()->get('id')) {
-                $datasource = $brickConfigurator->getClassName() !== null ?
-                    $this->datasourceRegistry->getByClass($brickConfigurator->getClassName()) :
-                    $brickConfigurator->getDatasource();
-                $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
-                $fieldName = $brickConfigurator->getFieldNameAssociation() ??
-                    $datasource->getAssociationFieldName($brickConfigurator->getDataSource()->getClassName());
-                $query = $datasource->createQuery('assoc');
-                if ($brickConfigurator->hasCatchQueryAssociation()) {
-                    $query = $brickConfigurator->catchQueryAssociation($query, 'assoc');
-                } elseif ($fieldName !== null) {
-                    $query
-                        ->where('assoc. ' . $fieldName . ' = :id')
-                        ->setParameter('id', $this->getRequest()->get('id'));
-                }
-                foreach ($query->execute() as $resource) {
-                    $lines[] = $this->resourceResolver->resolve(
-                        $resource,
-                        $this->getFields($brickConfigurator),
-                        $datasource
-                    );
-                }
+
+        if ($brickConfigurator->getDatasource()) {
+
+            $assocEntity = $this->getRequest()->get("id");
+            $datasource = $brickConfigurator->getClassName() !== null ?
+                $this->datasourceRegistry->getByClass($brickConfigurator->getClassName()) :
+                $brickConfigurator->getDatasource();
+            $assocField = $brickConfigurator->getFieldNameAssociation() ??
+                $datasource->getAssociationFieldName($brickConfigurator->getDatasource()->getClassName());
+
+            if ($brickConfigurator->hasCatchQueryAssociation()) {
+                // custom query
+                $resources = $brickConfigurator->catchQueryAssociation($query, 'assoc');
+            } elseif ($assocField !== null) {
+                // sublist
+                $resources = $datasource->createQuery("assoc")
+                    ->where('assoc. ' . $assocField . ' = :id')
+                    ->setParameter('id', $this->getRequest()->get('id'))
+                    ->execute();
             } else {
+                // normal list
                 $dsParams = $brickConfigurator->getDatasourceParams();
-                $dsParams->setCount($brickConfigurator->getDataSource()->count($dsParams));
-                foreach ($brickConfigurator->getDataSource()->list($dsParams) as $resource) {
-                    $lines[] = $this->resourceResolver->resolve(
-                        $resource,
-                        $this->getFields($brickConfigurator),
-                        $brickConfigurator->getDataSource()
-                    );
-                }
+                $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+                $resources = $brickConfigurator->getDatasource()->list($dsParams);
+            }
+
+            foreach ($resources as $resource) {
+                $lines[] = $this->resourceResolver->resolve(
+                    $resource,
+                    $this->getFields($brickConfigurator),
+                    $datasource
+                );
             }
         }
+
         return $lines;
     }
 }

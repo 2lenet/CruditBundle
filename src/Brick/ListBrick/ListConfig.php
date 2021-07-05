@@ -43,6 +43,7 @@ class ListConfig extends AbstractBrickConfig
         if ($this->datasource === null) {
             $this->setDatasource($crudConfig->getDatasource());
         }
+
         return $this;
     }
 
@@ -59,6 +60,7 @@ class ListConfig extends AbstractBrickConfig
     public function setDatasource(DatasourceInterface $datasource): self
     {
         $this->datasource = $datasource;
+
         return $this;
     }
 
@@ -75,12 +77,14 @@ class ListConfig extends AbstractBrickConfig
     public function setDatasourceParams(DatasourceParams $datasourceParams): self
     {
         $this->datasourceParams = $datasourceParams;
+
         return $this;
     }
 
     public function addAction(ItemAction $action): self
     {
         $this->actions[] = $action;
+
         return $this;
     }
 
@@ -92,6 +96,7 @@ class ListConfig extends AbstractBrickConfig
     public function setActions($actions): self
     {
         $this->actions = $actions;
+
         return $this;
     }
 
@@ -117,6 +122,7 @@ class ListConfig extends AbstractBrickConfig
     public function addField(Field $field): self
     {
         $this->fields[] = $field;
+
         return $this;
     }
 
@@ -125,6 +131,7 @@ class ListConfig extends AbstractBrickConfig
         foreach ($fields as $field) {
             $this->addField($field);
         }
+
         return $this;
     }
 
@@ -136,6 +143,7 @@ class ListConfig extends AbstractBrickConfig
     public function setClassName(string $className): self
     {
         $this->className = $className;
+
         return $this;
     }
 
@@ -160,6 +168,7 @@ class ListConfig extends AbstractBrickConfig
         if ($this->hasCatchQueryAssociation() && is_callable($this->catchQueryAssociationCallback)) {
             return \call_user_func($this->catchQueryAssociationCallback, $query, $alias);
         }
+
         return $query;
     }
 
@@ -171,12 +180,14 @@ class ListConfig extends AbstractBrickConfig
     public function setCatchQueryAssociation(callable $callback): self
     {
         $this->catchQueryAssociationCallback = $callback;
+
         return $this;
     }
 
     public function setFieldNameAssociation(string $fieldNameAssociation): self
     {
         $this->fieldNameAssociation = $fieldNameAssociation;
+
         return $this;
     }
 }

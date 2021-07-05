@@ -9,6 +9,7 @@ use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
+use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
@@ -22,7 +23,6 @@ use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\HttpFoundation\Request;
-use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
@@ -36,6 +36,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         foreach ($fieldnames as $field) {
             $fields[] = Field::new($field);
         }
+
         return $fields;
     }
 
@@ -111,6 +112,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         return $actions;
     }
+
     public function getShowActions(): array
     {
         $actions = [];
@@ -166,12 +168,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getName(): ?string
     {
         $className = get_class($this);
+
         return strtoupper(str_replace("CrudConfig", "", (substr($className, strrpos($className, '\\') + 1))));
     }
 
     public function getTitle(string $key): ?string
     {
-        return "crud.title.".strtolower($key).".".strtolower($this->getName());
+        return "crud.title." . strtolower($key) . "." . strtolower($this->getName());
     }
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
@@ -188,7 +191,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getBrickConfigs(): array
     {
         $indexBricks = [];
-        $indexBricks[] = LinksConfig::new(['title'=>$this->getTitle('list')])->setActions($this->getListActions());
+        $indexBricks[] = LinksConfig::new(['title' => $this->getTitle('list')])->setActions($this->getListActions());
 
         if ($this->getFilterset()) {
             $indexBricks[] = FilterConfig::new()
@@ -200,18 +203,19 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setActions($this->getItemActions());
 
         $showBricks = [];
-        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->setActions($this->getShowActions());
+        $showBricks[] = LinksConfig::new(['title' => $this->getTitle('show')])->setActions($this->getShowActions());
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
-            $tabConf->add( $this->getTitle('show'), ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
+            $tabConf->add($this->getTitle('show'), ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
             foreach ($tabs as $label => $tab) {
                 $tabConf->add($label, $tab);
             }
             $showBricks[] = $tabConf;
         } else {
-            $showBricks[]  = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
+            $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
         }
+
         return [
             CrudConfigInterface::INDEX => $indexBricks,
             CrudConfigInterface::SHOW => $showBricks,
@@ -226,11 +230,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         ];
     }
 
-    public function getTabs():array
+    public function getTabs(): array
     {
         return [];
     }
-    
+
     public function getDefaultSort(): array
     {
         $fields = $this->getFields(self::INDEX);
