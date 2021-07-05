@@ -19,6 +19,8 @@ use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Exporter\Exporter;
+use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 
@@ -58,7 +60,31 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getListActions(): array
     {
         $actions = [];
-        $actions[] = ListAction::new('add', $this->getPath(CrudConfigInterface::NEW), Icon::new('plus'));
+
+        /**
+         * Create new resource action
+         */
+        $actions[] = ListAction::new(
+            'action.add',
+            $this->getPath(CrudConfigInterface::NEW),
+            Icon::new('plus')
+        );
+
+        /**
+         * Export filtered list action
+         */
+        $actions[] = ListAction::new(
+            "action.export",
+            $this->getPath(CrudConfigInterface::EXPORT),
+            Icon::new("file-export")
+        )
+            ->setModal("@LleCrudit/modal/_export.html.twig")
+            ->setConfig(
+                [
+                    "export" => [Exporter::CSV, Exporter::EXCEL],
+                ]
+            );
+
         return $actions;
     }
 
@@ -66,17 +92,41 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
         $actions[] = ItemAction::new(
-            'show',
+            'action.show',
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
         )->setCssClass('btn btn-primary btn-sm mr-1');
         $actions[] = ItemAction::new(
-            'edit',
+            'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
         $actions[] = DeleteAction::new(
-            'delete',
+            'action.delete',
+            $this->getPath(CrudConfigInterface::DELETE),
+            Icon::new('trash-alt')
+        )
+            ->setCssClass('btn btn-danger btn-sm mr-1')
+            ->setModal("@LleCrudit/modal/_confirm_delete.html.twig");
+
+        return $actions;
+    }
+    public function getShowActions(): array
+    {
+        $actions = [];
+        $actions[] = ItemAction::new(
+            'action.list',
+            $this->getPath(CrudConfigInterface::INDEX),
+            Icon::new('list')
+        )->setCssClass('btn btn-secondary btn-sm mr-1');
+
+        $actions[] = ItemAction::new(
+            'action.edit',
+            $this->getPath(CrudConfigInterface::EDIT),
+            Icon::new('edit')
+        )->setCssClass('btn btn-secondary btn-sm mr-1');
+        $actions[] = DeleteAction::new(
+            'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
         )
@@ -93,7 +143,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getDatasourceParams(Request $request): DatasourceParams
     {
-        $limit = $request->query->get(strtolower($this->getName()) . '_limit', 30);
+        $limit = $request->query->get(strtolower($this->getName()) . '_limit', $this->getNbItems());
         $offset = $request->query->get(strtolower($this->getName()) . '_offset', 0);
 
         $sortField = $request->query->get(strtolower($this->getName()) . '_sort', "");
@@ -126,7 +176,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
-        return Path::new($this->getRootRoute() . '_' . $context, $params);
+        $path = Path::new($this->getRootRoute() . '_' . $context, $params);
+        $path->setRole(sprintf("ROLE_%s_%s",
+            $this->getName(),
+            $context
+        ));
+
+        return $path;
     }
 
     public function getBrickConfigs(): array
@@ -144,7 +200,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setActions($this->getItemActions());
 
         $showBricks = [];
-        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->addBack();
+        $showBricks[] = LinksConfig::new(['title'=>$this->getTitle('show')])->setActions($this->getShowActions());
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
@@ -183,5 +239,21 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $fields[0]->getName(),
             "ASC",
         ]] : [];
+    }
+
+    public function getExportParams(string $format): ExportParams
+    {
+        return ExportParams::new()
+            ->setFilename($this->getName());
+    }
+
+    public function getAfterEditPath(): Path
+    {
+        return $this->getPath(CrudConfigInterface::INDEX);
+    }
+
+    public function getNbItems(): int
+    {
+        return 30;
     }
 }

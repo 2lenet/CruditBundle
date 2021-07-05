@@ -22,6 +22,7 @@ class StringFilterType extends AbstractFilterType
             "startswith" => ["icon" => "far fa-caret-square-right"],
             "contains" => ["icon" => "fa fa-text-width"],
             "endswith" => ["icon" => "far fa-caret-square-left"],
+            "equals" => ["icon" => "fas fa-equals"],
             "isnull" => ["icon" => "far fa-square"],
             "isnotnull" => ["icon" => "fas fa-square"],
         ];

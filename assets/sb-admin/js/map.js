@@ -2,7 +2,6 @@
 import L from 'leaflet';
 
 require('leaflet-easybutton');
-require('@ansur/leaflet-pulse-icon');
 require('leaflet-ajax/dist/leaflet.ajax.min');
 require('./Leaflet.Editable');
 
@@ -13,20 +12,22 @@ L.Icon.Default.mergeOptions({
     iconUrl: '/bundles/llecrudit/leaflet/images/marker-icon.png',
     shadowUrl: '/bundles/llecrudit/leaflet/images/marker-shadow.png',
 });
-
+//let markers = {}
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".crudit-map").forEach(map_elem => {
-        let center = [map_elem.dataset.lat, map_elem.dataset.lng]
-        let editable = (map_elem.dataset.editable !== 'off')
+        let center = [map_elem.dataset.lat, map_elem.dataset.lng];
+        let zoom = map_elem.dataset.zoom;
+        let editable = (map_elem.dataset.editable !== undefined && map_elem.dataset.editable !== "off");
         let map = L.map(map_elem.id, {
             editable: editable,
             center: center,
-            zoom: map_elem.dataset.zoom
+            zoom: zoom
         });
         let marker = null;
         let geo = null;
-        var overlay = {}
+        var overlay = {};
+        let fitbound = null;
 
         if (map_elem.dataset.with_marker === "1") {
             marker = L.marker(center).addTo(map);
@@ -37,23 +38,32 @@ window.addEventListener('load', function () {
             geojsons.forEach((g) => {
                 var g_layer;
                 if( g["icon"] ) {
-                    var icon = L.icon(g["icon"]);
                     g_layer = new L.GeoJSON.AJAX(g["url"], {
                         pointToLayer: function (geoJsonPoint, latlng) {
-                            return L.marker(latlng, {icon: icon}).bindPopup(
-                                "<iframe src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>"
+                            g["icon"]["className"] = "mk-"+geoJsonPoint.id;
+                            var icon = L.icon(g["icon"]);
+                            console.log(icon);
+                            return L.marker(latlng, {icon: icon, title: geoJsonPoint.title})
+                                .bindPopup(
+                                "<iframe height=\"400px\" src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>"
                             ).openPopup();
                         }
                     });
                 } else {
                     g_layer = new L.GeoJSON.AJAX(g["url"], {
                         onEachFeature(feature, layer) {
-                            layer.bindPopup("<iframe src=\"" + g["popup_url"] + feature.id + "\"></iframe>").openPopup();
+                            layer.bindPopup("<iframe height=\"400px\" src=\"" + g["popup_url"] + feature.id + "\"></iframe>").openPopup();
                         }
                     });
                 }
 
                 overlay[g['libelle']]= g_layer
+                if (g["fitBounds"]) {
+                    g_layer.on('data:loaded', function () {
+                        fitbound = g_layer.getBounds();
+                        map.fitBounds(g_layer.getBounds())
+                    })
+                }
                 g_layer.addTo(map);
             })
         }
@@ -62,11 +72,17 @@ window.addEventListener('load', function () {
             let feat = JSON.parse(map_elem.dataset.polyline);
             geo = L.geoJSON(feat);
             geo.addTo(map);
-
         }
+        L.easyButton('fa-map-marker', () => {
+            if (fitbound) {
+                map.fitBounds(fitbound,{animate:true});
+            } else {
+                map.flyTo(center, zoom);
+            }
+        }).addTo(map);
 
         if (editable) {
-            L.easyButton('fa-edit', (btn, map) => {
+            L.easyButton('fa-edit', () => {
                 if (geo) {
                     geo.getLayers().forEach(l => {
                         l.toggleEdit();
@@ -144,42 +160,30 @@ window.addEventListener('load', function () {
             })
         });
 
-        //sites_layer_poly.addTo(this.map);
-        //sites_layer_point.addTo(this.map);
-        //point_layer.addTo(this.map);
-
-        /*
-        // couche geojson
-        let sites_layer_poly = new L.GeoJSON.AJAX("/api/site_collecte/poly.json", {
-          onEachFeature(feature, layer) {
-            layer.bindPopup(
-                "<iframe src=\"/api/site_collecte/" + feature.id + "/popup\"></iframe>"
-            ).openPopup();
-          }
+        // goto
+        var gotoEls = document.querySelectorAll('[data-gotomap]');
+        gotoEls.forEach((gotoElem) => {
+            gotoElem.addEventListener('click', function () {
+                let center = gotoElem.dataset.gotomap;
+                let zoom = gotoElem.dataset.gotozoom;
+                map.flyTo(center.split(","), zoom, {"duration":0.5});
+            })
         });
-        let sites_layer_point = new L.GeoJSON.AJAX("/api/site_collecte/points.json");
+        // goto marker_id
 
-        var greenIcon = L.icon({
-          iconUrl: '/img/icons/tree_outline.svg',
-          iconSize: [32, 32] // size of the icon
+        var gotoMkEls = document.querySelectorAll('[data-gotomarker]');
+        gotoMkEls.forEach((gotoElem) => {
+            gotoElem.addEventListener('click', function () {
+                let marker_id = gotoElem.dataset.gotomarker;
+                var markers = document.querySelectorAll('img.leaflet-marker-icon');
+                markers.forEach((mkIcon) => {
+                    mkIcon.classList.remove('blinking');
+                    if (mkIcon.classList.contains(marker_id)) {
+                        mkIcon.classList.add('blinking');
+                    }
+                });
+            })
         });
-
-        let point_layer = new L.GeoJSON.AJAX("/api/point_collecte/points.json", {
-          pointToLayer: function (geoJsonPoint, latlng) {
-            return L.marker(latlng, {icon: greenIcon}).bindPopup(
-                "<iframe src=\"/api/point_collecte/" + geoJsonPoint.id + "/popup\"></iframe>"
-            ).openPopup();
-          }
-        });
-
-        let commune_layer;
-        if (communeId === undefined) {
-          commune_layer = new L.GeoJSON.AJAX("/api/communes/poly.json");
-        } else {
-          commune_layer = new L.GeoJSON.AJAX("/api/communes/" + communeId);
-        }
-        */
-
     });
 
 });

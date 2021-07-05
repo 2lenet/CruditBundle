@@ -63,7 +63,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
 
         foreach ($requestParams->getSorts() as $sort) {
-            $qb->addOrderBy('root.' . $sort[0], $sort[1]);
+            $this->addOrderBy($qb, $sort[0], $sort[1]);
         }
 
         if ($requestParams->getOffset()) {
@@ -73,9 +73,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    public function query(string $queryColumn, $queryTerm, array $sorts): iterable
+    public function query(string $queryColumn, $queryTerm, array $sorts, $requestParams=null): iterable
     {
-        $qb = $this->buildQueryBuilder(null);
+        $qb = $this->buildQueryBuilder($requestParams);
         $orStatements = $qb->expr()->orX();
         foreach ($this->searchFields as $field) {
             $orStatements->add(
@@ -85,10 +85,32 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb->andWhere($orStatements);
 
         foreach ($sorts as $sort) {
-            $qb->addOrderBy('root.' . $sort[0], $sort[1]);
+            $this->addOrderBy($qb, $sort[0], $sort[1]);
         }
-
+        if ($requestParams) {
+            if ($requestParams->getLimit()) {
+                $qb->setMaxResults($requestParams->getLimit());
+            }
+            if ($requestParams->getOffset()) {
+                $qb->setFirstResult($requestParams->getOffset());
+            }
+        }
         return $qb->getQuery()->execute();
+    }
+
+    public function count_query(string $queryColumn, $queryTerm): int
+    {
+        $qb = $this->buildQueryBuilder(null);
+        $qb->select('count(root.id)');
+        $orStatements = $qb->expr()->orX();
+        foreach ($this->searchFields as $field) {
+            $orStatements->add(
+                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm.'%'))
+            );
+        }
+        $qb->andWhere($orStatements);
+
+        return intval($qb->getQuery()->getSingleScalarResult());
     }
 
     public function count(?DataSourceParams $requestParams): int
@@ -162,7 +184,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $type;
     }
 
-    //todometadata
     public function getIdentifier(object $resource): string
     {
         $identifierValue = '';
@@ -219,6 +240,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         foreach ($this->filterset->getFilters() as $filter) {
             $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
             $filter->apply($qb);
+        }
+    }
+
+    private function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
+    {
+        $field = explode(".", $column);
+        if (count($field)==2) {
+            $qb->join('root.'.$field[0], $field[0]);
+            $qb->addOrderBy($field[0].'.'.$field[1], $order);
+        } else {
+            $qb->addOrderBy('root.'.$column, $order);
         }
     }
 

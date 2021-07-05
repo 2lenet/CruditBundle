@@ -9,14 +9,14 @@
 {# this map is a item map #}
 
 {% set item = view.data.resource.resource |default(null) %}
+{% set editable = view.options['editable'] | default(false) %}
+
 {% if item %}
     {% set centrefield_lat = view.options['lat_field'] %}
     {% set centrefield_lng = view.options['lng_field'] %}
-    {% set editable = view.options['editable']|default(false) %}
     {% if editable %}
         {% set edit_url = path(view.options['edit_route'], {"id": item.id}) %}
     {% endif %}
-
 
     {% set polylinefield = view.options['poly_field']|default(null) %}
 
@@ -33,15 +33,15 @@
      data-lng="{{ lng }}"
      data-zoom="{{ zoom }}"
 
-
-
      data-with_marker="{{ view.options['with_marker']|default(1) }}"
 
-     {% if geojsons %}data-geojsons="{{ geojsons|json_encode }}"{% endif %}
+     {% if geojsons %}data-geojsons="{{ geojsons|json_encode|replace({'%id%':app.request.attributes.get('id','')}) }}"{% endif %}
 
         {% if item %}
-            data-editable="{{ editable }}"
-            data-edit_url="{{ edit_url }}"
+            {% if editable %}
+                data-editable="{{ editable }}"
+                data-edit_url="{{ edit_url }}"
+            {% endif %}
             {% if polylinefield is not null %}
                 data-polyline="{{ polyline }}"
                 data-polyline_field="{{ polylinefield }}"

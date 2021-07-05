@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block page_title %}CrudIt{% endblock %}</title>
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset(crudit.asset('app.css')) }}">
+        <link rel="stylesheet" href="{{ asset('bundles/llecrudit/sbadmin/app.css') }}">
     {% endblock %}
     {% block head_stylesheets %}{% endblock %}
     <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
     {% block javascripts %}
-        <script src="{{ asset(crudit.asset('app.js')) }}"></script>
+        <script src="{{ asset('bundles/llecrudit/sbadmin/app.js') }}"></script>
     {% endblock %}
 
     {% block head_javascript %}{% endblock %}
@@ -21,21 +21,26 @@
     {% block body %}
         <div id="wrapper">
             <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion">
-                {% include crudit.template('brand') %}
-                {% include crudit.template('menu') %}
+                {% block brand %}
+                {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
+                {% endblock %}
+                {% include '@LleCrudit/layout/sb_admin/menu.html.twig' %}
             </ul>
 
             <div id="content-wrapper" class="d-flex flex-column">
                 <div id="content">
-                    {% include crudit.template('header') %}
+                    {% block header %}
+                    {% include '@LleCrudit/layout/sb_admin/header.html.twig' %}
+                    {% endblock %}
                     <div class="container-fluid">
                         {% block main %}
-                            <h1 class="h3 mb-4 text-gray-800">{% block content_title %}{% endblock %}</h1>
                             {% block content %}{% endblock %}
                         {% endblock main %}
                     </div>
                 </div>
-                {% include crudit.template('footer') %}
+                {% block footer %}
+                {% include '@LleCrudit/layout/sb_admin/footer.html.twig' %}
+                {% endblock %}
             </div>
         </div>
     {% endblock %}

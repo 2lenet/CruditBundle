@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Registry;
 
+use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
-use Lle\CruditBundle\Dto\Layout\LayoutElementInterface;
 
 class MenuRegistry
 {
@@ -28,7 +28,7 @@ class MenuRegistry
         return null;
     }
 
-    public function getElements(): array
+    public function getElements($navid): array
     {
         $elements = [];
         foreach ($this->providers as $k => $provider) {

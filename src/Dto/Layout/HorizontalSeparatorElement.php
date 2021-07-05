@@ -14,6 +14,6 @@ class HorizontalSeparatorElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return 'elements/_h_separator';
+        return '@LleCrudit/layout/sb_admin/elements/_h_separator.html.twig';
     }
 }

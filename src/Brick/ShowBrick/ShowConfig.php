@@ -18,6 +18,7 @@ class ShowConfig extends AbstractBrickConfig
 
     /** @var DatasourceInterface */
     private $dataSource;
+    private $actions;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
@@ -59,6 +60,12 @@ class ShowConfig extends AbstractBrickConfig
         return [];
     }
 
+    public function setActions($actions): self
+    {
+        $this->actions = $actions;
+        return $this;
+    }
+
     public function getConfig(Request $request): array
     {
         return [
@@ -68,11 +75,6 @@ class ShowConfig extends AbstractBrickConfig
             'title' => $this->getCrudConfig()->getTitle('show'),
             'hidden_action' => false,
         ];
-    }
-
-    public function addItemAction(): self
-    {
-        return $this;
     }
 
     public function addField(Field $field): self

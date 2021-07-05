@@ -113,6 +113,7 @@ class FormConfig extends AbstractBrickConfig
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }
+        $this->setSuccessRedirectPath($crudConfig->getAfterEditPath());
         return $this;
     }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lle\CruditBundle\Dto\Layout;
+namespace Lle\CruditBundle\Contracts;
 
 interface LayoutElementInterface
 {

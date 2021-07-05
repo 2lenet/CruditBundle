@@ -1,16 +1,11 @@
 <!-- Topbar -->
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-        <i class="fa fa-bars"></i>
-    </button>
-
-    {% for element in crudit.elements('header-nav') %}
-        {% include crudit.template(element.template) with {'element': element, 'where': 'header-nav'} %}
-    {% endfor %}
-
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-2 static-top shadow">
+    {% block header_nav %}
+    {% endblock %}
+    {% block header_right %}
     <ul class="navbar-nav ms-auto">
-        {% for element in crudit.elements('header-right') %}
-            {% include crudit.template(element.template) with {'element': element, 'where': 'header-right'} %}
-        {% endfor %}
+        {% include '@LleCrudit/layout/sb_admin/elements/_v_separator.html.twig' %}
+        {% include '@LleCrudit/layout/sb_admin/elements/_user.html.twig' %}
     </ul>
+    {% endblock %}
 </nav>

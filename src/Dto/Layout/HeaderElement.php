@@ -17,7 +17,7 @@ class HeaderElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return 'elements/_header';
+        return '@LleCrudit/layout/sb_admin/elements/_header.html.twig';
     }
 
     public function __construct(string $libelle)

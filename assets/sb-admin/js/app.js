@@ -1,5 +1,6 @@
 import "bootstrap";
 import TomSelect from "tom-select/dist/js/tom-select.complete";
+
 import "./map";
 
 window.addEventListener('load', function () {
@@ -36,30 +37,50 @@ window.addEventListener('load', function () {
                 valueField: 'id',
                 labelField: 'text',
                 searchField: 'text',
-                maxItems: select.dataset.maxitems,
+                maxOptions: 2000,
                 preload: true,
                 options: inioptions,
                 plugins: [
-                        'checkbox_options',
+                        //'checkbox_options',
+                        'virtual_scroll',
                         'remove_button'
                     ],
                 onChange: function (value) {
                     let items = [];
-                    value.split(',').forEach(v=>{
-                        items.push({id: v, text: this.options[v].text});
-                    })
+                    if (value!='') {
+                        value.split(',').forEach(v => {
+                            items.push({id: v, text: this.options[v].text});
+                        })
+                    }
                     document.getElementById(select.id+"_items").value=JSON.stringify(items);
                 },
+                firstUrl: function(query){
+                    return dataurl + encodeURIComponent(query)+"&limit=20";
+                },
                 load: function (query, callback) {
-                    let url = dataurl + encodeURIComponent(query);
+                    let url = this.getUrl(query);
                     fetch(url)
                         .then(response => response.json())
                         .then(json => {
+                            if (json.next_offset< json.total_count) {
+                                const next_url = dataurl + encodeURIComponent(query) + "&limit=20&offset=" + json.next_offset;
+                                this.setNextUrl(query, next_url);
+                            }
+                            // add data to the results
                             callback(json.items);
-                            }).catch(() => {
+                            }).catch((e) => {
+                                console.log("error", e)
                                 callback();
                             });
-                }
+                },
+                render: {
+                    loading_more: function() {
+                        return `<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours </div>`;
+                    },
+                    no_more_results: function () {
+                        return "";
+                    }
+                },
             }
         );
     });

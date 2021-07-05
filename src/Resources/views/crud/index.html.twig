@@ -1,5 +1,5 @@
-{%  extends crudit.layout %}
+{%  extends 'base.html.twig' %}
 
 {% block content %}
-    {%  include crudit.template('bricks/_bricks') with {'views': views } %}
+    {%  include '@LleCrudit/layout/sb_admin/bricks/_bricks.html.twig' with {'views': views } %}
 {%  endblock %}

@@ -1,9 +1,3 @@
 {
-  "bundles/crudit/app.js": "/app.js",
-  "bundles/crudit/images/undraw_posting_photo.svg": "/images/undraw_posting_photo.svg",
-  "bundles/crudit/images/undraw_rocket.svg": "/images/undraw_rocket.svg",
-  "bundles/crudit/images/undraw_profile.svg": "/images/undraw_profile.svg",
-  "bundles/crudit/images/undraw_profile_3.svg": "/images/undraw_profile_3.svg",
-  "bundles/crudit/images/undraw_profile_2.svg": "/images/undraw_profile_2.svg",
-  "bundles/crudit/images/undraw_profile_1.svg": "/images/undraw_profile_1.svg"
+  "bundles/crudit/app.js": "/app.js"
 }

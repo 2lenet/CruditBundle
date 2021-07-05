@@ -35,13 +35,14 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     protected ?array $data = null;
 
-    protected array $defaults = [];
+    protected array $default = [];
 
     public function getOperators(): array
     {
         return [
         ];
     }
+
     /**
      * @return array
      */
@@ -63,6 +64,11 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getFilterLabel()
     {
         return $this->label;
+    }
+
+    public function setDefault($default_data): self {
+        $this->default = $default_data;
+        return $this;
     }
 
     public function getId(): string
@@ -112,24 +118,11 @@ abstract class AbstractFilterType implements FilterTypeInterface
     }
 
     /**
-     * Get the value of defaults
+     * Get the value of default
      */
-    public function getDefaults()
+    public function getDefault()
     {
-        return $this->defaults;
-    }
-
-    /**
-     * Set the value of defaults
-     */
-    public function setDefaults($defaults)
-    {
-        if (!is_array($defaults)) {
-            $defaults = ['value' => $defaults];
-        }
-        $this->defaults = array_merge($this->defaults, $defaults);
-
-        return $this;
+        return $this->default;
     }
 
     public function getStateTemplate(): string

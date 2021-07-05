@@ -1,79 +1,114 @@
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">{{ view.config.title|trans }}</h6>
+    <div class="card-header py-1">
+        {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
     <div class="card-body">
         <div class="table-responsive">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        {% for field in view.config.fields %}
-                            <th class="text-nowrap">{{ field.label |trans }}
-                                {% if field.sortable %}
-                                    {% set merge_params = {
-                                        ((view.config.name|lower)~'_sort'): field.name,
-                                        ((view.config.name|lower)~'_sort_order'): 'asc'
-                                    } %}
-                                    {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
-                                    {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
-                                    {% set icon = 'fa-sort' %}
-                                    {% if sorted %}
-                                        {% set icon = 'fa-sort-amount-up-alt' %}
-                                    {% endif %}
-                                    {% if sorted and order=='asc' %}
-                                        {% set icon = 'fa-sort-amount-down-alt' %}
-                                        {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                    {% endif %}
-                                    {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                    {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
-                                    <span>
-                                        <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                            <i class="fas {{ icon }}"></i>
-                                        </a>
-                                    </span>
-                                {% endif %}
-                            </th>
-                        {% endfor %}
-                        {% if view.config.actions|length %}
-                            <th>{{ 'crudit.action'|trans }}</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for line in view.data.lines %}
+                {% if not view.options.noHeader|default(false) %}
+                    <thead class="thead-light">
                         <tr>
+                            {% for field in view.config.fields %}
+                                {% if field.ruptGroup == 0 %}
+
+                                <th class="text-nowrap">{{ field.label |trans }}
+                                    {% if field.sortable %}
+                                        {% set merge_params = {
+                                            ((view.config.name|lower)~'_sort'): field.name,
+                                            ((view.config.name|lower)~'_sort_order'): 'asc'
+                                        } %}
+                                        {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
+                                        {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
+                                        {% set icon = 'fa-sort' %}
+                                        {% if sorted %}
+                                            {% set icon = 'fa-sort-amount-up-alt' %}
+                                        {% endif %}
+                                        {% if sorted and order=='asc' %}
+                                            {% set icon = 'fa-sort-amount-down-alt' %}
+                                            {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
+                                        {% endif %}
+                                        {% set parameters = app.request.query.all()|merge(merge_params) %}
+                                        {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
+                                        <span>
+                                            <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
+                                                <i class="fas {{ icon }}"></i>
+                                            </a>
+                                        </span>
+                                    {% endif %}
+                                </th>
+                                {% endif %}
+                            {% endfor %}
+                            {% if view.config.actions|length %}
+                                <th>{{ 'crudit.action'|trans }}</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                {% endif %}
+                <tbody>
+                {% set ruptval1 = "" %}
+                {% set ruptval2 = "" %}
+
+                {% for line in view.data.lines %}
                             {% for column in line.fields %}
+                                {# RUPTURE NIVEAU 1 #}
+                                {% if column.field.ruptGroup==1 %}
+                                   {% if ruptval1 != column.value %}
+                                       <tr>
+                                           <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                       </tr>
+                                       {% set ruptval2 = "" %}
+                                   {% endif %}
+                                   {%  set ruptval1 = column.value %}
+                                {% endif %}
+
+                                {# RUPTURE NIVEAU 2 #}
+                                {% if column.field.ruptGroup==2 %}
+                                    {% if ruptval2 != column.value %}
+                                        <tr>
+                                            <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                        </tr>
+                                    {% endif %}
+                                    {%  set ruptval2 = column.value %}
+                                {% endif %}
+
+                                {% if column.field.ruptGroup==0 %}
+                                    {% if loop.first %}
+                                        <tr>
+                                    {% endif %}
                                 <td>
                                     {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                        {% endif %}
+                                    {% endif %}
                                         {{ column.value|raw }}
-                                        {% if column.field.path %}
+                                    {% if column.field.path %}
                                     </a>
                                     {% endif %}
                                 </td>
+                                {% endif %}
                             {% endfor %}
                             {% if view.config.actions|length %}
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
                                         {% for action in view.config.actions %}
-                                            {% do action.setResource(line.resource) %}
-                                            {% if action.modal %}
-                                                {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
+                                            {% if action.path.role is null or is_granted(action.path.role) %}
+                                                {% set params = { 'id': line.resource.id } %}
+                                                {% if action.modal %}
+                                                    {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
+                                                {% endif %}
+                                                <a
+                                                        class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
+                                                        {% if action.modal %}
+                                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                                                        {% elseif not action.disabled %}
+                                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
+                                                        {% endif %}
+                                                        title="{{ action.title|trans }}"
+                                                >
+                                                    {% if action.icon %}
+                                                    <i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                                    {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
+                                                </a>
                                             {% endif %}
-                                            <a
-                                                    class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
-                                                    {% if action.modal %}
-                                                        data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-                                                    {% elseif not action.disabled %}
-                                                        href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                                    {% endif %}
-                                                    title="{{ action.title|trans }}"
-                                            >
-                                                {% if action.icon %}
-                                                <i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                                {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
-                                            </a>
                                         {% endfor %}
                                     </div>
                                 </td>
@@ -84,7 +119,7 @@
             </table>
         </div>
     </div>
-    <div class="card-footer py-3">
+    <div class="card-footer py-1">
         {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
 </div>
