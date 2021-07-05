@@ -4885,11 +4885,12 @@ leaflet__WEBPACK_IMPORTED_MODULE_0___default().Icon.Default.mergeOptions({
 window.addEventListener('load', function () {
   document.querySelectorAll(".crudit-map").forEach(function (map_elem) {
     var center = [map_elem.dataset.lat, map_elem.dataset.lng];
+    var zoom = map_elem.dataset.zoom;
     var editable = map_elem.dataset.editable !== undefined && map_elem.dataset.editable !== "off";
     var map = leaflet__WEBPACK_IMPORTED_MODULE_0___default().map(map_elem.id, {
       editable: editable,
       center: center,
-      zoom: map_elem.dataset.zoom
+      zoom: zoom
     });
     var marker = null;
     var geo = null;
@@ -4951,7 +4952,7 @@ window.addEventListener('load', function () {
           animate: true
         });
       } else {
-        map.flyTo(center);
+        map.flyTo(center, zoom);
       }
     }).addTo(map);
 

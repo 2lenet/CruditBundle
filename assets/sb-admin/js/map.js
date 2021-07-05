@@ -17,11 +17,12 @@ window.addEventListener('load', function () {
 
     document.querySelectorAll(".crudit-map").forEach(map_elem => {
         let center = [map_elem.dataset.lat, map_elem.dataset.lng];
+        let zoom = map_elem.dataset.zoom;
         let editable = (map_elem.dataset.editable !== undefined && map_elem.dataset.editable !== "off");
         let map = L.map(map_elem.id, {
             editable: editable,
             center: center,
-            zoom: map_elem.dataset.zoom
+            zoom: zoom
         });
         let marker = null;
         let geo = null;
@@ -76,7 +77,7 @@ window.addEventListener('load', function () {
             if (fitbound) {
                 map.fitBounds(fitbound,{animate:true});
             } else {
-                map.flyTo(center);
+                map.flyTo(center, zoom);
             }
         }).addTo(map);
 
