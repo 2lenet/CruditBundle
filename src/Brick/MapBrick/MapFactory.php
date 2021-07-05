@@ -40,7 +40,7 @@ class MapFactory extends AbstractBasicBrickFactory
 
     private function getResourceView(MapConfig $brickConfigurator): ?ResourceView
     {
-        if ($this->getRequest()->get('id')) {
+        if ($this->getRequest()->attributes->get('id')) {
             $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
             if ($resource) {
                 return $this->resourceResolver->resolve(

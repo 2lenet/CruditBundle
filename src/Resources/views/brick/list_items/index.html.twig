@@ -1,6 +1,6 @@
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">{{ view.config.title|trans }}</h6>
+    <div class="card-header py-1">
+        {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -117,7 +117,7 @@
             </table>
         </div>
     </div>
-    <div class="card-footer py-3">
+    <div class="card-footer py-1">
         {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
 </div>

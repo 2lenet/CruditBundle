@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Annotation\Route;
 
 trait TraitCrudController
 {
@@ -28,7 +29,7 @@ trait TraitCrudController
      */
     public function index(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_LIST');
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_INDEX');
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);

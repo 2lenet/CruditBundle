@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-sm-12 col-md-5" role="status" aria-live="polite">
+    <div class="col-sm-12 col-md-4" role="status" aria-live="polite">
         {% if view.config.datasource_params.count > 0 %}
             Items
             <b>{{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }}</b> sur {{ view.config.datasource_params.count }}
@@ -8,7 +8,7 @@
         {% endif %}
     </div>
 
-    <nav class="col-sm-12 col-md-7" aria-label="navigation">
+    <nav class="col-sm-12 col-md-8" aria-label="navigation">
         <ul class="pagination">
             {% if view.config.datasource_params.previous %}
                 {% set merge_params = {(view.config.name|lower~'_offset'): 0} %}
