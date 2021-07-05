@@ -1,3 +1,5 @@
+$input-group-length: 220px;
+
 .input-group-prepend {
     .dropdown-toggle, .dropdown-toggle:hover {
         height: 100%;
@@ -7,8 +9,12 @@
         border-bottom-right-radius: 0;
     }
 
+    &:empty + .form-floating {
+        width: $input-group-length+57;
+    }
+
     & + .form-floating {
-        width: 220px;
+        width: $input-group-length;
         input, .entity-select {
             border: solid 1px $gray-400;
             border-left: none;

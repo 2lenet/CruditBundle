@@ -1,5 +1,9 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
-{% block operator %}{% endblock %}
+
+{% block operator %}
+    <div class="input-group-prepend"></div>
+{% endblock %}
+
 {% block input %}
     <div class="form-floating">
         <select class="form-control tom-select" data-widget="select2" {% if filtertype.multiple %} multiple {% endif %}

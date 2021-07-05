@@ -14,12 +14,12 @@ a {
     }
 }
 
-// Main page wrapper
 #wrapper {
     display: flex;
     #content-wrapper {
         background-color: $gray-100;
         width: 100%;
+        min-height: 100vh;
         overflow-x: hidden;
         #content {
             flex: 1 0 auto;
@@ -34,7 +34,6 @@ a {
     padding-right: $grid-gutter-width;
 }
 
-// Scroll to top button
 .scroll-to-top {
     position: fixed;
     right: 1rem;
