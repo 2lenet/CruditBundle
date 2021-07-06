@@ -94,7 +94,7 @@
                                                 {% set params = { 'id': line.resource.id } %}
                                                 {% do action.setResource(line.resource) %}
                                                 {% if action.modal %}
-                                                    {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
+                                                    {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                                                 {% endif %}
 
                                                 {# span around link otherwise title may not show #}
@@ -102,7 +102,7 @@
                                                     <a
                                                             class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                             {% if action.modal %}
-                                                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                                                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                                                             {% elseif not action.disabled %}
                                                                 href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                                                             {% endif %}
