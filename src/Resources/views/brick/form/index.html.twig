@@ -1,9 +1,6 @@
 {%  set form = view.data.form %}
 <div class="card shadow mb-4">
     {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">{# {{ view.config.title }} #}</h6>
-        </div>
         <div class="card-body">
             <div class="table-responsive">
 
@@ -15,7 +12,8 @@
             </div>
         </div>
         <div class="card-footer">
-            <button type="submit" class="btn btn-primary">{{ 'crudit.action.save' | trans }}</button>
+            <button type="submit" class="btn btn-primary">{{ 'crudit.action.save' | trans({},'LleCruditBundle') }}</button>
+            <a href="{{path(view.data.cancel_path.route, view.data.cancel_path.params)}}" class="btn btn-danger">{{ 'crudit.action.cancel' | trans({},'LleCruditBundle') }}</a>
         </div>
     {{ form_end(form) }}
 </div>

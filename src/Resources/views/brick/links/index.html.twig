@@ -5,28 +5,26 @@
             {% set params = action.path.params %}
             {% set id = app.request.attributes.get('id') %}
             {% if id %}
-                {% set params = action.path.params |merge({id: id}) %}
+                {% set params = action.path.params|merge({id: id}) %}
             {% endif %}
 
             {% if action.path.role is null or is_granted(action.path.role) %}
                 {% if action.modal %}
-                    {% include action.modal with {action: action, id: 'modal_' ~ action.id , params: params} %}
+                    {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
                 {% endif %}
                 <a
-                        class="{{ action.cssClass ?? 'btn btn-sm btn-primary ml-2' }}"
+                        class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }}"
                         {% if action.modal %}
                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
                         {% else %}
                             href="{{ action.url ?? path(action.path.route, params) }}"
                         {% endif %}
-                        title="{{ action.label | trans }}"
+                        title="{{ action.label|trans }}"
                 >
                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                    {% if not action.hideLabel %}{{ action.label | trans }}{% endif %}
+                    {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
                 </a>
             {% endif %}
-
         {% endfor %}
     </div>
 </nav>
-

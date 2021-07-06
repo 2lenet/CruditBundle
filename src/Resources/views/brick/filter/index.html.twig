@@ -1,31 +1,21 @@
 <form>
-    <div class="card shadow mb-2">
+    <div class="card shadow mb-1">
         <div class="card-header py-1">
-            <ul class="nav nav-pills card-header-pills">
-                <li class="navbar-brand">
-                    <h6 class="font-weight-boldtext-primary" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true"
-                        aria-controls="collapse-filter">
-                        <i class="icon fa fa-search"></i>&nbsp;
-                        {{ 'crudit.title.filters'|trans({}, 'LleCruditBundle') }}
-                    </h6>
-                </li>
-
-                {% for id, filter in view.data.filters %}
-                    {% set vars = {
-                        'data': filter.data,
-                        'id': id,
-                        'filtertype':filter} %}
-                    <li class="nav-item mx-1">
-                        {% include filter.stateTemplate with vars %}
-                    </li>
-                {% endfor %}
-                <li class="nav-item">
-                    <span class="btn float-end" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true"
-                          aria-controls="collapse-filter">
-                        <i class="fa fa-chevron-up"></i>
-                    </span>
-                </li>
-            </ul>
+            <h6 class="m-2 font-weight-bold float-start text-primary">
+                <i class="icon fa fa-search"></i>&nbsp;
+                {{ 'crudit.title.filters'|trans({}, 'LleCruditBundle') }}
+            </h6>
+            <span id="card-toggle" class="btn float-end" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
+                <i class="fa fa-chevron-up"></i>
+            </span>
+            {% for id, filter in view.data.filters %}
+                {% set vars = {
+                    'data': filter.data,
+                    'id': id,
+                    'filtertype':filter}
+                %}
+                {% include filter.stateTemplate with vars %}
+            {% endfor %}
         </div>
 
         <div id="collapse-filter" class="collapse show card-body">
@@ -36,7 +26,8 @@
                             {% set vars = {
                                 'data': filter.data,
                                 'id': 'filter_'~ id,
-                                'filtertype': filter} %}
+                                'filtertype': filter}
+                            %}
                             {% include filter.template with vars %}
                         </div>
                     </div>
@@ -49,8 +40,7 @@
                 <i class="fa fa-filter"></i>&nbsp;
                 {{ 'crudit.filter.filter'|trans({}, 'LleCruditBundle') }}
             </button>
-            <button class="btn btn-sm btn-default" name="{{ view.data.filterset.id }}_reset" value="reset"
-                    type="submit">
+            <button class="btn btn-sm btn-default" name="{{ view.data.filterset.id}}_reset" value="reset" type="submit">
                 <i class="fa fa-window-close"></i>&nbsp;
                 {{ 'crudit.filter.reset'|trans({}, 'LleCruditBundle') }}
             </button>

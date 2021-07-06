@@ -92,22 +92,26 @@
                                         {% for action in view.config.actions %}
                                             {% if action.path.role is null or is_granted(action.path.role) %}
                                                 {% set params = { 'id': line.resource.id } %}
+                                                {% do action.setResource(line.resource) %}
                                                 {% if action.modal %}
                                                     {% include action.modal with {action: action, id: 'modal_' ~ action.id } %}
                                                 {% endif %}
-                                                <a
-                                                        class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
-                                                        {% if action.modal %}
-                                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-                                                        {% elseif not action.disabled %}
-                                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                                        {% endif %}
-                                                        title="{{ action.title|trans }}"
-                                                >
-                                                    {% if action.icon %}
-                                                    <i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                                    {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
-                                                </a>
+
+                                                {# span around link otherwise title may not show #}
+                                                <span title="{{ action.title | trans }}" >
+                                                    <a
+                                                            class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
+                                                            {% if action.modal %}
+                                                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                                                            {% elseif not action.disabled %}
+                                                                href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
+                                                            {% endif %}
+                                                    >
+                                                        {% if action.icon %}
+                                                        <i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                                        {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
+                                                    </a>
+                                                </span>
                                             {% endif %}
                                         {% endfor %}
                                     </div>

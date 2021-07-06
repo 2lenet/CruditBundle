@@ -19,7 +19,7 @@ class DateTimeField extends DateField
     {
         $optionResolver = new OptionsResolver();
         $optionResolver->setDefaults([
-            'format' => 'd-m-Y H:i'
+            'format' => 'd/m/Y H:i'
         ])->setAllowedTypes('format', 'string');
         return $optionResolver->resolve($field->getOptions());
     }
