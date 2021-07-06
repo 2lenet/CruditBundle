@@ -71,7 +71,7 @@ class EntityToIdTransformer implements DataTransformerInterface
     public function reverseTransform($id)
     {
         if (!$id) {
-            return null;
+            return $this->multiple ? [] : null;
         }
 
         // Multiple input
