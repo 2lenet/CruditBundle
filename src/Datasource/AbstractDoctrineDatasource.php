@@ -153,9 +153,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function newInstance(): object
     {
-        return $this->entityManager
-            ->getClassMetadata($this->getClassName())
-            ->newInstance();
+        $class = $this->getClassName();
+
+        return new $class();
     }
 
     public function save(object $resource): void

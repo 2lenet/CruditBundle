@@ -104,10 +104,11 @@ class AutocompleteType extends AbstractType
             "compound" => false,
         ]);
 
-        $resolver->setAllowedTypes("class", ["string", "null"]);
-        $resolver->setRequired("class");
-        $resolver->setAllowedTypes("url", ["string", "null"]);
-        $resolver->setAllowedTypes("route", ["string", "null"]);
-        $resolver->setAllowedTypes("multiple", "bool");
+        $resolver
+            ->setAllowedTypes("class", ["string", "null"])
+            ->setRequired("class")
+            ->setAllowedTypes("url", ["string", "null"])
+            ->setAllowedTypes("route", ["string", "null"])
+            ->setAllowedTypes("multiple", "bool");
     }
 }
