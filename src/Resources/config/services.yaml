@@ -44,10 +44,6 @@ services:
         arguments:
             - !tagged_iterator crudit.menu
 
-    Lle\CruditBundle\Registry\DatasourceRegistry:
-        arguments:
-            - !tagged_iterator crudit.datasource
-
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'

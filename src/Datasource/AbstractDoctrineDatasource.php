@@ -61,7 +61,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams->getLimit()) {
             $qb->setMaxResults($requestParams->getLimit());
         }
-
         foreach ($requestParams->getSorts() as $sort) {
             $this->addOrderBy($qb, $sort[0], $sort[1]);
         }
@@ -69,7 +68,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
-
         return $qb->getQuery()->execute();
     }
 

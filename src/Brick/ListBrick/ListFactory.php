@@ -10,21 +10,16 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
-use Lle\CruditBundle\Registry\DatasourceRegistry;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ListFactory extends AbstractBasicBrickFactory
 {
-    /** @var DatasourceRegistry */
-    private $datasourceRegistry;
-
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack,
-        DatasourceRegistry $datasourceRegistry
-    ) {
-        $this->datasourceRegistry = $datasourceRegistry;
+        RequestStack $requestStack
+    )
+    {
         parent::__construct($resourceResolver, $requestStack);
     }
 
@@ -49,23 +44,12 @@ class ListFactory extends AbstractBasicBrickFactory
         return $view;
     }
 
-    public function getRequestParametersScop(): array
-    {
-        return ['id'];
-    }
-
     public function getPath(BrickConfigInterface $brickConfig): Path
     {
         return $brickConfig->getCrudConfig()->getPath(
             'brick',
             array_merge($this->getRequestParameters(), ['idBrick' => $brickConfig->getId(), '_format' => 'html'])
         );
-    }
-
-    /** @return Field[] */
-    private function getFields(ListConfig $brickConfigurator): array
-    {
-        return $brickConfigurator->getFields();
     }
 
     /** @return ResourceView[] */
@@ -75,38 +59,31 @@ class ListFactory extends AbstractBasicBrickFactory
 
         if ($brickConfigurator->getDatasource()) {
 
-            $assocEntity = $this->getRequest()->get("id");
-            $datasource = $brickConfigurator->getClassName() !== null ?
-                $this->datasourceRegistry->getByClass($brickConfigurator->getClassName()) :
-                $brickConfigurator->getDatasource();
-            $assocField = $brickConfigurator->getFieldNameAssociation() ??
-                $datasource->getAssociationFieldName($brickConfigurator->getDatasource()->getClassName());
-
-            if ($brickConfigurator->hasCatchQueryAssociation()) {
-                // custom query
-                $resources = $brickConfigurator->catchQueryAssociation($query, 'assoc');
-            } elseif ($assocField !== null) {
-                // sublist
-                $resources = $datasource->createQuery("assoc")
-                    ->where('assoc. ' . $assocField . ' = :id')
-                    ->setParameter('id', $this->getRequest()->get('id'))
-                    ->execute();
-            } else {
-                // normal list
-                $dsParams = $brickConfigurator->getDatasourceParams();
-                $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
-                $resources = $brickConfigurator->getDatasource()->list($dsParams);
-            }
+            // normal list
+            $dsParams = $brickConfigurator->getDatasourceParams();
+            $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+            $resources = $brickConfigurator->getDatasource()->list($dsParams);
 
             foreach ($resources as $resource) {
                 $lines[] = $this->resourceResolver->resolve(
                     $resource,
                     $this->getFields($brickConfigurator),
-                    $datasource
+                    $brickConfigurator->getDatasource()
                 );
             }
         }
 
         return $lines;
+    }
+
+    /** @return Field[] */
+    private function getFields(ListConfig $brickConfigurator): array
+    {
+        return $brickConfigurator->getFields();
+    }
+
+    public function getRequestParametersScop(): array
+    {
+        return ['id'];
     }
 }

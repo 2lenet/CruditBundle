@@ -1,7 +1,7 @@
 services:
 
   Lle\CruditBundle\Brick\ListBrick\ListFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Registry\DatasourceRegistry']
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
