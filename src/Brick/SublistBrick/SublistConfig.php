@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Lle\CruditBundle\Brick\ListBrick;
+namespace Lle\CruditBundle\Brick\SublistBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
-use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Component\HttpFoundation\Request;
 
-class ListConfig extends AbstractBrickConfig
+class SublistConfig extends AbstractBrickConfig
 {
 
     /** @var Field[] */
@@ -30,6 +29,18 @@ class ListConfig extends AbstractBrickConfig
 
     /** @var string */
     private $className;
+    private $fieldname;
+
+    public function __construct($fieldname, array $options = [])
+    {
+        $this->fieldname = $fieldname;
+        $this->options = $options;
+    }
+
+    public static function new(string $fieldname, array $options = []): self
+    {
+        return new self($fieldname, $options);
+    }
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
@@ -41,55 +52,20 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public static function new(array $options = []): self
-    {
-        return new self($options);
-    }
-
-    public function __construct(array $options = [])
-    {
-        $this->options = $options;
-    }
-
-    public function setDatasource(DatasourceInterface $datasource): self
-    {
-        $this->datasource = $datasource;
-
-        return $this;
-    }
-
     public function getDatasource(): DatasourceInterface
     {
         return $this->datasource ?? $this->getCrudConfig()->getDatasource();
     }
 
-    public function getDatasourceParams(): DatasourceParams
+    public function setDatasource(DatasourceInterface $datasource): self
     {
-        return $this->datasourceParams;
-    }
-
-    public function setDatasourceParams(DatasourceParams $datasourceParams): self
-    {
-        $this->datasourceParams = $datasourceParams;
-
+        $this->datasource = $datasource;
         return $this;
     }
 
     public function addAction(ItemAction $action): self
     {
         $this->actions[] = $action;
-
-        return $this;
-    }
-
-    public function getActions(): array
-    {
-        return $this->actions;
-    }
-
-    public function setActions($actions): self
-    {
-        $this->actions = $actions;
 
         return $this;
     }
@@ -109,7 +85,48 @@ class ListConfig extends AbstractBrickConfig
             'hidden_action' => false,
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
+            'canModifyNbEntityPerPage' => false
         ];
+    }
+
+    /** @return Field[] */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    public function setFields(array $fields): self
+    {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    public function getActions(): array
+    {
+        return $this->actions;
+    }
+
+    public function setActions($actions): self
+    {
+        $this->actions = $actions;
+
+        return $this;
+    }
+
+    public function getDatasourceParams(): DatasourceParams
+    {
+        return $this->datasourceParams;
+    }
+
+    public function setDatasourceParams(DatasourceParams $datasourceParams): self
+    {
+        $this->datasourceParams = $datasourceParams;
+        return $this;
+    }
+
+    public function add(string $name, string $type = null, array $options = []): self
+    {
+        return $this->addField(Field::new($name, $type, $options));
     }
 
     public function addField(Field $field): self
@@ -119,18 +136,9 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function addFields(array $fields): self
+    public function getClassName(): ?string
     {
-        foreach ($fields as $field) {
-            $this->addField($field);
-        }
-
-        return $this;
-    }
-
-    public function add(string $name, string $type = null, array $options = []): self
-    {
-        return $this->addField(Field::new($name, $type, $options));
+        return $this->className;
     }
 
     public function setClassName(string $className): self
@@ -140,15 +148,22 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getClassName(): ?string
+    /**
+     * @return mixed
+     */
+    public function getFieldname()
     {
-        return $this->className;
+        return $this->fieldname;
     }
 
-    /** @return Field[] */
-    public function getFields(): array
+    /**
+     * @param mixed $fieldname
+     * @return SublistConfig
+     */
+    public function setFieldname($fieldname)
     {
-        return $this->fields;
+        $this->fieldname = $fieldname;
+        return $this;
     }
 
 }
