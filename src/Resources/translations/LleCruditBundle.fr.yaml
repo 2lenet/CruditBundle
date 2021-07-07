@@ -1,4 +1,8 @@
 crudit:
+    action:
+        save: "Enregistrer"
+        cancel: "Annuler"
+        logout: "Se déconnecter"
     title:
         filters: "Filtrer les items"
     filter:
@@ -61,3 +65,11 @@ crudit:
     "true": "Oui"
     "false": "Non"
     "all": "Tout"
+    modal:
+        cancel: "Annuler"
+        delete:
+            message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
+            delete: "Supprimer"
+        export:
+            message: "Choisissez un format d'export"
+            export: "Exporter"

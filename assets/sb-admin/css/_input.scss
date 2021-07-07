@@ -1,13 +1,20 @@
+$input-group-length: 220px;
+
 .input-group-prepend {
     .dropdown-toggle, .dropdown-toggle:hover {
+        height: 100%;
         color: #000000;
         border-color: $gray-400;
-        border-top-left-radius: $border-radius !important;
-        border-bottom-left-radius: $border-radius !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    &:empty + .form-floating {
+        width: $input-group-length+57;
     }
 
     & + .form-floating {
-        width: 220px;
+        width: $input-group-length;
         input, .entity-select {
             border: solid 1px $gray-400;
             border-left: none;
@@ -56,5 +63,12 @@
                 margin: 0;
             }
         }
+    }
+}
+
+.form-floating {
+    & > select.form-control:focus,
+    & > select.form-control:not(:placeholder-shown) {
+        padding-top: 0.9rem;
     }
 }

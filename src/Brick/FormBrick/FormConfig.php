@@ -31,6 +31,8 @@ class FormConfig extends AbstractBrickConfig
     /** @var string */
     private $messageError;
 
+    protected Path $cancelPath;
+
 
     public static function new(array $options = []): self
     {
@@ -113,6 +115,7 @@ class FormConfig extends AbstractBrickConfig
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }
+        $this->setSuccessRedirectPath($crudConfig->getAfterEditPath());
         return $this;
     }
 
@@ -126,4 +129,23 @@ class FormConfig extends AbstractBrickConfig
     {
         return $this->dataSource;
     }
+
+    /**
+     * @return Path
+     */
+    public function getCancelPath(): Path
+    {
+        return $this->cancelPath;
+    }
+
+    /**
+     * @param Path $cancelPath
+     * @return FormConfig
+     */
+    public function setCancelPath(Path $cancelPath): FormConfig
+    {
+        $this->cancelPath = $cancelPath;
+        return $this;
+    }
+
 }

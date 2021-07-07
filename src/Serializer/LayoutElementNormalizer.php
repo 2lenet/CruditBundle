@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Serializer;
 
-use Lle\CruditBundle\Dto\Layout\LayoutElementInterface;
+use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 

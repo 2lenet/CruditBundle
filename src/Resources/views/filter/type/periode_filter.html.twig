@@ -1,6 +1,8 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
-{% block operator %}{% endblock %}
+{% block operator %}
+    <div class="input-group-prepend"></div>
+{% endblock %}
 
 {% block input %}
     <div class="form-floating">
@@ -10,7 +12,7 @@
                 class="form-control"
                 name="{{ id }}_value"
                 id="input_{{ id }}_value"
-        >
+        />
         <label for="input_{{ id }}_value">
             {{ filter.filterLabel|trans() }}
         </label>
@@ -21,6 +23,6 @@
                 class="form-control"
                 name="{{ id }}_to"
                 id="input_{{ id }}_to"
-        >
+        />
     </div>
 {% endblock %}

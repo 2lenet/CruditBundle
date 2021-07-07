@@ -1,0 +1,20 @@
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            {% block content %}
+                <div class="modal-header">
+                    {% block header %}
+                    {% endblock %}
+                </div>
+                <div class="modal-body">
+                    {% block body %}
+                    {% endblock %}
+                </div>
+                <div class="modal-footer">
+                    {% block footer %}
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>

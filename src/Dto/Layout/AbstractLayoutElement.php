@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Layout;
 
+use Lle\CruditBundle\Contracts\LayoutElementInterface;
+
 abstract class AbstractLayoutElement implements LayoutElementInterface
 {
-
-    /** @var array */
-    protected $roles;
+    /** @var string|null */
+    protected $role;
 
     /** @var string */
     protected $cssClass;
@@ -25,12 +26,16 @@ abstract class AbstractLayoutElement implements LayoutElementInterface
     /** @var LayoutElementInterface[] */
     protected $children = [];
 
-    /**
-     * @return string[]
-     */
-    public function getRole(): ?array
+    public function getRole(): string
     {
-        return $this->roles;
+        return $this->role ?? "ROLE_USER";
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+
+        return $this;
     }
 
     public function getCssClass(): ?string

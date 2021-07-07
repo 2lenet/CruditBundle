@@ -28,6 +28,10 @@ class ListAction
     /** @var bool */
     protected $hideLabel = false;
 
+    protected ?string $modal = null;
+
+    protected array $config = [];
+
     public static function new(string $label, Path $path, ?Icon $icon = null): self
     {
         return (new ListAction($label, $path))
@@ -93,6 +97,35 @@ class ListAction
     public function setHideLabel(bool $hideLabel): self
     {
         $this->hideLabel = $hideLabel;
+        return $this;
+    }
+
+    public function getModal(): ?string
+    {
+        return $this->modal;
+    }
+
+    public function setModal(?string $modal): self
+    {
+        $this->modal = $modal;
+
+        return $this;
+    }
+
+    public function getId(): string
+    {
+        return md5("crudit_action_" . spl_object_id($this));
+    }
+
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    public function setConfig(array $config): self
+    {
+        $this->config = $config;
+
         return $this;
     }
 }

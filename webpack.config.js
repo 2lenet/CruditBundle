@@ -20,20 +20,6 @@ function basic(path, Encore){
 }
 
 /**
- * Config for adminlte layout
- */
-basic('adminlte', Encore)
-    .addEntry("app", "./assets/admin-lte/js/app.js")
-    .copyFiles({
-        from: './node_modules/admin-lte/dist/img/',
-        to: 'images/[name].[ext]',
-        pattern: /\.(jpg|png)$/
-    })
-;
-const adminlte = Encore.getWebpackConfig();
-Encore.reset();
-
-/**
  * Config for sb-admin layout
  */
 basic('sbadmin', Encore)

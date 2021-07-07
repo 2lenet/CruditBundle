@@ -10,21 +10,16 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
-use Lle\CruditBundle\Registry\DatasourceRegistry;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ListFactory extends AbstractBasicBrickFactory
 {
-    /** @var DatasourceRegistry */
-    private $datasourceRegistry;
-
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack,
-        DatasourceRegistry $datasourceRegistry
-    ) {
-        $this->datasourceRegistry = $datasourceRegistry;
+        RequestStack $requestStack
+    )
+    {
         parent::__construct($resourceResolver, $requestStack);
     }
 
@@ -45,12 +40,8 @@ class ListFactory extends AbstractBasicBrickFactory
                     'lines' => $this->getLines($brickConfigurator)
                 ]);
         }
-        return $view;
-    }
 
-    public function getRequestParametersScop(): array
-    {
-        return ['id'];
+        return $view;
     }
 
     public function getPath(BrickConfigInterface $brickConfig): Path
@@ -61,51 +52,38 @@ class ListFactory extends AbstractBasicBrickFactory
         );
     }
 
+    /** @return ResourceView[] */
+    private function getLines(ListConfig $brickConfigurator): array
+    {
+        $lines = [];
+
+        if ($brickConfigurator->getDatasource()) {
+
+            // normal list
+            $dsParams = $brickConfigurator->getDatasourceParams();
+            $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+            $resources = $brickConfigurator->getDatasource()->list($dsParams);
+
+            foreach ($resources as $resource) {
+                $lines[] = $this->resourceResolver->resolve(
+                    $resource,
+                    $this->getFields($brickConfigurator),
+                    $brickConfigurator->getDatasource()
+                );
+            }
+        }
+
+        return $lines;
+    }
+
     /** @return Field[] */
     private function getFields(ListConfig $brickConfigurator): array
     {
         return $brickConfigurator->getFields();
     }
 
-    /** @return ResourceView[] */
-    private function getLines(ListConfig $brickConfigurator): array
+    public function getRequestParametersScop(): array
     {
-        $lines = [];
-        if ($brickConfigurator->getDataSource() !== null) {
-            if ($this->getRequest()->get('id')) {
-                $datasource = $brickConfigurator->getClassName() !== null ?
-                    $this->datasourceRegistry->getByClass($brickConfigurator->getClassName()) :
-                    $brickConfigurator->getDatasource();
-                $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
-                $fieldName = $brickConfigurator->getFieldNameAssociation() ??
-                    $datasource->getAssociationFieldName($brickConfigurator->getDataSource()->getClassName());
-                $query = $datasource->createQuery('assoc');
-                if ($brickConfigurator->hasCatchQueryAssociation()) {
-                    $query = $brickConfigurator->catchQueryAssociation($query, 'assoc');
-                } elseif ($fieldName !== null) {
-                    $query
-                        ->where('assoc. ' . $fieldName . ' = :id')
-                        ->setParameter('id', $this->getRequest()->get('id'));
-                }
-                foreach ($query->execute() as $resource) {
-                    $lines[] = $this->resourceResolver->resolve(
-                        $resource,
-                        $this->getFields($brickConfigurator),
-                        $datasource
-                    );
-                }
-            } else {
-                $dsParams = $brickConfigurator->getDatasourceParams();
-                $dsParams->setCount($brickConfigurator->getDataSource()->count($dsParams));
-                foreach ($brickConfigurator->getDataSource()->list($dsParams) as $resource) {
-                    $lines[] = $this->resourceResolver->resolve(
-                        $resource,
-                        $this->getFields($brickConfigurator),
-                        $brickConfigurator->getDataSource()
-                    );
-                }
-            }
-        }
-        return $lines;
+        return ['id'];
     }
 }

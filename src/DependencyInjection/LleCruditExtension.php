@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\DependencyInjection;
 use Lle\CruditBundle\Contracts\BrickInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
@@ -31,16 +32,15 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $loader->load('form.yaml');
 
         $configuration = new Configuration();
-        $processedConfig =  $this->processConfiguration($configuration, $configs);
-        $container->setParameter('crudit.layout_provider', $processedConfig[ 'layout_provider' ]);
+        $this->processConfiguration($configuration, $configs);
 
-        $container->registerForAutoconfiguration(LayoutInterface::class)->addTag('crudit.layout');
         $container->registerForAutoconfiguration(MenuProviderInterface::class)->addTag('crudit.menu');
         $container->registerForAutoconfiguration(CrudConfigInterface::class)->addTag('crudit.config');
         $container->registerForAutoconfiguration(DatasourceInterface::class)->addTag('crudit.datasource');
         $container->registerForAutoconfiguration(BrickInterface::class)->addTag('crudit.brick');
         $container->registerForAutoconfiguration(FieldInterface::class)->addTag('crudit.field');
         $container->registerForAutoconfiguration(FilterSetInterface::class)->addTag('crudit.filterset');
+        $container->registerForAutoconfiguration(ExporterInterface::class)->addTag("crudit.exporter");
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {

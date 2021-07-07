@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Serializer;
 
-use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -35,6 +34,6 @@ class LayoutNormalizer implements NormalizerInterface
 
     public function supportsNormalization($data, string $format = null, array $context = [])
     {
-        return $data instanceof LayoutInterface;
+        return false;
     }
 }

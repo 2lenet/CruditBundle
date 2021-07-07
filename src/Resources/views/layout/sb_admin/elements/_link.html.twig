@@ -5,7 +5,7 @@
         {% else %}
             {% set path = '#' %}
         {% endif %}
-        <a href="{{ path }}" class="nav-link py-3 {% if crudit.isActive(element, app.request) %}active{% endif %}">
+        <a href="{{ path }}" class="nav-link py-2 {% if crudit.isActive(element, app.request) %}active{% endif %}">
             {{ element.libelle|trans }}
         </a>
     </li>
@@ -32,7 +32,10 @@
         {% else %}
             {% set path = '#' %}
         {% endif %}
-        <a href="{{ path }}" id="heading-{{ element.id }}" class="nav-link collapsed py-3 {% if crudit.isActive(element, app.request) %}active{% endif %}" {% if element.children|length %}data-toggle="collapse" data-target="#collapse-{{ element.id|lower }}"{% endif %}>
+        {%  set active = crudit_menu_active(element, app.request) %}
+        <a href="{{ path }}"
+           id="heading-{{ element.id }}"
+           class="nav-link py-2 {% if active %}active{% else %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %}>
             {% if element.icon and element.icon.img %}
                 <img src="{{ element.icon.icon }}" class="img-thumbnail mr-1" />
             {% elseif element.icon %}
@@ -48,10 +51,12 @@
             </span>
         </a>
         {% if element.children|length %}
-            <div id="collapse-{{ element.id|lower }}" class="collapse">
-                <div class="bg-white py-2 collapse-inner rounded">
+            <div id="collapse-{{ element.id|lower }}" class="collapse {% if active %}show{% endif %}">
+                <div class="bg-white py-1 collapse-inner rounded">
                     {% for child in element.children %}
-                        {% include crudit.template(child.template) with {'element': child, 'submenu': true} %}
+                        {% if is_granted(child.role) %}
+                            {% include child.template with {'element': child, 'submenu': true} %}
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>

@@ -14,6 +14,6 @@ class SearchElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return 'elements/_search';
+        return '@LleCrudit/layout/sb_admin/elements/_search.html.twig';
     }
 }

@@ -25,11 +25,6 @@ services:
     Lle\CruditBundle\Resolver\ResourceResolver:
         arguments: ['@Lle\CruditBundle\Resolver\FieldResolver']
 
-    Lle\CruditBundle\Provider\LayoutProvider:
-        arguments:
-            - !tagged_iterator crudit.layout
-            - '@parameter_bag'
-
     Lle\CruditBundle\Maker\MakeCrudit:
         arguments: ["@maker.file_manager","@maker.doctrine_helper"]
         tags: [maker.command]
@@ -49,21 +44,9 @@ services:
         arguments:
             - !tagged_iterator crudit.menu
 
-    Lle\CruditBundle\Registry\DatasourceRegistry:
-        arguments:
-            - !tagged_iterator crudit.datasource
-
-    Lle\CruditBundle\Layout\AdminLteLayout:
-        arguments:
-            - '@Lle\CruditBundle\Registry\MenuRegistry'
-        tags: ['crudit.layout']
-
-    Lle\CruditBundle\Layout\SbAdminLayout:
-        arguments:
-            - '@Lle\CruditBundle\Registry\MenuRegistry'
-        tags: ['crudit.layout']
-
     Lle\CruditBundle\Twig\CruditExtension:
+        arguments:
+            - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: [twig.extension]
 
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
@@ -75,3 +58,20 @@ services:
     # old definition is lost
     form.type_guesser.doctrine:
         class: Lle\CruditBundle\Form\DoctrineOrmTypeGuesser
+
+    Lle\CruditBundle\Exporter\Exporter:
+        arguments:
+            $exporters: !tagged_iterator crudit.exporter
+
+    Lle\CruditBundle\Exporter\:
+        exclude: '../../Exporter/{Exporter.php,ExportParams.php}'
+        resource: '../../Exporter'
+        tags: [ 'crudit.exporter' ]
+
+    Lle\CruditBundle\Exporter\CsvExporter:
+        arguments:
+            $translator: "@translator"
+
+    Lle\CruditBundle\Exporter\ExcelExporter:
+        arguments:
+            $translator: "@translator"

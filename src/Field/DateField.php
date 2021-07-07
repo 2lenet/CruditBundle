@@ -24,7 +24,7 @@ class DateField extends AbstractField
     {
         $optionResolver = new OptionsResolver();
         $optionResolver->setDefaults([
-            'format' => 'd-m-Y'
+            'format' => 'd/m/Y'
         ])->setAllowedTypes('format', 'string');
         return $optionResolver->resolve($field->getOptions());
     }

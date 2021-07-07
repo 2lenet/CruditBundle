@@ -14,7 +14,10 @@ Crudit bundle for 2le.
 
 - [Submenu](doc/submenu.md)
 - [Filters](doc/filter.md)
+- [Use a FilterSet in your own Controller](doc/filterset_controller.md)
 - [Form types](doc/form_types.md)
+- [Add a map to a list or to a show](doc/map_config.md)
+- [How to export data](doc/export.md)
 
 
 ## Design architecture

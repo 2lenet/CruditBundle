@@ -30,6 +30,8 @@ class ItemAction
     /** @var ?object */
     protected $resource = null;
 
+    protected ?string $modal = null;
+
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
         return (new static($label, $path))
@@ -119,5 +121,22 @@ class ItemAction
     public function isDisabled(): bool
     {
         return false;
+    }
+
+    public function getModal(): ?string
+    {
+        return $this->modal;
+    }
+
+    public function setModal(?string $modal): self
+    {
+        $this->modal = $modal;
+
+        return $this;
+    }
+
+    public function getId(): string
+    {
+        return md5("crudit_action_" . spl_object_id($this));
     }
 }

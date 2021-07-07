@@ -34,6 +34,11 @@ class BooleanFilterType extends AbstractFilterType
 
     public function isSelected($data, $value)
     {
-        return is_array($data) ? $data["value"] === $value : false;
+        if (is_array($data)) {
+            if (array_key_exists('value', $data) && $data["value"] === $value) {
+                return true;
+            }
+        }
+        return false;
     }
 }

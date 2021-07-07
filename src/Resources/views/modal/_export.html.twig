@@ -1,0 +1,30 @@
+{% extends '@LleCrudit/modal/_base_modal.html.twig' %}
+
+{% block header %}
+    {{ 'crudit.modal.export.message' | trans({}, 'LleCruditBundle') }}
+{% endblock %}
+{% block body %}
+    <form
+            id="form_{{ id }}"
+            method="GET"
+            action="{{ action.url ?? path(action.path.route, action.path.params) }}"
+    >
+        {% if action.config.export is defined and action.config.export is iterable %}
+            <select name="format" class="form-select">
+                {% for format in action.config.export %}
+                    <option value="{{ format }}">{{ ('export.' ~ format) | trans }}</option>
+                {% endfor %}
+            </select>
+        {% else %}
+            Export is not configured.
+        {% endif %}
+    </form>
+{% endblock %}
+{% block footer %}
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        {{ 'crudit.modal.cancel' | trans({}, 'LleCruditBundle') }}
+    </button>
+    <button type="submit" class="btn btn-primary" form="form_{{ id }}">
+        {{ 'crudit.modal.export.export' | trans({}, 'LleCruditBundle') }}
+    </button>
+{% endblock %}

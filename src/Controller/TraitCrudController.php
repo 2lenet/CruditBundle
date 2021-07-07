@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Exception\CruditException;
+use Lle\CruditBundle\Exporter\Exporter;
+use Lle\CruditBundle\Filter\FilterState;
+use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Annotation\Route;
 
 trait TraitCrudController
 {
@@ -24,7 +29,7 @@ trait TraitCrudController
      */
     public function index(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_LIST');
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_INDEX');
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::INDEX);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -94,10 +99,21 @@ trait TraitCrudController
     {
         $dataSource = $this->config->getDatasource();
         $res = [];
+        $offset = intval($request->get('offset', 0));
+        $limit = intval($request->get('limit', 0));
+
+        $rqParams = new DatasourceParams(
+            $limit,
+            $offset,
+            [], []
+        );
+        $nb_items = $dataSource->count_query("libelle", $request->query->get("q", ""));
+
         $items = $dataSource->query(
             "libelle",
-            $request->query->get("q",""),
-            $this->config->getDefaultSort()
+            $request->query->get("q", ""),
+            $this->config->getDefaultSort(),
+            $rqParams
         );
 
         foreach ($items as $item) {
@@ -109,7 +125,8 @@ trait TraitCrudController
 
         return new JsonResponse(
             [
-                "total_count" => count($res),
+                "total_count" => $nb_items,
+                "next_offset" => $offset + $limit,
                 "incomplete_results" => false,
                 "items" => $res,
             ]
@@ -117,23 +134,73 @@ trait TraitCrudController
     }
 
     /**
-     * @Route("/editdata/{id}/{field}")
+     * @Route("/editdata/{id}")
      */
-    public function editdata(Request $request, $id, $field): Response
+    public function editdata(Request $request, $id): Response
     {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
+
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
+
         if ($item) {
             $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
                 ->getPropertyAccessor();
 
-            $propertyAccessor->setValue($item, $field, $request->request->get('value'));
+            $data = json_decode($request->request->get("data", []), true);
+
+            foreach ($data as $field => $value) {
+                if ($field === "id") {
+                    continue;
+                }
+
+                $propertyAccessor->setValue($item, $field, $value);
+            }
+
             $dataSource->save($item);
+
             return new JsonResponse(["status" => "ok"]);
-        } else {
-            return new JsonResponse(["status" => "ko"],Response::HTTP_BAD_REQUEST);
         }
+
+        return new JsonResponse(["status" => "ko"], Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @Route("/export")
+     */
+    public function export(
+        Request $request,
+        FilterState $filterState,
+        Exporter $exporter,
+        ResourceResolver $resolver
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EXPORT');
+
+        $datasource = $this->config->getDatasource();
+        $dsParams = $this->config->getDatasourceParams($request);
+
+        // we request all of the filtered resources, so no limit
+        $dsParams->setLimit(0);
+        $resources = $datasource->list($dsParams);
+
+        $fields = $this->config->getFields(CrudConfigInterface::EXPORT);
+        if (empty($fields)) {
+            $fields = $this->config->getFields(CrudConfigInterface::INDEX);
+        }
+
+        $generator = function () use ($resources, $datasource, $fields, $resolver) {
+            foreach ($resources as $resource) {
+                yield ($resolver->resolve($resource, $fields, $datasource));
+            }
+        };
+
+        $format = $request->get("format", "csv");
+
+        return $exporter->export(
+            $generator(),
+            $format,
+            $this->config->getExportParams($format)
+        );
     }
 
     /**
