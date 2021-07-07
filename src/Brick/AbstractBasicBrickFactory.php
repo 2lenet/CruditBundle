@@ -28,7 +28,7 @@ abstract class AbstractBasicBrickFactory implements BrickInterface
 
     protected function getRequest(): Request
     {
-        $request = $this->requestStack->getMainRequest();
+        $request = $this->requestStack->getMasterRequest();
         if ($request) {
             return $request;
         }
