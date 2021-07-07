@@ -2,6 +2,7 @@ crudit:
     action:
         save: "Enregistrer"
         cancel: "Annuler"
+        logout: "Se déconnecter"
     title:
         filters: "Filtrer les items"
     filter:
