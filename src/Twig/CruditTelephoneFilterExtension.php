@@ -5,7 +5,10 @@ namespace Lle\CruditBundle\Twig;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
-class TelephoneFilterExtension extends AbstractExtension
+/**
+ * This filter allows to format the display of a phone number in 03 88 .. .. ..
+ */
+class CruditTelephoneFilterExtension extends AbstractExtension
 {
     public function getFilters()
     {
@@ -16,7 +19,10 @@ class TelephoneFilterExtension extends AbstractExtension
 
     public function formatTelephone($telephone)
     {
-        $substr = substr($telephone, 1);
-        return str_replace(' ', '', '+33'.$substr);
+        if (strlen($telephone) == 10) {
+            return wordwrap($telephone, 2, ' ', true);
+        }
+
+        return $telephone;
     }
 }
