@@ -102,6 +102,10 @@ class FormFactory extends AbstractBasicBrickFactory
             }
             return $formBuilder->getForm();
         } else {
+            $form = $brickConfigurator->getCrudConfig()->getForm($resource);
+            if ($form) {
+                return $form;
+            }
             return $this->formFactory->create($brickConfigurator->getForm(), $resource);
         }
     }

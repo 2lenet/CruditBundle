@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
+use App\Entity\Objet;
 use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
@@ -235,6 +236,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getTabs(): array
     {
         return [];
+    }
+
+    public function getForm($resource)
+    {
+        return null;
     }
 
     public function getDefaultSort(): array

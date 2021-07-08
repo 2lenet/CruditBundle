@@ -78,7 +78,7 @@ class FormConfig extends AbstractBrickConfig
         return $this->messageSuccess ?? 'crudit.message.success';
     }
 
-    public function getForm(): ?string
+    public function getForm($resource=null): ?string
     {
         return $this->form;
     }
