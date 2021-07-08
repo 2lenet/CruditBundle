@@ -20,10 +20,12 @@ class FieldRegistry
     public function get(string $type): FieldInterface
     {
         foreach ($this->fields as $field) {
+            dump($field);
             if ($field instanceof FieldInterface && $field->support($type)) {
                 return $field;
             }
         }
+        dd("error");
         throw new CruditException('field ' . $type . ' not found');
     }
 }
