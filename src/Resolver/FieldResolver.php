@@ -50,6 +50,7 @@ class FieldResolver
         $fieldView = (new FieldView($field, $value))
             ->setResource($resource)
             ->setParentResource($subResource);
+
         return $this->fieldRegistry->get($type)
             ->buildView($fieldView, $value);
     }

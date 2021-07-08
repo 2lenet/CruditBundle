@@ -10,6 +10,8 @@ use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Field\DoctrineEntityField;
+use Lle\CruditBundle\Field\EmailField;
+use Lle\CruditBundle\Field\TelephoneField;
 use Lle\CruditBundle\Filter\FilterState;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
@@ -173,6 +175,15 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function getType(string $property, object $resource): string
     {
         $metadata = $this->entityManager->getClassMetadata(get_class($resource));
+
+        if (in_array($property, ['email','mail'])) {
+            return EmailField::class;
+        }
+
+        if (in_array($property, ['tel','telephone','mobile','portable'])) {
+            return TelephoneField::class;
+        }
+
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
             if ($metadata->getAssociationMapping($property)) {
