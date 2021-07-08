@@ -210,7 +210,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $tabConf = TabConfig::new();
 
             // default "show" tab
-            $tabConf->add($this->getTitle('show'), ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
+            $tabConf->add('tab.info', ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
 
             // additional tabs
             foreach ($tabs as $label => $bricks) {
