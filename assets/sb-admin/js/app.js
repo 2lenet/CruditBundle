@@ -38,6 +38,7 @@ window.addEventListener('load', function () {
                 labelField: 'text',
                 searchField: 'text',
                 maxOptions: 2000,
+                maxItems: select.dataset.maxitems,
                 preload: true,
                 options: inioptions,
                 plugins: [
