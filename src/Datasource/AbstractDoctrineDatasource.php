@@ -17,7 +17,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     /** @var EntityManagerInterface */
     protected $entityManager;
     protected ?FilterSetInterface $filterset;
-    private FilterState $filterState;
+    protected FilterState $filterState;
     protected array $searchFields = [];
 
     public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
@@ -233,7 +233,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    private function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
+    protected function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
     {
         foreach ($this->filterset->getFilters() as $filter) {
             $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
@@ -241,7 +241,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
     }
 
-    private function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
+    protected function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
     {
         $field = explode(".", $column);
         if (count($field)==2) {
