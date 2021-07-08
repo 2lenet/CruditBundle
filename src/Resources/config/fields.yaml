@@ -18,3 +18,9 @@ services:
   Lle\CruditBundle\Field\FormatField:
     arguments: ['@twig']
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\EmailField:
+    arguments: [ '@twig' ]
+    tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\TelephoneField:
+    arguments: [ '@twig' ]
+    tags: [ 'crudit.field' ]
