@@ -31,15 +31,19 @@ class SublistConfig extends AbstractBrickConfig
     private $className;
     private $fieldname;
 
-    public function __construct($fieldname, array $options = [])
+    protected CrudConfigInterface $subCrudConfig;
+
+    public function __construct($fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
     {
         $this->fieldname = $fieldname;
         $this->options = $options;
+        $this->subCrudConfig = $subCrudConfig;
+        $this->datasource = $subCrudConfig->getDatasource();
     }
 
-    public static function new(string $fieldname, array $options = []): self
+    public static function new(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = []): self
     {
-        return new self($fieldname, $options);
+        return new self($fieldname, $subCrudConfig, $options);
     }
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
@@ -72,8 +76,7 @@ class SublistConfig extends AbstractBrickConfig
 
     public function getConfig(Request $request): array
     {
-        // beurk
-        $this->setDatasourceParams($this->getCrudConfig()->getDatasourceParams($request));
+        $this->setDatasourceParams($this->subCrudConfig->getDatasourceParams($request));
 
         return [
             'fields' => $this->getFields(),

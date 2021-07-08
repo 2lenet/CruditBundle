@@ -75,7 +75,6 @@ class SublistFactory extends AbstractBasicBrickFactory
             );
         }
 
-
         return $lines;
     }
 

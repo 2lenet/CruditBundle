@@ -37,7 +37,7 @@ services:
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\FormBrick\FormFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default']
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default', '@property_accessor']
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\LinksBrick\LinksFactory:
