@@ -49,6 +49,9 @@ services:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: [twig.extension]
 
+    Lle\CruditBundle\Twig\TelephoneFilterExtension:
+        tags: [ twig.extension ]
+
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
     # And guess the good type
 
