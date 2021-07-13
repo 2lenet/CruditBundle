@@ -180,7 +180,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             return EmailField::class;
         }
 
-        if (in_array($property, ['tel','telephone','mobile','portable'])) {
+        if (in_array($property, ['tel','telephone','mobile','portable','telephoneMobile'])) {
             return TelephoneField::class;
         }
 
