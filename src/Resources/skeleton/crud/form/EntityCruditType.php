@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace <?= $namespace ?>;
 
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class <?= $entityClass ?>Type extends AbstractType
 {
