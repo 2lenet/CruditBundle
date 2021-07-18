@@ -30,7 +30,7 @@ class DateTimeFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (isset($this->data['value']) && isset($this->data['op'])) {
+        if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
 
             $datetime = $this->data["value"] . " ";
             if (isset($this->data["time"])) {
