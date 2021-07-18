@@ -49,7 +49,10 @@ services:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: [twig.extension]
 
-    Lle\CruditBundle\Twig\TelephoneFilterExtension:
+    Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
+        tags: [ twig.extension ]
+
+    Lle\CruditBundle\Twig\CruditTelephoneFilterExtension:
         tags: [ twig.extension ]
 
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
