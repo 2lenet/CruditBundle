@@ -44,14 +44,16 @@ services:
         arguments:
             - !tagged_iterator crudit.menu
 
-    Lle\CruditBundle\Registry\DatasourceRegistry:
-        arguments:
-            - !tagged_iterator crudit.datasource
-
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
         tags: [twig.extension]
+
+    Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
+        tags: [ twig.extension ]
+
+    Lle\CruditBundle\Twig\CruditTelephoneFilterExtension:
+        tags: [ twig.extension ]
 
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
     # And guess the good type

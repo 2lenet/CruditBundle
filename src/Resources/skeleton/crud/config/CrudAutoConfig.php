@@ -13,26 +13,28 @@ use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
-use Lle\CruditBundle\Contracts\DataSourceInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-<?php if($form): ?>use App\Form\<?= $entityClass ?>Type;<?php endif; ?>
+<?php if($form): ?>use App\Form\<?= $entityClass ?>Type;
+<?php endif; ?>
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 {
     /** @var <?= $entityClass ?>Datasource  */
-    private $datasource;
+    protected DatasourceInterface $datasource;
 
     public function __construct(
         <?= $entityClass ?>Datasource $datasource
-    ) {
+    )
+    {
         $this->datasource = $datasource;
     }
 
-    public function getDatasource(): DataSourceInterface
+    public function getDatasource(): DatasourceInterface
     {
         return $this->datasource;
     }
@@ -46,10 +48,11 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         if ($key == CrudConfigInterface::INDEX || $key == CrudConfigInterface::SHOW) {
             return [
 <?php foreach ($fields as $field) { ?>
-              $<?= $field?>,
+               $<?= $field?>,
 <?php } ?>
             ];
         }
+
         return [];
     }
 
@@ -58,7 +61,7 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         return 'app_<?= strtolower($controllerRoute) ?>';
     }
 
-    /* can be surcharged 
+    /* can be overriden
     public function getBrickConfigs(): array
     {
         return [

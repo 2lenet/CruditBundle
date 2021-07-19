@@ -31,12 +31,6 @@ class ListConfig extends AbstractBrickConfig
     /** @var string */
     private $className;
 
-    /** @var string */
-    private $fieldNameAssociation = null;
-
-    /** @var ?callable */
-    private $catchQueryAssociationCallback = null;
-
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
@@ -115,7 +109,6 @@ class ListConfig extends AbstractBrickConfig
             'hidden_action' => false,
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
-            'canModifyNbEntityPerPage' => false
         ];
     }
 
@@ -158,36 +151,4 @@ class ListConfig extends AbstractBrickConfig
         return $this->fields;
     }
 
-    public function hasCatchQueryAssociation(): bool
-    {
-        return $this->catchQueryAssociationCallback !== null;
-    }
-
-    public function catchQueryAssociation(QueryAdapterInterface $query, string $alias): QueryAdapterInterface
-    {
-        if ($this->hasCatchQueryAssociation() && is_callable($this->catchQueryAssociationCallback)) {
-            return \call_user_func($this->catchQueryAssociationCallback, $query, $alias);
-        }
-
-        return $query;
-    }
-
-    public function getFieldNameAssociation(): ?string
-    {
-        return $this->fieldNameAssociation;
-    }
-
-    public function setCatchQueryAssociation(callable $callback): self
-    {
-        $this->catchQueryAssociationCallback = $callback;
-
-        return $this;
-    }
-
-    public function setFieldNameAssociation(string $fieldNameAssociation): self
-    {
-        $this->fieldNameAssociation = $fieldNameAssociation;
-
-        return $this;
-    }
 }

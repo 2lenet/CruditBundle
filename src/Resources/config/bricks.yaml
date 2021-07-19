@@ -1,7 +1,7 @@
 services:
 
   Lle\CruditBundle\Brick\ListBrick\ListFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Registry\DatasourceRegistry']
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
@@ -9,6 +9,10 @@ services:
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+    tags: [ 'crudit.brick' ]
+
+  Lle\CruditBundle\Brick\SublistBrick\SublistFactory:
     arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]
 
@@ -33,7 +37,7 @@ services:
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\FormBrick\FormFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default']
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default', '@property_accessor']
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\LinksBrick\LinksFactory:

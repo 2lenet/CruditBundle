@@ -27,8 +27,7 @@ use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig implements MenuProviderInterface
 {
-    /** @var <?= $entityClass ?>Datasource  */
-    private $datasource;
+    protected <?= $entityClass ?>Datasource $datasource;
 
     public function __construct(
         <?= $entityClass ?>Datasource $datasource

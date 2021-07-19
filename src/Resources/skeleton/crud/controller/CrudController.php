@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace <?= $namespace; ?>;
 
 use App\Crudit\Config\<?= $entityClass ?>CrudConfig;
-use Symfony\Component\Routing\Annotation\Route;
 use Lle\CruditBundle\Controller\AbstractCrudController;
 use Lle\CruditBundle\Controller\TraitCrudController;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/<?= strtolower($entityClass) ?>")
@@ -23,5 +23,4 @@ class <?= $entityClass ?>Controller extends AbstractCrudController
     {
         $this->config = $config;
     }
-
 }

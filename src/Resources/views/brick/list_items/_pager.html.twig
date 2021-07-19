@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row align-items-center">
     <div class="col-sm-12 col-md-4" role="status" aria-live="polite">
         {% if view.config.datasource_params.count > 0 %}
             Items
@@ -29,15 +29,17 @@
                 </li>
             {% endif %}
 
-            {% for page in view.config.datasource_params.pages %}
-                {% set merge_params = {(view.config.name|lower~'_offset'): (page-1)*view.config.datasource_params.limit} %}
-                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                {% set current = view.config.datasource_params.current(page) %}
-                <li class="page-item {% if current %}active{% endif %}">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.goToPage'|trans({page}) }}">{{ page }}</a>
-                </li>
-            {% endfor %}
+            {% if view.config.datasource_params.pages|length != 1 %}
+                {% for page in view.config.datasource_params.pages %}
+                    {% set merge_params = {(view.config.name|lower~'_offset'): (page-1)*view.config.datasource_params.limit} %}
+                    {% set parameters = app.request.query.all()|merge(merge_params) %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    {% set current = view.config.datasource_params.current(page) %}
+                    <li class="page-item {% if current %}active{% endif %}">
+                        <a class="page-link" href="{{ url }}" title="{{ 'crudit.goToPage'|trans({page}) }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+            {% endif %}
 
             {% if view.config.datasource_params.next %}
                 {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage)} %}
