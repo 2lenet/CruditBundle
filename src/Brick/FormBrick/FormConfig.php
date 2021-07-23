@@ -31,8 +31,15 @@ class FormConfig extends AbstractBrickConfig
     /** @var string */
     private $messageError;
 
-    protected Path $cancelPath;
+    protected ?Path $cancelPath = null;
 
+    /**
+     * For sublist forms.
+     * assocField contains the name of the parent property
+     */
+    protected ?string $assocProperty = null;
+
+    protected bool $sublist = false;
 
     public static function new(array $options = []): self
     {
@@ -78,7 +85,7 @@ class FormConfig extends AbstractBrickConfig
         return $this->messageSuccess ?? 'crudit.message.success';
     }
 
-    public function getForm(): ?string
+    public function getForm($resource=null): ?string
     {
         return $this->form;
     }
@@ -87,6 +94,24 @@ class FormConfig extends AbstractBrickConfig
     {
         $this->form = $form;
         return $this;
+    }
+
+    public function isSublist(): bool
+    {
+        return $this->sublist;
+    }
+
+    public function setSublist(?string $assocProperty): self
+    {
+        $this->sublist = true;
+        $this->assocProperty = $assocProperty;
+
+        return $this;
+    }
+
+    public function getAssocProperty(): ?string
+    {
+        return $this->assocProperty;
     }
 
     public function add(FormField $field): self
@@ -115,7 +140,10 @@ class FormConfig extends AbstractBrickConfig
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }
-        $this->setSuccessRedirectPath($crudConfig->getAfterEditPath());
+        if (!$this->successRedirectPath) {
+            $this->setSuccessRedirectPath($crudConfig->getAfterEditPath());
+        }
+
         return $this;
     }
 
@@ -133,7 +161,7 @@ class FormConfig extends AbstractBrickConfig
     /**
      * @return Path
      */
-    public function getCancelPath(): Path
+    public function getCancelPath(): ?Path
     {
         return $this->cancelPath;
     }
@@ -142,9 +170,10 @@ class FormConfig extends AbstractBrickConfig
      * @param Path $cancelPath
      * @return FormConfig
      */
-    public function setCancelPath(Path $cancelPath): FormConfig
+    public function setCancelPath(?Path $cancelPath): FormConfig
     {
         $this->cancelPath = $cancelPath;
+
         return $this;
     }
 

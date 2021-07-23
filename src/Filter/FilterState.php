@@ -38,7 +38,7 @@ class FilterState
                     $key = "filter_" . $filterId . '_' . $filterType->getId();
 
                     $data = $request->query->get($key . '_value');
-                    if ($data !== null && $data !== "") {
+                    if ($data !== null) {
                         $filterdata[$filterId][$filterType->getId()]['value'] = $data;
                     }
 

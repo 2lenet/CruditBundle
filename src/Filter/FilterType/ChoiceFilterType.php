@@ -55,7 +55,7 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (isset($this->data['value'])) {
+        if (isset($this->data['value']) && $this->data['value']) {
             if ($this->getMultiple()) {
                 $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
             } else {

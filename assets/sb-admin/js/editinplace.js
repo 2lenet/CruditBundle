@@ -33,6 +33,7 @@ window.addEventListener('load', function () {
                     method: "post"
                 }
             );
+
             eip_val.textContent = input.value;
             eip_val.classList.toggle('d-none');
             eip_elem.querySelector('form').classList.toggle('d-none');

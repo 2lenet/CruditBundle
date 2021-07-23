@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FormFactory extends AbstractBasicBrickFactory
@@ -30,17 +31,21 @@ class FormFactory extends AbstractBasicBrickFactory
     /** @var UrlGeneratorInterface  */
     private $urlGenerator;
 
+    protected PropertyAccessorInterface $propertyAccessor;
+
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FormFactoryInterface $formFactory,
         BrickResponseCollector $brickResponseCollector,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->formFactory = $formFactory;
         $this->brickResponseCollector = $brickResponseCollector;
         $this->urlGenerator = $urlGenerator;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -51,7 +56,8 @@ class FormFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         /** @var FormConfig $brickConfigurator */
-        $resource = $this->getResource($brickConfigurator->getDataSource());
+        $resource = $this->getResource($brickConfigurator);
+
         $form = $this->generateForm($brickConfigurator, $resource);
         $this->bindRequest($form, $brickConfigurator, $resource);
         /** @var FormConfig $brickConfigurator */
@@ -75,10 +81,16 @@ class FormFactory extends AbstractBasicBrickFactory
                 $this->brickResponseCollector->add(
                     new FlashBrickResponse(FlashBrickResponse::SUCCESS, $brickConfig->getMessageSuccess())
                 );
+
+                // if the new entity is from a sublist, use parent entity id
+                if ($brickConfig->isSublist() && $brickConfig->getAssocProperty()) {
+                    $resource = $this->propertyAccessor->getValue($resource, $brickConfig->getAssocProperty());
+                }
+
                 $this->brickResponseCollector->add(new RedirectBrickResponse(
                     $this->urlGenerator->generate(
                         $brickConfig->getSuccessRedirectPath()->getRoute(),
-                        array_merge($brickConfig->getSuccessRedirectPath()->getParams(), ['id'=> $resource->getId()] )
+                        array_merge($brickConfig->getSuccessRedirectPath()->getParams(), ['id'=> $resource->getId()])
                     )
                 ));
             } else {
@@ -102,20 +114,43 @@ class FormFactory extends AbstractBasicBrickFactory
             }
             return $formBuilder->getForm();
         } else {
+            $form = $brickConfigurator->getCrudConfig()->getForm($resource);
+            if ($form) {
+                return $form;
+            }
             return $this->formFactory->create($brickConfigurator->getForm(), $resource);
         }
     }
 
-    private function getResource(DatasourceInterface $datasource): object
+    private function getResource(FormConfig $brickConfigurator): object
     {
+        $datasource = $brickConfigurator->getCrudConfig()->getDatasource();
+
+        $resource = null;
         if ($this->getRequest()->get('id')) {
             $resource = $datasource->get($this->getRequest()->get('id'));
-            if ($resource === null) {
-                throw new CruditException('resource not found');
-            }
-            return $resource;
         } else {
-            return $datasource->newInstance();
+            $resource = $datasource->newInstance();
         }
+
+        if ($resource === null) {
+            throw new CruditException('Resource not found');
+        }
+
+        if ($brickConfigurator->isSublist()) {
+            $subResource = $brickConfigurator->getDataSource()->newInstance();
+
+            if ($brickConfigurator->getAssocProperty()) {
+                $this->propertyAccessor->setValue(
+                    $subResource,
+                    $brickConfigurator->getAssocProperty(),
+                    $resource
+                );
+            }
+
+            $resource = $subResource;
+        }
+
+        return $resource;
     }
 }

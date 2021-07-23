@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
+use App\Entity\Objet;
 use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
@@ -207,9 +208,16 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
-            $tabConf->add($this->getTitle('show'), ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
-            foreach ($tabs as $label => $tab) {
-                $tabConf->add($label, $tab);
+
+            // default "show" tab
+            $tabConf->add('tab.info', ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
+
+            // additional tabs
+            foreach ($tabs as $label => $bricks) {
+                if (!is_array($bricks)) {
+                    $bricks = [$bricks];
+                }
+                $tabConf->adds($label, $bricks);
             }
             $showBricks[] = $tabConf;
         } else {
@@ -235,6 +243,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getTabs(): array
     {
         return [];
+    }
+
+    public function getForm($resource)
+    {
+        return null;
     }
 
     public function getDefaultSort(): array

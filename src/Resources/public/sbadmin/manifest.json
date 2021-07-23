@@ -1,6 +1,6 @@
 {
-  "bundles/crudit/app.js": "/app.js",
   "bundles/crudit/app.css": "/app.css",
+  "bundles/crudit/app.js": "/app.js",
   "bundles/crudit/images/GPisochronOptions.png": "/images/GPisochronOptions.6a2be22f.png",
   "bundles/crudit/images/GPlocationOptions.png": "/images/GPlocationOptions.cfbfca4d.png",
   "bundles/crudit/images/GProuteOptions.png": "/images/GProuteOptions.cfbfca4d.png",

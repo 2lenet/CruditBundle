@@ -20,6 +20,7 @@ $input-group-length: 220px;
             border-left: none;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+            z-index: 10000;
         }
 
         .entity-select {

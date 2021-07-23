@@ -7,8 +7,9 @@ declare(strict_types=1);
 
 namespace <?= $namespace; ?>;
 
-use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
+use App\Crudit\Datasource\Filterset\<?= $entityClass ?>FilterSet;
 use App\Entity\<?= $entityClass ?>;
+use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 
 class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
 {

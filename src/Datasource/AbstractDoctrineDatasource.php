@@ -10,6 +10,8 @@ use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Field\DoctrineEntityField;
+use Lle\CruditBundle\Field\EmailField;
+use Lle\CruditBundle\Field\TelephoneField;
 use Lle\CruditBundle\Filter\FilterState;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
@@ -17,7 +19,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     /** @var EntityManagerInterface */
     protected $entityManager;
     protected ?FilterSetInterface $filterset;
-    private FilterState $filterState;
+    protected FilterState $filterState;
     protected array $searchFields = [];
 
     public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
@@ -61,7 +63,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams->getLimit()) {
             $qb->setMaxResults($requestParams->getLimit());
         }
-
         foreach ($requestParams->getSorts() as $sort) {
             $this->addOrderBy($qb, $sort[0], $sort[1]);
         }
@@ -69,7 +70,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
-
         return $qb->getQuery()->execute();
     }
 
@@ -153,9 +153,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function newInstance(): object
     {
-        return $this->entityManager
-            ->getClassMetadata($this->getClassName())
-            ->newInstance();
+        $class = $this->getClassName();
+
+        return new $class();
     }
 
     public function save(object $resource): void
@@ -175,6 +175,15 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function getType(string $property, object $resource): string
     {
         $metadata = $this->entityManager->getClassMetadata(get_class($resource));
+
+        if (in_array($property, ['email','mail'])) {
+            return EmailField::class;
+        }
+
+        if (in_array($property, ['tel','telephone','mobile','portable','telephoneMobile'])) {
+            return TelephoneField::class;
+        }
+
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
             if ($metadata->getAssociationMapping($property)) {
@@ -235,7 +244,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    private function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
+    protected function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
     {
         foreach ($this->filterset->getFilters() as $filter) {
             $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
@@ -243,7 +252,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
     }
 
-    private function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
+    protected function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
     {
         $field = explode(".", $column);
         if (count($field)==2) {
