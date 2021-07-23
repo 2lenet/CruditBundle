@@ -2,7 +2,7 @@ import "bootstrap";
 import TomSelect from "tom-select/dist/js/tom-select.complete";
 
 import "./map";
-
+import "./editinplace";
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".valuesetter").forEach(choice => {

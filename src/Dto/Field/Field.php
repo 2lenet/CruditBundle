@@ -38,6 +38,7 @@ class Field
 
     /** @var ?string */
     private $ruptGroup=0;
+    private bool $editInPlace = false;
 
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
@@ -65,6 +66,24 @@ class Field
     public function setType(string $type): self
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function getEditInPlace(): bool
+    {
+        return $this->editInPlace;
+    }
+
+    public function setEditable(string $edit_route): self
+    {
+        $this->options['edit_route']= $edit_route;
+        $this->editInPlace = true;
+        return $this;
+    }
+
+    public function setEditInPlace(bool $editInPlace): self
+    {
+        $this->editInPlace = $editInPlace;
         return $this;
     }
 

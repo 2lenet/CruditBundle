@@ -8,7 +8,7 @@
                             <th>{{ field.field.label |trans }}</th>
                             <td>
                                 {%  if field.field.path %}<a href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{%  endif %}
-                                    {{ field.value }}
+                                    {{ field.value |raw }}
                                 {%  if field.field.path %}</a>{%  endif %}
                             </td>
                         <tr>

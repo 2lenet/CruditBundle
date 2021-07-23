@@ -46,8 +46,7 @@ abstract class AbstractField implements FieldInterface
 
     public function configureOptions(Field $field): array
     {
-        $optionResolver = new OptionsResolver();
-        return $optionResolver->resolve($field->getOptions());
+        return $field->getOptions();
     }
 
     abstract protected function getDefaultTemplate(): ?string;

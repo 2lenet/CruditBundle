@@ -1,5 +1,6 @@
 'use strict';
 import L from 'leaflet';
+import * as Gp from 'geoportal-extensions-leaflet';
 
 require('leaflet-easybutton');
 require('leaflet-ajax/dist/leaflet.ajax.min');
@@ -12,6 +13,10 @@ L.Icon.Default.mergeOptions({
     iconUrl: '/bundles/llecrudit/leaflet/images/marker-icon.png',
     shadowUrl: '/bundles/llecrudit/leaflet/images/marker-shadow.png',
 });
+Gp.Services.getConfig({
+    apiKey: '2ngllojaqtakjcfeok0iuds5',
+})
+
 //let markers = {}
 window.addEventListener('load', function () {
 
@@ -143,10 +148,17 @@ window.addEventListener('load', function () {
             maxZoom: 20,
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
         });
+        /*let lyr = L.geoportalLayer.WMTS({
+            layer  : "PARCELLAIRE_EXPRESS"
+        }) ;*/
+        var lyr = L.geoportalLayer.WMTS({
+            layer  : "GEOGRAPHICALGRIDSYSTEMS.MAPS"
+        }) ;
         osm.addTo(map);
         var baseMaps = {
             "OpenStreetMap": osm,
-            "Satellite": googleSat
+            "Satellite": googleSat,
+            "IGN": lyr
         }
         L.control.layers(baseMaps, overlay).addTo(map);
 
