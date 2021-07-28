@@ -39,7 +39,8 @@ class SublistFactory extends AbstractBasicBrickFactory
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
-                    'lines' => $this->getLines($brickConfigurator)
+                    'lines' => $this->getLines($brickConfigurator),
+                    'batch_actions'=>[] // to use the same pager template as list
                 ]);
         }
 
