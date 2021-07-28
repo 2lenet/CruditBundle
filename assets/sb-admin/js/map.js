@@ -47,7 +47,6 @@ window.addEventListener('load', function () {
                         pointToLayer: function (geoJsonPoint, latlng) {
                             g["icon"]["className"] = "mk-"+geoJsonPoint.id;
                             var icon = L.icon(g["icon"]);
-                            console.log(icon);
                             return L.marker(latlng, {icon: icon, title: geoJsonPoint.title})
                                 .bindPopup(
                                 "<iframe height=\"400px\" src=\"" + g["popup_url"] + geoJsonPoint.id + "\"></iframe>"

@@ -5,7 +5,6 @@ window.addEventListener('load', function () {
     document.querySelectorAll(".crudit-eip").forEach(eip_elem => {
         let eip_val = eip_elem.querySelector(".crudit-eip-value");
         eip_val.addEventListener('click', () => {
-            console.log("edit", eip_val);
             eip_val.classList.toggle('d-none');
             eip_elem.querySelector('form').classList.toggle('d-none');
         });

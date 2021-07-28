@@ -1,3 +1,4 @@
+{%  set  has_batch = view.data.batch_actions|length %}
 <div class="card shadow mb-4">
     <div class="card-header py-1">
         {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
@@ -46,8 +47,8 @@
                 <tbody>
                     {% set ruptval1 = "" %}
                     {% set ruptval2 = "" %}
-
                     {% for line in view.data.lines %}
+                        {% set line_opened = 0 %}
                         {% for column in line.fields %}
                             {# RUPTURE NIVEAU 1 #}
                             {% if column.field.ruptGroup==1 %}
@@ -71,8 +72,12 @@
                             {% endif %}
 
                             {% if column.field.ruptGroup==0 %}
-                                {% if loop.first %}
+                                {% if line_opened == 0 %}
                                     <tr>
+                                    {% set line_opened = 1 %}
+                                    {% if has_batch %}
+                                        <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" /></td>
+                                    {% endif %}
                                 {% endif %}
                                 <td>
                                     {% if column.field.path %}

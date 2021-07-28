@@ -37,7 +37,8 @@ class ListFactory extends AbstractBasicBrickFactory
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
-                    'lines' => $this->getLines($brickConfigurator)
+                    'lines' => $this->getLines($brickConfigurator),
+                    'batch_actions' => $brickConfigurator->getBatchActions()
                 ]);
         }
 

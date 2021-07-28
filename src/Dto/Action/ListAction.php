@@ -31,6 +31,7 @@ class ListAction
     protected ?string $modal = null;
 
     protected array $config = [];
+    protected bool $batch = false;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): self
     {
@@ -127,5 +128,16 @@ class ListAction
         $this->config = $config;
 
         return $this;
+    }
+
+    public function setIsBatch()
+    {
+        $this->batch = true;
+        return $this;
+    }
+
+    public function isBatch()
+    {
+        return $this->batch;
     }
 }

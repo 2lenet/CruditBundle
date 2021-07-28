@@ -3,11 +3,11 @@ import TomSelect from "tom-select/dist/js/tom-select.complete";
 
 import "./map";
 import "./editinplace";
+import "./batch_actions";
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".valuesetter").forEach(choice => {
         choice.addEventListener("click", (e) => {
-            console.log(e.target.dataset);
             const hidden = document.getElementById(e.target.dataset.valueid);
             hidden.value = e.target.dataset.value;
             /*

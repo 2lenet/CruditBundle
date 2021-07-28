@@ -201,7 +201,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $indexBricks[] = ListConfig::new()
             ->addFields($this->getFields(CrudConfigInterface::INDEX))
-            ->setActions($this->getItemActions());
+            ->setActions($this->getItemActions())
+            ->setBatchActions($this->getListActions());
 
         $showBricks = [];
         $showBricks[] = LinksConfig::new(['title' => $this->getTitle('show')])->setActions($this->getShowActions());

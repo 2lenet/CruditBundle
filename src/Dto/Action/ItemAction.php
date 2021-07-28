@@ -139,4 +139,9 @@ class ItemAction
     {
         return md5("crudit_action_" . spl_object_id($this));
     }
+
+    public function isBatch()
+    {
+        return false;
+    }
 }
