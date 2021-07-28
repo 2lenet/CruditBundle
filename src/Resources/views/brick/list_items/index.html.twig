@@ -9,6 +9,9 @@
                 {% if not view.options.noHeader|default(false) %}
                     <thead class="thead-light">
                         <tr>
+                            {% if has_batch %}
+                                <td></td>
+                            {% endif %}
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 %}
                                     <th class="text-nowrap">{{ field.label |trans }}

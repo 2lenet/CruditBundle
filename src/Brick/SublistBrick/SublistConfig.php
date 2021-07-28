@@ -81,6 +81,7 @@ class SublistConfig extends AbstractBrickConfig
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
+            'batch_actions' => [],
             'name' => $this->getCrudConfig()->getName(),
             'title' => $this->getCrudConfig()->getTitle('list'),
             'datasource_params' => $this->getDatasourceParams(),
