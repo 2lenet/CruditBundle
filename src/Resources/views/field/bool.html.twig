@@ -1,10 +1,19 @@
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" id="{{ view.field.id }}" {% if value == true %}checked{%  endif %}>
-  <label class="form-check-label" for="{{ view.field.id }}">
-      {%  if value == true %}
-          {{ 'crudit.yes'|trans }}
-      {%  elseif value is same as(false) or (not value and options.nullToFalse == true) %}
-          {{ 'crudit.no'|trans }}
-      {%  endif %}
-  </label>
-</div>
+{% if view.field.editInPlace %}
+    {% set edit_url = path(view.field.options['edit_route'], {"id": resource.id}) %}
+
+    <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
+        <div class="form-check form-switch">
+            <input
+                    class="form-check-input crudit-eip-input crudit-eip-submit"
+                    type="checkbox"
+                    autocomplete="off"
+                    id="{{ view.field.id }}" {% if value == true %}checked{% endif %}>
+        </div>
+    </div>
+{% else %}
+    {% if value == true %}
+        {{ 'crudit.yes'|trans }}
+    {% elseif value is same as(false) or (not value and options.nullToFalse == true) %}
+        {{ 'crudit.no'|trans }}
+    {% endif %}
+{% endif %}
