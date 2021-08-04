@@ -3,16 +3,18 @@
 
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
-            <div class="control-group form-group d-flex">
+            <div class="control-group form-group d-flex justify-content-around align-items-center">
                 <div>
                     <textarea class="form-control form-control-sm crudit-eip-input" autocomplete="off">{{ value }}</textarea>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm crudit-eip-submit">
-                    <i class="fa fa-check"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-sm crudit-eip-cancel">
-                    <i class="fa fa-close"></i>
-                </button>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-primary crudit-eip-submit">
+                        <i class="fa fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary crudit-eip-cancel">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
             </div>
             <div class="editable-error-block help-block" style="display: none;">
             </div>
