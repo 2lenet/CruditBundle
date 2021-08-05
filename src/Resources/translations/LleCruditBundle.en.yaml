@@ -91,12 +91,12 @@ blame:
     updated_at: Updated at
     by: by
 tab:
-    main: Main    
+    main: Main
 history:
     action:
-        update: updated by        
+        update: updated by
         delete: deleted by
-        create: created by  
+        create: created by
 Rechercher: Search
 Filtrer: Filter
 Effacer: Clear
@@ -130,6 +130,7 @@ crudit:
         logout: "Log out"
     modal:
         cancel: "Cancel"
+        validate: "Validate"
         delete:
             message: "Do you really wish to delete this element ? This action is irreversible."
             delete: "Delete"
