@@ -53,6 +53,10 @@ class EntityToIdTransformer implements DataTransformerInterface
         if ($this->isMultiple()) {
             $result = [];
 
+            if ($entity === null) {
+                return $result;
+            }
+
             foreach ($entity as $e) {
                 $result[] = $e->getId();
             }
