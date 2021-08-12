@@ -67,6 +67,7 @@ crudit:
     "all": "Tout"
     modal:
         cancel: "Annuler"
+        validate: "Valider"
         delete:
             message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
             delete: "Supprimer"

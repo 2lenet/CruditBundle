@@ -23,7 +23,8 @@ class BooleanField extends AbstractField
     {
         $optionResolver = new OptionsResolver();
         $optionResolver->setDefaults([
-           'nullToFalse' => false
+           'nullToFalse' => false,
+           'edit_route' => null,
         ]);
         return $optionResolver->resolve($field->getOptions());
     }
