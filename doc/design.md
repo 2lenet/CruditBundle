@@ -1,6 +1,6 @@
-# castor
+# Crud-it
 
-Castor is a standard RAD specification to create business applications. 
+Crud-it is a standard RAD specification to create business applications.
 These application are naively composed by crud screen assembled by a layout and linked together.
 
 There is a lot of tools to génerate such screen in multiple technology. But each techno redefine some vocabulary, redevelop some concept and design.
@@ -16,7 +16,7 @@ First we define two main part.
 
 This part it the visible part of the application. It can be an single page app in Vue, Angular or React but it could also be a simple classic template system in php or twig.
 
-The frontend recieve two sort of data. 
+The frontend recieve two sort of data.
 - parameters data ( UI config, layout, menu entry, etc...)
 - business data ( customer, invoice, prices, products, etc... )
 
