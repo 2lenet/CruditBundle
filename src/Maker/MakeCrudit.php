@@ -68,26 +68,14 @@ final class MakeCrudit extends AbstractMaker
                 sprintf('Namespace for controller App/Controller/[...]/MyController.php ?')
             )
             ->addArgument(
-                'form',
-                InputArgument::OPTIONAL,
-                sprintf('Do you want custom your FormType ?')
-            )
-            ->addArgument(
                 'filter',
                 InputArgument::OPTIONAL,
                 sprintf('Do you want some filters ?')
             )
-            ->addArgument(
-                'use-strict-type',
-                InputArgument::OPTIONAL,
-                sprintf('Do you use strict type ?')
-            )
             ->setHelp((string)file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'));
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
-        $inputConfig->setArgumentAsNonInteractive('use-strict-type');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
-        $inputConfig->setArgumentAsNonInteractive('form');
         $inputConfig->setArgumentAsNonInteractive('filter');
 
     }
@@ -101,13 +89,6 @@ final class MakeCrudit extends AbstractMaker
             $question->setAutocompleterValues($entities);
             $value = $io->askQuestion($question);
             $input->setArgument('entity-class', $value);
-        }
-
-        if (null === $input->getArgument('use-strict-type')) {
-            $argument = $command->getDefinition()->getArgument('use-strict-type');
-            $question = new ConfirmationQuestion($argument->getDescription(), true);
-            $value = $io->askQuestion($question);
-            $input->setArgument('use-strict-type', $value);
         }
 
         if (null === $input->getArgument('namespace-controller')) {
@@ -124,12 +105,6 @@ final class MakeCrudit extends AbstractMaker
             $input->setArgument('namespace-controller', $value);
         }
 
-        if (null === $input->getArgument('form')) {
-            $argument = $command->getDefinition()->getArgument('form');
-            $question = new ConfirmationQuestion($argument->getDescription(), true);
-            $value = $io->askQuestion($question);
-            $input->setArgument('form', $value);
-        }
         if (null === $input->getArgument('filter')) {
             $argument = $command->getDefinition()->getArgument('filter');
             $question = new ConfirmationQuestion($argument->getDescription(), true);
@@ -138,10 +113,10 @@ final class MakeCrudit extends AbstractMaker
         }
     }
 
-    private function getFields(ClassNameDetails $entityClassDetail): array
+    private function getFields(string $entityClass): array
     {
         $fields = [];
-        $metadata = $this->entityHelper->getMetadata($entityClassDetail->getFullName());
+        $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
                 $fields[] = $fieldname;
@@ -154,13 +129,14 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        ClassNameDetails $entityClassDetail
+        string $entityClass
     ): string
     {
-        $fields = $this->getFields($entityClassDetail);
+        $fields = $this->getFields($entityClass);
         $template = 'CrudAuto';
+        $shortEntity = basename(str_replace('\\', '/', $entityClass));
         $configuratorClassNameDetails = $generator->createClassNameDetails(
-            $this->getStringArgument('entity-class', $input),
+            $shortEntity,
             'Crudit\\Config\\',
             'CrudConfig'
         );
@@ -170,9 +146,10 @@ final class MakeCrudit extends AbstractMaker
             [
                 'namespace' => 'App',
                 'fields' => $fields,
-                'entityClass' => $input->getArgument('entity-class'),
-                'strictType' => $this->getBoolArgument('use-strict-type', $input),
-                'form' => $this->getBoolArgument('form', $input),
+                'entityClass' => $shortEntity,
+                'fullEntityClass' => $entityClass,
+                'strictType' => true,
+                'form' => true,
                 'controllerRoute' => ($input->getArgument('namespace-controller')) ?
                     $this->getStringArgument('namespace-controller', $input) . '_' .
                     $this->getStringArgument('entity-class', $input) :
@@ -186,8 +163,10 @@ final class MakeCrudit extends AbstractMaker
 
     private function createController(InputInterface $input, ConsoleStyle $io, Generator $generator): string
     {
+        $shortEntity = basename(str_replace('\\', '/',  $this->getStringArgument('entity-class', $input)));
+
         $controllerClassNameDetails = $generator->createClassNameDetails(
-            $this->getStringArgument('entity-class', $input),
+            $shortEntity,
             $this->getStringArgument('namespace-controller', $input) ?
                 'Controller\\' . $this->getStringArgument('namespace-controller', $input) . '\\' :
                 'Controller\\',
@@ -198,8 +177,9 @@ final class MakeCrudit extends AbstractMaker
             $this->getSkeletonTemplate('controller/CrudController.php'),
             [
                 'namespace' => 'App',
-                'entityClass' => $this->getStringArgument('entity-class', $input),
-                'strictType' => $this->getBoolArgument('use-strict-type', $input)
+                'fullEntityClass' => $this->getStringArgument('entity-class', $input),
+                'entityClass' => $shortEntity,
+                'strictType' => true
             ]
         );
         $generator->writeChanges();
@@ -211,12 +191,14 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        ClassNameDetails $entityClassDetail
+        string $entityClass
     ): void
     {
-        $fields = $this->getFields($entityClassDetail);
+        $fields = $this->getFields($entityClass);
+        $shortEntity = basename(str_replace('\\', '/',  $entityClass));
+
         $formTypeClassNameDetails = $generator->createClassNameDetails(
-            $this->getStringArgument('entity-class', $input),
+            $shortEntity,
             'Form\\',
             'Type'
         );
@@ -225,9 +207,10 @@ final class MakeCrudit extends AbstractMaker
             $this->getSkeletonTemplate('form/EntityCruditType.php'),
             [
                 'namespace' => 'App',
-                'entityClass' => $input->getArgument('entity-class'),
+                'entityClass' => $shortEntity,
+                'fullEntityClass' => $input->getArgument('entity-class'),
                 'fields' => $fields,
-                'strictType' => $this->getBoolArgument('use-strict-type', $input)
+                'strictType' => true
             ]
         );
         $generator->writeChanges();
@@ -238,12 +221,14 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        ClassNameDetails $entityClassDetail
+        string $entityClass
     ): void
     {
-        $fields = $this->getFields($entityClassDetail);
+        $shortEntity = basename(str_replace('\\', '/',  $entityClass));
+
+        $fields = $this->getFields($entityClass);
         $filtersetClassNameDetails = $generator->createClassNameDetails(
-            $this->getStringArgument('entity-class', $input),
+            $shortEntity,
             'Crudit\Datasource\Filterset\\',
             'FilterSet'
         );
@@ -252,9 +237,10 @@ final class MakeCrudit extends AbstractMaker
             $this->getSkeletonTemplate('filterset/EntityFilterset.php'),
             [
                 'namespace' => 'App',
-                'entityClass' => $input->getArgument('entity-class'),
+                'entityClass' => $shortEntity,
+                'fullEntityClass' => $input->getArgument('entity-class'),
                 'fields' => $fields,
-                'strictType' => $this->getBoolArgument('use-strict-type', $input)
+                'strictType' => true
             ]
         );
         $generator->writeChanges();
@@ -263,8 +249,10 @@ final class MakeCrudit extends AbstractMaker
 
     private function createDatasource(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
+        $shortEntity = basename(str_replace('\\', '/',  $this->getStringArgument('entity-class', $input)));
+
         $datasourceClassNameDetails = $generator->createClassNameDetails(
-            $this->getStringArgument('entity-class', $input),
+            $shortEntity,
             'Crudit\\Datasource\\',
             'Datasource'
         );
@@ -273,8 +261,9 @@ final class MakeCrudit extends AbstractMaker
             $this->getSkeletonTemplate('datasource/DoctrineDatasource.php'),
             [
                 'namespace' => 'App',
-                'entityClass' => $this->getStringArgument('entity-class', $input),
-                'strictType' => $this->getBoolArgument('use-strict-type', $input)
+                'entityClass' => $shortEntity,
+                'fullEntityClass' => $this->getStringArgument('entity-class', $input),
+                'strictType' => true
             ]
         );
         $generator->writeChanges();
@@ -283,32 +272,28 @@ final class MakeCrudit extends AbstractMaker
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $entityClassDetails = $generator->createClassNameDetails(
-            Validator::entityExists(
-                $this->getStringArgument('entity-class', $input),
-                $this->entityHelper->getEntitiesForAutocomplete()
-            ),
-            'Entity\\'
+        $classname = Validator::entityExists(
+            $this->getStringArgument('entity-class', $input),
+            $this->entityHelper->getEntitiesForAutocomplete()
         );
 
-        $entityPath = $this->getPathOfClass($entityClassDetails->getFullName());
-
-        $io->text('Creat a configurator for ' . $entityClassDetails->getFullName());
+        $entityPath = $this->getPathOfClass($classname);
+        $io->text('Create a configurator for ' . $classname);
 
         try {
-            $this->createConfigurator($input, $io, $generator, $entityClassDetails);
+            $this->createConfigurator($input, $io, $generator, $classname);
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }
         
         try {
-            $this->createFormType($input, $io, $generator, $entityClassDetails);
+            $this->createFormType($input, $io, $generator, $classname);
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }
         
         try {
-            $this->createFilterset($input, $io, $generator, $entityClassDetails);
+            $this->createFilterset($input, $io, $generator, $classname);
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }

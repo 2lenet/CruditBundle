@@ -18,8 +18,7 @@ use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-<?php if($form): ?>use App\Form\<?= $entityClass ?>Type;
-<?php endif; ?>
+use App\Form\<?= $entityClass ?>Type;
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
@@ -61,37 +60,4 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         return 'app_<?= strtolower($controllerRoute) ?>';
     }
 
-    /* can be overriden
-    public function getBrickConfigs(): array
-    {
-        return [
-            CrudConfigInterface::INDEX => [
-                LinksConfig::new()->addAction(ListAction::new('add', $this->getPath(CrudConfigInterface::NEW))),
-                ListConfig::new()->addFields($this->getFields(CrudConfigInterface::INDEX))
-                    ->addAction(ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW)))
-                    ->addAction(ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT)))
-            ],
-            CrudConfigInterface::SHOW => [
-                LinksConfig::new()->addBack(),
-                ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW))
-            ],
-                CrudConfigInterface::EDIT => [
-                LinksConfig::new()->addBack(),
-<?php if($form): ?>
-                FormConfig::new()->setForm(<?= $entityClass ?>Type::class)
-<?php else: ?>
-                FormConfig::new()->addAuto([<?= join(',', $fields); ?>]
-<?php endif; ?>
-            ],
-            CrudConfigInterface::NEW => [
-                LinksConfig::new()->addBack(),
-<?php if($form): ?>
-                FormConfig::new()->setForm(<?= $entityClass ?>Type::class)
-<?php else: ?>
-                FormConfig::new()->addAuto([<?= join(',', $fields); ?>]
-<?php endif; ?>
-            ]
-        ];
-    }
-    */
 }
