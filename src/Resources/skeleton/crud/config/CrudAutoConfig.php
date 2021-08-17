@@ -40,15 +40,15 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 
     public function getFields($key): array
     {
-<?php foreach ($fields as $field) { ?>
+<?php foreach ($fields as $field) { if ($field != 'id') { ?>
         $<?php echo $field?> = Field::new('<?php echo $field?>');
-<?php } ?>
+<?php }} ?>
         // you can return different fields based on the block key
         if ($key == CrudConfigInterface::INDEX || $key == CrudConfigInterface::SHOW) {
             return [
-<?php foreach ($fields as $field) { ?>
+<?php foreach ($fields as $field) { if ($field != 'id') { ?>
                $<?= $field?>,
-<?php } ?>
+<?php }} ?>
             ];
         }
 

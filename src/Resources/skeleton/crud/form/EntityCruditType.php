@@ -14,9 +14,9 @@ class <?= $entityClass ?>Type extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-<?php foreach($fields as $field): ?>
+<?php foreach($fields as $field) { if ($field !='id') { ?>
         $builder->add('<?= $field ?>');
-<?php endforeach ?>
+<?php }} ?>
     }
 
     public function getName()

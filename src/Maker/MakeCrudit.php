@@ -152,8 +152,8 @@ final class MakeCrudit extends AbstractMaker
                 'form' => true,
                 'controllerRoute' => ($input->getArgument('namespace-controller')) ?
                     $this->getStringArgument('namespace-controller', $input) . '_' .
-                    $this->getStringArgument('entity-class', $input) :
-                    $this->getStringArgument('entity-class', $input)
+                    $shortEntity :
+                    $shortEntity
             ]
         );
         $generator->writeChanges();
@@ -276,10 +276,10 @@ final class MakeCrudit extends AbstractMaker
             $this->getStringArgument('entity-class', $input),
             $this->entityHelper->getEntitiesForAutocomplete()
         );
-
-        $entityPath = $this->getPathOfClass($classname);
+        if (strpos($classname, '\\') === false) {
+            $classname = "App\\Entity\\".$classname;
+        }
         $io->text('Create a configurator for ' . $classname);
-
         try {
             $this->createConfigurator($input, $io, $generator, $classname);
         } catch (\Exception $e) {
@@ -291,11 +291,13 @@ final class MakeCrudit extends AbstractMaker
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }
-        
-        try {
-            $this->createFilterset($input, $io, $generator, $classname);
-        } catch (\Exception $e) {
-            $io->error($e->getMessage());
+
+        if ($this->getBoolArgument('filter', $input)) {
+            try {
+                $this->createFilterset($input, $io, $generator, $classname);
+            } catch (\Exception $e) {
+                $io->error($e->getMessage());
+            }
         }
         
         try {
