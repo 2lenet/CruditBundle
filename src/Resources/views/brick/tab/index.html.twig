@@ -9,7 +9,7 @@
 
     <div class="tab-content">
         {% for tab in view.config.tabs %}
-                <div id="{{ tab.id }}" role="tabpanel" class="tab-pane fade {% if(loop.first) %}active{%  endif %}">
+                <div id="{{ tab.id }}" role="tabpanel" class="tab-pane fade {% if(loop.first) %}show active{%  endif %}">
                     {%  for view in tab.views %}
                         {% include view.indexTemplate with { 'view': view } only %}
                     {%  endfor %}
