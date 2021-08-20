@@ -121,7 +121,11 @@ final class MakeCrudit extends AbstractMaker
             foreach ($metadata->getFieldNames() as $fieldname) {
                 $fields[] = $fieldname;
             }
+            foreach ($metadata->getAssociationNames() as $fieldassoc) {
+                $fields[] = $fieldassoc;
+            }
         }
+        //dd($fields);
         return $fields;
     }
 
