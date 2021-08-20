@@ -28,14 +28,13 @@ class FormatField extends AbstractField
         ]));
     }
 
-    public function configureOptions(Field $field): array
+    public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        $optionResolver = new OptionsResolver();
+        parent::configureOptions($optionResolver);
         $optionResolver
             ->setRequired([
             'format'
         ])->setAllowedTypes('format', 'string');
-        return $optionResolver->resolve($field->getOptions());
     }
 
     public function getDefaultTemplate(): ?string

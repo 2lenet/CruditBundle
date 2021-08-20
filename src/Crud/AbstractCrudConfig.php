@@ -206,12 +206,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $showBricks = [];
         $showBricks[] = LinksConfig::new(['title' => $this->getTitle('show')])->setActions($this->getShowActions());
+        $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
-
-            // default "show" tab
-            $tabConf->add('tab.info', ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
 
             // additional tabs
             foreach ($tabs as $label => $bricks) {
@@ -221,8 +219,6 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
                 $tabConf->adds($label, $bricks);
             }
             $showBricks[] = $tabConf;
-        } else {
-            $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
         }
 
         return [

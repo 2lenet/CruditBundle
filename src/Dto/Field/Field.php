@@ -100,6 +100,11 @@ class Field
         $this->options = $options;
     }
 
+    public function setCssClass($cssClass): self {
+        $this->options["cssClass"] = $cssClass;
+        return $this;
+    }
+
     public function getName(): string
     {
         return $this->name;

@@ -46,6 +46,6 @@ class TabView
 
     public function getId(): string
     {
-        return md5($this->getLabel());
+        return str_replace('tab.','',$this->getLabel());
     }
 }

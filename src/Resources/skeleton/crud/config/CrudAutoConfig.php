@@ -23,19 +23,11 @@ use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 {
-    /** @var <?= $entityClass ?>Datasource  */
-    protected DatasourceInterface $datasource;
-
     public function __construct(
         <?= $entityClass ?>Datasource $datasource
     )
     {
         $this->datasource = $datasource;
-    }
-
-    public function getDatasource(): DatasourceInterface
-    {
-        return $this->datasource;
     }
 
     public function getFields($key): array

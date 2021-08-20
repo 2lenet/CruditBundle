@@ -1,15 +1,15 @@
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs" role="tablist">
         {% for tab in view.config.tabs %}
-            <li class="nav-item {% if(loop.first) %}active{%  endif %}" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#_{{ tab.id }}" role="tab" type="button">{{ tab.label|trans }}</a>
+            <li class="nav-item " role="presentation">
+                <a class="nav-link {% if(loop.first) %}active{%  endif %}" data-bs-toggle="tab" href="#{{ tab.id }}" role="tab" type="button">{{ tab.label|trans }}</a>
             </li>
         {%  endfor %}
     </ul>
 
     <div class="tab-content">
         {% for tab in view.config.tabs %}
-                <div id="_{{ tab.id }}" role="tabpanel" class="tab-pane {% if(loop.first) %}active{%  endif %}">
+                <div id="{{ tab.id }}" role="tabpanel" class="tab-pane fade {% if(loop.first) %}active{%  endif %}">
                     {%  for view in tab.views %}
                         {% include view.indexTemplate with { 'view': view } only %}
                     {%  endfor %}
