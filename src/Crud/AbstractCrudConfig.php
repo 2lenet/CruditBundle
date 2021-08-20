@@ -225,11 +225,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             CrudConfigInterface::INDEX => $indexBricks,
             CrudConfigInterface::SHOW => $showBricks,
             CrudConfigInterface::EDIT => [
+                LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::EDIT))
                     ->setCancelPath($this->getPath(CrudConfigInterface::INDEX))
             ],
             CrudConfigInterface::NEW => [
+                LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::NEW))
                     ->setCancelPath($this->getPath(CrudConfigInterface::INDEX))
