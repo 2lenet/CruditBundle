@@ -49,7 +49,10 @@ abstract class AbstractField implements FieldInterface
 
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        $optionsResolver->setDefaults(["cssClass"=>"col-12 col-md-6"]);
+        $optionsResolver->setDefaults([
+            "cssClass"=>"col-12 col-md-6",
+            "edit_route"=>null,
+        ]);
     }
 
     abstract protected function getDefaultTemplate(): ?string;
