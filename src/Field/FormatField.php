@@ -30,8 +30,8 @@ class FormatField extends AbstractField
 
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        parent::configureOptions($optionResolver);
-        $optionResolver
+        parent::configureOptions($optionsResolver);
+        $optionsResolver
             ->setRequired([
             'format'
         ])->setAllowedTypes('format', 'string');
