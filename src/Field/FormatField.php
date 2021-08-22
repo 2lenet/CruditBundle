@@ -18,7 +18,9 @@ class FormatField extends AbstractField
     /** @param mixed $value */
     public function buildView(FieldView $fieldView, $value): FieldView
     {
-        $options = $this->configureOptions($fieldView->getField());
+        $optionResolver = new OptionsResolver();
+        $this->configureOptions($optionResolver);
+        $options = $optionResolver->resolve($fieldView->getField()->getOptions());
         $template = $this->twig->createTemplate($options['format']);
         return $fieldView->setStringValue($template->render([
             'value' => $value,
