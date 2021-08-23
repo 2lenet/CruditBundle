@@ -10,6 +10,44 @@ Crudit bundle for 2le.
 
 ```composer require 2lenet/crudit-bundle```
 
+webpack encore is required and you need to have a security on your application
+
+```
+npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free leaflet --save
+```
+
+Please add app.scss in your app.js file
+```javascript
+
+/*
+* Welcome to your app's main JavaScript file!
+*
+* We recommend including the built version of this JavaScript file
+* (and its CSS file) in your base layout (base.html.twig).
+  */
+
+// any CSS you import will output into a single css file (app.css in this case)
+import './styles/app.scss';
+
+// start the Stimulus application
+import './bootstrap';
+```
+
+rename your app.css to app.scss with this content
+
+```scss
+@import "variables";
+@import "../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss";
+```
+
+in variables.scss you can configure the main color design
+
+```scss
+$primary: #264467;
+$secondary: #00B6BE;
+```
+
+
 ## Principle
 
 A crud is composed by 
