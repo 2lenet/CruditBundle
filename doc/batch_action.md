@@ -3,7 +3,7 @@
 The batch actions allow to perform a given action on the pre-selected items of the list.
 
 In your src/Crudit/Config/EntityCrudConfig.php, you have to overload the getListActions() method of the 
-AbstractCrudConfig. Inside you getListActions() method, you can add a new action and add ```->setIsBatch()``` to it:
+AbstractCrudConfig. Inside your getListActions() method, you can add a new action and add ```->setIsBatch()``` to it:
 ```php
     public function getListActions(): array
     {
