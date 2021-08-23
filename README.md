@@ -30,7 +30,7 @@ The list view has the following features :
 - Item Actions ( Show, Edit and Delete as standard )
 - List Actions ( Add and Export csv and excel as standard )
 - List grouping ( to save place in repeating values )
-- Batch Action ( ( see [Sublist](doc/batch_action.md) ) )
+- Batch Action ( see [Batch actions](doc/batch_action.md) )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 The list view need a Datasource but is not bounded to Doctrine or any ORM.
