@@ -73,3 +73,11 @@ $input-group-length: 220px;
         padding-top: 0.9rem;
     }
 }
+
+label.required {
+    &::after {
+        content: '*';
+        margin-left: 7px;
+        color: red;
+    }
+}
