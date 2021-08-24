@@ -22,12 +22,24 @@ class ShowFactory extends AbstractBasicBrickFactory
 
         $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof ShowConfig) {
+            $item = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+            $data = ['resource' => $this->getResourceView($brickConfigurator)];
+            if (method_exists($item, "getCreatedAt")) {
+                $data["createdAt"] = $item->getCreatedAt();
+            }
+            if (method_exists($item, "getCreatedBy")) {
+                $data["createdBy"] = $item->getCreatedBy();
+            }
+            if (method_exists($item, "getUpdatedAt")) {
+                $data["updatedAt"] = $item->getUpdatedAt();
+            }
+            if (method_exists($item, "getUpdatedBy")) {
+                $data["updatedBy"] = $item->getUpdatedBy();
+            }
             $view
                 ->setTemplate('@LleCrudit/brick/show_item')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
-                ->setData([
-                    'resource' => $this->getResourceView($brickConfigurator)
-                ]);
+                ->setData($data);
         }
         return $view;
     }
