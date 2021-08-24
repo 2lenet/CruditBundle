@@ -9,3 +9,28 @@
            value="{{ value | default('') }}"
     />
 {% endblock %}
+
+{% block crudit_gedmo_translatable_widget %}
+        {% set fieldname = form.vars.name %}
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs" role="tablist">
+                {% for locale in locales %}
+                    {% set isActiveTab = (locale == currentlocale) ? 'active' : '' %}
+                    <li class="nav-item {{ isActiveTab }}" role="presentation">
+                        <a class="nav-link {{ isActiveTab }}" aria-expanded="true" href="{{ '#' ~ fieldname ~ '_' ~ locale }}" data-bs-toggle="tab">
+                            {{ tablabels[locale] }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content">
+                {% for locale in locales %}
+                    {% set isActiveTabContent = (locale == currentlocale) ? 'active' : '' %}
+                    {# TAB CONTENT #}
+                    <div  role="tabpanel" class="tab-pane {{ isActiveTabContent }}" id="{{ fieldname ~ '_' ~ locale }}">
+                        {{ form_widget(attribute(form, locale)) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+{% endblock %}

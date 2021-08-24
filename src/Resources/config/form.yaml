@@ -8,3 +8,14 @@ services:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
+    Lle\CruditBundle\Service\GedmoTranslatableFieldManager:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    Lle\CruditBundle\Form\Type\GedmoTranslatableType:
+        arguments:
+            - '%php_translation.default_locale%'
+            - '%php_translation.locales%'
+            - '@Lle\CruditBundle\Service\GedmoTranslatableFieldManager'
+            - '@Symfony\Contracts\Translation\TranslatorInterface'
+        tags:
+           - { name: form.type, alias: lego_gedmo_translatable }
