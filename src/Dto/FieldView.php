@@ -18,6 +18,9 @@ class FieldView
     /** @var ?string */
     private $stringValue;
 
+    private $options;
+
+
     /** @var ?object */
     private $resource = null;
 
@@ -74,4 +77,23 @@ class FieldView
     {
         return $this->field;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param mixed $options
+     * @return FieldView
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
 }

@@ -18,15 +18,11 @@ use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-<?php if($form): ?>use App\Form\<?= $entityClass ?>Type;
-<?php endif; ?>
+use App\Form\<?= $entityClass ?>Type;
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 {
-    /** @var <?= $entityClass ?>Datasource  */
-    protected DatasourceInterface $datasource;
-
     public function __construct(
         <?= $entityClass ?>Datasource $datasource
     )
@@ -34,22 +30,17 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         $this->datasource = $datasource;
     }
 
-    public function getDatasource(): DatasourceInterface
-    {
-        return $this->datasource;
-    }
-
     public function getFields($key): array
     {
-<?php foreach ($fields as $field) { ?>
+<?php foreach ($fields as $field) { if ($field != 'id') { ?>
         $<?php echo $field?> = Field::new('<?php echo $field?>');
-<?php } ?>
+<?php }} ?>
         // you can return different fields based on the block key
         if ($key == CrudConfigInterface::INDEX || $key == CrudConfigInterface::SHOW) {
             return [
-<?php foreach ($fields as $field) { ?>
+<?php foreach ($fields as $field) { if ($field != 'id') { ?>
                $<?= $field?>,
-<?php } ?>
+<?php }} ?>
             ];
         }
 
@@ -61,37 +52,4 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         return 'app_<?= strtolower($controllerRoute) ?>';
     }
 
-    /* can be overriden
-    public function getBrickConfigs(): array
-    {
-        return [
-            CrudConfigInterface::INDEX => [
-                LinksConfig::new()->addAction(ListAction::new('add', $this->getPath(CrudConfigInterface::NEW))),
-                ListConfig::new()->addFields($this->getFields(CrudConfigInterface::INDEX))
-                    ->addAction(ItemAction::new('show', $this->getPath(CrudConfigInterface::SHOW)))
-                    ->addAction(ItemAction::new('edit', $this->getPath(CrudConfigInterface::EDIT)))
-            ],
-            CrudConfigInterface::SHOW => [
-                LinksConfig::new()->addBack(),
-                ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW))
-            ],
-                CrudConfigInterface::EDIT => [
-                LinksConfig::new()->addBack(),
-<?php if($form): ?>
-                FormConfig::new()->setForm(<?= $entityClass ?>Type::class)
-<?php else: ?>
-                FormConfig::new()->addAuto([<?= join(',', $fields); ?>]
-<?php endif; ?>
-            ],
-            CrudConfigInterface::NEW => [
-                LinksConfig::new()->addBack(),
-<?php if($form): ?>
-                FormConfig::new()->setForm(<?= $entityClass ?>Type::class)
-<?php else: ?>
-                FormConfig::new()->addAuto([<?= join(',', $fields); ?>]
-<?php endif; ?>
-            ]
-        ];
-    }
-    */
 }

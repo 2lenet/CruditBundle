@@ -15,13 +15,12 @@ class DateTimeField extends DateField
         return (in_array($type, ['datetime', self::class]));
     }
 
-    public function configureOptions(Field $field): array
+    public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        $optionResolver = new OptionsResolver();
-        $optionResolver->setDefaults([
+        parent::configureOptions($optionsResolver);
+        $optionsResolver->setDefaults([
             'format' => 'd/m/Y H:i'
         ])->setAllowedTypes('format', 'string');
-        return $optionResolver->resolve($field->getOptions());
     }
 
     public function getDefaultTemplate(): ?string

@@ -24,7 +24,10 @@ abstract class AbstractField implements FieldInterface
     /** @param mixed $value */
     public function buildView(FieldView $fieldView, $value): FieldView
     {
-        $options = $this->configureOptions($fieldView->getField());
+        $optionResolver = new OptionsResolver();
+        $this->configureOptions($optionResolver);
+        $options = $optionResolver->resolve($fieldView->getField()->getOptions());
+        $fieldView->setOptions($options);
         return $fieldView->setStringValue($this->render($fieldView, $value, $options));
     }
 
@@ -44,9 +47,12 @@ abstract class AbstractField implements FieldInterface
         }
     }
 
-    public function configureOptions(Field $field): array
+    public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        return $field->getOptions();
+        $optionsResolver->setDefaults([
+            "cssClass"=>"col-12 col-md-6",
+            "edit_route"=>null,
+        ]);
     }
 
     abstract protected function getDefaultTemplate(): ?string;

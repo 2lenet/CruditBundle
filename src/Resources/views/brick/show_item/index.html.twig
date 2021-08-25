@@ -1,20 +1,26 @@
 <div class="card shadow mb-4">
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="{{ view.data.resource.id }}" width="100%" cellspacing="0">
-                <tbody>
+        <div class="row" id="{{ view.data.resource.id }}">
                     {% for field in view.data.resource.fields %}
-                        <tr>
-                            <th>{{ field.field.label |trans }}</th>
-                            <td>
+                        <div class="crudit-field {{ field.options.cssClass }}">
+                            <dl class="row">
+                            <dt class="col-sm-3">{{ field.field.label |trans }}</dt>
+                            <dd class="col-sm-9">
                                 {%  if field.field.path %}<a href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{%  endif %}
                                     {{ field.value |raw }}
                                 {%  if field.field.path %}</a>{%  endif %}
-                            </td>
-                        <tr>
+                            </dd>
+                            </dl>
+                        </div>
                     {% endfor %}
-                </tbody>
-            </table>
         </div>
     </div>
+    {% if view.data.createdAt is defined %}
+    <div class="card-footer">
+        <small>{{ "crudit.createdAt"|trans({},'LleCruditBundle') }} {{ view.data.createdAt |date('d/m/Y H:i:s') }}</small>
+        {% if view.data.createdBy is defined %}<small>{{ "crudit.createdBy"|trans({},'LleCruditBundle') }} {{ view.data.createdBy }}</small>{% endif %}
+        {% if view.data.updatedAt is defined %},<small>{{ "crudit.updatedAt"|trans({},'LleCruditBundle') }} {{ view.data.updatedAt |date('d/m/Y H:i:s') }}</small>{% endif %}
+        {% if view.data.updatedBy is defined %}<small>{{ "crudit.updatedBy"|trans({},'LleCruditBundle') }} {{ view.data.updatedBy }}</small>{% endif %}
+    </div>
+    {% endif %}
 </div>

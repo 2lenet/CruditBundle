@@ -1,6 +1,19 @@
 .crudit-eip {
-  .crudit-eip-value {
-    border-bottom: dotted 1px #0b2e13;
-    cursor: text;
-  }
+    &-value {
+        position: relative;
+        min-height: 24px;
+        border-bottom: dotted 1px #0b2e13;
+        cursor: pointer;
+        &::after {
+            content: '\f044';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            transform: translate(0, -50%);
+            font-family: 'Font Awesome 5 Free';
+            font-size: 0.8rem;
+        }
+    }
 }

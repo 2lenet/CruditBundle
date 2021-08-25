@@ -206,12 +206,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $showBricks = [];
         $showBricks[] = LinksConfig::new(['title' => $this->getTitle('show')])->setActions($this->getShowActions());
+        $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
         $tabs = $this->getTabs();
         if ($tabs) {
             $tabConf = TabConfig::new();
-
-            // default "show" tab
-            $tabConf->add('tab.info', ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW)));
 
             // additional tabs
             foreach ($tabs as $label => $bricks) {
@@ -221,19 +219,19 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
                 $tabConf->adds($label, $bricks);
             }
             $showBricks[] = $tabConf;
-        } else {
-            $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
         }
 
         return [
             CrudConfigInterface::INDEX => $indexBricks,
             CrudConfigInterface::SHOW => $showBricks,
             CrudConfigInterface::EDIT => [
+                LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::EDIT))
                     ->setCancelPath($this->getPath(CrudConfigInterface::INDEX))
             ],
             CrudConfigInterface::NEW => [
+                LinksConfig::new(['title' => $this->getTitle('new')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::NEW))
                     ->setCancelPath($this->getPath(CrudConfigInterface::INDEX))

@@ -1,6 +1,6 @@
 # CruditBundle
 
-
+![](doc/crudit.png)
 [![Build Status](https://github.com/2lenet/CruditBundle/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/2lenet/CruditBundle/actions)
 [![Build Status](https://github.com/2lenet/CruditBundle/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/2lenet/CruditBundle/actions)
 
@@ -9,6 +9,100 @@ Crudit bundle for 2le.
 ## Installation
 
 ```composer require 2lenet/crudit-bundle```
+
+webpack encore is required and you need to have a security on your application
+
+```
+npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free leaflet --save
+```
+
+Please add app.scss in your app.js file
+```javascript
+
+/*
+* Welcome to your app's main JavaScript file!
+*
+* We recommend including the built version of this JavaScript file
+* (and its CSS file) in your base layout (base.html.twig).
+  */
+
+// any CSS you import will output into a single css file (app.css in this case)
+import './styles/app.scss';
+
+// start the Stimulus application
+import './bootstrap';
+```
+
+rename your app.css to app.scss with this content
+
+```scss
+@import "variables";
+@import "../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss";
+```
+
+in variables.scss you can configure the main color design
+
+```scss
+$primary: #264467;
+$secondary: #00B6BE;
+```
+
+
+## Principle
+
+A crud is composed by 
+- an independent controller
+- a crud config class
+- a datasource
+- a filterset if needed
+
+The layout and menu are independant from the crud. You can integrate easily you own controller in a Crudit Layout 
+
+## Feature
+
+### List view
+![](doc/list.png)
+The list view has the following features :
+- Pagination
+- Sorting
+- Item Actions ( Show, Edit and Delete as standard )
+- List Actions ( Add and Export csv and excel as standard )
+- List grouping ( to save place in repeating values )
+- Batch Action ( see [Batch actions](doc/batch_action.md) )
+- Layout customisation is possible ( doc TODO / Block principle )
+
+The list view need a Datasource but is not bounded to Doctrine or any ORM.
+
+### Show view
+![](doc/show.png)
+The show view has the following feature :
+- Show all fields
+- Title can use the entity to title the object by its name
+- Tabs 
+- Sublists to show related data ( see [Sublist](doc/sublist.md) )
+- Layout customisation is possible ( doc TODO / Block principle )
+
+### Form view
+![](doc/edit.png)
+The edit view is a classical Symfony Form. You write your own FormType
+
+Crudit provides some help to be nicely integrated :
+- Many FormType ( Datetime, Entity, etc ...)
+- Entity Dropdown based on TomSelect with autocomplete
+- DoctrineFormGuesser to automatically use Crudit FormType.
+- Layout customisation is possible ( doc TODO / Block principle )
+
+### Maps
+If you work with geographic data you can integrate it easily as Leaflet Map in Crudit Screen
+
+![](doc/map.png)
+
+The map Bloc can show Markers and Polylines.
+You can provide your own Geojson datasource too.
+
+Maps can be used in the list ( like the screenshot ) or in the show view to basically show the position of the object in a Tab, for example.
+
+See [Add a map to a list or to a show](doc/map_config.md) for details
 
 ## Recipe
 
@@ -21,44 +115,28 @@ Crudit bundle for 2le.
 - [How to export data](doc/export.md)
 
 
-## Design architecture
+## Dependencies
 
-Crudit is a standard RAD specification to create business applications. 
-These applications are naively composed by crud screen assembled by a layout and linked together.
+Crudit wants to minimise dependencies on not really popular bundles or components
+in order to be able to maintain this bundle for many years and to follow the Symfony Stack development without dependency problems.
 
-There is a lot of tools to generate such screen in multiple technologies. But each techno redefines some vocabulary, redevelops some concept and design.
-Maybe some reflexion could be mutualized.
+The layout is inspired by sb-admin-2 but partially rewritten. Many of the features of sbAdmin wasn't useful for this project.
 
-The first objective is to define some standard format to optimise development effort for each part of such a complex system.
+https://startbootstrap.com/theme/sb-admin-2 ( inspired from ).
 
-These standards are techno agnostic.
+The CSS framework used is Bootstrap5. ( It could be possible to change that without much difficulty ).
 
-First we define two main parts.
+The map component uses Leaflet.
 
-## Frontend
+Excel export uses phpoffice/phpspreadsheet.
 
-This part it the visible part of the application. It can be a single page app in Vue, Angular or React but it could also be a simple and classic template system in PHP or Twig.
-
-The frontend recieves two sorts of data. 
-- parameters data ( UI config, layout, menu entry, etc...)
-- business data ( customer, invoice, prices, products, etc... )
-
-these two sorts of data are provided in a standardised way ( the format is defined by castor but the serialisation model is free ( json, direct data, xml))
+Doctrine is needed for the pre-version but the project is designed to work without it. Feel free to contact us if you want to use other dataprovider.
 
 
-## Backend
+# Development
 
-This part is responsible for providing the business data, configuring the manager and how this data should be managed by the user.
-
-The backend could be dispatched in many micro services each responsible for a small part of the application.
-
-For example, we could build a single CRM / ERP app with part of the interface handled by a CRM micro service and the other by an ERP one.
-
-The system have to respect the separation on concern needed by the business rules.
-
-## Dependency
-
-https://startbootstrap.com/theme/sb-admin-2 ( inspired from )
+TO COMPLETE
+- [Design principle ](doc/design.md)
 
 ## js / css Developpement
 

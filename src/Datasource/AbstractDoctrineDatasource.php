@@ -164,7 +164,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $this->entityManager->flush();
     }
 
-    /** @return  class-string<T> $className */
     abstract public function getClassName(): string;
 
     private function getRepository(): ObjectRepository

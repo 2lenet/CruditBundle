@@ -1,5 +1,7 @@
 services:
-
+  Lle\CruditBundle\Field\TextAreaField:
+    arguments: ['@twig']
+    tags: [ 'crudit.field' ]
   Lle\CruditBundle\Field\DateTimeField:
     arguments: ['@twig']
     tags: [ 'crudit.field' ]

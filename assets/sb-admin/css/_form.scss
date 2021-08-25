@@ -1,0 +1,22 @@
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    margin-bottom: 0.3rem;
+}
+
+fieldset.form_row {
+    legend {
+        font-weight: bold;
+    }
+    > div {
+        display: flex;
+        margin-left: calc(var(--bs-gutter-x) * -.5);
+        margin-right: calc(var(--bs-gutter-x) * -.5);
+        .col-6 {
+            padding-left: calc(var(--bs-gutter-x)*.5);
+            padding-right: calc(var(--bs-gutter-x)*.5);
+        }
+    }
+}

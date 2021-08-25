@@ -2,3 +2,8 @@
 .o-hidden {
     overflow: hidden !important;
 }
+
+// Transform \n to line breaks
+.multiline {
+    white-space: pre-line;
+}

@@ -18,7 +18,9 @@ class FormatField extends AbstractField
     /** @param mixed $value */
     public function buildView(FieldView $fieldView, $value): FieldView
     {
-        $options = $this->configureOptions($fieldView->getField());
+        $optionResolver = new OptionsResolver();
+        $this->configureOptions($optionResolver);
+        $options = $optionResolver->resolve($fieldView->getField()->getOptions());
         $template = $this->twig->createTemplate($options['format']);
         return $fieldView->setStringValue($template->render([
             'value' => $value,
@@ -28,14 +30,13 @@ class FormatField extends AbstractField
         ]));
     }
 
-    public function configureOptions(Field $field): array
+    public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        $optionResolver = new OptionsResolver();
-        $optionResolver
+        parent::configureOptions($optionsResolver);
+        $optionsResolver
             ->setRequired([
             'format'
         ])->setAllowedTypes('format', 'string');
-        return $optionResolver->resolve($field->getOptions());
     }
 
     public function getDefaultTemplate(): ?string

@@ -19,12 +19,12 @@ class BooleanField extends AbstractField
         return '@LleCrudit/field/bool.html.twig';
     }
 
-    public function configureOptions(Field $field): array
+    public function configureOptions(OptionsResolver $optionResolver): void
     {
-        $optionResolver = new OptionsResolver();
+        parent::configureOptions($optionResolver);
         $optionResolver->setDefaults([
-           'nullToFalse' => false
+           'nullToFalse' => false,
+           'edit_route' => null,
         ]);
-        return $optionResolver->resolve($field->getOptions());
     }
 }

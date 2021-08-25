@@ -1,16 +1,6 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Lle\CruditBundle\Form;
-
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -97,6 +87,38 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         }
     }
 
+    protected function getMetadata(string $class)
+    {
+        // normalize class name
+        $class = self::getRealClass(ltrim($class, '\\'));
+
+        if (\array_key_exists($class, $this->cache)) {
+            return $this->cache[$class];
+        }
+
+        $this->cache[$class] = null;
+        foreach ($this->registry->getManagers() as $name => $em) {
+            try {
+                return $this->cache[$class] = [$em->getClassMetadata($class), $name];
+            } catch (MappingException $e) {
+                // not an entity or mapped super class
+            } catch (LegacyMappingException $e) {
+                // not an entity or mapped super class, using Doctrine ORM 2.2
+            }
+        }
+
+        return null;
+    }
+
+    private static function getRealClass(string $class): string
+    {
+        if (false === $pos = strrpos($class, '\\' . Proxy::MARKER . '\\')) {
+            return $class;
+        }
+
+        return substr($class, $pos + Proxy::MARKER_LENGTH + 2);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -171,37 +193,5 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         }
 
         return null;
-    }
-
-    protected function getMetadata(string $class)
-    {
-        // normalize class name
-        $class = self::getRealClass(ltrim($class, '\\'));
-
-        if (\array_key_exists($class, $this->cache)) {
-            return $this->cache[$class];
-        }
-
-        $this->cache[$class] = null;
-        foreach ($this->registry->getManagers() as $name => $em) {
-            try {
-                return $this->cache[$class] = [$em->getClassMetadata($class), $name];
-            } catch (MappingException $e) {
-                // not an entity or mapped super class
-            } catch (LegacyMappingException $e) {
-                // not an entity or mapped super class, using Doctrine ORM 2.2
-            }
-        }
-
-        return null;
-    }
-
-    private static function getRealClass(string $class): string
-    {
-        if (false === $pos = strrpos($class, '\\'.Proxy::MARKER.'\\')) {
-            return $class;
-        }
-
-        return substr($class, $pos + Proxy::MARKER_LENGTH + 2);
     }
 }

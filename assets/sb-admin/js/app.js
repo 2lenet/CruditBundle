@@ -1,5 +1,6 @@
 import "bootstrap";
 import TomSelect from "tom-select/dist/js/tom-select.complete";
+//import { Tab } from 'bootstrap'
 
 import "./map";
 import "./editinplace";
@@ -26,6 +27,21 @@ window.addEventListener('load', function () {
         /*if ($(".sidebar").hasClass("toggled")) {
             $('.sidebar .collapse').collapse('hide');
         }*/
+    });
+
+    // tabs select from anchor
+    var hash = window.location.hash;
+    var triggerEl = document.querySelector('ul.nav a[href="' + hash + '"]')
+    if (triggerEl) {
+        triggerEl.click();
+    }
+
+    // update anchor on click
+    var triggerTabList = [].slice.call(document.querySelectorAll('ul.nav-tabs a'));
+    triggerTabList.forEach(function (tabEl) {
+        tabEl.addEventListener('click', function () {
+            window.location.hash = tabEl.attributes.href.value;
+        });
     });
 
     // Entity filter
