@@ -74,7 +74,7 @@ $input-group-length: 220px;
     }
 }
 
-label.required {
+label.required:not(.form-check-label), legend.required {
     &::after {
         content: '*';
         margin-left: 7px;
