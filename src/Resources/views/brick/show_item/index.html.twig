@@ -19,7 +19,7 @@
     <div class="card-footer">
         <small>{{ "crudit.createdAt"|trans({},'LleCruditBundle') }} {{ view.data.createdAt |date('d/m/Y H:i:s') }}</small>
         {% if view.data.createdBy is defined %}<small>{{ "crudit.createdBy"|trans({},'LleCruditBundle') }} {{ view.data.createdBy }}</small>{% endif %}
-        {% if view.data.updatedAt is defined %},<small>{{ "crudit.updatedAt"|trans({},'LleCruditBundle') }} {{ view.data.updatedAt |date('d/m/Y H:i:s') }}</small>{% endif %}
+        {% if view.data.updatedAt is defined %}- <small>{{ "crudit.updatedAt"|trans({},'LleCruditBundle') }} {{ view.data.updatedAt |date('d/m/Y H:i:s') }}</small>{% endif %}
         {% if view.data.updatedBy is defined %}<small>{{ "crudit.updatedBy"|trans({},'LleCruditBundle') }} {{ view.data.updatedBy }}</small>{% endif %}
     </div>
     {% endif %}
