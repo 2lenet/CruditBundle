@@ -104,6 +104,11 @@ Maps can be used in the list ( like the screenshot ) or in the show view to basi
 
 See [Add a map to a list or to a show](doc/map_config.md) for details
 
+## JS Format input helper
+
+Some help to check the input validity ( upper, email, ip, etc... )
+- [inputFormat](doc/input_format.md)
+
 ## Recipe
 
 - [Submenu](doc/submenu.md)

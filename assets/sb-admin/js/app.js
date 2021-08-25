@@ -5,6 +5,8 @@ import TomSelect from "tom-select/dist/js/tom-select.complete";
 import "./map";
 import "./editinplace";
 import "./batch_actions";
+import "./input_format";
+
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".valuesetter").forEach(choice => {
