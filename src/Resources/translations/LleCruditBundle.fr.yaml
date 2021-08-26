@@ -74,6 +74,8 @@ crudit:
         export:
             message: "Choisissez un format d'export"
             export: "Exporter"
+    message:
+        success: "Succes"
     createdAt: "Créé le"
     createdBy: "par"
     updatedAt: "Modifié le"

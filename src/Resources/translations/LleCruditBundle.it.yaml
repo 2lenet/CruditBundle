@@ -86,10 +86,6 @@ generator:
           show: "Fiche %entity%"
           new: "Add %entity%"
           edit: "Edit %entity%"
-blame:
-    created_at: Created at
-    updated_at: Updated at
-    by: by
 tab:
     main: Main
 history:
@@ -137,7 +133,7 @@ crudit:
         export:
             message: "Choose your export format"
             export: "Export"
-    createdAt: "Created at"
-    createdBy: "by"
-    updatedAt: "Updated at"
-    updatedBy: "by"
+    createdAt: "creato il"
+    createdBy: "da"
+    updatedAt: "aggiornato il"
+    updatedBy: "da"
