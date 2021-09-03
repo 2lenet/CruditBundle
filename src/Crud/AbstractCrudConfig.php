@@ -16,6 +16,7 @@ use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
+use Lle\CruditBundle\Dto\Action\EditAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
@@ -98,7 +99,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
         )->setCssClass('btn btn-primary btn-sm mr-1');
-        $actions[] = ItemAction::new(
+        $actions[] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
@@ -123,7 +124,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('list')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
 
-        $actions[] = ItemAction::new(
+        $actions[] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
