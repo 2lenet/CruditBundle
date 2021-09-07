@@ -21,6 +21,9 @@ crudit:
             lte: "Inférieur ou égal à"
             gt: "Supérieur à"
             gte: "Supérieur ou égal à"
+            after: "Après"
+            before: "Avant"
+
 
         show_less: "Moins de filtres"
         show_more: "Plus de filtres"

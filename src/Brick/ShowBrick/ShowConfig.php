@@ -19,7 +19,8 @@ class ShowConfig extends AbstractBrickConfig
     /** @var DatasourceInterface */
     private $dataSource;
     private $actions;
-
+    private $role = null;
+    
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
@@ -100,5 +101,23 @@ class ShowConfig extends AbstractBrickConfig
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    /**
+     * @return null
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param null $role
+     * @return ShowConfig
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+        return $this;
     }
 }
