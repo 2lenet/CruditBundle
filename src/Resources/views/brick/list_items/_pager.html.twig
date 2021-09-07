@@ -2,10 +2,10 @@
 
     <div class="col-sm-12 col-md-4" role="status" aria-live="polite">
         {% if view.config.datasource_params.count > 0 %}
-            Items
-            <b>{{ view.config.datasource_params.from }} à {{ view.config.datasource_params.to }}</b> sur {{ view.config.datasource_params.count }}
+            {{ "crudit.items"|trans({}, 'LleCruditBundle') }}
+            <b>{{ view.config.datasource_params.from }}  {{ "crudit.pager.to" |trans({}, 'LleCruditBundle') }} {{ view.config.datasource_params.to }}</b>  {{ "crudit.pager.on"|trans({}, 'LleCruditBundle') }} {{ view.config.datasource_params.count }}
         {% else %}
-            Aucun item trouvé
+            {{ "crudit.no_items" |trans({}, 'LleCruditBundle') }}
         {% endif %}
     </div>
 
@@ -47,7 +47,7 @@
                 {% set parameters = app.request.query.all()|merge(merge_params) %}
                 {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.nextPage'|trans }}" aria-label="{{ 'crudit.next'|trans }}">
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.nextPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.next'|trans({}, 'LleCruditBundle') }}">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </li>
@@ -55,7 +55,7 @@
                 {% set parameters = app.request.query.all()|merge(merge_params) %}
                 {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.lastPage'|trans }}" aria-label="{{ 'crudit.last'|trans }}">
+                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.lastPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.last'|trans({}, 'LleCruditBundle') }} }}">
                         <i class="fa fa-angle-double-right"></i>
                     </a>
                 </li>

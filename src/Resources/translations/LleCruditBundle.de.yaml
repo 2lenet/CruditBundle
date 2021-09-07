@@ -1,13 +1,18 @@
 crudit:
+    items: articles
+    no_items: keine article
+    pager:
+        to: zu
+        on: von
     action:
         save: "Enregistrer"
         cancel: "Annuler"
         logout: "Se déconnecter"
     title:
-        filters: "Filtrer les items"
+        filters: "Article Auswählen"
     filter:
-        reset: "Effacer"
-        filter: "Filtrer"
+        reset: "Löschen"
+        filter: "Auswählen"
         operators:
             contains: "Contient"
             startswith: "Débute par"
@@ -15,6 +20,7 @@ crudit:
             isnull: "Est vide"
             isnotnull: "N'est pas vide"
             eq: "Egal à"
+            equals: "Egal à"
             neq: "Différent de"
             not_equal: "Différent de"
             lt: "Inférieur à"
@@ -27,9 +33,9 @@ crudit:
         auto_complete:
             placeholder: "Sélectionnez une valeur"
         boolean:
-            yes: "Oui"
-            no: "Non"
-            all: "Tous"
+            yes: "Ja"
+            no: "Nein"
+            all: "Alle"
         date:
             on: "Le"
             before: "Avant le"
@@ -62,9 +68,9 @@ crudit:
         periode:
             from: "du"
             to: "au"
-    "true": "Oui"
-    "false": "Non"
-    "all": "Tout"
+    "true": "Ja"
+    "false": "Nein"
+    "all": "Alle"
     modal:
         cancel: "Annuler"
         validate: "Valider"

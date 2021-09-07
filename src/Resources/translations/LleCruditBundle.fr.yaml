@@ -1,4 +1,9 @@
 crudit:
+    items: items
+    no_items: aucun item
+    pager:
+        to: à
+        on: sur
     action:
         save: "Enregistrer"
         cancel: "Annuler"
@@ -15,6 +20,7 @@ crudit:
             isnull: "Est vide"
             isnotnull: "N'est pas vide"
             eq: "Egal à"
+            equals: "Egal à"
             neq: "Différent de"
             not_equal: "Différent de"
             lt: "Inférieur à"
