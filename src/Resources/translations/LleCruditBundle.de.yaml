@@ -1,6 +1,9 @@
 crudit:
     items: articles
     no_items: keine article
+    next: Nexte
+    last: Last
+    lastPage: Last page
     pager:
         to: zu
         on: von
