@@ -65,6 +65,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
     {
         return $this->label;
     }
+    
+    
+    public function setLabel(string $label): self
+    {
+        $this->label = $label;
+        return $this;
+    }
 
     public function setDefault($default_data): self {
         $this->default = $default_data;
