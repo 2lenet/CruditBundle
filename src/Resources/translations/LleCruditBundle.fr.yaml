@@ -1,9 +1,6 @@
 crudit:
     items: items
     no_items: aucun item
-    next: Suivant
-    last: Derniere
-    lastPage: Dernière page
     pager:
         to: à
         on: sur
@@ -32,6 +29,7 @@ crudit:
             gte: "Supérieur ou égal à"
             after: "Après"
             before: "Avant"
+            interval: "Compris entre"
 
 
         show_less: "Moins de filtres"
