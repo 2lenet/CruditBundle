@@ -154,6 +154,10 @@ trait TraitCrudController
                     continue;
                 }
 
+                if ($value === "") {
+                    $value = null;
+                }
+
                 $propertyAccessor->setValue($item, $field, $value);
             }
 
