@@ -14,13 +14,20 @@ $input-group-length: 220px;
     }
 
     & + .form-floating {
-        width: $input-group-length;
-        input, .entity-select {
+        display: flex;
+        min-width: $input-group-length;
+
+        .form-control, .entity-select {
+            background-color: transparent;
             border: solid 1px $gray-400;
-            border-left: none;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
-            z-index: 10000;
+            z-index: 999;
+        }
+
+        .form-control:not(:last-of-type) {
+            border-right: none;
+            border-radius: 0;
         }
 
         .entity-select {
@@ -62,6 +69,7 @@ $input-group-length: 220px;
 
             & .ts-dropdown {
                 margin: 0;
+                background-color: #FFFFFF;
             }
         }
     }
@@ -69,7 +77,8 @@ $input-group-length: 220px;
 
 .form-floating {
     & > select.form-control:focus,
-    & > select.form-control:not(:placeholder-shown) {
+    & > select.form-control:not(:placeholder-shown),
+    & > input.form-control:not(:placeholder-shown) {
         padding-top: 0.9rem;
     }
 }
