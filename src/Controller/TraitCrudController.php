@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\Column;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Exception\CruditException;
@@ -147,6 +149,9 @@ trait TraitCrudController
             $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
                 ->getPropertyAccessor();
 
+            $reflection = new \ReflectionClass($item);
+            $annotationReader = new AnnotationReader();
+
             $data = json_decode($request->request->get("data", []), true);
 
             foreach ($data as $field => $value) {
@@ -156,6 +161,30 @@ trait TraitCrudController
 
                 if ($value === "") {
                     $value = null;
+                } else {
+                    $mapping = $annotationReader->getPropertyAnnotation(
+                        $reflection->getProperty($field),
+                        Column::class
+                    );
+
+                    switch ($mapping->type) {
+                        case "date":
+                        case "datetime":
+                            $value = new \DateTime($value);
+                            break;
+                        case "integer":
+                        case "smallint":
+                            $value = (int)$value;
+                            break;
+                        case "float":
+                            $value = (float)$value;
+                            break;
+                        case "string":
+                        case "text":
+                        case "decimal":
+                        default:
+                            // do nothing
+                    }
                 }
 
                 $propertyAccessor->setValue($item, $field, $value);
