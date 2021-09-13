@@ -87,7 +87,7 @@ class Field
         return $this;
     }
 
-    public function setOptions(array $options): void
+    public function setOptions(array $options): self
     {
         $this->label = $options['label'] ?? $this->label;
         $this->sort = $options['sort'] ?? true;
@@ -98,6 +98,7 @@ class Field
         unset($options['path']);
         unset($options['template']);
         $this->options = $options;
+        return $this;
     }
 
     public function setCssClass($cssClass): self {

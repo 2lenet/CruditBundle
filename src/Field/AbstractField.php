@@ -51,6 +51,7 @@ abstract class AbstractField implements FieldInterface
     {
         $optionsResolver->setDefaults([
             "cssClass"=>"col-12 col-md-6",
+            "tableCssClass"=>"text-nowrap",
             "edit_route"=>null,
         ]);
     }

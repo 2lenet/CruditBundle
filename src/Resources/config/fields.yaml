@@ -11,6 +11,9 @@ services:
   Lle\CruditBundle\Field\TextField:
     arguments: ['@twig']
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\NumberField:
+    arguments: ['@twig']
+    tags: [ 'crudit.field' ]
   Lle\CruditBundle\Field\DoctrineEntityField:
     arguments: ['@twig']
     tags: [ 'crudit.field' ]
