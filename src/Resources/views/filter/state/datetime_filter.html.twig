@@ -3,7 +3,7 @@
 {% block value %}
     {% if data['value'] %}
         <span class="filter-state">
-            <small>{{ filtertype.filterLabel | trans }}</small>
+            <small>{{ filtertype.label | trans }}</small>
             <span class="badge">
                 {{ data.value | date("d/m/Y") ~ ' ' ~ data.time }}
             </span>

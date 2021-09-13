@@ -61,7 +61,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this;
     }
 
-    public function getFilterLabel()
+    public function getLabel()
     {
         return $this->label;
     }
