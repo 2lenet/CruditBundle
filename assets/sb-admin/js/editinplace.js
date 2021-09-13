@@ -39,7 +39,13 @@ window.addEventListener('load', function () {
             );
 
             if (eip_val) {
-                eip_val.textContent = input.value;
+
+                if (input.type === "date") {
+                    eip_val.textContent = new Date(input.value).toLocaleDateString();
+                } else {
+                    eip_val.textContent = input.value;
+                }
+
                 eip_val.classList.toggle('d-none');
             }
 
