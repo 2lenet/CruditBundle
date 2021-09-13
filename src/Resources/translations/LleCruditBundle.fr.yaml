@@ -32,6 +32,7 @@ crudit:
             gte: "Supérieur ou égal à"
             after: "Après"
             before: "Avant"
+            interval: "Compris entre"
 
 
         show_less: "Moins de filtres"
