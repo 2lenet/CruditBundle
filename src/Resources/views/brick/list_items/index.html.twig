@@ -14,7 +14,7 @@
                             {% endif %}
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 %}
-                                    <th class="text-nowrap">{{ field.label |trans }}
+                                    <th class="{{ field.options.tableCssClass|default("text-nowrap") }}">{{ field.label |trans }}
                                         {% if field.sortable %}
                                             {% set merge_params = {
                                                 ((view.config.name|lower)~'_sort'): field.name,

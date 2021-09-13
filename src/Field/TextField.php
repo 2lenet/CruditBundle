@@ -8,7 +8,7 @@ class TextField extends AbstractField
 {
     public function support(string $type): bool
     {
-        return (in_array($type, ['integer', 'float', 'string', 'decimal', 'text', 'smallint', self::class]));
+        return (in_array($type, ['string', 'text', self::class]));
     }
 
     public function getDefaultTemplate(): ?string
