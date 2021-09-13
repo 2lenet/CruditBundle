@@ -19,6 +19,8 @@ class LinksFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
+        $resource = $this->getItem($brickConfigurator);
+
         /** @var LinksConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
@@ -26,7 +28,8 @@ class LinksFactory extends AbstractBasicBrickFactory
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
                 'actions' => $this->getActions($brickConfigurator),
-                'entity' => $this->getItem($brickConfigurator)
+                'entity' => (string)$resource,
+                'resource' => $resource
             ]);
         return $view;
     }
@@ -44,14 +47,15 @@ class LinksFactory extends AbstractBasicBrickFactory
         }
         return $actions;
     }
-    private function getItem(LinksConfig $brickConfigurator): ?string
+    private function getItem(LinksConfig $brickConfigurator)
     {
         $id = $this->getRequest()->get('id');
         if ($id) {
             $resource = $brickConfigurator->getDataSource()->get($id);
-            return (string)$resource;
+
+            return $resource;
         } else {
-            return "";
+            return null;
         }
     }
 }
