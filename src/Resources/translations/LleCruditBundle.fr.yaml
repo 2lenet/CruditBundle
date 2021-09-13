@@ -1,31 +1,61 @@
 crudit:
-    items: items
-    no_items: aucun item
-    next: Suivant
-    last: Derniere
-    lastPage: Dernière page
-    pager:
-        to: à
-        on: sur
-    action:
-        save: "Enregistrer"
-        cancel: "Annuler"
-        logout: "Se déconnecter"
     title:
-        filters: "Filtrer les items"
+        filter: "Filtrer les éléments"
+
+    pagination:
+        first: "Première"
+        previous: "Précédente"
+        next: "Suivante"
+        last: "Dernière"
+        firstPage: "Première page"
+        previousPage: "Page précédente"
+        nextPage: "Page suivante"
+        lastPage: "Dernière page"
+        goToPage: "Aller à la page nb"
+        items: "Éléments"
+        to: "à"
+        of: "sur"
+        noItem: "Aucun élément trouvé"
+
+    action:
+        save: "Sauvegarder"
+        cancel: "Annuler"
+        back: "Retour"
+        logout: "Déconnexion"
+
+    message:
+        success: "Succès"
+        error: "Erreur"
+
+    modal:
+        cancel: "Annuler"
+        export:
+            message: "Choisissez un format d'export"
+            action: "Exporter"
+            notConfigured: "L'export n'est pas configuré"
+        delete:
+            message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
+            action: "Supprimer"
+
+    field:
+        createdAt: "Créé le"
+        createdBy: "Créé par"
+        updatedAt: "Édité le"
+        updatedBy: "Édité par"
+
     filter:
-        reset: "Effacer"
-        filter: "Filtrer"
-        operators:
+        action: "Filtrer"
+        reset: "Réinitialiser"
+        operator:
             contains: "Contient"
             startswith: "Débute par"
             endswith: "Termine par"
             isnull: "Est vide"
             isnotnull: "N'est pas vide"
-            eq: "Egal à"
-            equals: "Egal à"
+            eq: "Égal à"
+            #            equals: "Egal à"
             neq: "Différent de"
-            not_equal: "Différent de"
+            #            not_equal: "Différent de"
             lt: "Inférieur à"
             lte: "Inférieur ou égal à"
             gt: "Supérieur à"
@@ -34,62 +64,6 @@ crudit:
             before: "Avant"
             interval: "Compris entre"
 
-
-        show_less: "Moins de filtres"
-        show_more: "Plus de filtres"
-        auto_complete:
-            placeholder: "Sélectionnez une valeur"
-        boolean:
-            yes: "Oui"
-            no: "Non"
-            all: "Tous"
-        date:
-            on: "Le"
-            before: "Avant le"
-            after: "Après le"
-        date_time:
-            on: "Le"
-            before: "Avant le"
-            after: "Après le"
-        enumeration:
-            contains: "contient"
-            does_not_contain: "ne contient pas"
-        exact_string:
-            is_null: "Est vide"
-            equals: "Égal"
-        not_null:
-            all: "Tous"
-            filled: "Renseigné"
-            not_filled: "Non renseigné"
-        number:
-            is_equal: "Est égal à"
-            is_not_equal: "N'est pas égal à"
-            lesser_than: "Plus petit que"
-            greater_than: "Plus grand que"
-        string:
-            contains: "Contient"
-            starts_with: "Commence par"
-            ends_with: "Termine par"
-            is_empty: "Est vide"
-            is_not_empty: "Est non vide"
-        periode:
-            from: "du"
-            to: "au"
-    "true": "Oui"
-    "false": "Non"
-    "all": "Tout"
-    modal:
-        cancel: "Annuler"
-        validate: "Valider"
-        delete:
-            message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
-            delete: "Supprimer"
-        export:
-            message: "Choisissez un format d'export"
-            export: "Exporter"
-    message:
-        success: "Succes"
-    createdAt: "Créé le"
-    createdBy: "par"
-    updatedAt: "Modifié le"
-    updatedBy: "par"
+    yes: "Oui"
+    no: "Non"
+    by: "par"

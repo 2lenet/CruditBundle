@@ -3,7 +3,7 @@
         <div class="card-header py-1">
             <h6 class="m-2 font-weight-bold float-start text-primary">
                 <i class="icon fa fa-search"></i>&nbsp;
-                {{ 'crudit.title.filters'|trans({}, 'LleCruditBundle') }}
+                {{ 'crudit.title.filter'|trans({}, 'LleCruditBundle') }}
             </h6>
             <span id="card-toggle" class="btn float-end" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
                 <i class="fa fa-chevron-up"></i>
@@ -38,7 +38,7 @@
         <div class="card-footer py-1">
             <button class="btn btn-sm btn-primary" name="filter" value="filter" type="submit">
                 <i class="fa fa-filter"></i>&nbsp;
-                {{ 'crudit.filter.filter'|trans({}, 'LleCruditBundle') }}
+                {{ 'crudit.filter.action'|trans({}, 'LleCruditBundle') }}
             </button>
             <button class="btn btn-sm btn-default" name="{{ view.data.filterset.id}}_reset" value="reset" type="submit">
                 <i class="fa fa-window-close"></i>&nbsp;

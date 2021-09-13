@@ -12,8 +12,8 @@
     </div>
 {% else %}
     {% if value == true %}
-        {{ 'crudit.yes'|trans }}
+        {{ 'crudit.yes'|trans({}, 'LleCruditBundle') }}
     {% elseif value is same as(false) or (not value and options.nullToFalse == true) %}
-        {{ 'crudit.no'|trans }}
+        {{ 'crudit.no'|trans({}, 'LleCruditBundle') }}
     {% endif %}
 {% endif %}

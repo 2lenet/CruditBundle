@@ -22,7 +22,8 @@ class StringFilterType extends AbstractFilterType
             "startswith" => ["icon" => "far fa-caret-square-right"],
             "contains" => ["icon" => "fa fa-text-width"],
             "endswith" => ["icon" => "far fa-caret-square-left"],
-            "equals" => ["icon" => "fas fa-equals"],
+            "eq" => ["icon" => "fas fa-equals"],
+            "neq" => ["icon" => "fas fa-not-equal"],
             "isnull" => ["icon" => "far fa-square"],
             "isnotnull" => ["icon" => "fas fa-square"],
         ];
@@ -72,8 +73,8 @@ class StringFilterType extends AbstractFilterType
                 case 'endswith':
                     $queryBuilder->setParameter("val_" . $this->id, "%" . $value);
                     break;
-                case 'equals':
-                case 'notequals':
+                case 'eq':
+                case 'neq':
                     $queryBuilder->setParameter("val_" . $this->id, $value);
             }
 
@@ -97,10 +98,10 @@ class StringFilterType extends AbstractFilterType
             case "isnotnull":
                 $pattern = $alias . $col . ' IS NOT NULL AND ' . $alias . $col . " <> '' ";
                 break;
-            case "equals":
+            case "eq":
                 $pattern = $alias . $col . ' = :val_' . $id;
                 break;
-            case "notequals":
+            case "neq":
                 $pattern = $alias . $col . ' != :val_' . $id;
                 break;
             case "contains":

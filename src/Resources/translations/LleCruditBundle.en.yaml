@@ -1,146 +1,67 @@
-login:
-    title: "Admin"
-    username: "Username"
-    password: "Password"
-    remember_me: "Remember me"
-    submit: "Login"
-
-translator:
-    title: "Translations"
-    domain: "Domain"
-    switch: "Change"
-    save: "Save"
-    flash:
-        success: "%nbFiles% file has been saved|]1,+Inf]%nbFiles% files were saved successfully."
-
-exporter:
-    export: Export %format%
-
-generator:
-    image:
-        mime: "The allowed formats for the image are %mimes%."
-        ratio:
-            equal: "The ratio of the image must be equal to %equal%."
-            min: "The ratio of the image must be greater than %min%."
-            max: "The ratio of the image must be less than %max%."
-            interval: "The ratio of the image must be between %min% and %max%."
-    range:
-        interval: "The value must be between %min% and %max%."
-        equal: "The value must be equal to %value%."
-        min: "The value must be greater than %min%."
-        max: "The value must be less than %max%."
-    count:
-        interval: "The number of elements must be between %min% and %max%."
-        equal: "The number of elements must be equal to %value%."
-        min: "The number of items must be greater than or equal to %min%."
-        max: "The number of elements must be less than or equal to %max%."
-    bic:
-        help: "The value must be a valid Universal Bank Identification Code (BIC)."
-    iban:
-        help: "The value must be a valid International Bank Account Number (IBAN)."
-    isbn:
-        10: "The value must be a valid ISBN-10 (International Standard Book Number)."
-        13: "The value must be a valid ISBN-13 (International Standard Book Number)."
-        both: "The value must be a valid ISBN-10 or ISBN-13 (International Standard Book Number)."
-    email:
-        help: "The e-mail address must include an @ followed by a domain name (ex: john@free.fr)."
-    url:
-        help: "The value must be a valid url, with the correct protocol."
-        protocols: "The allowed protocols for the url are %protocols%."
-    length:
-        min: "The number of characters must be greater than %min%."
-        max: "The number of characters must not exceed %max%."
-        interval: "The number of characters must be between %min% and %max%."
-        equal: "The number of characters must be equal to %equal%."
-    luhn:
-        help: "You must enter a valid credit card number."
-    ip:
-        v4: "You must enter an IPv4 address."
-        v6: "You must enter an IPv6 address."
-        all: "You must enter an IP address (IPV4 or IPV6)."
-    issn:
-        help: "You must enter a valid International Standard Serial Number (ISSN)."
-    unique:
-        help: "The value must be unique."
-    equal_to:
-        help: "The value must be equal to %value%."
-    not_equal_to:
-        help: "The value must not be equal to %value%."
-    identical_to:
-        help: "The value must be identical to %value%."
-    not_identical_to:
-        help: "The value must not be identical to %value%."
-    less_than:
-        help: "The value must be less than %value%."
-    less_than_or_equal:
-        help: "The value must be less than or equal to %value%."
-    greater_than:
-        help: "The value must be greater than %value%."
-    greater_than_or_equal:
-        help: "The value must be greater than or equal to %value%."
-    decimal:
-        title: "The number must have at most %value% digits after the decimal point."
-    method:
-        title:
-          list: "List %entity%"
-          show: "Fiche %entity%"
-          new: "Add %entity%"
-          edit: "Edit %entity%"
-blame:
-    created_at: Created at
-    updated_at: Updated at
-    by: by
-tab:
-    main: Main
-history:
-    action:
-        update: updated by
-        delete: deleted by
-        create: created by
-Rechercher: Search
-Filtrer: Filter
-Effacer: Clear
-label.batchActions:
-    title: "Choose"
-    help: "Select items"
-batch:
-    execute: Execute
-label.batchthispage: "This page"
-action.batchselectall: "Select all"
-action.export.confirm.maxLines: "There are more than %max% lines that will be exported, do you want to continue ?"
-label.batchallselectactive: "All items are selected"
-action.batchselectpage: "Select current page"
-label.batchselectall: "Select all"
-batch_modal:
-    title: "Confirm this action ?"
-    action: "Execute"
-    content: "Number of items selected : "
-action.cancel: Cancel
-wf_modal:
-    title: "Confirm this action ?"
-    action: "Execute"
-    content: ""
-Plus de filtres: More filters
-Réinitialiser: Reset
-Actions massives: Batch actions
-Filtrer les résultats: Filter results
-form.url_auto_complet.placeholder: Choose a value
 crudit:
-    next: Next
-    last: Last
-    lastPage: Last Page
-    actions:
-        logout: "Log out"
+    title:
+        filter: "Filter items"
+
+    pagination:
+        first: "First"
+        previous: "Previous"
+        next: "Next"
+        last: "Last"
+        firstPage: "First page"
+        previousPage: "Previous page"
+        nextPage: "Next page"
+        lastPage: "Last page"
+        goToPage: "Go to page nb"
+        items: "Items"
+        to: "to"
+        of: "of"
+        noItem: "No items found"
+
+    action:
+        save: "Save"
+        cancel: "Cancel"
+        back: "Go back"
+        logout: "Logout"
+
+    message:
+        success: "Success"
+        error: "Error"
+
     modal:
         cancel: "Cancel"
-        validate: "Validate"
-        delete:
-            message: "Do you really wish to delete this element ? This action is irreversible."
-            delete: "Delete"
         export:
             message: "Choose your export format"
-            export: "Export"
-    createdAt: "Created at"
-    createdBy: "by"
-    updatedAt: "Updated at"
-    updatedBy: "by"
+            action: "Export"
+            notConfigured: "Export is not configured"
+        delete:
+            message: "Do you really wish to delete this element ? This action is irreversible."
+            action: "Delete"
+
+    field:
+        createdAt: "Created at"
+        createdBy: "Created by"
+        updatedAt: "Updated at"
+        updatedBy: "Updated by"
+
+    filter:
+        action: "Filter"
+        reset: "Reset"
+        operator:
+            contains: "Contains"
+            startswith: "Starts with"
+            endswith: "Ends with"
+            isnull: "Is empty"
+            isnotnull: "Is not empty"
+            eq: "Equal to"
+            neq: "Not equal to"
+            lt: "Lower than"
+            lte: "Lower than or equal to"
+            gt: "Greater than"
+            gte: "Greater than or equal to"
+            after: "After"
+            before: "Before"
+            interval: "Between"
+
+    yes: "Yes"
+    no: "No"
+    by: "by"

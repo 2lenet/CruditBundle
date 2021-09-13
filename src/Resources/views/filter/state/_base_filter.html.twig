@@ -5,7 +5,7 @@
         {% if data.op is defined %}
             {% set options = filter.operators[data.op]|default(null) %}
             {% if options %}
-                <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operators.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
+                <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operator.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
             {% endif %}
         {% endif %}
 
