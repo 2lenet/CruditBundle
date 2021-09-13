@@ -1,7 +1,7 @@
 {% extends '@LleCrudit/modal/_base_modal.html.twig' %}
 
 {% block header %}
-    {{ 'crudit.modal.export.message' | trans({}, 'LleCruditBundle') }}
+    {{ 'crudit.modal.export.message'|trans({}, 'LleCruditBundle') }}
 {% endblock %}
 {% block body %}
     <form
@@ -16,15 +16,15 @@
                 {% endfor %}
             </select>
         {% else %}
-            Export is not configured.
+            {{ 'crudit.modal.export.notConfigured'|trans({}, 'LleCruditBundle') }}
         {% endif %}
     </form>
 {% endblock %}
 {% block footer %}
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-        {{ 'crudit.modal.cancel' | trans({}, 'LleCruditBundle') }}
+        {{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}
     </button>
     <button type="submit" class="btn btn-primary" form="form_{{ id }}">
-        {{ 'crudit.modal.export.export' | trans({}, 'LleCruditBundle') }}
+        {{ 'crudit.modal.export.action'|trans({}, 'LleCruditBundle') }}
     </button>
 {% endblock %}

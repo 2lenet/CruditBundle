@@ -1,89 +1,67 @@
 crudit:
-    items: articles
-    no_items: keine article
-    next: Nexte
-    last: Last
-    lastPage: Last page
-    pager:
-        to: zu
-        on: von
-    action:
-        save: "Enregistrer"
-        cancel: "Annuler"
-        logout: "Se déconnecter"
     title:
-        filters: "Article Auswählen"
-    filter:
-        reset: "Löschen"
-        filter: "Auswählen"
-        operators:
-            contains: "Contient"
-            startswith: "Débute par"
-            endswith: "Termine par"
-            isnull: "Est vide"
-            isnotnull: "N'est pas vide"
-            eq: "Egal à"
-            equals: "Egal à"
-            neq: "Différent de"
-            not_equal: "Différent de"
-            lt: "Inférieur à"
-            lte: "Inférieur ou égal à"
-            gt: "Supérieur à"
-            gte: "Supérieur ou égal à"
+        filter: "Artikel Auswählen"
 
-        show_less: "Moins de filtres"
-        show_more: "Plus de filtres"
-        auto_complete:
-            placeholder: "Sélectionnez une valeur"
-        boolean:
-            yes: "Ja"
-            no: "Nein"
-            all: "Alle"
-        date:
-            on: "Le"
-            before: "Avant le"
-            after: "Après le"
-        date_time:
-            on: "Le"
-            before: "Avant le"
-            after: "Après le"
-        enumeration:
-            contains: "contient"
-            does_not_contain: "ne contient pas"
-        exact_string:
-            is_null: "Est vide"
-            equals: "Égal"
-        not_null:
-            all: "Tous"
-            filled: "Renseigné"
-            not_filled: "Non renseigné"
-        number:
-            is_equal: "Est égal à"
-            is_not_equal: "N'est pas égal à"
-            lesser_than: "Plus petit que"
-            greater_than: "Plus grand que"
-        string:
-            contains: "Contient"
-            starts_with: "Commence par"
-            ends_with: "Termine par"
-            is_empty: "Est vide"
-            is_not_empty: "Est non vide"
-        periode:
-            from: "du"
-            to: "au"
-    "true": "Ja"
-    "false": "Nein"
-    "all": "Alle"
+    pagination:
+        first: "Erste"
+        previous: "Vorherige"
+        next: "Nächste"
+        last: "Letzte"
+        firstPage: "Erste Seite"
+        previousPage: "Vorherige Seite"
+        nextPage: "Nächste Seite"
+        lastPage: "Letzte Seite"
+        goToPage: "Weiter zu Seite nb"
+        items: "Artikel"
+        to: "bis"
+        of: "von"
+        noItem: "Kein Artikel gefunden"
+
+    action:
+        save: "Speichern"
+        cancel: "Abbrechen"
+        back: "Zurück"
+        logout: "Abmelden"
+
+    message:
+        success: "Erfolg"
+        error: "Fehler"
+
     modal:
-        cancel: "Annuler"
-        validate: "Valider"
-        delete:
-            message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
-            delete: "Supprimer"
+        cancel: "Abbrechen"
         export:
-            message: "Choisissez un format d'export"
-            export: "Exporter"
-    createdAt: "erstellt am"
-    createdBy: "von"
-    updatedAt: "aktualisiert am"
-    updatedBy: "von"
+            message: "Wählen Sie ein Exportformat"
+            action: "Exportieren"
+            notConfigured: "Export ist nicht konfiguriert"
+        delete:
+            message: "Möchten Sie diesen Artikel wirklich löschen? Diese Aktion ist unwiderruflich."
+            action: "Löschen"
+
+    field:
+        createdAt: "Erstellt am"
+        createdBy: "Erstellt von"
+        updatedAt: "Aktualisiert am"
+        updatedBy: "Aktualisiert von"
+
+    filter:
+        action: "Auswählen"
+        reset: "Löschen"
+        operator:
+            contains: "Inhalt"
+            startswith: "Beginnt mit"
+            endswith: "Endet mit"
+            isnull: "Ist leer"
+            isnotnull: "Ist nicht leer"
+            eq: "Gleich zu"
+            neq: "Nicht gleich als"
+            lt: "Kleiner als"
+            lte: "Kleiner oder gleich als"
+            gt: "Grösser als"
+            gte: "Grösser oder gleich als"
+            after: "Bevor"
+            before: "Nach"
+            interval: "Zwischen"
+
+    yes: "Ja"
+    no: "Nein"
+    by: "von"

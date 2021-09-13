@@ -1,21 +1,21 @@
 {% set form = view.data.form %}
 <div class="card shadow mb-4">
     {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
-        <div class="card-body">
-            <div class="table-responsive">
-                {{ form_errors(form) }}
-                {% for field in form.getIterator() %}
-                    {{ form_row(field) }}
-                {% endfor %}
-            </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            {{ form_errors(form) }}
+            {% for field in form.getIterator() %}
+                {{ form_row(field) }}
+            {% endfor %}
         </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary">{{ 'crudit.action.save'|trans({},'LleCruditBundle') }}</button>
-            {% if view.data.cancel_path %}
-                <a href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}" class="btn btn-danger">
-                    {{ 'crudit.action.cancel'|trans({},'LleCruditBundle') }}
-                </a>
-            {% endif %}
-        </div>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
+        {% if view.data.cancel_path %}
+            <a href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}" class="btn btn-danger">
+                {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
+            </a>
+        {% endif %}
+    </div>
     {{ form_end(form) }}
 </div>
