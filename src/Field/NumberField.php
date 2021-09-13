@@ -11,7 +11,7 @@ class NumberField extends AbstractField
     
     public function support(string $type): bool
     {
-        return (in_array($type, ['integer', 'float', 'decimal', 'smallint', self::class]));
+        return (in_array($type, ['integer', 'float', 'decimal', 'smallint','bigint', self::class]));
     }
 
     public function getDefaultTemplate(): ?string
