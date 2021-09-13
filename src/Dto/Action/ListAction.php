@@ -150,4 +150,10 @@ class ListAction
     {
         return false;
     }
+
+    public function setResource(?object $resource): self
+    {
+        /** do nothing */
+        return $this;
+    }
 }
