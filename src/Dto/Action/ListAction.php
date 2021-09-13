@@ -140,4 +140,14 @@ class ListAction
     {
         return $this->batch;
     }
+
+    public function getTitle(): string
+    {
+        return $this->getLabel();
+    }
+
+    public function isDisabled(): bool
+    {
+        return false;
+    }
 }

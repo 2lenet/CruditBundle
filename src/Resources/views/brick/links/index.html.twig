@@ -3,7 +3,9 @@
     <div>
         {% for action in view.data.actions %}
             {% set params = action.path.params %}
-            {% do action.setResource(view.data.resource) %}
+            {% if view.data.resource %}
+                {% do action.setResource(view.data.resource) %}
+            {% endif %}
             {% set id = app.request.attributes.get('id') %}
             {% if id %}
                 {% set params = action.path.params|merge({id: id}) %}
