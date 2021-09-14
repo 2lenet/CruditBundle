@@ -62,6 +62,11 @@ crudit:
             before: "Before"
             interval: "Between"
 
+    boolean:
+        yes: "Yes"
+        no: "No"
+        all: "All"
+
     yes: "Yes"
     no: "No"
     by: "by"
