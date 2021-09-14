@@ -32,7 +32,8 @@
         "symfony/twig-bundle": "^5.2",
         "symfony/translation": "^5.2",
         "phpoffice/phpspreadsheet": "^1.18",
-        "symfony/workflow": "^5.2"
+        "symfony/workflow": "^5.2",
+        "gedmo/doctrine-extensions": "^3.1"
     },
     "require-dev": {
         "ergebnis/phpstan-rules": "^0.15.3",

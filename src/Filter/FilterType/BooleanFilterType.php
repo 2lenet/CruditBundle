@@ -2,7 +2,7 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
-use function Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * BooleanFilterType

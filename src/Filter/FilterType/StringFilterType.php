@@ -37,21 +37,20 @@ class StringFilterType extends AbstractFilterType
 
         $op = $this->data["op"];
 
-        // MAKE QUERY
-        $query = $this->getPattern($op, $this->id, $this->alias, $this->columnName);
-        /*foreach ($this->additionalProperties as $additionalCol) {
-            if (strpos($additionalCol, '.') !== false) {
-                $alias = '';
-            } else {
-                $alias = $this->alias;
+        // ADD JOIN IF NEEDED
+        $arr = explode(':',$this->id);
+        if (count($arr)>1) {
+            $id = $arr[1];
+            $alias = $arr[0].'.';
+            if (!in_array($arr[0],$queryBuilder->getAllAliases())) {
+                $queryBuilder->join($this->alias . $arr[0], $arr[0]);
             }
+        } else {
+            $id = $this->id;
+            $alias = $this->alias;
+        }
 
-            $pattern = $this->getPattern($op, $this->id, $alias, $additionalCol);
-
-            if ($pattern) {
-                $query .= " OR " . $pattern;
-            }
-        }*/
+        $query = $this->getPattern($op, $id, $alias, $id);
 
         if (in_array($op, ["isnull", "isnotnull"])) {
             $queryBuilder->andWhere($query);
@@ -65,17 +64,17 @@ class StringFilterType extends AbstractFilterType
             switch ($op) {
                 case 'contains':
                 case 'doesnotcontain':
-                    $queryBuilder->setParameter("val_" . $this->id, "%" . $value . "%");
+                    $queryBuilder->setParameter("val_" . $id, "%" . $value . "%");
                     break;
                 case 'startswith':
-                    $queryBuilder->setParameter("val_" . $this->id, $value . "%");
+                    $queryBuilder->setParameter("val_" . $id, $value . "%");
                     break;
                 case 'endswith':
-                    $queryBuilder->setParameter("val_" . $this->id, "%" . $value);
+                    $queryBuilder->setParameter("val_" . $id, "%" . $value);
                     break;
                 case 'eq':
                 case 'neq':
-                    $queryBuilder->setParameter("val_" . $this->id, $value);
+                    $queryBuilder->setParameter("val_" . $id, $value);
             }
 
             $queryBuilder->andWhere($query);

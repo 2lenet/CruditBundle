@@ -45,7 +45,6 @@ class GedmoTranslatableFieldManager
         }
     }
 
-    /* @var $translation AbstractPersonalTranslation */
     private function getTranslations($entity, $fieldName)
     {
         if(\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) && \is_callable(array($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET)))

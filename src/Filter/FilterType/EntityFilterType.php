@@ -41,8 +41,22 @@ class EntityFilterType extends AbstractFilterType
     {
         if (isset($this->data['value']) and $this->data['value'] != '') {
             $ids = explode(',', $this->data['value']);
-            $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
-            $queryBuilder->setParameter('var_' . $this->id, $ids);
+            // ADD JOIN IF NEEDED
+            $arr = explode(':',$this->id);
+            if (count($arr)>1) {
+                $id = $arr[1];
+                $alias = $arr[0].'.';
+                if (!in_array($arr[0],$queryBuilder->getAllAliases())) {
+                    $queryBuilder->join($this->alias . $arr[0], $arr[0]);
+                }
+            } else {
+                $id = $this->id;
+                $alias = $this->alias;
+            }
+
+            
+            $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $id, ':var_' . $id));
+            $queryBuilder->setParameter('var_' . $id, $ids);
         }
     }
 
