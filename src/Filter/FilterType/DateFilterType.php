@@ -27,20 +27,33 @@ class DateFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
+        // ADD JOIN IF NEEDED
+        $arr = explode(':',$this->id);
+        if (count($arr)>1) {
+            $id = $arr[1];
+            $alias = $arr[0].'.';
+            if (!in_array($arr[0],$queryBuilder->getAllAliases())) {
+                $queryBuilder->join($this->alias . $arr[0], $arr[0]);
+            }
+        } else {
+            $id = $this->id;
+            $alias = $this->alias;
+        }
+
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {
                 case 'eq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $this->columnName, ':var_' . $id));
                     break;
                 case 'before':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lt($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $this->columnName, ':var_' . $id));
                     break;
                 case 'after':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $this->columnName, ':var_' . $id));
                     break;
             }
 
-            $queryBuilder->setParameter('var_' . $this->id, $this->data["value"] . '%');
+            $queryBuilder->setParameter('var_' . $id, $this->data["value"] . '%');
         }
     }
 }
