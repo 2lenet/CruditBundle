@@ -63,6 +63,10 @@ crudit:
             after: "Après"
             before: "Avant"
             interval: "Compris entre"
+        boolean:
+            yes: "Oui"
+            no: "Non"
+            all: "Tous"
 
     yes: "Oui"
     no: "Non"
