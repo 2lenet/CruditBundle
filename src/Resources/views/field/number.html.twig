@@ -21,6 +21,8 @@
     </div>
 {% else %}
     <div class="text-end me-3">
-    {{ value|number_format(options.decimals, options.decimal_separator, options.thousands_separator) }}
+    {%  if value %}
+        {{ value|number_format(options.decimals, options.decimal_separator, options.thousands_separator) }}
+    {% endif %}
     </div>
 {% endif %}
