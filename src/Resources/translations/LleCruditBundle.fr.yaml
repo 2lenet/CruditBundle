@@ -53,9 +53,7 @@ crudit:
             isnull: "Est vide"
             isnotnull: "N'est pas vide"
             eq: "Égal à"
-            #            equals: "Egal à"
             neq: "Différent de"
-            #            not_equal: "Différent de"
             lt: "Inférieur à"
             lte: "Inférieur ou égal à"
             gt: "Supérieur à"
@@ -63,10 +61,11 @@ crudit:
             after: "Après"
             before: "Avant"
             interval: "Compris entre"
-        boolean:
-            yes: "Oui"
-            no: "Non"
-            all: "Tous"
+
+    boolean:
+        yes: "Oui"
+        no: "Non"
+        all: "Tous"
 
     yes: "Oui"
     no: "Non"

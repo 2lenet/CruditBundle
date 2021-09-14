@@ -61,10 +61,11 @@ crudit:
             after: "Prima"
             before: "Dopo"
             interval: "Tra"
-        boolean:
-            yes: "Sì"
-            no: "No"
-            all: "Tutti"
+
+    boolean:
+        yes: "Sì"
+        no: "No"
+        all: "Tutti"
 
     yes: "Sì"
     no: "No"
