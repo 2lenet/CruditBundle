@@ -7,7 +7,7 @@
                 id="input_{{ id }}_value"
                 {% if data.value is defined %}value="{{ data.value }}"{% endif %} />
         <label for="input_{{ id }}_value">
-            {{ filter.filterLabel|trans() }}
+            {{ filter.label|trans() }}
         </label>
     </div>
 {% endblock %}
