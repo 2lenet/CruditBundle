@@ -42,6 +42,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             $this->searchFields[] = "name";
         }
 
+        if (property_exists( $entityClass , 'label')) {
+            $this->searchFields[] = "label";
+        }
+
         if (property_exists( $entityClass , 'nom')) {
             $this->searchFields[] = "nom";
         }
@@ -109,7 +113,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             );
         }
         $qb->andWhere($orStatements);
-
         return intval($qb->getQuery()->getSingleScalarResult());
     }
 
