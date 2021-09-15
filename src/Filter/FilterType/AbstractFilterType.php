@@ -174,7 +174,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
             $id = $this->id;
             $alias = $this->alias;
         }
-        $paramname = $alias . $id;
+        $paramname = str_replace('.','_', $alias . $id);
         return array($id, $alias, $paramname);
     }
 }

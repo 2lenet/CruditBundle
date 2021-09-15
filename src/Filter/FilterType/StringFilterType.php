@@ -40,7 +40,7 @@ class StringFilterType extends AbstractFilterType
         // ADD JOIN IF NEEDED
         list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
-        $query = $this->getPattern($op, $id, $alias, $id);
+        $query = $this->getPattern($op, $id, $alias, $id, $paramname);
 
         if (in_array($op, ["isnull", "isnotnull"])) {
             $queryBuilder->andWhere($query);
@@ -77,7 +77,7 @@ class StringFilterType extends AbstractFilterType
      * @param string parameter the query parameter to set
      * @return string
      */
-    private function getPattern($op, $id, $alias, $col)
+    private function getPattern($op, $id, $alias, $col, $paramname)
     {
         $pattern = null;
         switch ($op) {
@@ -88,18 +88,18 @@ class StringFilterType extends AbstractFilterType
                 $pattern = $alias . $col . ' IS NOT NULL AND ' . $alias . $col . " <> '' ";
                 break;
             case "eq":
-                $pattern = $alias . $col . ' = :val_' . $id;
+                $pattern = $alias . $col . ' = :' . $paramname;
                 break;
             case "neq":
-                $pattern = $alias . $col . ' != :val_' . $id;
+                $pattern = $alias . $col . ' != :' . $paramname;
                 break;
             case "contains":
             case "endswith":
             case "startswith":
-                $pattern = $alias . $col . ' LIKE :val_' . $id;
+                $pattern = $alias . $col . ' LIKE :' . $paramname;
                 break;
             case "doesnotcontain":
-                $pattern = $alias . $col . ' NOT LIKE :val_' . $id;
+                $pattern = $alias . $col . ' NOT LIKE :' . $paramname;
         }
 
         return $pattern ? "(" . $pattern . ")" : null;
