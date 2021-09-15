@@ -22,8 +22,8 @@ class PeriodeFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "isnull" => ["icon" => "far fa-square"],
-            "interval" => ["icon" => "fas fa-arrows-alt-h"]
+            "interval" => ["icon" => "fas fa-arrows-alt-h"],
+            "isnull" => ["icon" => "far fa-square"]
         ];
     }
 
@@ -34,10 +34,10 @@ class PeriodeFilterType extends AbstractFilterType
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {
                 case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias .$id));
                     break;
                 case 'interval':
-                    $queryBuilder->andWhere($alias . $this->columnName . ' >= :min_' . $paramname);
+                    $queryBuilder->andWhere($alias .$id . ' >= :min_' . $paramname);
                     $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
                     break;
             }
@@ -46,10 +46,10 @@ class PeriodeFilterType extends AbstractFilterType
         if (isset($this->data['to']) && $this->data['to']) {
             switch ($this->data['op']) {
                 case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias .$id));
                     break;
                 case 'interval':
-                    $queryBuilder->andWhere($alias . $this->columnName . ' <= :max_' . $paramname);
+                    $queryBuilder->andWhere($alias .$id . ' <= :max_' . $paramname);
                     $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
                     break;
             }
