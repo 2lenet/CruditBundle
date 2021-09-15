@@ -84,17 +84,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->id;
     }
 
-    /*public function addJoin($queryBuilder)
-    {
-        $queryHelper = new QueryHelper();
-        [
-            $alias,
-            $col
-        ] = $queryHelper->getPath($queryBuilder, $queryBuilder->getRootAlias(), $this->columnName);
-        $this->alias = $alias;
-        $this->columnName = $col;
-    }*/
-
     /**
      * Returns empty string if no alias, otherwise make sure the alias has just one '.' after it.
      *

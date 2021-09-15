@@ -2,10 +2,10 @@
 
 {% block input %}
     <div class="form-floating">
-        <input type="hidden" id="input_{{ id }}_items" name="{{ id }}_items" />
-        <input id="input_{{ id }}"
+        <input type="hidden" id="input_{{ id|replace({':': "_"}) }}_items" name="{{ id|replace({':': "_"}) }}_items" />
+        <input id="input_{{ id|replace({':': "_"}) }}"
                 class="form-control entity-select"
-                name="{{ id }}_value"
+                name="{{ id|replace({':': "_"}) }}_value"
                 value="{{ data['value']|default('') }}"
                 placeholder=""
                 data-url="{{ path(filter.dataRoute) }}?q="
