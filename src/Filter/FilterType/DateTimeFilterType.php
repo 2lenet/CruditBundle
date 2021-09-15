@@ -30,6 +30,8 @@ class DateTimeFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
+        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
 
             $datetime = $this->data["value"] . " ";
@@ -41,17 +43,17 @@ class DateTimeFilterType extends AbstractFilterType
 
             switch ($this->data['op']) {
                 case 'eq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'before':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lt($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'after':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $this->columnName, ':'.$paramname));
                     break;
             }
 
-            $queryBuilder->setParameter('var_' . $this->id, $datetime);
+            $queryBuilder->setParameter($paramname, $datetime);
         }
     }
 }

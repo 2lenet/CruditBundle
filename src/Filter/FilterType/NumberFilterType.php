@@ -32,38 +32,40 @@ class NumberFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
+        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+
         if (isset($this->data["op"]) && in_array($this->data["op"], ["isnull", "isnotnull"])) {
             switch ($this->data['op']) {
                 case 'isnotnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($alias . $this->columnName));
                     break;
                 case 'isnull':
                 default:
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $this->columnName));
             }
         } else if (isset($this->data['value']) && $this->data['value']) {
             switch ($this->data['op']) {
                 case 'neq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->neq($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->neq($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'lt':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lt($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'lte':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lte($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lte($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'gt':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'gte':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gte($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gte($alias . $this->columnName, ':'.$paramname));
                     break;
                 case 'eq':
                 default:
-                    $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $this->columnName, ':'.$paramname));
             }
 
-            $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
+            $queryBuilder->setParameter($paramname, $this->data['value']);
         }
     }
 }

@@ -26,28 +26,30 @@ class BooleanFilterType extends AbstractFilterType
 
     public function apply($queryBuilder): void
     {
+        list($id, $alias, $params) = $this->getQueryParams($queryBuilder);
+
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             if ($this->data['op'] == 'eq' && $this->data['value'] !== 'all') {
                 switch ($this->data['value']) {
                     case 'true':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'true'));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'true'));
                         break;
                     case 'false':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'))
-                            ->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'false'))
+                            ->andWhere($queryBuilder->expr()->isNotNull($alias.$id));
                         break;
                 }
             } elseif ($this->data['op'] == 'neq') {
                 switch ($this->data['value']) {
                     case 'true':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'false'))
-                            ->andWhere($queryBuilder->expr()->isNotNull($this->alias . $this->columnName));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'false'))
+                            ->andWhere($queryBuilder->expr()->isNotNull($alias.$id));
                         break;
                     case 'false':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, 'true'));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'true'));
                         break;
                     case 'all':
-                        $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
+                        $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias.$id));
                         break;
                 }
             }

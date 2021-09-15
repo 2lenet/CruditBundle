@@ -55,13 +55,15 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
+        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+
         if (isset($this->data['value']) && $this->data['value']) {
             if ($this->getMultiple()) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($this->alias . $this->columnName, ':var_' . $this->id));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($alias.$id, ':'.$paramname));
             } else {
-                $queryBuilder->andWhere($queryBuilder->expr()->eq($this->alias . $this->columnName, ':var_' . $this->id));
+                $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, ':'.$paramname));
             }
-            $queryBuilder->setParameter('var_' . $this->id, $this->data['value']);
+            $queryBuilder->setParameter($paramname, $this->data['value']);
         }
     }
 

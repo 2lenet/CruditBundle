@@ -38,17 +38,7 @@ class StringFilterType extends AbstractFilterType
         $op = $this->data["op"];
 
         // ADD JOIN IF NEEDED
-        $arr = explode(':',$this->id);
-        if (count($arr)>1) {
-            $id = $arr[1];
-            $alias = $arr[0].'.';
-            if (!in_array($arr[0],$queryBuilder->getAllAliases())) {
-                $queryBuilder->join($this->alias . $arr[0], $arr[0]);
-            }
-        } else {
-            $id = $this->id;
-            $alias = $this->alias;
-        }
+        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
         $query = $this->getPattern($op, $id, $alias, $id);
 
@@ -64,17 +54,17 @@ class StringFilterType extends AbstractFilterType
             switch ($op) {
                 case 'contains':
                 case 'doesnotcontain':
-                    $queryBuilder->setParameter("val_" . $id, "%" . $value . "%");
+                    $queryBuilder->setParameter($paramname, "%" . $value . "%");
                     break;
                 case 'startswith':
-                    $queryBuilder->setParameter("val_" . $id, $value . "%");
+                    $queryBuilder->setParameter($paramname, $value . "%");
                     break;
                 case 'endswith':
-                    $queryBuilder->setParameter("val_" . $id, "%" . $value);
+                    $queryBuilder->setParameter($paramname, "%" . $value);
                     break;
                 case 'eq':
                 case 'neq':
-                    $queryBuilder->setParameter("val_" . $id, $value);
+                    $queryBuilder->setParameter($paramname, $value);
             }
 
             $queryBuilder->andWhere($query);
@@ -114,4 +104,6 @@ class StringFilterType extends AbstractFilterType
 
         return $pattern ? "(" . $pattern . ")" : null;
     }
+
+
 }

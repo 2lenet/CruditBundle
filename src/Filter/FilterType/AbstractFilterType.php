@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
@@ -154,5 +155,26 @@ abstract class AbstractFilterType implements FilterTypeInterface
         ));
 
         return "@LleCrudit/filter/type/{$name}_filter.html.twig";
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return array
+     */
+    protected function getQueryParams(QueryBuilder $queryBuilder): array
+    {
+        $arr = explode(':', $this->id);
+        if (count($arr) > 1) {
+            $id = $arr[1];
+            $alias = $arr[0] . '.';
+            if (!in_array($arr[0], $queryBuilder->getAllAliases())) {
+                $queryBuilder->join($this->alias . $arr[0], $arr[0]);
+            }
+        } else {
+            $id = $this->id;
+            $alias = $this->alias;
+        }
+        $paramname = $alias . $id;
+        return array($id, $alias, $paramname);
     }
 }
