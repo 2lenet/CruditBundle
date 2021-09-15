@@ -5,7 +5,7 @@
         <div class="table-responsive">
             {{ form_errors(form) }}
             {% for field in form.getIterator() %}
-                {{ form_row(field, {'attr': {'autocomplete': 'no'}}) }}
+                {{ form_row(field, {'attr': {'autocomplete': 'new-password'}}) }}
             {% endfor %}
         </div>
     </div>
