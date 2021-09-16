@@ -1,6 +1,6 @@
 {% block side_header %}{% endblock %}
 {% for element in crudit_menu_items('menu_side') %}
-       {% if is_granted(element.role) %}
+    {% if is_granted(element.role) %}
         {% include element.template with {'element': element, 'where': 'menu-nav'} %}
     {% endif %}
 
