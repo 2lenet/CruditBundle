@@ -1,11 +1,11 @@
 {% set form = view.data.form %}
 <div class="card shadow mb-4">
-    {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+    {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
     <div class="card-body">
         <div class="table-responsive">
             {{ form_errors(form) }}
             {% for field in form.getIterator() %}
-                {{ form_row(field) }}
+                {{ form_row(field, {'attr': {'autocomplete': 'new-password'}}) }}
             {% endfor %}
         </div>
     </div>
