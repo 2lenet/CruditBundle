@@ -5,7 +5,16 @@
         <div class="table-responsive">
             {{ form_errors(form) }}
             {% for field in form.getIterator() %}
-                {{ form_row(field, {'attr': {'autocomplete': 'new-password'}}) }}
+                {% if field.vars.name != '_token' %}
+                    <div class="form-floating mb-4">
+                        {{ form_widget(field, {'attr': {'class': 'form-control', 'placeholder': '', 'autocomplete': 'new-password'}}) }}
+                        {{ form_label(field) }}
+                        <div class="px-2">
+                            {{ form_help(field) }}
+                            {{ form_errors(field) }}
+                        </div>
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
