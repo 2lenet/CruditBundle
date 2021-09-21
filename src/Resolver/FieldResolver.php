@@ -34,6 +34,7 @@ class FieldResolver
             $cascade = explode('.', $field->getName());
             foreach ($cascade as $k => $name) {
                 $value = $this->propertyAccessor->getValue($subResource, $name);
+                if ($value === null) break;
                 if (\count($cascade) - 1 !== $k) {
                     $subResource = $value;
                 }
