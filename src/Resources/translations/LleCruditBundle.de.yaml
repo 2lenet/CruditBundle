@@ -29,6 +29,7 @@ crudit:
 
     modal:
         cancel: "Abbrechen"
+        validate: "Validieren"
         export:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"

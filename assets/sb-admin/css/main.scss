@@ -1,8 +1,11 @@
+@import 'settings/responsive';
 @import 'settings/colors';
 @import 'settings/fonts';
 @import 'settings/borders';
 @import 'settings/sizing';
 @import 'settings/forms';
+
+@import 'tools/responsive';
 
 @import '~bootstrap/scss/bootstrap';
 
