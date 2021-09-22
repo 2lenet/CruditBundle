@@ -111,6 +111,7 @@ Some help to check the input validity ( upper, email, ip, etc... )
 
 ## Recipe
 
+- [Create crud](doc/crud.md)
 - [Submenu](doc/submenu.md)
 - [Filters](doc/filter.md)
 - [Sublist](doc/sublist.md)
