@@ -56,6 +56,7 @@ class ExcelExporter implements ExporterInterface
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
 
                 // TODO: fix field blank spaces to remove trim
+                $string = str_replace(["&#039;", "&#39;", "&#x27;"], "'", $field->getValue());
                 $sheet->setCellValue($cell, trim((string)$field->getValue()));
             }
 

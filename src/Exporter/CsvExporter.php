@@ -52,6 +52,7 @@ class CsvExporter implements ExporterInterface
 
             /** @var FieldView $field */
             foreach ($resource->getFields() as $field) {
+                $string = str_replace(["&#039;", "&#39;", "&#x27;"], "'", $field->getValue());
                 $line[] = trim((string)$field->getValue());
             }
 
