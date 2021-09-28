@@ -8,6 +8,7 @@ use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -56,7 +57,7 @@ class ExcelExporter implements ExporterInterface
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
 
                 // TODO: fix field blank spaces to remove trim
-                $sheet->setCellValue($cell, trim((string)$field->getValue()));
+                $sheet->setCellValueExplicit($cell, trim((string)$field->getValue()), $this->getType($field));
             }
 
             $row++;
@@ -90,6 +91,26 @@ class ExcelExporter implements ExporterInterface
         /** @var FieldView $field */
         foreach ($fields as $field) {
             $result[] = $this->translator->trans($field->getField()->getLabel());
+        }
+
+        return $result;
+    }
+
+    protected function getType(FieldView $field)
+    {
+        switch ($field->getField()->getType()) {
+            case "bigint":
+            case "smallint":
+            case "float":
+            case "integer":
+            case "decimal":
+                $result = DataType::TYPE_NUMERIC;
+                break;
+            case "boolean":
+                $result = DataType::TYPE_BOOL;
+                break;
+            default:
+                $result = DataType::TYPE_STRING;
         }
 
         return $result;
