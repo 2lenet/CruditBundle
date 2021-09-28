@@ -4,7 +4,6 @@
 namespace Lle\CruditBundle\Exporter;
 
 
-use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -16,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ExcelExporter implements ExporterInterface
+class ExcelExporter extends AbstractExporter
 {
     protected TranslatorInterface $translator;
 
@@ -57,7 +56,7 @@ class ExcelExporter implements ExporterInterface
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
 
                 // TODO: fix field blank spaces to remove trim
-                $sheet->setCellValueExplicit($cell, trim((string)$field->getValue()), $this->getType($field));
+                $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
             }
 
             $row++;
@@ -68,7 +67,7 @@ class ExcelExporter implements ExporterInterface
         }
 
         $writer = new Xls($spreadsheet);
-        $response = new StreamedResponse(function() use ($writer) {
+        $response = new StreamedResponse(function () use ($writer) {
             $writer->save("php://output");
         });
 

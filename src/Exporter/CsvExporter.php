@@ -4,7 +4,6 @@
 namespace Lle\CruditBundle\Exporter;
 
 
-use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Exception\ExporterException;
@@ -14,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class CsvExporter implements ExporterInterface
+class CsvExporter extends AbstractExporter
 {
     protected TranslatorInterface $translator;
 
@@ -52,7 +51,7 @@ class CsvExporter implements ExporterInterface
 
             /** @var FieldView $field */
             foreach ($resource->getFields() as $field) {
-                $line[] = trim((string)$field->getValue());
+                $line[] = $this->getValue($field);
             }
 
             fputcsv($file, $line, $params->getSeparator());
