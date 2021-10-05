@@ -21,15 +21,13 @@
         <div id="collapse-filter" class="collapse show card-body">
             <div class="row">
                 {% for id, filter in view.data.filters %}
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 {% if filter.hidden %}d-none{% endif %}">
-                        <div class="form-group">
-                            {% set vars = {
-                                'data': filter.data,
-                                'id': 'filter_'~ id,
-                                'filtertype': filter}
-                            %}
-                            {% include filter.template with vars %}
-                        </div>
+                    <div class="col-xl-3 col-lg-6 col-xs-12 form-group {% if filter.hidden %}d-none{% endif %}">
+                        {% set vars = {
+                            'data': filter.data,
+                            'id': 'filter_'~ id,
+                            'filtertype': filter}
+                        %}
+                        {% include filter.template with vars %}
                     </div>
                 {% endfor %}
             </div>
