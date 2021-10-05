@@ -5,6 +5,7 @@ import "./editinplace";
 import "./batch_actions";
 import "./input_format";
 import './filters';
+import './form';
 
 window.addEventListener('load', function () {
 
