@@ -12,7 +12,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "popperGenerator": () => (/* binding */ popperGenerator),
 /* harmony export */   "createPopper": () => (/* binding */ createPopper),
-/* harmony export */   "detectOverflow": () => (/* reexport safe */ _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_13__.default)
+/* harmony export */   "detectOverflow": () => (/* reexport safe */ _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_13__["default"])
 /* harmony export */ });
 /* harmony import */ var _dom_utils_getCompositeRect_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./dom-utils/getCompositeRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js");
 /* harmony import */ var _dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./dom-utils/getLayoutRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js");
@@ -91,16 +91,17 @@ function popperGenerator(generatorOptions) {
     var isDestroyed = false;
     var instance = {
       state: state,
-      setOptions: function setOptions(options) {
+      setOptions: function setOptions(setOptionsAction) {
+        var options = typeof setOptionsAction === 'function' ? setOptionsAction(state.options) : setOptionsAction;
         cleanupModifierEffects();
         state.options = Object.assign({}, defaultOptions, state.options, options);
         state.scrollParents = {
-          reference: (0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isElement)(reference) ? (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_1__.default)(reference) : reference.contextElement ? (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_1__.default)(reference.contextElement) : [],
-          popper: (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_1__.default)(popper)
+          reference: (0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isElement)(reference) ? (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_1__["default"])(reference) : reference.contextElement ? (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_1__["default"])(reference.contextElement) : [],
+          popper: (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_1__["default"])(popper)
         }; // Orders the modifiers based on their dependencies and `phase`
         // properties
 
-        var orderedModifiers = (0,_utils_orderModifiers_js__WEBPACK_IMPORTED_MODULE_2__.default)((0,_utils_mergeByName_js__WEBPACK_IMPORTED_MODULE_3__.default)([].concat(defaultModifiers, state.options.modifiers))); // Strip out disabled modifiers
+        var orderedModifiers = (0,_utils_orderModifiers_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_utils_mergeByName_js__WEBPACK_IMPORTED_MODULE_3__["default"])([].concat(defaultModifiers, state.options.modifiers))); // Strip out disabled modifiers
 
         state.orderedModifiers = orderedModifiers.filter(function (m) {
           return m.enabled;
@@ -108,13 +109,13 @@ function popperGenerator(generatorOptions) {
         // if one of the modifiers is invalid for any reason
 
         if (true) {
-          var modifiers = (0,_utils_uniqueBy_js__WEBPACK_IMPORTED_MODULE_4__.default)([].concat(orderedModifiers, state.options.modifiers), function (_ref) {
+          var modifiers = (0,_utils_uniqueBy_js__WEBPACK_IMPORTED_MODULE_4__["default"])([].concat(orderedModifiers, state.options.modifiers), function (_ref) {
             var name = _ref.name;
             return name;
           });
-          (0,_utils_validateModifiers_js__WEBPACK_IMPORTED_MODULE_5__.default)(modifiers);
+          (0,_utils_validateModifiers_js__WEBPACK_IMPORTED_MODULE_5__["default"])(modifiers);
 
-          if ((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_6__.default)(state.options.placement) === _enums_js__WEBPACK_IMPORTED_MODULE_7__.auto) {
+          if ((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_6__["default"])(state.options.placement) === _enums_js__WEBPACK_IMPORTED_MODULE_7__.auto) {
             var flipModifier = state.orderedModifiers.find(function (_ref2) {
               var name = _ref2.name;
               return name === 'flip';
@@ -125,7 +126,7 @@ function popperGenerator(generatorOptions) {
             }
           }
 
-          var _getComputedStyle = (0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_8__.default)(popper),
+          var _getComputedStyle = (0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_8__["default"])(popper),
               marginTop = _getComputedStyle.marginTop,
               marginRight = _getComputedStyle.marginRight,
               marginBottom = _getComputedStyle.marginBottom,
@@ -168,8 +169,8 @@ function popperGenerator(generatorOptions) {
 
 
         state.rects = {
-          reference: (0,_dom_utils_getCompositeRect_js__WEBPACK_IMPORTED_MODULE_9__.default)(reference, (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_10__.default)(popper), state.options.strategy === 'fixed'),
-          popper: (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_11__.default)(popper)
+          reference: (0,_dom_utils_getCompositeRect_js__WEBPACK_IMPORTED_MODULE_9__["default"])(reference, (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_10__["default"])(popper), state.options.strategy === 'fixed'),
+          popper: (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_11__["default"])(popper)
         }; // Modifiers have the ability to reset the current update cycle. The
         // most common use case for this is the `flip` modifier changing the
         // placement, which then needs to re-run all the modifiers, because the
@@ -221,7 +222,7 @@ function popperGenerator(generatorOptions) {
       },
       // Async and optimistically optimized update – it will not be executed if
       // not necessary (debounced to run at most once-per-tick)
-      update: (0,_utils_debounce_js__WEBPACK_IMPORTED_MODULE_12__.default)(function () {
+      update: (0,_utils_debounce_js__WEBPACK_IMPORTED_MODULE_12__["default"])(function () {
         return new Promise(function (resolve) {
           instance.forceUpdate();
           resolve(state);
@@ -338,17 +339,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ getBoundingClientRect)
 /* harmony export */ });
-function getBoundingClientRect(element) {
+// import { isHTMLElement } from './instanceOf';
+function getBoundingClientRect(element, // eslint-disable-next-line unused-imports/no-unused-vars
+includeScale) {
+  if (includeScale === void 0) {
+    includeScale = false;
+  }
+
   var rect = element.getBoundingClientRect();
+  var scaleX = 1;
+  var scaleY = 1; // FIXME:
+  // `offsetWidth` returns an integer while `getBoundingClientRect`
+  // returns a float. This results in `scaleX` or `scaleY` being
+  // non-1 when it should be for elements that aren't a full pixel in
+  // width or height.
+  // if (isHTMLElement(element) && includeScale) {
+  //   const offsetHeight = element.offsetHeight;
+  //   const offsetWidth = element.offsetWidth;
+  //   // Do not attempt to divide by 0, otherwise we get `Infinity` as scale
+  //   // Fallback to 1 in case both values are `0`
+  //   if (offsetWidth > 0) {
+  //     scaleX = rect.width / offsetWidth || 1;
+  //   }
+  //   if (offsetHeight > 0) {
+  //     scaleY = rect.height / offsetHeight || 1;
+  //   }
+  // }
+
   return {
-    width: rect.width,
-    height: rect.height,
-    top: rect.top,
-    right: rect.right,
-    bottom: rect.bottom,
-    left: rect.left,
-    x: rect.left,
-    y: rect.top
+    width: rect.width / scaleX,
+    height: rect.height / scaleY,
+    top: rect.top / scaleY,
+    right: rect.right / scaleX,
+    bottom: rect.bottom / scaleY,
+    left: rect.left / scaleX,
+    x: rect.left / scaleX,
+    y: rect.top / scaleY
   };
 }
 
@@ -395,7 +421,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function getInnerBoundingClientRect(element) {
-  var rect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__.default)(element);
+  var rect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
   rect.top = rect.top + element.clientTop;
   rect.left = rect.left + element.clientLeft;
   rect.bottom = rect.top + element.clientHeight;
@@ -408,16 +434,16 @@ function getInnerBoundingClientRect(element) {
 }
 
 function getClientRectFromMixedType(element, clippingParent) {
-  return clippingParent === _enums_js__WEBPACK_IMPORTED_MODULE_1__.viewport ? (0,_utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_2__.default)((0,_getViewportRect_js__WEBPACK_IMPORTED_MODULE_3__.default)(element)) : (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isHTMLElement)(clippingParent) ? getInnerBoundingClientRect(clippingParent) : (0,_utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_2__.default)((0,_getDocumentRect_js__WEBPACK_IMPORTED_MODULE_5__.default)((0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_6__.default)(element)));
+  return clippingParent === _enums_js__WEBPACK_IMPORTED_MODULE_1__.viewport ? (0,_utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_getViewportRect_js__WEBPACK_IMPORTED_MODULE_3__["default"])(element)) : (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isHTMLElement)(clippingParent) ? getInnerBoundingClientRect(clippingParent) : (0,_utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_getDocumentRect_js__WEBPACK_IMPORTED_MODULE_5__["default"])((0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_6__["default"])(element)));
 } // A "clipping parent" is an overflowable container with the characteristic of
 // clipping (or hiding) overflowing elements with a position different from
 // `initial`
 
 
 function getClippingParents(element) {
-  var clippingParents = (0,_listScrollParents_js__WEBPACK_IMPORTED_MODULE_7__.default)((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_8__.default)(element));
-  var canEscapeClipping = ['absolute', 'fixed'].indexOf((0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_9__.default)(element).position) >= 0;
-  var clipperElement = canEscapeClipping && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isHTMLElement)(element) ? (0,_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_10__.default)(element) : element;
+  var clippingParents = (0,_listScrollParents_js__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_8__["default"])(element));
+  var canEscapeClipping = ['absolute', 'fixed'].indexOf((0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_9__["default"])(element).position) >= 0;
+  var clipperElement = canEscapeClipping && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isHTMLElement)(element) ? (0,_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_10__["default"])(element) : element;
 
   if (!(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isElement)(clipperElement)) {
     return [];
@@ -425,7 +451,7 @@ function getClippingParents(element) {
 
 
   return clippingParents.filter(function (clippingParent) {
-    return (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isElement)(clippingParent) && (0,_contains_js__WEBPACK_IMPORTED_MODULE_11__.default)(clippingParent, clipperElement) && (0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_12__.default)(clippingParent) !== 'body';
+    return (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isElement)(clippingParent) && (0,_contains_js__WEBPACK_IMPORTED_MODULE_11__["default"])(clippingParent, clipperElement) && (0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_12__["default"])(clippingParent) !== 'body';
   });
 } // Gets the maximum area that the element is visible in due to any number of
 // clipping parents
@@ -463,12 +489,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ getCompositeRect)
 /* harmony export */ });
-/* harmony import */ var _getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
+/* harmony import */ var _getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
 /* harmony import */ var _getNodeScroll_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getNodeScroll.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js");
 /* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
-/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
 /* harmony import */ var _getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getWindowScrollBarX.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js");
-/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
 /* harmony import */ var _isScrollParent_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./isScrollParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js");
 
 
@@ -476,17 +502,26 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // Returns the composite rect of an element relative to its offsetParent.
+
+
+function isElementScaled(element) {
+  var rect = element.getBoundingClientRect();
+  var scaleX = rect.width / element.offsetWidth || 1;
+  var scaleY = rect.height / element.offsetHeight || 1;
+  return scaleX !== 1 || scaleY !== 1;
+} // Returns the composite rect of an element relative to its offsetParent.
 // Composite means it takes into account transforms as well as layout.
+
 
 function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
   if (isFixed === void 0) {
     isFixed = false;
   }
 
-  var documentElement = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_0__.default)(offsetParent);
-  var rect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_1__.default)(elementOrVirtualElement);
-  var isOffsetParentAnElement = (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_2__.isHTMLElement)(offsetParent);
+  var isOffsetParentAnElement = (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(offsetParent);
+  var offsetParentIsScaled = (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(offsetParent) && isElementScaled(offsetParent);
+  var documentElement = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(offsetParent);
+  var rect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_2__["default"])(elementOrVirtualElement, offsetParentIsScaled);
   var scroll = {
     scrollLeft: 0,
     scrollTop: 0
@@ -497,17 +532,17 @@ function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
   };
 
   if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
-    if ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__.default)(offsetParent) !== 'body' || // https://github.com/popperjs/popper-core/issues/1078
-    (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_4__.default)(documentElement)) {
-      scroll = (0,_getNodeScroll_js__WEBPACK_IMPORTED_MODULE_5__.default)(offsetParent);
+    if ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__["default"])(offsetParent) !== 'body' || // https://github.com/popperjs/popper-core/issues/1078
+    (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_4__["default"])(documentElement)) {
+      scroll = (0,_getNodeScroll_js__WEBPACK_IMPORTED_MODULE_5__["default"])(offsetParent);
     }
 
-    if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_2__.isHTMLElement)(offsetParent)) {
-      offsets = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_1__.default)(offsetParent);
+    if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(offsetParent)) {
+      offsets = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_2__["default"])(offsetParent, true);
       offsets.x += offsetParent.clientLeft;
       offsets.y += offsetParent.clientTop;
     } else if (documentElement) {
-      offsets.x = (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_6__.default)(documentElement);
+      offsets.x = (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_6__["default"])(documentElement);
     }
   }
 
@@ -535,7 +570,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
 
 function getComputedStyle(element) {
-  return (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(element).getComputedStyle(element);
+  return (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element).getComputedStyle(element);
 }
 
 /***/ }),
@@ -587,15 +622,15 @@ __webpack_require__.r(__webpack_exports__);
 function getDocumentRect(element) {
   var _element$ownerDocumen;
 
-  var html = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_0__.default)(element);
-  var winScroll = (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_1__.default)(element);
+  var html = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
+  var winScroll = (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element);
   var body = (_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body;
   var width = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_2__.max)(html.scrollWidth, html.clientWidth, body ? body.scrollWidth : 0, body ? body.clientWidth : 0);
   var height = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_2__.max)(html.scrollHeight, html.clientHeight, body ? body.scrollHeight : 0, body ? body.clientHeight : 0);
-  var x = -winScroll.scrollLeft + (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_3__.default)(element);
+  var x = -winScroll.scrollLeft + (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_3__["default"])(element);
   var y = -winScroll.scrollTop;
 
-  if ((0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_4__.default)(body || html).direction === 'rtl') {
+  if ((0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body || html).direction === 'rtl') {
     x += (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_2__.max)(html.clientWidth, body ? body.clientWidth : 0) - width;
   }
 
@@ -645,7 +680,7 @@ __webpack_require__.r(__webpack_exports__);
 // means it doesn't take into account transforms.
 
 function getLayoutRect(element) {
-  var clientRect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__.default)(element); // Use the clientRect sizes if it's not been transformed.
+  var clientRect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element); // Use the clientRect sizes if it's not been transformed.
   // Fixes https://github.com/popperjs/popper-core/issues/1223
 
   var width = element.offsetWidth;
@@ -706,10 +741,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function getNodeScroll(node) {
-  if (node === (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(node) || !(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isHTMLElement)(node)) {
-    return (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_2__.default)(node);
+  if (node === (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node) || !(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isHTMLElement)(node)) {
+    return (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_2__["default"])(node);
   } else {
-    return (0,_getHTMLElementScroll_js__WEBPACK_IMPORTED_MODULE_3__.default)(node);
+    return (0,_getHTMLElementScroll_js__WEBPACK_IMPORTED_MODULE_3__["default"])(node);
   }
 }
 
@@ -741,7 +776,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function getTrueOffsetParent(element) {
   if (!(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element) || // https://github.com/popperjs/popper-core/issues/837
-  (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__.default)(element).position === 'fixed') {
+  (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element).position === 'fixed') {
     return null;
   }
 
@@ -756,17 +791,17 @@ function getContainingBlock(element) {
 
   if (isIE && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element)) {
     // In IE 9, 10 and 11 fixed elements containing block is always established by the viewport
-    var elementCss = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__.default)(element);
+    var elementCss = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element);
 
     if (elementCss.position === 'fixed') {
       return null;
     }
   }
 
-  var currentNode = (0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_2__.default)(element);
+  var currentNode = (0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element);
 
-  while ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(currentNode) && ['html', 'body'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__.default)(currentNode)) < 0) {
-    var css = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__.default)(currentNode); // This is non-exhaustive but covers the most common CSS properties that
+  while ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(currentNode) && ['html', 'body'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__["default"])(currentNode)) < 0) {
+    var css = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__["default"])(currentNode); // This is non-exhaustive but covers the most common CSS properties that
     // create a containing block.
     // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
 
@@ -783,14 +818,14 @@ function getContainingBlock(element) {
 
 
 function getOffsetParent(element) {
-  var window = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_4__.default)(element);
+  var window = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element);
   var offsetParent = getTrueOffsetParent(element);
 
-  while (offsetParent && (0,_isTableElement_js__WEBPACK_IMPORTED_MODULE_5__.default)(offsetParent) && (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__.default)(offsetParent).position === 'static') {
+  while (offsetParent && (0,_isTableElement_js__WEBPACK_IMPORTED_MODULE_5__["default"])(offsetParent) && (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__["default"])(offsetParent).position === 'static') {
     offsetParent = getTrueOffsetParent(offsetParent);
   }
 
-  if (offsetParent && ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__.default)(offsetParent) === 'html' || (0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__.default)(offsetParent) === 'body' && (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__.default)(offsetParent).position === 'static')) {
+  if (offsetParent && ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__["default"])(offsetParent) === 'html' || (0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_3__["default"])(offsetParent) === 'body' && (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__["default"])(offsetParent).position === 'static')) {
     return window;
   }
 
@@ -817,7 +852,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function getParentNode(element) {
-  if ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__.default)(element) === 'html') {
+  if ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element) === 'html') {
     return element;
   }
 
@@ -828,7 +863,7 @@ function getParentNode(element) {
     element.parentNode || ( // DOM Element detected
     (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isShadowRoot)(element) ? element.host : null) || // ShadowRoot detected
     // $FlowFixMe[incompatible-call]: HTMLElement is a Node
-    (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_2__.default)(element) // fallback
+    (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element) // fallback
 
   );
 }
@@ -855,16 +890,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function getScrollParent(node) {
-  if (['html', 'body', '#document'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__.default)(node)) >= 0) {
+  if (['html', 'body', '#document'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node)) >= 0) {
     // $FlowFixMe[incompatible-return]: assume body is always available
     return node.ownerDocument.body;
   }
 
-  if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isHTMLElement)(node) && (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_2__.default)(node)) {
+  if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isHTMLElement)(node) && (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_2__["default"])(node)) {
     return node;
   }
 
-  return getScrollParent((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_3__.default)(node));
+  return getScrollParent((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_3__["default"])(node));
 }
 
 /***/ }),
@@ -887,8 +922,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function getViewportRect(element) {
-  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(element);
-  var html = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__.default)(element);
+  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
+  var html = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element);
   var visualViewport = win.visualViewport;
   var width = html.clientWidth;
   var height = html.clientHeight;
@@ -919,7 +954,7 @@ function getViewportRect(element) {
   return {
     width: width,
     height: height,
-    x: x + (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_2__.default)(element),
+    x: x + (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element),
     y: y
   };
 }
@@ -966,7 +1001,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
 
 function getWindowScroll(node) {
-  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(node);
+  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node);
   var scrollLeft = win.pageXOffset;
   var scrollTop = win.pageYOffset;
   return {
@@ -1002,7 +1037,7 @@ function getWindowScrollBarX(element) {
   // anyway.
   // Browsers where the left scrollbar doesn't cause an issue report `0` for
   // this (e.g. Edge 2019, IE11, Safari)
-  return (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__.default)((0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__.default)(element)).left + (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_2__.default)(element).scrollLeft;
+  return (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])((0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element)).left + (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element).scrollLeft;
 }
 
 /***/ }),
@@ -1024,12 +1059,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function isElement(node) {
-  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(node).Element;
+  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node).Element;
   return node instanceof OwnElement || node instanceof Element;
 }
 
 function isHTMLElement(node) {
-  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(node).HTMLElement;
+  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node).HTMLElement;
   return node instanceof OwnElement || node instanceof HTMLElement;
 }
 
@@ -1039,7 +1074,7 @@ function isShadowRoot(node) {
     return false;
   }
 
-  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(node).ShadowRoot;
+  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node).ShadowRoot;
   return node instanceof OwnElement || node instanceof ShadowRoot;
 }
 
@@ -1062,7 +1097,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function isScrollParent(element) {
   // Firefox wants us to check `-x` and `-y` variations as well
-  var _getComputedStyle = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_0__.default)(element),
+  var _getComputedStyle = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element),
       overflow = _getComputedStyle.overflow,
       overflowX = _getComputedStyle.overflowX,
       overflowY = _getComputedStyle.overflowY;
@@ -1086,7 +1121,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
 
 function isTableElement(element) {
-  return ['table', 'td', 'th'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__.default)(element)) >= 0;
+  return ['table', 'td', 'th'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element)) >= 0;
 }
 
 /***/ }),
@@ -1124,13 +1159,13 @@ function listScrollParents(element, list) {
     list = [];
   }
 
-  var scrollParent = (0,_getScrollParent_js__WEBPACK_IMPORTED_MODULE_0__.default)(element);
+  var scrollParent = (0,_getScrollParent_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
   var isBody = scrollParent === ((_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body);
-  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_1__.default)(scrollParent);
-  var target = isBody ? [win].concat(win.visualViewport || [], (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_2__.default)(scrollParent) ? scrollParent : []) : scrollParent;
+  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_1__["default"])(scrollParent);
+  var target = isBody ? [win].concat(win.visualViewport || [], (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_2__["default"])(scrollParent) ? scrollParent : []) : scrollParent;
   var updatedList = list.concat(target);
   return isBody ? updatedList : // $FlowFixMe[incompatible-call]: isBody tells us target will be an HTMLElement here
-  updatedList.concat(listScrollParents((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_3__.default)(target)));
+  updatedList.concat(listScrollParents((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_3__["default"])(target)));
 }
 
 /***/ }),
@@ -1246,7 +1281,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "popperOffsets": () => (/* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.popperOffsets),
 /* harmony export */   "preventOverflow": () => (/* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.preventOverflow),
 /* harmony export */   "popperGenerator": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_2__.popperGenerator),
-/* harmony export */   "detectOverflow": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "detectOverflow": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_3__["default"]),
 /* harmony export */   "createPopperBase": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_2__.createPopper),
 /* harmony export */   "createPopper": () => (/* reexport safe */ _popper_js__WEBPACK_IMPORTED_MODULE_4__.createPopper),
 /* harmony export */   "createPopperLite": () => (/* reexport safe */ _popper_lite_js__WEBPACK_IMPORTED_MODULE_5__.createPopper)
@@ -1292,7 +1327,7 @@ function applyStyles(_ref) {
     var attributes = state.attributes[name] || {};
     var element = state.elements[name]; // arrow is optional + virtual elements
 
-    if (!(0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element) || !(0,_dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__.default)(element)) {
+    if (!(0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element) || !(0,_dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element)) {
       return;
     } // Flow doesn't support to extend this property, but it's the most
     // effective way to apply styles to an HTMLElement
@@ -1344,7 +1379,7 @@ function effect(_ref2) {
         return style;
       }, {}); // arrow is optional + virtual elements
 
-      if (!(0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element) || !(0,_dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__.default)(element)) {
+      if (!(0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element) || !(0,_dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element)) {
         return;
       }
 
@@ -1404,7 +1439,7 @@ var toPaddingObject = function toPaddingObject(padding, state) {
   padding = typeof padding === 'function' ? padding(Object.assign({}, state.rects, {
     placement: state.placement
   })) : padding;
-  return (0,_utils_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_0__.default)(typeof padding !== 'number' ? padding : (0,_utils_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_1__.default)(padding, _enums_js__WEBPACK_IMPORTED_MODULE_2__.basePlacements));
+  return (0,_utils_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_0__["default"])(typeof padding !== 'number' ? padding : (0,_utils_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_1__["default"])(padding, _enums_js__WEBPACK_IMPORTED_MODULE_2__.basePlacements));
 };
 
 function arrow(_ref) {
@@ -1415,8 +1450,8 @@ function arrow(_ref) {
       options = _ref.options;
   var arrowElement = state.elements.arrow;
   var popperOffsets = state.modifiersData.popperOffsets;
-  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_3__.default)(state.placement);
-  var axis = (0,_utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_4__.default)(basePlacement);
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(state.placement);
+  var axis = (0,_utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_4__["default"])(basePlacement);
   var isVertical = [_enums_js__WEBPACK_IMPORTED_MODULE_2__.left, _enums_js__WEBPACK_IMPORTED_MODULE_2__.right].indexOf(basePlacement) >= 0;
   var len = isVertical ? 'height' : 'width';
 
@@ -1425,12 +1460,12 @@ function arrow(_ref) {
   }
 
   var paddingObject = toPaddingObject(options.padding, state);
-  var arrowRect = (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_5__.default)(arrowElement);
+  var arrowRect = (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_5__["default"])(arrowElement);
   var minProp = axis === 'y' ? _enums_js__WEBPACK_IMPORTED_MODULE_2__.top : _enums_js__WEBPACK_IMPORTED_MODULE_2__.left;
   var maxProp = axis === 'y' ? _enums_js__WEBPACK_IMPORTED_MODULE_2__.bottom : _enums_js__WEBPACK_IMPORTED_MODULE_2__.right;
   var endDiff = state.rects.reference[len] + state.rects.reference[axis] - popperOffsets[axis] - state.rects.popper[len];
   var startDiff = popperOffsets[axis] - state.rects.reference[axis];
-  var arrowOffsetParent = (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_6__.default)(arrowElement);
+  var arrowOffsetParent = (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_6__["default"])(arrowElement);
   var clientSize = arrowOffsetParent ? axis === 'y' ? arrowOffsetParent.clientHeight || 0 : arrowOffsetParent.clientWidth || 0 : 0;
   var centerToReference = endDiff / 2 - startDiff / 2; // Make sure the arrow doesn't overflow the popper if the center point is
   // outside of the popper bounds
@@ -1438,7 +1473,7 @@ function arrow(_ref) {
   var min = paddingObject[minProp];
   var max = clientSize - arrowRect[len] - paddingObject[maxProp];
   var center = clientSize / 2 - arrowRect[len] / 2 + centerToReference;
-  var offset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_7__.default)(min, center, max); // Prevents breaking syntax highlighting...
+  var offset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_7__["default"])(min, center, max); // Prevents breaking syntax highlighting...
 
   var axisProp = axis;
   state.modifiersData[name] = (_state$modifiersData$ = {}, _state$modifiersData$[axisProp] = offset, _state$modifiersData$.centerOffset = offset - center, _state$modifiersData$);
@@ -1469,7 +1504,7 @@ function effect(_ref2) {
     }
   }
 
-  if (!(0,_dom_utils_contains_js__WEBPACK_IMPORTED_MODULE_9__.default)(state.elements.popper, arrowElement)) {
+  if (!(0,_dom_utils_contains_js__WEBPACK_IMPORTED_MODULE_9__["default"])(state.elements.popper, arrowElement)) {
     if (true) {
       console.error(['Popper: "arrow" modifier\'s `element` must be a child of the popper', 'element.'].join(' '));
     }
@@ -1511,7 +1546,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../dom-utils/getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
 /* harmony import */ var _dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../dom-utils/getComputedStyle.js */ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js");
 /* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _utils_getVariation_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/getVariation.js */ "./node_modules/@popperjs/core/lib/utils/getVariation.js");
 /* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
 
 
 
@@ -1546,6 +1583,7 @@ function mapToStyles(_ref2) {
   var popper = _ref2.popper,
       popperRect = _ref2.popperRect,
       placement = _ref2.placement,
+      variation = _ref2.variation,
       offsets = _ref2.offsets,
       position = _ref2.position,
       gpuAcceleration = _ref2.gpuAcceleration,
@@ -1565,14 +1603,14 @@ function mapToStyles(_ref2) {
   var win = window;
 
   if (adaptive) {
-    var offsetParent = (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_2__.default)(popper);
+    var offsetParent = (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_2__["default"])(popper);
     var heightProp = 'clientHeight';
     var widthProp = 'clientWidth';
 
-    if (offsetParent === (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_3__.default)(popper)) {
-      offsetParent = (0,_dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_4__.default)(popper);
+    if (offsetParent === (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_3__["default"])(popper)) {
+      offsetParent = (0,_dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_4__["default"])(popper);
 
-      if ((0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_5__.default)(offsetParent).position !== 'static') {
+      if ((0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_5__["default"])(offsetParent).position !== 'static' && position === 'absolute') {
         heightProp = 'scrollHeight';
         widthProp = 'scrollWidth';
       }
@@ -1581,14 +1619,14 @@ function mapToStyles(_ref2) {
 
     offsetParent = offsetParent;
 
-    if (placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.top) {
+    if (placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.top || (placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.left || placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.right) && variation === _enums_js__WEBPACK_IMPORTED_MODULE_1__.end) {
       sideY = _enums_js__WEBPACK_IMPORTED_MODULE_1__.bottom; // $FlowFixMe[prop-missing]
 
       y -= offsetParent[heightProp] - popperRect.height;
       y *= gpuAcceleration ? 1 : -1;
     }
 
-    if (placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.left) {
+    if (placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.left || (placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.top || placement === _enums_js__WEBPACK_IMPORTED_MODULE_1__.bottom) && variation === _enums_js__WEBPACK_IMPORTED_MODULE_1__.end) {
       sideX = _enums_js__WEBPACK_IMPORTED_MODULE_1__.right; // $FlowFixMe[prop-missing]
 
       x -= offsetParent[widthProp] - popperRect.width;
@@ -1603,7 +1641,7 @@ function mapToStyles(_ref2) {
   if (gpuAcceleration) {
     var _Object$assign;
 
-    return Object.assign({}, commonStyles, (_Object$assign = {}, _Object$assign[sideY] = hasY ? '0' : '', _Object$assign[sideX] = hasX ? '0' : '', _Object$assign.transform = (win.devicePixelRatio || 1) < 2 ? "translate(" + x + "px, " + y + "px)" : "translate3d(" + x + "px, " + y + "px, 0)", _Object$assign));
+    return Object.assign({}, commonStyles, (_Object$assign = {}, _Object$assign[sideY] = hasY ? '0' : '', _Object$assign[sideX] = hasX ? '0' : '', _Object$assign.transform = (win.devicePixelRatio || 1) <= 1 ? "translate(" + x + "px, " + y + "px)" : "translate3d(" + x + "px, " + y + "px, 0)", _Object$assign));
   }
 
   return Object.assign({}, commonStyles, (_Object$assign2 = {}, _Object$assign2[sideY] = hasY ? y + "px" : '', _Object$assign2[sideX] = hasX ? x + "px" : '', _Object$assign2.transform = '', _Object$assign2));
@@ -1620,7 +1658,7 @@ function computeStyles(_ref4) {
       roundOffsets = _options$roundOffsets === void 0 ? true : _options$roundOffsets;
 
   if (true) {
-    var transitionProperty = (0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_5__.default)(state.elements.popper).transitionProperty || '';
+    var transitionProperty = (0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_5__["default"])(state.elements.popper).transitionProperty || '';
 
     if (adaptive && ['transform', 'top', 'right', 'bottom', 'left'].some(function (property) {
       return transitionProperty.indexOf(property) >= 0;
@@ -1630,7 +1668,8 @@ function computeStyles(_ref4) {
   }
 
   var commonStyles = {
-    placement: (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_6__.default)(state.placement),
+    placement: (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_6__["default"])(state.placement),
+    variation: (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_7__["default"])(state.placement),
     popper: state.elements.popper,
     popperRect: state.rects.popper,
     gpuAcceleration: gpuAcceleration
@@ -1696,7 +1735,7 @@ function effect(_ref) {
       scroll = _options$scroll === void 0 ? true : _options$scroll,
       _options$resize = options.resize,
       resize = _options$resize === void 0 ? true : _options$resize;
-  var window = (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_0__.default)(state.elements.popper);
+  var window = (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(state.elements.popper);
   var scrollParents = [].concat(state.scrollParents.reference, state.scrollParents.popper);
 
   if (scroll) {
@@ -1761,12 +1800,12 @@ __webpack_require__.r(__webpack_exports__);
  // eslint-disable-next-line import/no-unused-modules
 
 function getExpandedFallbackPlacements(placement) {
-  if ((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__.default)(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_1__.auto) {
+  if ((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_1__.auto) {
     return [];
   }
 
-  var oppositePlacement = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__.default)(placement);
-  return [(0,_utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_3__.default)(placement), oppositePlacement, (0,_utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_3__.default)(oppositePlacement)];
+  var oppositePlacement = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(placement);
+  return [(0,_utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(placement), oppositePlacement, (0,_utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(oppositePlacement)];
 }
 
 function flip(_ref) {
@@ -1791,11 +1830,11 @@ function flip(_ref) {
       flipVariations = _options$flipVariatio === void 0 ? true : _options$flipVariatio,
       allowedAutoPlacements = options.allowedAutoPlacements;
   var preferredPlacement = state.options.placement;
-  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__.default)(preferredPlacement);
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(preferredPlacement);
   var isBasePlacement = basePlacement === preferredPlacement;
-  var fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipVariations ? [(0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__.default)(preferredPlacement)] : getExpandedFallbackPlacements(preferredPlacement));
+  var fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipVariations ? [(0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(preferredPlacement)] : getExpandedFallbackPlacements(preferredPlacement));
   var placements = [preferredPlacement].concat(fallbackPlacements).reduce(function (acc, placement) {
-    return acc.concat((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__.default)(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_1__.auto ? (0,_utils_computeAutoPlacement_js__WEBPACK_IMPORTED_MODULE_4__.default)(state, {
+    return acc.concat((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_1__.auto ? (0,_utils_computeAutoPlacement_js__WEBPACK_IMPORTED_MODULE_4__["default"])(state, {
       placement: placement,
       boundary: boundary,
       rootBoundary: rootBoundary,
@@ -1813,12 +1852,12 @@ function flip(_ref) {
   for (var i = 0; i < placements.length; i++) {
     var placement = placements[i];
 
-    var _basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__.default)(placement);
+    var _basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement);
 
-    var isStartVariation = (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_5__.default)(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_1__.start;
+    var isStartVariation = (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_5__["default"])(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_1__.start;
     var isVertical = [_enums_js__WEBPACK_IMPORTED_MODULE_1__.top, _enums_js__WEBPACK_IMPORTED_MODULE_1__.bottom].indexOf(_basePlacement) >= 0;
     var len = isVertical ? 'width' : 'height';
-    var overflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_6__.default)(state, {
+    var overflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_6__["default"])(state, {
       placement: placement,
       boundary: boundary,
       rootBoundary: rootBoundary,
@@ -1828,10 +1867,10 @@ function flip(_ref) {
     var mainVariationSide = isVertical ? isStartVariation ? _enums_js__WEBPACK_IMPORTED_MODULE_1__.right : _enums_js__WEBPACK_IMPORTED_MODULE_1__.left : isStartVariation ? _enums_js__WEBPACK_IMPORTED_MODULE_1__.bottom : _enums_js__WEBPACK_IMPORTED_MODULE_1__.top;
 
     if (referenceRect[len] > popperRect[len]) {
-      mainVariationSide = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__.default)(mainVariationSide);
+      mainVariationSide = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(mainVariationSide);
     }
 
-    var altVariationSide = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__.default)(mainVariationSide);
+    var altVariationSide = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(mainVariationSide);
     var checks = [];
 
     if (checkMainAxis) {
@@ -1946,10 +1985,10 @@ function hide(_ref) {
   var referenceRect = state.rects.reference;
   var popperRect = state.rects.popper;
   var preventedOffsets = state.modifiersData.preventOverflow;
-  var referenceOverflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__.default)(state, {
+  var referenceOverflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state, {
     elementContext: 'reference'
   });
-  var popperAltOverflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__.default)(state, {
+  var popperAltOverflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state, {
     altBoundary: true
   });
   var referenceClippingOffsets = getSideOffsets(referenceOverflow, referenceRect);
@@ -1988,15 +2027,15 @@ function hide(_ref) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "applyStyles": () => (/* reexport safe */ _applyStyles_js__WEBPACK_IMPORTED_MODULE_0__.default),
-/* harmony export */   "arrow": () => (/* reexport safe */ _arrow_js__WEBPACK_IMPORTED_MODULE_1__.default),
-/* harmony export */   "computeStyles": () => (/* reexport safe */ _computeStyles_js__WEBPACK_IMPORTED_MODULE_2__.default),
-/* harmony export */   "eventListeners": () => (/* reexport safe */ _eventListeners_js__WEBPACK_IMPORTED_MODULE_3__.default),
-/* harmony export */   "flip": () => (/* reexport safe */ _flip_js__WEBPACK_IMPORTED_MODULE_4__.default),
-/* harmony export */   "hide": () => (/* reexport safe */ _hide_js__WEBPACK_IMPORTED_MODULE_5__.default),
-/* harmony export */   "offset": () => (/* reexport safe */ _offset_js__WEBPACK_IMPORTED_MODULE_6__.default),
-/* harmony export */   "popperOffsets": () => (/* reexport safe */ _popperOffsets_js__WEBPACK_IMPORTED_MODULE_7__.default),
-/* harmony export */   "preventOverflow": () => (/* reexport safe */ _preventOverflow_js__WEBPACK_IMPORTED_MODULE_8__.default)
+/* harmony export */   "applyStyles": () => (/* reexport safe */ _applyStyles_js__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "arrow": () => (/* reexport safe */ _arrow_js__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "computeStyles": () => (/* reexport safe */ _computeStyles_js__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "eventListeners": () => (/* reexport safe */ _eventListeners_js__WEBPACK_IMPORTED_MODULE_3__["default"]),
+/* harmony export */   "flip": () => (/* reexport safe */ _flip_js__WEBPACK_IMPORTED_MODULE_4__["default"]),
+/* harmony export */   "hide": () => (/* reexport safe */ _hide_js__WEBPACK_IMPORTED_MODULE_5__["default"]),
+/* harmony export */   "offset": () => (/* reexport safe */ _offset_js__WEBPACK_IMPORTED_MODULE_6__["default"]),
+/* harmony export */   "popperOffsets": () => (/* reexport safe */ _popperOffsets_js__WEBPACK_IMPORTED_MODULE_7__["default"]),
+/* harmony export */   "preventOverflow": () => (/* reexport safe */ _preventOverflow_js__WEBPACK_IMPORTED_MODULE_8__["default"])
 /* harmony export */ });
 /* harmony import */ var _applyStyles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./applyStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/applyStyles.js");
 /* harmony import */ var _arrow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./arrow.js */ "./node_modules/@popperjs/core/lib/modifiers/arrow.js");
@@ -2036,7 +2075,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function distanceAndSkiddingToXY(placement, rects, offset) {
-  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__.default)(placement);
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement);
   var invertDistance = [_enums_js__WEBPACK_IMPORTED_MODULE_1__.left, _enums_js__WEBPACK_IMPORTED_MODULE_1__.top].indexOf(basePlacement) >= 0 ? -1 : 1;
 
   var _ref = typeof offset === 'function' ? offset(Object.assign({}, rects, {
@@ -2110,7 +2149,7 @@ function popperOffsets(_ref) {
   // properly positioned near its reference element
   // This is the most basic placement, and will be adjusted by
   // the modifiers in the next step
-  state.modifiersData[name] = (0,_utils_computeOffsets_js__WEBPACK_IMPORTED_MODULE_0__.default)({
+  state.modifiersData[name] = (0,_utils_computeOffsets_js__WEBPACK_IMPORTED_MODULE_0__["default"])({
     reference: state.rects.reference,
     element: state.rects.popper,
     strategy: 'absolute',
@@ -2179,17 +2218,17 @@ function preventOverflow(_ref) {
       tether = _options$tether === void 0 ? true : _options$tether,
       _options$tetherOffset = options.tetherOffset,
       tetherOffset = _options$tetherOffset === void 0 ? 0 : _options$tetherOffset;
-  var overflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_0__.default)(state, {
+  var overflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(state, {
     boundary: boundary,
     rootBoundary: rootBoundary,
     padding: padding,
     altBoundary: altBoundary
   });
-  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__.default)(state.placement);
-  var variation = (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_2__.default)(state.placement);
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state.placement);
+  var variation = (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_2__["default"])(state.placement);
   var isBasePlacement = !variation;
-  var mainAxis = (0,_utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_3__.default)(basePlacement);
-  var altAxis = (0,_utils_getAltAxis_js__WEBPACK_IMPORTED_MODULE_4__.default)(mainAxis);
+  var mainAxis = (0,_utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(basePlacement);
+  var altAxis = (0,_utils_getAltAxis_js__WEBPACK_IMPORTED_MODULE_4__["default"])(mainAxis);
   var popperOffsets = state.modifiersData.popperOffsets;
   var referenceRect = state.rects.reference;
   var popperRect = state.rects.popper;
@@ -2218,11 +2257,11 @@ function preventOverflow(_ref) {
     // outside the reference bounds
 
     var arrowElement = state.elements.arrow;
-    var arrowRect = tether && arrowElement ? (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_6__.default)(arrowElement) : {
+    var arrowRect = tether && arrowElement ? (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_6__["default"])(arrowElement) : {
       width: 0,
       height: 0
     };
-    var arrowPaddingObject = state.modifiersData['arrow#persistent'] ? state.modifiersData['arrow#persistent'].padding : (0,_utils_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_7__.default)();
+    var arrowPaddingObject = state.modifiersData['arrow#persistent'] ? state.modifiersData['arrow#persistent'].padding : (0,_utils_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_7__["default"])();
     var arrowPaddingMin = arrowPaddingObject[mainSide];
     var arrowPaddingMax = arrowPaddingObject[altSide]; // If the reference length is smaller than the arrow length, we don't want
     // to include its full size in the calculation. If the reference is small
@@ -2230,17 +2269,17 @@ function preventOverflow(_ref) {
     // reference is not overflowing as well (e.g. virtual elements with no
     // width or height)
 
-    var arrowLen = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_8__.default)(0, referenceRect[len], arrowRect[len]);
+    var arrowLen = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_8__["default"])(0, referenceRect[len], arrowRect[len]);
     var minOffset = isBasePlacement ? referenceRect[len] / 2 - additive - arrowLen - arrowPaddingMin - tetherOffsetValue : minLen - arrowLen - arrowPaddingMin - tetherOffsetValue;
     var maxOffset = isBasePlacement ? -referenceRect[len] / 2 + additive + arrowLen + arrowPaddingMax + tetherOffsetValue : maxLen + arrowLen + arrowPaddingMax + tetherOffsetValue;
-    var arrowOffsetParent = state.elements.arrow && (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_9__.default)(state.elements.arrow);
+    var arrowOffsetParent = state.elements.arrow && (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_9__["default"])(state.elements.arrow);
     var clientOffset = arrowOffsetParent ? mainAxis === 'y' ? arrowOffsetParent.clientTop || 0 : arrowOffsetParent.clientLeft || 0 : 0;
     var offsetModifierValue = state.modifiersData.offset ? state.modifiersData.offset[state.placement][mainAxis] : 0;
     var tetherMin = popperOffsets[mainAxis] + minOffset - offsetModifierValue - clientOffset;
     var tetherMax = popperOffsets[mainAxis] + maxOffset - offsetModifierValue;
 
     if (checkMainAxis) {
-      var preventedOffset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_8__.default)(tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.min)(min, tetherMin) : min, offset, tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.max)(max, tetherMax) : max);
+      var preventedOffset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_8__["default"])(tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.min)(min, tetherMin) : min, offset, tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.max)(max, tetherMax) : max);
       popperOffsets[mainAxis] = preventedOffset;
       data[mainAxis] = preventedOffset - offset;
     }
@@ -2256,7 +2295,7 @@ function preventOverflow(_ref) {
 
       var _max = _offset - overflow[_altSide];
 
-      var _preventedOffset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_8__.default)(tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.min)(_min, tetherMin) : _min, _offset, tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.max)(_max, tetherMax) : _max);
+      var _preventedOffset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_8__["default"])(tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.min)(_min, tetherMin) : _min, _offset, tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.max)(_max, tetherMax) : _max);
 
       popperOffsets[altAxis] = _preventedOffset;
       data[altAxis] = _preventedOffset - _offset;
@@ -2289,7 +2328,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "createPopper": () => (/* binding */ createPopper),
 /* harmony export */   "popperGenerator": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_4__.popperGenerator),
 /* harmony export */   "defaultModifiers": () => (/* binding */ defaultModifiers),
-/* harmony export */   "detectOverflow": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_5__.default)
+/* harmony export */   "detectOverflow": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_5__["default"])
 /* harmony export */ });
 /* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/createPopper.js");
 /* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
@@ -2302,7 +2341,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var defaultModifiers = [_modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_0__.default, _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_1__.default, _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_2__.default, _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_3__.default];
+var defaultModifiers = [_modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_0__["default"], _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_1__["default"], _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_2__["default"], _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_3__["default"]];
 var createPopper = /*#__PURE__*/(0,_createPopper_js__WEBPACK_IMPORTED_MODULE_4__.popperGenerator)({
   defaultModifiers: defaultModifiers
 }); // eslint-disable-next-line import/no-unused-modules
@@ -2323,7 +2362,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "createPopper": () => (/* binding */ createPopper),
 /* harmony export */   "popperGenerator": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_9__.popperGenerator),
 /* harmony export */   "defaultModifiers": () => (/* binding */ defaultModifiers),
-/* harmony export */   "detectOverflow": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_10__.default),
+/* harmony export */   "detectOverflow": () => (/* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_10__["default"]),
 /* harmony export */   "createPopperLite": () => (/* reexport safe */ _popper_lite_js__WEBPACK_IMPORTED_MODULE_11__.createPopper),
 /* harmony export */   "applyStyles": () => (/* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.applyStyles),
 /* harmony export */   "arrow": () => (/* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.arrow),
@@ -2358,7 +2397,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var defaultModifiers = [_modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_0__.default, _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_1__.default, _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_2__.default, _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_3__.default, _modifiers_offset_js__WEBPACK_IMPORTED_MODULE_4__.default, _modifiers_flip_js__WEBPACK_IMPORTED_MODULE_5__.default, _modifiers_preventOverflow_js__WEBPACK_IMPORTED_MODULE_6__.default, _modifiers_arrow_js__WEBPACK_IMPORTED_MODULE_7__.default, _modifiers_hide_js__WEBPACK_IMPORTED_MODULE_8__.default];
+var defaultModifiers = [_modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_0__["default"], _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_1__["default"], _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_2__["default"], _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_3__["default"], _modifiers_offset_js__WEBPACK_IMPORTED_MODULE_4__["default"], _modifiers_flip_js__WEBPACK_IMPORTED_MODULE_5__["default"], _modifiers_preventOverflow_js__WEBPACK_IMPORTED_MODULE_6__["default"], _modifiers_arrow_js__WEBPACK_IMPORTED_MODULE_7__["default"], _modifiers_hide_js__WEBPACK_IMPORTED_MODULE_8__["default"]];
 var createPopper = /*#__PURE__*/(0,_createPopper_js__WEBPACK_IMPORTED_MODULE_9__.popperGenerator)({
   defaultModifiers: defaultModifiers
 }); // eslint-disable-next-line import/no-unused-modules
@@ -2403,9 +2442,9 @@ function computeAutoPlacement(state, options) {
       flipVariations = _options.flipVariations,
       _options$allowedAutoP = _options.allowedAutoPlacements,
       allowedAutoPlacements = _options$allowedAutoP === void 0 ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.placements : _options$allowedAutoP;
-  var variation = (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__.default)(placement);
+  var variation = (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement);
   var placements = variation ? flipVariations ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.variationPlacements : _enums_js__WEBPACK_IMPORTED_MODULE_0__.variationPlacements.filter(function (placement) {
-    return (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__.default)(placement) === variation;
+    return (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement) === variation;
   }) : _enums_js__WEBPACK_IMPORTED_MODULE_0__.basePlacements;
   var allowedPlacements = placements.filter(function (placement) {
     return allowedAutoPlacements.indexOf(placement) >= 0;
@@ -2421,12 +2460,12 @@ function computeAutoPlacement(state, options) {
 
 
   var overflows = allowedPlacements.reduce(function (acc, placement) {
-    acc[placement] = (0,_detectOverflow_js__WEBPACK_IMPORTED_MODULE_2__.default)(state, {
+    acc[placement] = (0,_detectOverflow_js__WEBPACK_IMPORTED_MODULE_2__["default"])(state, {
       placement: placement,
       boundary: boundary,
       rootBoundary: rootBoundary,
       padding: padding
-    })[(0,_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_3__.default)(placement)];
+    })[(0,_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(placement)];
     return acc;
   }, {});
   return Object.keys(overflows).sort(function (a, b) {
@@ -2459,8 +2498,8 @@ function computeOffsets(_ref) {
   var reference = _ref.reference,
       element = _ref.element,
       placement = _ref.placement;
-  var basePlacement = placement ? (0,_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__.default)(placement) : null;
-  var variation = placement ? (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__.default)(placement) : null;
+  var basePlacement = placement ? (0,_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement) : null;
+  var variation = placement ? (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement) : null;
   var commonX = reference.x + reference.width / 2 - element.width / 2;
   var commonY = reference.y + reference.height / 2 - element.height / 2;
   var offsets;
@@ -2501,7 +2540,7 @@ function computeOffsets(_ref) {
       };
   }
 
-  var mainAxis = basePlacement ? (0,_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_3__.default)(basePlacement) : null;
+  var mainAxis = basePlacement ? (0,_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(basePlacement) : null;
 
   if (mainAxis != null) {
     var len = mainAxis === 'y' ? 'height' : 'width';
@@ -2564,9 +2603,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ detectOverflow)
 /* harmony export */ });
-/* harmony import */ var _dom_utils_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../dom-utils/getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
 /* harmony import */ var _dom_utils_getClippingRect_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../dom-utils/getClippingRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js");
 /* harmony import */ var _dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../dom-utils/getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _dom_utils_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../dom-utils/getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
 /* harmony import */ var _computeOffsets_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./computeOffsets.js */ "./node_modules/@popperjs/core/lib/utils/computeOffsets.js");
 /* harmony import */ var _rectToClientRect_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./rectToClientRect.js */ "./node_modules/@popperjs/core/lib/utils/rectToClientRect.js");
 /* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
@@ -2601,20 +2640,19 @@ function detectOverflow(state, options) {
       altBoundary = _options$altBoundary === void 0 ? false : _options$altBoundary,
       _options$padding = _options.padding,
       padding = _options$padding === void 0 ? 0 : _options$padding;
-  var paddingObject = (0,_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_1__.default)(typeof padding !== 'number' ? padding : (0,_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_2__.default)(padding, _enums_js__WEBPACK_IMPORTED_MODULE_0__.basePlacements));
+  var paddingObject = (0,_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_1__["default"])(typeof padding !== 'number' ? padding : (0,_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_2__["default"])(padding, _enums_js__WEBPACK_IMPORTED_MODULE_0__.basePlacements));
   var altContext = elementContext === _enums_js__WEBPACK_IMPORTED_MODULE_0__.popper ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.reference : _enums_js__WEBPACK_IMPORTED_MODULE_0__.popper;
-  var referenceElement = state.elements.reference;
   var popperRect = state.rects.popper;
   var element = state.elements[altBoundary ? altContext : elementContext];
-  var clippingClientRect = (0,_dom_utils_getClippingRect_js__WEBPACK_IMPORTED_MODULE_3__.default)((0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isElement)(element) ? element : element.contextElement || (0,_dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__.default)(state.elements.popper), boundary, rootBoundary);
-  var referenceClientRect = (0,_dom_utils_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_6__.default)(referenceElement);
-  var popperOffsets = (0,_computeOffsets_js__WEBPACK_IMPORTED_MODULE_7__.default)({
+  var clippingClientRect = (0,_dom_utils_getClippingRect_js__WEBPACK_IMPORTED_MODULE_3__["default"])((0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isElement)(element) ? element : element.contextElement || (0,_dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__["default"])(state.elements.popper), boundary, rootBoundary);
+  var referenceClientRect = (0,_dom_utils_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_6__["default"])(state.elements.reference);
+  var popperOffsets = (0,_computeOffsets_js__WEBPACK_IMPORTED_MODULE_7__["default"])({
     reference: referenceClientRect,
     element: popperRect,
     strategy: 'absolute',
     placement: placement
   });
-  var popperClientRect = (0,_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_8__.default)(Object.assign({}, popperRect, popperOffsets));
+  var popperClientRect = (0,_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_8__["default"])(Object.assign({}, popperRect, popperOffsets));
   var elementClientRect = elementContext === _enums_js__WEBPACK_IMPORTED_MODULE_0__.popper ? popperClientRect : referenceClientRect; // positive = overflowing the clipping rect
   // 0 or negative = within the clipping rect
 
@@ -2883,7 +2921,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFreshSideObject.js */ "./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js");
 
 function mergePaddingObject(paddingObject) {
-  return Object.assign({}, (0,_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_0__.default)(), paddingObject);
+  return Object.assign({}, (0,_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_0__["default"])(), paddingObject);
 }
 
 /***/ }),
@@ -3014,51 +3052,56 @@ var MISSING_DEPENDENCY_ERROR = 'Popper: modifier "%s" requires "%s", but "%s" mo
 var VALID_PROPERTIES = ['name', 'enabled', 'phase', 'fn', 'effect', 'requires', 'options'];
 function validateModifiers(modifiers) {
   modifiers.forEach(function (modifier) {
-    Object.keys(modifier).forEach(function (key) {
+    [].concat(Object.keys(modifier), VALID_PROPERTIES) // IE11-compatible replacement for `new Set(iterable)`
+    .filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+    }).forEach(function (key) {
       switch (key) {
         case 'name':
           if (typeof modifier.name !== 'string') {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, String(modifier.name), '"name"', '"string"', "\"" + String(modifier.name) + "\""));
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, String(modifier.name), '"name"', '"string"', "\"" + String(modifier.name) + "\""));
           }
 
           break;
 
         case 'enabled':
           if (typeof modifier.enabled !== 'boolean') {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, modifier.name, '"enabled"', '"boolean"', "\"" + String(modifier.enabled) + "\""));
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, modifier.name, '"enabled"', '"boolean"', "\"" + String(modifier.enabled) + "\""));
           }
+
+          break;
 
         case 'phase':
           if (_enums_js__WEBPACK_IMPORTED_MODULE_1__.modifierPhases.indexOf(modifier.phase) < 0) {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, modifier.name, '"phase"', "either " + _enums_js__WEBPACK_IMPORTED_MODULE_1__.modifierPhases.join(', '), "\"" + String(modifier.phase) + "\""));
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, modifier.name, '"phase"', "either " + _enums_js__WEBPACK_IMPORTED_MODULE_1__.modifierPhases.join(', '), "\"" + String(modifier.phase) + "\""));
           }
 
           break;
 
         case 'fn':
           if (typeof modifier.fn !== 'function') {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, modifier.name, '"fn"', '"function"', "\"" + String(modifier.fn) + "\""));
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, modifier.name, '"fn"', '"function"', "\"" + String(modifier.fn) + "\""));
           }
 
           break;
 
         case 'effect':
-          if (typeof modifier.effect !== 'function') {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, modifier.name, '"effect"', '"function"', "\"" + String(modifier.fn) + "\""));
+          if (modifier.effect != null && typeof modifier.effect !== 'function') {
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, modifier.name, '"effect"', '"function"', "\"" + String(modifier.fn) + "\""));
           }
 
           break;
 
         case 'requires':
-          if (!Array.isArray(modifier.requires)) {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, modifier.name, '"requires"', '"array"', "\"" + String(modifier.requires) + "\""));
+          if (modifier.requires != null && !Array.isArray(modifier.requires)) {
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, modifier.name, '"requires"', '"array"', "\"" + String(modifier.requires) + "\""));
           }
 
           break;
 
         case 'requiresIfExists':
           if (!Array.isArray(modifier.requiresIfExists)) {
-            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(INVALID_MODIFIER_ERROR, modifier.name, '"requiresIfExists"', '"array"', "\"" + String(modifier.requiresIfExists) + "\""));
+            console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(INVALID_MODIFIER_ERROR, modifier.name, '"requiresIfExists"', '"array"', "\"" + String(modifier.requiresIfExists) + "\""));
           }
 
           break;
@@ -3077,7 +3120,7 @@ function validateModifiers(modifiers) {
         if (modifiers.find(function (mod) {
           return mod.name === requirement;
         }) == null) {
-          console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__.default)(MISSING_DEPENDENCY_ERROR, String(modifier.name), requirement, requirement));
+          console.error((0,_format_js__WEBPACK_IMPORTED_MODULE_0__["default"])(MISSING_DEPENDENCY_ERROR, String(modifier.name), requirement, requirement));
         }
       });
     });
@@ -4910,15 +4953,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 window.addEventListener('load', function () {
   document.querySelectorAll(".crudit-eip").forEach(function (eip_elem) {
     var eip_val = eip_elem.querySelector(".crudit-eip-value");
+    var eip_submit = eip_elem.querySelector(".crudit-eip-submit");
+    var eip_input = eip_elem.querySelector(".crudit-eip-input");
+    var eip_cancel = eip_elem.querySelector(".crudit-eip-cancel");
+    var eip_form = eip_elem.querySelector("form");
 
     if (eip_val) {
       eip_val.addEventListener('click', function () {
         eip_val.classList.toggle('d-none');
-        eip_elem.querySelector('form').classList.toggle('d-none');
+
+        if (eip_form) {
+          eip_form.classList.toggle('d-none');
+        } // put user cursor in the text input
+
+
+        if (eip_input.type === "text" || eip_input.tagName === "TEXTAREA") {
+          eip_input.focus();
+          setTimeout(function () {
+            eip_input.selectionStart = eip_input.selectionEnd = 10000;
+          }, 0);
+        }
       });
     }
-
-    var eip_cancel = eip_elem.querySelector(".crudit-eip-cancel");
 
     if (eip_cancel && eip_val) {
       eip_cancel.addEventListener('click', function () {
@@ -4927,38 +4983,49 @@ window.addEventListener('load', function () {
       });
     }
 
-    var eip_submit = eip_elem.querySelector(".crudit-eip-submit");
-    eip_submit.addEventListener('click', function () {
-      var input = eip_elem.querySelector(".crudit-eip-input");
-      var url = eip_elem.dataset.edit_url;
-      var formData = new FormData();
-      var value = input.type === "checkbox" ? input.checked : input.value;
-
-      var data = _defineProperty({}, eip_elem.dataset.field, value);
-
-      formData.append("data", JSON.stringify(data));
-      fetch(url, {
-        body: formData,
-        method: "post"
+    if (eip_form) {
+      eip_form.addEventListener("submit", function (e) {
+        // disable submit, because the save is async
+        e.preventDefault();
+        submitEIP(eip_elem, eip_input, eip_val);
       });
+    }
 
-      if (eip_val) {
-        if (input.type === "date") {
-          eip_val.textContent = new Date(input.value).toLocaleDateString();
-        } else {
-          eip_val.textContent = input.value;
-        }
-
-        eip_val.classList.toggle('d-none');
-      }
-
-      var form = eip_elem.querySelector('form');
-
-      if (form) {
-        form.classList.toggle('d-none');
-      }
+    eip_submit.addEventListener("click", function () {
+      return submitEIP(eip_elem, eip_input, eip_val);
     });
   });
+
+  function submitEIP(eip_elem, eip_input, eip_val) {
+    eip_input = eip_elem.querySelector(".crudit-eip-input");
+    var url = eip_elem.dataset.edit_url;
+    var formData = new FormData();
+    var value = eip_input.type === "checkbox" ? eip_input.checked : eip_input.value;
+
+    var data = _defineProperty({}, eip_elem.dataset.field, value);
+
+    formData.append("data", JSON.stringify(data));
+    fetch(url, {
+      body: formData,
+      method: "post"
+    });
+
+    if (eip_val) {
+      if (eip_input.type === "date") {
+        eip_val.textContent = new Date(eip_input.value).toLocaleDateString();
+      } else {
+        eip_val.textContent = eip_input.value;
+      }
+
+      eip_val.classList.toggle('d-none');
+    }
+
+    var form = eip_elem.querySelector('form');
+
+    if (form) {
+      form.classList.toggle('d-none');
+    }
+  }
 });
 
 /***/ }),
@@ -5352,7 +5419,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _popperjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/index.js");
 /* harmony import */ var _popperjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/popper.js");
 /*!
-  * Bootstrap v5.0.2 (https://getbootstrap.com/)
+  * Bootstrap v5.1.1 (https://getbootstrap.com/)
   * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -5360,82 +5427,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): dom/selector-engine.js
+ * Bootstrap (v5.1.1): util/index.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
-
-/**
- * ------------------------------------------------------------------------
- * Constants
- * ------------------------------------------------------------------------
- */
-const NODE_TEXT = 3;
-const SelectorEngine = {
-  find(selector, element = document.documentElement) {
-    return [].concat(...Element.prototype.querySelectorAll.call(element, selector));
-  },
-
-  findOne(selector, element = document.documentElement) {
-    return Element.prototype.querySelector.call(element, selector);
-  },
-
-  children(element, selector) {
-    return [].concat(...element.children).filter(child => child.matches(selector));
-  },
-
-  parents(element, selector) {
-    const parents = [];
-    let ancestor = element.parentNode;
-
-    while (ancestor && ancestor.nodeType === Node.ELEMENT_NODE && ancestor.nodeType !== NODE_TEXT) {
-      if (ancestor.matches(selector)) {
-        parents.push(ancestor);
-      }
-
-      ancestor = ancestor.parentNode;
-    }
-
-    return parents;
-  },
-
-  prev(element, selector) {
-    let previous = element.previousElementSibling;
-
-    while (previous) {
-      if (previous.matches(selector)) {
-        return [previous];
-      }
-
-      previous = previous.previousElementSibling;
-    }
-
-    return [];
-  },
-
-  next(element, selector) {
-    let next = element.nextElementSibling;
-
-    while (next) {
-      if (next.matches(selector)) {
-        return [next];
-      }
-
-      next = next.nextElementSibling;
-    }
-
-    return [];
-  }
-
-};
-
-/**
- * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): util/index.js
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
- * --------------------------------------------------------------------------
- */
-
 const MAX_UID = 1000000;
 const MILLISECONDS_MULTIPLIER = 1000;
 const TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
@@ -5547,7 +5542,7 @@ const getElement = obj => {
   }
 
   if (typeof obj === 'string' && obj.length > 0) {
-    return SelectorEngine.findOne(obj);
+    return document.querySelector(obj);
   }
 
   return null;
@@ -5613,8 +5608,20 @@ const findShadowRoot = element => {
 };
 
 const noop = () => {};
+/**
+ * Trick to restart an element's animation
+ *
+ * @param {HTMLElement} element
+ * @return void
+ *
+ * @see https://www.charistheo.io/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
+ */
 
-const reflow = element => element.offsetHeight;
+
+const reflow = element => {
+  // eslint-disable-next-line no-unused-expressions
+  element.offsetHeight;
+};
 
 const getjQuery = () => {
   const {
@@ -5731,7 +5738,7 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): dom/event-handler.js
+ * Bootstrap (v5.1.1): dom/event-handler.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -5794,7 +5801,6 @@ function bootstrapDelegationHandler(element, selector, fn) {
           event.delegateTarget = target;
 
           if (handler.oneOff) {
-            // eslint-disable-next-line unicorn/consistent-destructuring
             EventHandler.off(element, event.type, selector, fn);
           }
 
@@ -6020,7 +6026,7 @@ const EventHandler = {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): dom/data.js
+ * Bootstrap (v5.1.1): dom/data.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6074,7 +6080,7 @@ var Data = {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): base-component.js
+ * Bootstrap (v5.1.1): base-component.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6084,7 +6090,7 @@ var Data = {
  * ------------------------------------------------------------------------
  */
 
-const VERSION = '5.0.2';
+const VERSION = '5.1.1';
 
 class BaseComponent {
   constructor(element) {
@@ -6113,7 +6119,7 @@ class BaseComponent {
 
 
   static getInstance(element) {
-    return Data.get(element, this.DATA_KEY);
+    return Data.get(getElement(element), this.DATA_KEY);
   }
 
   static getOrCreateInstance(element, config = {}) {
@@ -6140,7 +6146,33 @@ class BaseComponent {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): alert.js
+ * Bootstrap (v5.1.1): util/component-functions.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+const enableDismissTrigger = (component, method = 'hide') => {
+  const clickEvent = `click.dismiss${component.EVENT_KEY}`;
+  const name = component.NAME;
+  EventHandler.on(document, clickEvent, `[data-bs-dismiss="${name}"]`, function (event) {
+    if (['A', 'AREA'].includes(this.tagName)) {
+      event.preventDefault();
+    }
+
+    if (isDisabled(this)) {
+      return;
+    }
+
+    const target = getElementFromSelector(this) || this.closest(`.${name}`);
+    const instance = component.getOrCreateInstance(target); // Method argument is left, for Alert and only, as it doesn't implement the 'hide' method
+
+    instance[method]();
+  });
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap (v5.1.1): alert.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6150,17 +6182,13 @@ class BaseComponent {
  * ------------------------------------------------------------------------
  */
 
-const NAME$c = 'alert';
-const DATA_KEY$b = 'bs.alert';
-const EVENT_KEY$b = `.${DATA_KEY$b}`;
-const DATA_API_KEY$8 = '.data-api';
-const SELECTOR_DISMISS = '[data-bs-dismiss="alert"]';
-const EVENT_CLOSE = `close${EVENT_KEY$b}`;
-const EVENT_CLOSED = `closed${EVENT_KEY$b}`;
-const EVENT_CLICK_DATA_API$7 = `click${EVENT_KEY$b}${DATA_API_KEY$8}`;
-const CLASS_NAME_ALERT = 'alert';
-const CLASS_NAME_FADE$6 = 'fade';
-const CLASS_NAME_SHOW$9 = 'show';
+const NAME$d = 'alert';
+const DATA_KEY$c = 'bs.alert';
+const EVENT_KEY$c = `.${DATA_KEY$c}`;
+const EVENT_CLOSE = `close${EVENT_KEY$c}`;
+const EVENT_CLOSED = `closed${EVENT_KEY$c}`;
+const CLASS_NAME_FADE$5 = 'fade';
+const CLASS_NAME_SHOW$8 = 'show';
 /**
  * ------------------------------------------------------------------------
  * Class Definition
@@ -6170,41 +6198,30 @@ const CLASS_NAME_SHOW$9 = 'show';
 class Alert extends BaseComponent {
   // Getters
   static get NAME() {
-    return NAME$c;
+    return NAME$d;
   } // Public
 
 
-  close(element) {
-    const rootElement = element ? this._getRootElement(element) : this._element;
+  close() {
+    const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
 
-    const customEvent = this._triggerCloseEvent(rootElement);
-
-    if (customEvent === null || customEvent.defaultPrevented) {
+    if (closeEvent.defaultPrevented) {
       return;
     }
 
-    this._removeElement(rootElement);
+    this._element.classList.remove(CLASS_NAME_SHOW$8);
+
+    const isAnimated = this._element.classList.contains(CLASS_NAME_FADE$5);
+
+    this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
   } // Private
 
 
-  _getRootElement(element) {
-    return getElementFromSelector(element) || element.closest(`.${CLASS_NAME_ALERT}`);
-  }
+  _destroyElement() {
+    this._element.remove();
 
-  _triggerCloseEvent(element) {
-    return EventHandler.trigger(element, EVENT_CLOSE);
-  }
-
-  _removeElement(element) {
-    element.classList.remove(CLASS_NAME_SHOW$9);
-    const isAnimated = element.classList.contains(CLASS_NAME_FADE$6);
-
-    this._queueCallback(() => this._destroyElement(element), element, isAnimated);
-  }
-
-  _destroyElement(element) {
-    element.remove();
-    EventHandler.trigger(element, EVENT_CLOSED);
+    EventHandler.trigger(this._element, EVENT_CLOSED);
+    this.dispose();
   } // Static
 
 
@@ -6212,20 +6229,16 @@ class Alert extends BaseComponent {
     return this.each(function () {
       const data = Alert.getOrCreateInstance(this);
 
-      if (config === 'close') {
-        data[config](this);
+      if (typeof config !== 'string') {
+        return;
       }
+
+      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+
+      data[config](this);
     });
-  }
-
-  static handleDismiss(alertInstance) {
-    return function (event) {
-      if (event) {
-        event.preventDefault();
-      }
-
-      alertInstance.close(this);
-    };
   }
 
 }
@@ -6236,7 +6249,7 @@ class Alert extends BaseComponent {
  */
 
 
-EventHandler.on(document, EVENT_CLICK_DATA_API$7, SELECTOR_DISMISS, Alert.handleDismiss(new Alert()));
+enableDismissTrigger(Alert, 'close');
 /**
  * ------------------------------------------------------------------------
  * jQuery
@@ -6248,7 +6261,7 @@ defineJQueryPlugin(Alert);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): button.js
+ * Bootstrap (v5.1.1): button.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6258,13 +6271,13 @@ defineJQueryPlugin(Alert);
  * ------------------------------------------------------------------------
  */
 
-const NAME$b = 'button';
-const DATA_KEY$a = 'bs.button';
-const EVENT_KEY$a = `.${DATA_KEY$a}`;
+const NAME$c = 'button';
+const DATA_KEY$b = 'bs.button';
+const EVENT_KEY$b = `.${DATA_KEY$b}`;
 const DATA_API_KEY$7 = '.data-api';
 const CLASS_NAME_ACTIVE$3 = 'active';
 const SELECTOR_DATA_TOGGLE$5 = '[data-bs-toggle="button"]';
-const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$a}${DATA_API_KEY$7}`;
+const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$b}${DATA_API_KEY$7}`;
 /**
  * ------------------------------------------------------------------------
  * Class Definition
@@ -6274,7 +6287,7 @@ const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$a}${DATA_API_KEY$7}`;
 class Button extends BaseComponent {
   // Getters
   static get NAME() {
-    return NAME$b;
+    return NAME$c;
   } // Public
 
 
@@ -6319,7 +6332,7 @@ defineJQueryPlugin(Button);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): dom/manipulator.js
+ * Bootstrap (v5.1.1): dom/manipulator.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6377,8 +6390,8 @@ const Manipulator = {
   offset(element) {
     const rect = element.getBoundingClientRect();
     return {
-      top: rect.top + document.body.scrollTop,
-      left: rect.left + document.body.scrollLeft
+      top: rect.top + window.pageYOffset,
+      left: rect.left + window.pageXOffset
     };
   },
 
@@ -6393,7 +6406,77 @@ const Manipulator = {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): carousel.js
+ * Bootstrap (v5.1.1): dom/selector-engine.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+const NODE_TEXT = 3;
+const SelectorEngine = {
+  find(selector, element = document.documentElement) {
+    return [].concat(...Element.prototype.querySelectorAll.call(element, selector));
+  },
+
+  findOne(selector, element = document.documentElement) {
+    return Element.prototype.querySelector.call(element, selector);
+  },
+
+  children(element, selector) {
+    return [].concat(...element.children).filter(child => child.matches(selector));
+  },
+
+  parents(element, selector) {
+    const parents = [];
+    let ancestor = element.parentNode;
+
+    while (ancestor && ancestor.nodeType === Node.ELEMENT_NODE && ancestor.nodeType !== NODE_TEXT) {
+      if (ancestor.matches(selector)) {
+        parents.push(ancestor);
+      }
+
+      ancestor = ancestor.parentNode;
+    }
+
+    return parents;
+  },
+
+  prev(element, selector) {
+    let previous = element.previousElementSibling;
+
+    while (previous) {
+      if (previous.matches(selector)) {
+        return [previous];
+      }
+
+      previous = previous.previousElementSibling;
+    }
+
+    return [];
+  },
+
+  next(element, selector) {
+    let next = element.nextElementSibling;
+
+    while (next) {
+      if (next.matches(selector)) {
+        return [next];
+      }
+
+      next = next.nextElementSibling;
+    }
+
+    return [];
+  },
+
+  focusableChildren(element) {
+    const focusables = ['a', 'button', 'input', 'textarea', 'select', 'details', '[tabindex]', '[contenteditable="true"]'].map(selector => `${selector}:not([tabindex^="-"])`).join(', ');
+    return this.find(focusables, element).filter(el => !isDisabled(el) && isVisible(el));
+  }
+
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap (v5.1.1): carousel.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6403,16 +6486,16 @@ const Manipulator = {
  * ------------------------------------------------------------------------
  */
 
-const NAME$a = 'carousel';
-const DATA_KEY$9 = 'bs.carousel';
-const EVENT_KEY$9 = `.${DATA_KEY$9}`;
+const NAME$b = 'carousel';
+const DATA_KEY$a = 'bs.carousel';
+const EVENT_KEY$a = `.${DATA_KEY$a}`;
 const DATA_API_KEY$6 = '.data-api';
 const ARROW_LEFT_KEY = 'ArrowLeft';
 const ARROW_RIGHT_KEY = 'ArrowRight';
 const TOUCHEVENT_COMPAT_WAIT = 500; // Time for mouse compat events to fire after touch
 
 const SWIPE_THRESHOLD = 40;
-const Default$9 = {
+const Default$a = {
   interval: 5000,
   keyboard: true,
   slide: false,
@@ -6420,7 +6503,7 @@ const Default$9 = {
   wrap: true,
   touch: true
 };
-const DefaultType$9 = {
+const DefaultType$a = {
   interval: '(number|boolean)',
   keyboard: 'boolean',
   slide: '(boolean|string)',
@@ -6436,19 +6519,19 @@ const KEY_TO_DIRECTION = {
   [ARROW_LEFT_KEY]: DIRECTION_RIGHT,
   [ARROW_RIGHT_KEY]: DIRECTION_LEFT
 };
-const EVENT_SLIDE = `slide${EVENT_KEY$9}`;
-const EVENT_SLID = `slid${EVENT_KEY$9}`;
-const EVENT_KEYDOWN = `keydown${EVENT_KEY$9}`;
-const EVENT_MOUSEENTER = `mouseenter${EVENT_KEY$9}`;
-const EVENT_MOUSELEAVE = `mouseleave${EVENT_KEY$9}`;
-const EVENT_TOUCHSTART = `touchstart${EVENT_KEY$9}`;
-const EVENT_TOUCHMOVE = `touchmove${EVENT_KEY$9}`;
-const EVENT_TOUCHEND = `touchend${EVENT_KEY$9}`;
-const EVENT_POINTERDOWN = `pointerdown${EVENT_KEY$9}`;
-const EVENT_POINTERUP = `pointerup${EVENT_KEY$9}`;
-const EVENT_DRAG_START = `dragstart${EVENT_KEY$9}`;
-const EVENT_LOAD_DATA_API$2 = `load${EVENT_KEY$9}${DATA_API_KEY$6}`;
-const EVENT_CLICK_DATA_API$5 = `click${EVENT_KEY$9}${DATA_API_KEY$6}`;
+const EVENT_SLIDE = `slide${EVENT_KEY$a}`;
+const EVENT_SLID = `slid${EVENT_KEY$a}`;
+const EVENT_KEYDOWN = `keydown${EVENT_KEY$a}`;
+const EVENT_MOUSEENTER = `mouseenter${EVENT_KEY$a}`;
+const EVENT_MOUSELEAVE = `mouseleave${EVENT_KEY$a}`;
+const EVENT_TOUCHSTART = `touchstart${EVENT_KEY$a}`;
+const EVENT_TOUCHMOVE = `touchmove${EVENT_KEY$a}`;
+const EVENT_TOUCHEND = `touchend${EVENT_KEY$a}`;
+const EVENT_POINTERDOWN = `pointerdown${EVENT_KEY$a}`;
+const EVENT_POINTERUP = `pointerup${EVENT_KEY$a}`;
+const EVENT_DRAG_START = `dragstart${EVENT_KEY$a}`;
+const EVENT_LOAD_DATA_API$2 = `load${EVENT_KEY$a}${DATA_API_KEY$6}`;
+const EVENT_CLICK_DATA_API$5 = `click${EVENT_KEY$a}${DATA_API_KEY$6}`;
 const CLASS_NAME_CAROUSEL = 'carousel';
 const CLASS_NAME_ACTIVE$2 = 'active';
 const CLASS_NAME_SLIDE = 'slide';
@@ -6495,11 +6578,11 @@ class Carousel extends BaseComponent {
 
 
   static get Default() {
-    return Default$9;
+    return Default$a;
   }
 
   static get NAME() {
-    return NAME$a;
+    return NAME$b;
   } // Public
 
 
@@ -6577,11 +6660,11 @@ class Carousel extends BaseComponent {
 
 
   _getConfig(config) {
-    config = { ...Default$9,
+    config = { ...Default$a,
       ...Manipulator.getDataAttributes(this._element),
       ...(typeof config === 'object' ? config : {})
     };
-    typeCheckConfig(NAME$a, config, DefaultType$9);
+    typeCheckConfig(NAME$b, config, DefaultType$a);
     return config;
   }
 
@@ -6618,8 +6701,12 @@ class Carousel extends BaseComponent {
   }
 
   _addTouchEventListeners() {
+    const hasPointerPenTouch = event => {
+      return this._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH);
+    };
+
     const start = event => {
-      if (this._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
+      if (hasPointerPenTouch(event)) {
         this.touchStartX = event.clientX;
       } else if (!this._pointerEvent) {
         this.touchStartX = event.touches[0].clientX;
@@ -6632,7 +6719,7 @@ class Carousel extends BaseComponent {
     };
 
     const end = event => {
-      if (this._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
+      if (hasPointerPenTouch(event)) {
         this.touchDeltaX = event.clientX - this.touchStartX;
       }
 
@@ -6938,7 +7025,7 @@ defineJQueryPlugin(Carousel);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): collapse.js
+ * Bootstrap (v5.1.1): collapse.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6948,30 +7035,31 @@ defineJQueryPlugin(Carousel);
  * ------------------------------------------------------------------------
  */
 
-const NAME$9 = 'collapse';
-const DATA_KEY$8 = 'bs.collapse';
-const EVENT_KEY$8 = `.${DATA_KEY$8}`;
+const NAME$a = 'collapse';
+const DATA_KEY$9 = 'bs.collapse';
+const EVENT_KEY$9 = `.${DATA_KEY$9}`;
 const DATA_API_KEY$5 = '.data-api';
-const Default$8 = {
+const Default$9 = {
   toggle: true,
-  parent: ''
+  parent: null
 };
-const DefaultType$8 = {
+const DefaultType$9 = {
   toggle: 'boolean',
-  parent: '(string|element)'
+  parent: '(null|element)'
 };
-const EVENT_SHOW$5 = `show${EVENT_KEY$8}`;
-const EVENT_SHOWN$5 = `shown${EVENT_KEY$8}`;
-const EVENT_HIDE$5 = `hide${EVENT_KEY$8}`;
-const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$8}`;
-const EVENT_CLICK_DATA_API$4 = `click${EVENT_KEY$8}${DATA_API_KEY$5}`;
-const CLASS_NAME_SHOW$8 = 'show';
+const EVENT_SHOW$5 = `show${EVENT_KEY$9}`;
+const EVENT_SHOWN$5 = `shown${EVENT_KEY$9}`;
+const EVENT_HIDE$5 = `hide${EVENT_KEY$9}`;
+const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$9}`;
+const EVENT_CLICK_DATA_API$4 = `click${EVENT_KEY$9}${DATA_API_KEY$5}`;
+const CLASS_NAME_SHOW$7 = 'show';
 const CLASS_NAME_COLLAPSE = 'collapse';
 const CLASS_NAME_COLLAPSING = 'collapsing';
 const CLASS_NAME_COLLAPSED = 'collapsed';
+const CLASS_NAME_HORIZONTAL = 'collapse-horizontal';
 const WIDTH = 'width';
 const HEIGHT = 'height';
-const SELECTOR_ACTIVES = '.show, .collapsing';
+const SELECTOR_ACTIVES = '.collapse.show, .collapse.collapsing';
 const SELECTOR_DATA_TOGGLE$4 = '[data-bs-toggle="collapse"]';
 /**
  * ------------------------------------------------------------------------
@@ -6984,7 +7072,7 @@ class Collapse extends BaseComponent {
     super(element);
     this._isTransitioning = false;
     this._config = this._getConfig(config);
-    this._triggerArray = SelectorEngine.find(`${SELECTOR_DATA_TOGGLE$4}[href="#${this._element.id}"],` + `${SELECTOR_DATA_TOGGLE$4}[data-bs-target="#${this._element.id}"]`);
+    this._triggerArray = [];
     const toggleList = SelectorEngine.find(SELECTOR_DATA_TOGGLE$4);
 
     for (let i = 0, len = toggleList.length; i < len; i++) {
@@ -6999,10 +7087,10 @@ class Collapse extends BaseComponent {
       }
     }
 
-    this._parent = this._config.parent ? this._getParent() : null;
+    this._initializeChildren();
 
     if (!this._config.parent) {
-      this._addAriaAndCollapsedClass(this._element, this._triggerArray);
+      this._addAriaAndCollapsedClass(this._triggerArray, this._isShown());
     }
 
     if (this._config.toggle) {
@@ -7012,16 +7100,16 @@ class Collapse extends BaseComponent {
 
 
   static get Default() {
-    return Default$8;
+    return Default$9;
   }
 
   static get NAME() {
-    return NAME$9;
+    return NAME$a;
   } // Public
 
 
   toggle() {
-    if (this._element.classList.contains(CLASS_NAME_SHOW$8)) {
+    if (this._isShown()) {
       this.hide();
     } else {
       this.show();
@@ -7029,30 +7117,21 @@ class Collapse extends BaseComponent {
   }
 
   show() {
-    if (this._isTransitioning || this._element.classList.contains(CLASS_NAME_SHOW$8)) {
+    if (this._isTransitioning || this._isShown()) {
       return;
     }
 
-    let actives;
+    let actives = [];
     let activesData;
 
-    if (this._parent) {
-      actives = SelectorEngine.find(SELECTOR_ACTIVES, this._parent).filter(elem => {
-        if (typeof this._config.parent === 'string') {
-          return elem.getAttribute('data-bs-parent') === this._config.parent;
-        }
-
-        return elem.classList.contains(CLASS_NAME_COLLAPSE);
-      });
-
-      if (actives.length === 0) {
-        actives = null;
-      }
+    if (this._config.parent) {
+      const children = SelectorEngine.find(`.${CLASS_NAME_COLLAPSE} .${CLASS_NAME_COLLAPSE}`, this._config.parent);
+      actives = SelectorEngine.find(SELECTOR_ACTIVES, this._config.parent).filter(elem => !children.includes(elem)); // remove children if greater depth
     }
 
     const container = SelectorEngine.findOne(this._selector);
 
-    if (actives) {
+    if (actives.length) {
       const tempActiveData = actives.find(elem => container !== elem);
       activesData = tempActiveData ? Collapse.getInstance(tempActiveData) : null;
 
@@ -7067,17 +7146,17 @@ class Collapse extends BaseComponent {
       return;
     }
 
-    if (actives) {
-      actives.forEach(elemActive => {
-        if (container !== elemActive) {
-          Collapse.collapseInterface(elemActive, 'hide');
-        }
+    actives.forEach(elemActive => {
+      if (container !== elemActive) {
+        Collapse.getOrCreateInstance(elemActive, {
+          toggle: false
+        }).hide();
+      }
 
-        if (!activesData) {
-          Data.set(elemActive, DATA_KEY$8, null);
-        }
-      });
-    }
+      if (!activesData) {
+        Data.set(elemActive, DATA_KEY$9, null);
+      }
+    });
 
     const dimension = this._getDimension();
 
@@ -7087,22 +7166,18 @@ class Collapse extends BaseComponent {
 
     this._element.style[dimension] = 0;
 
-    if (this._triggerArray.length) {
-      this._triggerArray.forEach(element => {
-        element.classList.remove(CLASS_NAME_COLLAPSED);
-        element.setAttribute('aria-expanded', true);
-      });
-    }
+    this._addAriaAndCollapsedClass(this._triggerArray, true);
 
-    this.setTransitioning(true);
+    this._isTransitioning = true;
 
     const complete = () => {
+      this._isTransitioning = false;
+
       this._element.classList.remove(CLASS_NAME_COLLAPSING);
 
-      this._element.classList.add(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$8);
+      this._element.classList.add(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$7);
 
       this._element.style[dimension] = '';
-      this.setTransitioning(false);
       EventHandler.trigger(this._element, EVENT_SHOWN$5);
     };
 
@@ -7115,7 +7190,7 @@ class Collapse extends BaseComponent {
   }
 
   hide() {
-    if (this._isTransitioning || !this._element.classList.contains(CLASS_NAME_SHOW$8)) {
+    if (this._isTransitioning || !this._isShown()) {
       return;
     }
 
@@ -7132,26 +7207,23 @@ class Collapse extends BaseComponent {
 
     this._element.classList.add(CLASS_NAME_COLLAPSING);
 
-    this._element.classList.remove(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$8);
+    this._element.classList.remove(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$7);
 
     const triggerArrayLength = this._triggerArray.length;
 
-    if (triggerArrayLength > 0) {
-      for (let i = 0; i < triggerArrayLength; i++) {
-        const trigger = this._triggerArray[i];
-        const elem = getElementFromSelector(trigger);
+    for (let i = 0; i < triggerArrayLength; i++) {
+      const trigger = this._triggerArray[i];
+      const elem = getElementFromSelector(trigger);
 
-        if (elem && !elem.classList.contains(CLASS_NAME_SHOW$8)) {
-          trigger.classList.add(CLASS_NAME_COLLAPSED);
-          trigger.setAttribute('aria-expanded', false);
-        }
+      if (elem && !this._isShown(elem)) {
+        this._addAriaAndCollapsedClass([trigger], false);
       }
     }
 
-    this.setTransitioning(true);
+    this._isTransitioning = true;
 
     const complete = () => {
-      this.setTransitioning(false);
+      this._isTransitioning = false;
 
       this._element.classList.remove(CLASS_NAME_COLLAPSING);
 
@@ -7165,45 +7237,47 @@ class Collapse extends BaseComponent {
     this._queueCallback(complete, this._element, true);
   }
 
-  setTransitioning(isTransitioning) {
-    this._isTransitioning = isTransitioning;
+  _isShown(element = this._element) {
+    return element.classList.contains(CLASS_NAME_SHOW$7);
   } // Private
 
 
   _getConfig(config) {
-    config = { ...Default$8,
+    config = { ...Default$9,
+      ...Manipulator.getDataAttributes(this._element),
       ...config
     };
     config.toggle = Boolean(config.toggle); // Coerce string values
 
-    typeCheckConfig(NAME$9, config, DefaultType$8);
+    config.parent = getElement(config.parent);
+    typeCheckConfig(NAME$a, config, DefaultType$9);
     return config;
   }
 
   _getDimension() {
-    return this._element.classList.contains(WIDTH) ? WIDTH : HEIGHT;
+    return this._element.classList.contains(CLASS_NAME_HORIZONTAL) ? WIDTH : HEIGHT;
   }
 
-  _getParent() {
-    let {
-      parent
-    } = this._config;
-    parent = getElement(parent);
-    const selector = `${SELECTOR_DATA_TOGGLE$4}[data-bs-parent="${parent}"]`;
-    SelectorEngine.find(selector, parent).forEach(element => {
-      const selected = getElementFromSelector(element);
-
-      this._addAriaAndCollapsedClass(selected, [element]);
-    });
-    return parent;
-  }
-
-  _addAriaAndCollapsedClass(element, triggerArray) {
-    if (!element || !triggerArray.length) {
+  _initializeChildren() {
+    if (!this._config.parent) {
       return;
     }
 
-    const isOpen = element.classList.contains(CLASS_NAME_SHOW$8);
+    const children = SelectorEngine.find(`.${CLASS_NAME_COLLAPSE} .${CLASS_NAME_COLLAPSE}`, this._config.parent);
+    SelectorEngine.find(SELECTOR_DATA_TOGGLE$4, this._config.parent).filter(elem => !children.includes(elem)).forEach(element => {
+      const selected = getElementFromSelector(element);
+
+      if (selected) {
+        this._addAriaAndCollapsedClass([element], this._isShown(selected));
+      }
+    });
+  }
+
+  _addAriaAndCollapsedClass(triggerArray, isOpen) {
+    if (!triggerArray.length) {
+      return;
+    }
+
     triggerArray.forEach(elem => {
       if (isOpen) {
         elem.classList.remove(CLASS_NAME_COLLAPSED);
@@ -7216,33 +7290,23 @@ class Collapse extends BaseComponent {
   } // Static
 
 
-  static collapseInterface(element, config) {
-    let data = Collapse.getInstance(element);
-    const _config = { ...Default$8,
-      ...Manipulator.getDataAttributes(element),
-      ...(typeof config === 'object' && config ? config : {})
-    };
-
-    if (!data && _config.toggle && typeof config === 'string' && /show|hide/.test(config)) {
-      _config.toggle = false;
-    }
-
-    if (!data) {
-      data = new Collapse(element, _config);
-    }
-
-    if (typeof config === 'string') {
-      if (typeof data[config] === 'undefined') {
-        throw new TypeError(`No method named "${config}"`);
-      }
-
-      data[config]();
-    }
-  }
-
   static jQueryInterface(config) {
     return this.each(function () {
-      Collapse.collapseInterface(this, config);
+      const _config = {};
+
+      if (typeof config === 'string' && /show|hide/.test(config)) {
+        _config.toggle = false;
+      }
+
+      const data = Collapse.getOrCreateInstance(this, _config);
+
+      if (typeof config === 'string') {
+        if (typeof data[config] === 'undefined') {
+          throw new TypeError(`No method named "${config}"`);
+        }
+
+        data[config]();
+      }
     });
   }
 
@@ -7260,26 +7324,12 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$4, SELECTOR_DATA_TOGGLE$4, functi
     event.preventDefault();
   }
 
-  const triggerData = Manipulator.getDataAttributes(this);
   const selector = getSelectorFromElement(this);
   const selectorElements = SelectorEngine.find(selector);
   selectorElements.forEach(element => {
-    const data = Collapse.getInstance(element);
-    let config;
-
-    if (data) {
-      // update parent attribute
-      if (data._parent === null && typeof triggerData.parent === 'string') {
-        data._config.parent = triggerData.parent;
-        data._parent = data._getParent();
-      }
-
-      config = 'toggle';
-    } else {
-      config = triggerData;
-    }
-
-    Collapse.collapseInterface(element, config);
+    Collapse.getOrCreateInstance(element, {
+      toggle: false
+    }).toggle();
   });
 });
 /**
@@ -7293,7 +7343,7 @@ defineJQueryPlugin(Collapse);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): dropdown.js
+ * Bootstrap (v5.1.1): dropdown.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -7303,27 +7353,26 @@ defineJQueryPlugin(Collapse);
  * ------------------------------------------------------------------------
  */
 
-const NAME$8 = 'dropdown';
-const DATA_KEY$7 = 'bs.dropdown';
-const EVENT_KEY$7 = `.${DATA_KEY$7}`;
+const NAME$9 = 'dropdown';
+const DATA_KEY$8 = 'bs.dropdown';
+const EVENT_KEY$8 = `.${DATA_KEY$8}`;
 const DATA_API_KEY$4 = '.data-api';
 const ESCAPE_KEY$2 = 'Escape';
 const SPACE_KEY = 'Space';
-const TAB_KEY = 'Tab';
+const TAB_KEY$1 = 'Tab';
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 const RIGHT_MOUSE_BUTTON = 2; // MouseEvent.button value for the secondary button, usually the right button
 
 const REGEXP_KEYDOWN = new RegExp(`${ARROW_UP_KEY}|${ARROW_DOWN_KEY}|${ESCAPE_KEY$2}`);
-const EVENT_HIDE$4 = `hide${EVENT_KEY$7}`;
-const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$7}`;
-const EVENT_SHOW$4 = `show${EVENT_KEY$7}`;
-const EVENT_SHOWN$4 = `shown${EVENT_KEY$7}`;
-const EVENT_CLICK = `click${EVENT_KEY$7}`;
-const EVENT_CLICK_DATA_API$3 = `click${EVENT_KEY$7}${DATA_API_KEY$4}`;
-const EVENT_KEYDOWN_DATA_API = `keydown${EVENT_KEY$7}${DATA_API_KEY$4}`;
-const EVENT_KEYUP_DATA_API = `keyup${EVENT_KEY$7}${DATA_API_KEY$4}`;
-const CLASS_NAME_SHOW$7 = 'show';
+const EVENT_HIDE$4 = `hide${EVENT_KEY$8}`;
+const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$8}`;
+const EVENT_SHOW$4 = `show${EVENT_KEY$8}`;
+const EVENT_SHOWN$4 = `shown${EVENT_KEY$8}`;
+const EVENT_CLICK_DATA_API$3 = `click${EVENT_KEY$8}${DATA_API_KEY$4}`;
+const EVENT_KEYDOWN_DATA_API = `keydown${EVENT_KEY$8}${DATA_API_KEY$4}`;
+const EVENT_KEYUP_DATA_API = `keyup${EVENT_KEY$8}${DATA_API_KEY$4}`;
+const CLASS_NAME_SHOW$6 = 'show';
 const CLASS_NAME_DROPUP = 'dropup';
 const CLASS_NAME_DROPEND = 'dropend';
 const CLASS_NAME_DROPSTART = 'dropstart';
@@ -7338,7 +7387,7 @@ const PLACEMENT_BOTTOM = isRTL() ? 'bottom-end' : 'bottom-start';
 const PLACEMENT_BOTTOMEND = isRTL() ? 'bottom-start' : 'bottom-end';
 const PLACEMENT_RIGHT = isRTL() ? 'left-start' : 'right-start';
 const PLACEMENT_LEFT = isRTL() ? 'right-start' : 'left-start';
-const Default$7 = {
+const Default$8 = {
   offset: [0, 2],
   boundary: 'clippingParents',
   reference: 'toggle',
@@ -7346,7 +7395,7 @@ const Default$7 = {
   popperConfig: null,
   autoClose: true
 };
-const DefaultType$7 = {
+const DefaultType$8 = {
   offset: '(array|string|function)',
   boundary: '(string|element)',
   reference: '(string|element|object)',
@@ -7367,45 +7416,31 @@ class Dropdown extends BaseComponent {
     this._config = this._getConfig(config);
     this._menu = this._getMenuElement();
     this._inNavbar = this._detectNavbar();
-
-    this._addEventListeners();
   } // Getters
 
 
   static get Default() {
-    return Default$7;
+    return Default$8;
   }
 
   static get DefaultType() {
-    return DefaultType$7;
+    return DefaultType$8;
   }
 
   static get NAME() {
-    return NAME$8;
+    return NAME$9;
   } // Public
 
 
   toggle() {
-    if (isDisabled(this._element)) {
-      return;
-    }
-
-    const isActive = this._element.classList.contains(CLASS_NAME_SHOW$7);
-
-    if (isActive) {
-      this.hide();
-      return;
-    }
-
-    this.show();
+    return this._isShown() ? this.hide() : this.show();
   }
 
   show() {
-    if (isDisabled(this._element) || this._menu.classList.contains(CLASS_NAME_SHOW$7)) {
+    if (isDisabled(this._element) || this._isShown(this._menu)) {
       return;
     }
 
-    const parent = Dropdown.getParentFromElement(this._element);
     const relatedTarget = {
       relatedTarget: this._element
     };
@@ -7413,34 +7448,14 @@ class Dropdown extends BaseComponent {
 
     if (showEvent.defaultPrevented) {
       return;
-    } // Totally disable Popper for Dropdowns in Navbar
+    }
 
+    const parent = Dropdown.getParentFromElement(this._element); // Totally disable Popper for Dropdowns in Navbar
 
     if (this._inNavbar) {
       Manipulator.setDataAttribute(this._menu, 'popper', 'none');
     } else {
-      if (typeof _popperjs_core__WEBPACK_IMPORTED_MODULE_0__ === 'undefined') {
-        throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org)');
-      }
-
-      let referenceElement = this._element;
-
-      if (this._config.reference === 'parent') {
-        referenceElement = parent;
-      } else if (isElement(this._config.reference)) {
-        referenceElement = getElement(this._config.reference);
-      } else if (typeof this._config.reference === 'object') {
-        referenceElement = this._config.reference;
-      }
-
-      const popperConfig = this._getPopperConfig();
-
-      const isDisplayStatic = popperConfig.modifiers.find(modifier => modifier.name === 'applyStyles' && modifier.enabled === false);
-      this._popper = _popperjs_core__WEBPACK_IMPORTED_MODULE_1__.createPopper(referenceElement, this._menu, popperConfig);
-
-      if (isDisplayStatic) {
-        Manipulator.setDataAttribute(this._menu, 'popper', 'static');
-      }
+      this._createPopper(parent);
     } // If this is a touch-enabled device we add extra
     // empty mouseover listeners to the body's immediate children;
     // only needed because of broken event delegation on iOS
@@ -7455,15 +7470,15 @@ class Dropdown extends BaseComponent {
 
     this._element.setAttribute('aria-expanded', true);
 
-    this._menu.classList.toggle(CLASS_NAME_SHOW$7);
+    this._menu.classList.add(CLASS_NAME_SHOW$6);
 
-    this._element.classList.toggle(CLASS_NAME_SHOW$7);
+    this._element.classList.add(CLASS_NAME_SHOW$6);
 
     EventHandler.trigger(this._element, EVENT_SHOWN$4, relatedTarget);
   }
 
   hide() {
-    if (isDisabled(this._element) || !this._menu.classList.contains(CLASS_NAME_SHOW$7)) {
+    if (isDisabled(this._element) || !this._isShown(this._menu)) {
       return;
     }
 
@@ -7491,13 +7506,6 @@ class Dropdown extends BaseComponent {
   } // Private
 
 
-  _addEventListeners() {
-    EventHandler.on(this._element, EVENT_CLICK, event => {
-      event.preventDefault();
-      this.toggle();
-    });
-  }
-
   _completeHide(relatedTarget) {
     const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$4, relatedTarget);
 
@@ -7515,9 +7523,9 @@ class Dropdown extends BaseComponent {
       this._popper.destroy();
     }
 
-    this._menu.classList.remove(CLASS_NAME_SHOW$7);
+    this._menu.classList.remove(CLASS_NAME_SHOW$6);
 
-    this._element.classList.remove(CLASS_NAME_SHOW$7);
+    this._element.classList.remove(CLASS_NAME_SHOW$6);
 
     this._element.setAttribute('aria-expanded', 'false');
 
@@ -7530,14 +7538,43 @@ class Dropdown extends BaseComponent {
       ...Manipulator.getDataAttributes(this._element),
       ...config
     };
-    typeCheckConfig(NAME$8, config, this.constructor.DefaultType);
+    typeCheckConfig(NAME$9, config, this.constructor.DefaultType);
 
     if (typeof config.reference === 'object' && !isElement(config.reference) && typeof config.reference.getBoundingClientRect !== 'function') {
       // Popper virtual elements require a getBoundingClientRect method
-      throw new TypeError(`${NAME$8.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
+      throw new TypeError(`${NAME$9.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
     }
 
     return config;
+  }
+
+  _createPopper(parent) {
+    if (typeof _popperjs_core__WEBPACK_IMPORTED_MODULE_0__ === 'undefined') {
+      throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org)');
+    }
+
+    let referenceElement = this._element;
+
+    if (this._config.reference === 'parent') {
+      referenceElement = parent;
+    } else if (isElement(this._config.reference)) {
+      referenceElement = getElement(this._config.reference);
+    } else if (typeof this._config.reference === 'object') {
+      referenceElement = this._config.reference;
+    }
+
+    const popperConfig = this._getPopperConfig();
+
+    const isDisplayStatic = popperConfig.modifiers.find(modifier => modifier.name === 'applyStyles' && modifier.enabled === false);
+    this._popper = _popperjs_core__WEBPACK_IMPORTED_MODULE_1__.createPopper(referenceElement, this._menu, popperConfig);
+
+    if (isDisplayStatic) {
+      Manipulator.setDataAttribute(this._menu, 'popper', 'static');
+    }
+  }
+
+  _isShown(element = this._element) {
+    return element.classList.contains(CLASS_NAME_SHOW$6);
   }
 
   _getMenuElement() {
@@ -7629,26 +7666,24 @@ class Dropdown extends BaseComponent {
   } // Static
 
 
-  static dropdownInterface(element, config) {
-    const data = Dropdown.getOrCreateInstance(element, config);
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Dropdown.getOrCreateInstance(this, config);
 
-    if (typeof config === 'string') {
+      if (typeof config !== 'string') {
+        return;
+      }
+
       if (typeof data[config] === 'undefined') {
         throw new TypeError(`No method named "${config}"`);
       }
 
       data[config]();
-    }
-  }
-
-  static jQueryInterface(config) {
-    return this.each(function () {
-      Dropdown.dropdownInterface(this, config);
     });
   }
 
   static clearMenus(event) {
-    if (event && (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY)) {
+    if (event && (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY$1)) {
       return;
     }
 
@@ -7661,7 +7696,7 @@ class Dropdown extends BaseComponent {
         continue;
       }
 
-      if (!context._element.classList.contains(CLASS_NAME_SHOW$7)) {
+      if (!context._isShown()) {
         continue;
       }
 
@@ -7678,7 +7713,7 @@ class Dropdown extends BaseComponent {
         } // Tab navigation through the dropdown menu or events from contained inputs shouldn't close the menu
 
 
-        if (context._menu.contains(event.target) && (event.type === 'keyup' && event.key === TAB_KEY || /input|select|option|textarea|form/i.test(event.target.tagName))) {
+        if (context._menu.contains(event.target) && (event.type === 'keyup' && event.key === TAB_KEY$1 || /input|select|option|textarea|form/i.test(event.target.tagName))) {
           continue;
         }
 
@@ -7707,7 +7742,7 @@ class Dropdown extends BaseComponent {
       return;
     }
 
-    const isActive = this.classList.contains(CLASS_NAME_SHOW$7);
+    const isActive = this.classList.contains(CLASS_NAME_SHOW$6);
 
     if (!isActive && event.key === ESCAPE_KEY$2) {
       return;
@@ -7720,20 +7755,20 @@ class Dropdown extends BaseComponent {
       return;
     }
 
-    const getToggleButton = () => this.matches(SELECTOR_DATA_TOGGLE$3) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$3)[0];
+    const getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$3) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$3)[0];
+    const instance = Dropdown.getOrCreateInstance(getToggleButton);
 
     if (event.key === ESCAPE_KEY$2) {
-      getToggleButton().focus();
-      Dropdown.clearMenus();
+      instance.hide();
       return;
     }
 
     if (event.key === ARROW_UP_KEY || event.key === ARROW_DOWN_KEY) {
       if (!isActive) {
-        getToggleButton().click();
+        instance.show();
       }
 
-      Dropdown.getInstance(getToggleButton())._selectMenuItem(event);
+      instance._selectMenuItem(event);
 
       return;
     }
@@ -7757,7 +7792,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$3, Dropdown.clearMenus);
 EventHandler.on(document, EVENT_KEYUP_DATA_API, Dropdown.clearMenus);
 EventHandler.on(document, EVENT_CLICK_DATA_API$3, SELECTOR_DATA_TOGGLE$3, function (event) {
   event.preventDefault();
-  Dropdown.dropdownInterface(this);
+  Dropdown.getOrCreateInstance(this).toggle();
 });
 /**
  * ------------------------------------------------------------------------
@@ -7770,7 +7805,7 @@ defineJQueryPlugin(Dropdown);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): util/scrollBar.js
+ * Bootstrap (v5.1.1): util/scrollBar.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -7874,11 +7909,12 @@ class ScrollBarHelper {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): util/backdrop.js
+ * Bootstrap (v5.1.1): util/backdrop.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * --------------------------------------------------------------------------
  */
-const Default$6 = {
+const Default$7 = {
+  className: 'modal-backdrop',
   isVisible: true,
   // if false, we use the backdrop helper without adding any element to the dom
   isAnimated: false,
@@ -7886,17 +7922,17 @@ const Default$6 = {
   // give the choice to place backdrop under different elements
   clickCallback: null
 };
-const DefaultType$6 = {
+const DefaultType$7 = {
+  className: 'string',
   isVisible: 'boolean',
   isAnimated: 'boolean',
   rootElement: '(element|string)',
   clickCallback: '(function|null)'
 };
-const NAME$7 = 'backdrop';
-const CLASS_NAME_BACKDROP = 'modal-backdrop';
-const CLASS_NAME_FADE$5 = 'fade';
-const CLASS_NAME_SHOW$6 = 'show';
-const EVENT_MOUSEDOWN = `mousedown.bs.${NAME$7}`;
+const NAME$8 = 'backdrop';
+const CLASS_NAME_FADE$4 = 'fade';
+const CLASS_NAME_SHOW$5 = 'show';
+const EVENT_MOUSEDOWN = `mousedown.bs.${NAME$8}`;
 
 class Backdrop {
   constructor(config) {
@@ -7917,7 +7953,7 @@ class Backdrop {
       reflow(this._getElement());
     }
 
-    this._getElement().classList.add(CLASS_NAME_SHOW$6);
+    this._getElement().classList.add(CLASS_NAME_SHOW$5);
 
     this._emulateAnimation(() => {
       execute(callback);
@@ -7930,7 +7966,7 @@ class Backdrop {
       return;
     }
 
-    this._getElement().classList.remove(CLASS_NAME_SHOW$6);
+    this._getElement().classList.remove(CLASS_NAME_SHOW$5);
 
     this._emulateAnimation(() => {
       this.dispose();
@@ -7942,10 +7978,10 @@ class Backdrop {
   _getElement() {
     if (!this._element) {
       const backdrop = document.createElement('div');
-      backdrop.className = CLASS_NAME_BACKDROP;
+      backdrop.className = this._config.className;
 
       if (this._config.isAnimated) {
-        backdrop.classList.add(CLASS_NAME_FADE$5);
+        backdrop.classList.add(CLASS_NAME_FADE$4);
       }
 
       this._element = backdrop;
@@ -7955,12 +7991,12 @@ class Backdrop {
   }
 
   _getConfig(config) {
-    config = { ...Default$6,
+    config = { ...Default$7,
       ...(typeof config === 'object' ? config : {})
     }; // use getElement() with the default "body" to get a fresh Element on each instantiation
 
     config.rootElement = getElement(config.rootElement);
-    typeCheckConfig(NAME$7, config, DefaultType$6);
+    typeCheckConfig(NAME$8, config, DefaultType$7);
     return config;
   }
 
@@ -7969,7 +8005,7 @@ class Backdrop {
       return;
     }
 
-    this._config.rootElement.appendChild(this._getElement());
+    this._config.rootElement.append(this._getElement());
 
     EventHandler.on(this._getElement(), EVENT_MOUSEDOWN, () => {
       execute(this._config.clickCallback);
@@ -7997,7 +8033,110 @@ class Backdrop {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): modal.js
+ * Bootstrap (v5.1.1): util/focustrap.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+const Default$6 = {
+  trapElement: null,
+  // The element to trap focus inside of
+  autofocus: true
+};
+const DefaultType$6 = {
+  trapElement: 'element',
+  autofocus: 'boolean'
+};
+const NAME$7 = 'focustrap';
+const DATA_KEY$7 = 'bs.focustrap';
+const EVENT_KEY$7 = `.${DATA_KEY$7}`;
+const EVENT_FOCUSIN$1 = `focusin${EVENT_KEY$7}`;
+const EVENT_KEYDOWN_TAB = `keydown.tab${EVENT_KEY$7}`;
+const TAB_KEY = 'Tab';
+const TAB_NAV_FORWARD = 'forward';
+const TAB_NAV_BACKWARD = 'backward';
+
+class FocusTrap {
+  constructor(config) {
+    this._config = this._getConfig(config);
+    this._isActive = false;
+    this._lastTabNavDirection = null;
+  }
+
+  activate() {
+    const {
+      trapElement,
+      autofocus
+    } = this._config;
+
+    if (this._isActive) {
+      return;
+    }
+
+    if (autofocus) {
+      trapElement.focus();
+    }
+
+    EventHandler.off(document, EVENT_KEY$7); // guard against infinite focus loop
+
+    EventHandler.on(document, EVENT_FOCUSIN$1, event => this._handleFocusin(event));
+    EventHandler.on(document, EVENT_KEYDOWN_TAB, event => this._handleKeydown(event));
+    this._isActive = true;
+  }
+
+  deactivate() {
+    if (!this._isActive) {
+      return;
+    }
+
+    this._isActive = false;
+    EventHandler.off(document, EVENT_KEY$7);
+  } // Private
+
+
+  _handleFocusin(event) {
+    const {
+      target
+    } = event;
+    const {
+      trapElement
+    } = this._config;
+
+    if (target === document || target === trapElement || trapElement.contains(target)) {
+      return;
+    }
+
+    const elements = SelectorEngine.focusableChildren(trapElement);
+
+    if (elements.length === 0) {
+      trapElement.focus();
+    } else if (this._lastTabNavDirection === TAB_NAV_BACKWARD) {
+      elements[elements.length - 1].focus();
+    } else {
+      elements[0].focus();
+    }
+  }
+
+  _handleKeydown(event) {
+    if (event.key !== TAB_KEY) {
+      return;
+    }
+
+    this._lastTabNavDirection = event.shiftKey ? TAB_NAV_BACKWARD : TAB_NAV_FORWARD;
+  }
+
+  _getConfig(config) {
+    config = { ...Default$6,
+      ...(typeof config === 'object' ? config : {})
+    };
+    typeCheckConfig(NAME$7, config, DefaultType$6);
+    return config;
+  }
+
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap (v5.1.1): modal.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8027,21 +8166,20 @@ const EVENT_HIDE_PREVENTED = `hidePrevented${EVENT_KEY$6}`;
 const EVENT_HIDDEN$3 = `hidden${EVENT_KEY$6}`;
 const EVENT_SHOW$3 = `show${EVENT_KEY$6}`;
 const EVENT_SHOWN$3 = `shown${EVENT_KEY$6}`;
-const EVENT_FOCUSIN$2 = `focusin${EVENT_KEY$6}`;
 const EVENT_RESIZE = `resize${EVENT_KEY$6}`;
-const EVENT_CLICK_DISMISS$2 = `click.dismiss${EVENT_KEY$6}`;
+const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY$6}`;
 const EVENT_KEYDOWN_DISMISS$1 = `keydown.dismiss${EVENT_KEY$6}`;
 const EVENT_MOUSEUP_DISMISS = `mouseup.dismiss${EVENT_KEY$6}`;
 const EVENT_MOUSEDOWN_DISMISS = `mousedown.dismiss${EVENT_KEY$6}`;
 const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$6}${DATA_API_KEY$3}`;
 const CLASS_NAME_OPEN = 'modal-open';
-const CLASS_NAME_FADE$4 = 'fade';
-const CLASS_NAME_SHOW$5 = 'show';
+const CLASS_NAME_FADE$3 = 'fade';
+const CLASS_NAME_SHOW$4 = 'show';
 const CLASS_NAME_STATIC = 'modal-static';
+const OPEN_SELECTOR$1 = '.modal.show';
 const SELECTOR_DIALOG = '.modal-dialog';
 const SELECTOR_MODAL_BODY = '.modal-body';
 const SELECTOR_DATA_TOGGLE$2 = '[data-bs-toggle="modal"]';
-const SELECTOR_DATA_DISMISS$2 = '[data-bs-dismiss="modal"]';
 /**
  * ------------------------------------------------------------------------
  * Class Definition
@@ -8054,6 +8192,7 @@ class Modal extends BaseComponent {
     this._config = this._getConfig(config);
     this._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, this._element);
     this._backdrop = this._initializeBackDrop();
+    this._focustrap = this._initializeFocusTrap();
     this._isShown = false;
     this._ignoreBackdropClick = false;
     this._isTransitioning = false;
@@ -8103,7 +8242,6 @@ class Modal extends BaseComponent {
 
     this._setResizeEvent();
 
-    EventHandler.on(this._element, EVENT_CLICK_DISMISS$2, SELECTOR_DATA_DISMISS$2, event => this.hide(event));
     EventHandler.on(this._dialog, EVENT_MOUSEDOWN_DISMISS, () => {
       EventHandler.one(this._element, EVENT_MOUSEUP_DISMISS, event => {
         if (event.target === this._element) {
@@ -8115,11 +8253,7 @@ class Modal extends BaseComponent {
     this._showBackdrop(() => this._showElement(relatedTarget));
   }
 
-  hide(event) {
-    if (event && ['A', 'AREA'].includes(event.target.tagName)) {
-      event.preventDefault();
-    }
-
+  hide() {
     if (!this._isShown || this._isTransitioning) {
       return;
     }
@@ -8142,11 +8276,11 @@ class Modal extends BaseComponent {
 
     this._setResizeEvent();
 
-    EventHandler.off(document, EVENT_FOCUSIN$2);
+    this._focustrap.deactivate();
 
-    this._element.classList.remove(CLASS_NAME_SHOW$5);
+    this._element.classList.remove(CLASS_NAME_SHOW$4);
 
-    EventHandler.off(this._element, EVENT_CLICK_DISMISS$2);
+    EventHandler.off(this._element, EVENT_CLICK_DISMISS);
     EventHandler.off(this._dialog, EVENT_MOUSEDOWN_DISMISS);
 
     this._queueCallback(() => this._hideModal(), this._element, isAnimated);
@@ -8157,14 +8291,9 @@ class Modal extends BaseComponent {
 
     this._backdrop.dispose();
 
-    super.dispose();
-    /**
-     * `document` has 2 events `EVENT_FOCUSIN` and `EVENT_CLICK_DATA_API`
-     * Do not move `document` in `htmlElements` array
-     * It will remove `EVENT_CLICK_DATA_API` event that should remain
-     */
+    this._focustrap.deactivate();
 
-    EventHandler.off(document, EVENT_FOCUSIN$2);
+    super.dispose();
   }
 
   handleUpdate() {
@@ -8177,6 +8306,12 @@ class Modal extends BaseComponent {
       isVisible: Boolean(this._config.backdrop),
       // 'static' option will be translated to true, and booleans will keep their value
       isAnimated: this._isAnimated()
+    });
+  }
+
+  _initializeFocusTrap() {
+    return new FocusTrap({
+      trapElement: this._element
     });
   }
 
@@ -8196,7 +8331,7 @@ class Modal extends BaseComponent {
 
     if (!this._element.parentNode || this._element.parentNode.nodeType !== Node.ELEMENT_NODE) {
       // Don't move modal's DOM position
-      document.body.appendChild(this._element);
+      document.body.append(this._element);
     }
 
     this._element.style.display = 'block';
@@ -8217,15 +8352,11 @@ class Modal extends BaseComponent {
       reflow(this._element);
     }
 
-    this._element.classList.add(CLASS_NAME_SHOW$5);
-
-    if (this._config.focus) {
-      this._enforceFocus();
-    }
+    this._element.classList.add(CLASS_NAME_SHOW$4);
 
     const transitionComplete = () => {
       if (this._config.focus) {
-        this._element.focus();
+        this._focustrap.activate();
       }
 
       this._isTransitioning = false;
@@ -8235,16 +8366,6 @@ class Modal extends BaseComponent {
     };
 
     this._queueCallback(transitionComplete, this._dialog, isAnimated);
-  }
-
-  _enforceFocus() {
-    EventHandler.off(document, EVENT_FOCUSIN$2); // guard against infinite focus loop
-
-    EventHandler.on(document, EVENT_FOCUSIN$2, event => {
-      if (document !== event.target && this._element !== event.target && !this._element.contains(event.target)) {
-        this._element.focus();
-      }
-    });
   }
 
   _setEscapeEvent() {
@@ -8293,7 +8414,7 @@ class Modal extends BaseComponent {
   }
 
   _showBackdrop(callback) {
-    EventHandler.on(this._element, EVENT_CLICK_DISMISS$2, event => {
+    EventHandler.on(this._element, EVENT_CLICK_DISMISS, event => {
       if (this._ignoreBackdropClick) {
         this._ignoreBackdropClick = false;
         return;
@@ -8314,7 +8435,7 @@ class Modal extends BaseComponent {
   }
 
   _isAnimated() {
-    return this._element.classList.contains(CLASS_NAME_FADE$4);
+    return this._element.classList.contains(CLASS_NAME_FADE$3);
   }
 
   _triggerBackdropTransition() {
@@ -8421,10 +8542,18 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$2, functi
         this.focus();
       }
     });
-  });
+  }); // avoid conflict when clicking moddal toggler while another one is open
+
+  const allReadyOpen = SelectorEngine.findOne(OPEN_SELECTOR$1);
+
+  if (allReadyOpen) {
+    Modal.getInstance(allReadyOpen).hide();
+  }
+
   const data = Modal.getOrCreateInstance(target);
   data.toggle(this);
 });
+enableDismissTrigger(Modal);
 /**
  * ------------------------------------------------------------------------
  * jQuery
@@ -8436,7 +8565,7 @@ defineJQueryPlugin(Modal);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): offcanvas.js
+ * Bootstrap (v5.1.1): offcanvas.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8462,17 +8591,15 @@ const DefaultType$4 = {
   keyboard: 'boolean',
   scroll: 'boolean'
 };
-const CLASS_NAME_SHOW$4 = 'show';
+const CLASS_NAME_SHOW$3 = 'show';
+const CLASS_NAME_BACKDROP = 'offcanvas-backdrop';
 const OPEN_SELECTOR = '.offcanvas.show';
 const EVENT_SHOW$2 = `show${EVENT_KEY$5}`;
 const EVENT_SHOWN$2 = `shown${EVENT_KEY$5}`;
 const EVENT_HIDE$2 = `hide${EVENT_KEY$5}`;
 const EVENT_HIDDEN$2 = `hidden${EVENT_KEY$5}`;
-const EVENT_FOCUSIN$1 = `focusin${EVENT_KEY$5}`;
 const EVENT_CLICK_DATA_API$1 = `click${EVENT_KEY$5}${DATA_API_KEY$2}`;
-const EVENT_CLICK_DISMISS$1 = `click.dismiss${EVENT_KEY$5}`;
 const EVENT_KEYDOWN_DISMISS = `keydown.dismiss${EVENT_KEY$5}`;
-const SELECTOR_DATA_DISMISS$1 = '[data-bs-dismiss="offcanvas"]';
 const SELECTOR_DATA_TOGGLE$1 = '[data-bs-toggle="offcanvas"]';
 /**
  * ------------------------------------------------------------------------
@@ -8486,6 +8613,7 @@ class Offcanvas extends BaseComponent {
     this._config = this._getConfig(config);
     this._isShown = false;
     this._backdrop = this._initializeBackDrop();
+    this._focustrap = this._initializeFocusTrap();
 
     this._addEventListeners();
   } // Getters
@@ -8524,8 +8652,6 @@ class Offcanvas extends BaseComponent {
 
     if (!this._config.scroll) {
       new ScrollBarHelper().hide();
-
-      this._enforceFocusOnElement(this._element);
     }
 
     this._element.removeAttribute('aria-hidden');
@@ -8534,9 +8660,13 @@ class Offcanvas extends BaseComponent {
 
     this._element.setAttribute('role', 'dialog');
 
-    this._element.classList.add(CLASS_NAME_SHOW$4);
+    this._element.classList.add(CLASS_NAME_SHOW$3);
 
     const completeCallBack = () => {
+      if (!this._config.scroll) {
+        this._focustrap.activate();
+      }
+
       EventHandler.trigger(this._element, EVENT_SHOWN$2, {
         relatedTarget
       });
@@ -8556,13 +8686,13 @@ class Offcanvas extends BaseComponent {
       return;
     }
 
-    EventHandler.off(document, EVENT_FOCUSIN$1);
+    this._focustrap.deactivate();
 
     this._element.blur();
 
     this._isShown = false;
 
-    this._element.classList.remove(CLASS_NAME_SHOW$4);
+    this._element.classList.remove(CLASS_NAME_SHOW$3);
 
     this._backdrop.hide();
 
@@ -8588,8 +8718,9 @@ class Offcanvas extends BaseComponent {
   dispose() {
     this._backdrop.dispose();
 
+    this._focustrap.deactivate();
+
     super.dispose();
-    EventHandler.off(document, EVENT_FOCUSIN$1);
   } // Private
 
 
@@ -8604,6 +8735,7 @@ class Offcanvas extends BaseComponent {
 
   _initializeBackDrop() {
     return new Backdrop({
+      className: CLASS_NAME_BACKDROP,
       isVisible: this._config.backdrop,
       isAnimated: true,
       rootElement: this._element.parentNode,
@@ -8611,19 +8743,13 @@ class Offcanvas extends BaseComponent {
     });
   }
 
-  _enforceFocusOnElement(element) {
-    EventHandler.off(document, EVENT_FOCUSIN$1); // guard against infinite focus loop
-
-    EventHandler.on(document, EVENT_FOCUSIN$1, event => {
-      if (document !== event.target && element !== event.target && !element.contains(event.target)) {
-        element.focus();
-      }
+  _initializeFocusTrap() {
+    return new FocusTrap({
+      trapElement: this._element
     });
-    element.focus();
   }
 
   _addEventListeners() {
-    EventHandler.on(this._element, EVENT_CLICK_DISMISS$1, SELECTOR_DATA_DISMISS$1, () => this.hide());
     EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, event => {
       if (this._config.keyboard && event.key === ESCAPE_KEY) {
         this.hide();
@@ -8684,6 +8810,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$1, functi
   data.toggle(this);
 });
 EventHandler.on(window, EVENT_LOAD_DATA_API$1, () => SelectorEngine.find(OPEN_SELECTOR).forEach(el => Offcanvas.getOrCreateInstance(el).show()));
+enableDismissTrigger(Offcanvas);
 /**
  * ------------------------------------------------------------------------
  * jQuery
@@ -8694,7 +8821,7 @@ defineJQueryPlugin(Offcanvas);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): util/sanitizer.js
+ * Bootstrap (v5.1.1): util/sanitizer.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8807,7 +8934,7 @@ function sanitizeHtml(unsafeHtml, allowList, sanitizeFn) {
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): tooltip.js
+ * Bootstrap (v5.1.1): tooltip.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8821,7 +8948,6 @@ const NAME$4 = 'tooltip';
 const DATA_KEY$4 = 'bs.tooltip';
 const EVENT_KEY$4 = `.${DATA_KEY$4}`;
 const CLASS_PREFIX$1 = 'bs-tooltip';
-const BSCLS_PREFIX_REGEX$1 = new RegExp(`(^|\\s)${CLASS_PREFIX$1}\\S+`, 'g');
 const DISALLOWED_ATTRIBUTES = new Set(['sanitize', 'allowList', 'sanitizeFn']);
 const DefaultType$3 = {
   animation: 'boolean',
@@ -8880,12 +9006,14 @@ const Event$2 = {
   MOUSEENTER: `mouseenter${EVENT_KEY$4}`,
   MOUSELEAVE: `mouseleave${EVENT_KEY$4}`
 };
-const CLASS_NAME_FADE$3 = 'fade';
+const CLASS_NAME_FADE$2 = 'fade';
 const CLASS_NAME_MODAL = 'modal';
-const CLASS_NAME_SHOW$3 = 'show';
+const CLASS_NAME_SHOW$2 = 'show';
 const HOVER_STATE_SHOW = 'show';
 const HOVER_STATE_OUT = 'out';
 const SELECTOR_TOOLTIP_INNER = '.tooltip-inner';
+const SELECTOR_MODAL = `.${CLASS_NAME_MODAL}`;
+const EVENT_MODAL_HIDE = 'hide.bs.modal';
 const TRIGGER_HOVER = 'hover';
 const TRIGGER_FOCUS = 'focus';
 const TRIGGER_CLICK = 'click';
@@ -8962,7 +9090,7 @@ class Tooltip extends BaseComponent {
         context._leave(null, context);
       }
     } else {
-      if (this.getTipElement().classList.contains(CLASS_NAME_SHOW$3)) {
+      if (this.getTipElement().classList.contains(CLASS_NAME_SHOW$2)) {
         this._leave(null, this);
 
         return;
@@ -8974,15 +9102,13 @@ class Tooltip extends BaseComponent {
 
   dispose() {
     clearTimeout(this._timeout);
-    EventHandler.off(this._element.closest(`.${CLASS_NAME_MODAL}`), 'hide.bs.modal', this._hideModalHandler);
+    EventHandler.off(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler);
 
     if (this.tip) {
       this.tip.remove();
     }
 
-    if (this._popper) {
-      this._popper.destroy();
-    }
+    this._disposePopper();
 
     super.dispose();
   }
@@ -9002,6 +9128,15 @@ class Tooltip extends BaseComponent {
 
     if (showEvent.defaultPrevented || !isInTheDom) {
       return;
+    } // A trick to recreate a tooltip in case a new title is given by using the NOT documented `data-bs-original-title`
+    // This will be removed later in favor of a `setContent` method
+
+
+    if (this.constructor.NAME === 'tooltip' && this.tip && this.getTitle() !== this.tip.querySelector(SELECTOR_TOOLTIP_INNER).innerHTML) {
+      this._disposePopper();
+
+      this.tip.remove();
+      this.tip = null;
     }
 
     const tip = this.getTipElement();
@@ -9010,10 +9145,8 @@ class Tooltip extends BaseComponent {
 
     this._element.setAttribute('aria-describedby', tipId);
 
-    this.setContent();
-
     if (this._config.animation) {
-      tip.classList.add(CLASS_NAME_FADE$3);
+      tip.classList.add(CLASS_NAME_FADE$2);
     }
 
     const placement = typeof this._config.placement === 'function' ? this._config.placement.call(this, tip, this._element) : this._config.placement;
@@ -9028,7 +9161,7 @@ class Tooltip extends BaseComponent {
     Data.set(tip, this.constructor.DATA_KEY, this);
 
     if (!this._element.ownerDocument.documentElement.contains(this.tip)) {
-      container.appendChild(tip);
+      container.append(tip);
       EventHandler.trigger(this._element, this.constructor.Event.INSERTED);
     }
 
@@ -9038,8 +9171,9 @@ class Tooltip extends BaseComponent {
       this._popper = _popperjs_core__WEBPACK_IMPORTED_MODULE_1__.createPopper(this._element, tip, this._getPopperConfig(attachment));
     }
 
-    tip.classList.add(CLASS_NAME_SHOW$3);
-    const customClass = typeof this._config.customClass === 'function' ? this._config.customClass() : this._config.customClass;
+    tip.classList.add(CLASS_NAME_SHOW$2);
+
+    const customClass = this._resolvePossibleFunction(this._config.customClass);
 
     if (customClass) {
       tip.classList.add(...customClass.split(' '));
@@ -9065,7 +9199,7 @@ class Tooltip extends BaseComponent {
       }
     };
 
-    const isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$3);
+    const isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$2);
 
     this._queueCallback(complete, this.tip, isAnimated);
   }
@@ -9092,11 +9226,7 @@ class Tooltip extends BaseComponent {
 
       EventHandler.trigger(this._element, this.constructor.Event.HIDDEN);
 
-      if (this._popper) {
-        this._popper.destroy();
-
-        this._popper = null;
-      }
+      this._disposePopper();
     };
 
     const hideEvent = EventHandler.trigger(this._element, this.constructor.Event.HIDE);
@@ -9105,7 +9235,7 @@ class Tooltip extends BaseComponent {
       return;
     }
 
-    tip.classList.remove(CLASS_NAME_SHOW$3); // If this is a touch-enabled device we remove the extra
+    tip.classList.remove(CLASS_NAME_SHOW$2); // If this is a touch-enabled device we remove the extra
     // empty mouseover listeners we added for iOS support
 
     if ('ontouchstart' in document.documentElement) {
@@ -9115,7 +9245,7 @@ class Tooltip extends BaseComponent {
     this._activeTrigger[TRIGGER_CLICK] = false;
     this._activeTrigger[TRIGGER_FOCUS] = false;
     this._activeTrigger[TRIGGER_HOVER] = false;
-    const isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$3);
+    const isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$2);
 
     this._queueCallback(complete, this.tip, isAnimated);
 
@@ -9140,14 +9270,27 @@ class Tooltip extends BaseComponent {
 
     const element = document.createElement('div');
     element.innerHTML = this._config.template;
-    this.tip = element.children[0];
+    const tip = element.children[0];
+    this.setContent(tip);
+    tip.classList.remove(CLASS_NAME_FADE$2, CLASS_NAME_SHOW$2);
+    this.tip = tip;
     return this.tip;
   }
 
-  setContent() {
-    const tip = this.getTipElement();
-    this.setElementContent(SelectorEngine.findOne(SELECTOR_TOOLTIP_INNER, tip), this.getTitle());
-    tip.classList.remove(CLASS_NAME_FADE$3, CLASS_NAME_SHOW$3);
+  setContent(tip) {
+    this._sanitizeAndSetContent(tip, this.getTitle(), SELECTOR_TOOLTIP_INNER);
+  }
+
+  _sanitizeAndSetContent(template, content, selector) {
+    const templateElement = SelectorEngine.findOne(selector, template);
+
+    if (!content && templateElement) {
+      templateElement.remove();
+      return;
+    } // we use append for html objects to maintain js events
+
+
+    this.setElementContent(templateElement, content);
   }
 
   setElementContent(element, content) {
@@ -9161,7 +9304,7 @@ class Tooltip extends BaseComponent {
       if (this._config.html) {
         if (content.parentNode !== element) {
           element.innerHTML = '';
-          element.appendChild(content);
+          element.append(content);
         }
       } else {
         element.textContent = content.textContent;
@@ -9182,13 +9325,9 @@ class Tooltip extends BaseComponent {
   }
 
   getTitle() {
-    let title = this._element.getAttribute('data-bs-original-title');
+    const title = this._element.getAttribute('data-bs-original-title') || this._config.title;
 
-    if (!title) {
-      title = typeof this._config.title === 'function' ? this._config.title.call(this._element) : this._config.title;
-    }
-
-    return title;
+    return this._resolvePossibleFunction(title);
   }
 
   updateAttachment(attachment) {
@@ -9205,15 +9344,7 @@ class Tooltip extends BaseComponent {
 
 
   _initializeOnDelegatedTarget(event, context) {
-    const dataKey = this.constructor.DATA_KEY;
-    context = context || Data.get(event.delegateTarget, dataKey);
-
-    if (!context) {
-      context = new this.constructor(event.delegateTarget, this._getDelegateConfig());
-      Data.set(event.delegateTarget, dataKey, context);
-    }
-
-    return context;
+    return context || this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
   }
 
   _getOffset() {
@@ -9230,6 +9361,10 @@ class Tooltip extends BaseComponent {
     }
 
     return offset;
+  }
+
+  _resolvePossibleFunction(content) {
+    return typeof content === 'function' ? content.call(this._element) : content;
   }
 
   _getPopperConfig(attachment) {
@@ -9273,7 +9408,7 @@ class Tooltip extends BaseComponent {
   }
 
   _addAttachmentClass(attachment) {
-    this.getTipElement().classList.add(`${CLASS_PREFIX$1}-${this.updateAttachment(attachment)}`);
+    this.getTipElement().classList.add(`${this._getBasicClassPrefix()}-${this.updateAttachment(attachment)}`);
   }
 
   _getAttachment(placement) {
@@ -9300,7 +9435,7 @@ class Tooltip extends BaseComponent {
       }
     };
 
-    EventHandler.on(this._element.closest(`.${CLASS_NAME_MODAL}`), 'hide.bs.modal', this._hideModalHandler);
+    EventHandler.on(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler);
 
     if (this._config.selector) {
       this._config = { ...this._config,
@@ -9335,7 +9470,7 @@ class Tooltip extends BaseComponent {
       context._activeTrigger[event.type === 'focusin' ? TRIGGER_FOCUS : TRIGGER_HOVER] = true;
     }
 
-    if (context.getTipElement().classList.contains(CLASS_NAME_SHOW$3) || context._hoverState === HOVER_STATE_SHOW) {
+    if (context.getTipElement().classList.contains(CLASS_NAME_SHOW$2) || context._hoverState === HOVER_STATE_SHOW) {
       context._hoverState = HOVER_STATE_SHOW;
       return;
     }
@@ -9431,24 +9566,30 @@ class Tooltip extends BaseComponent {
   _getDelegateConfig() {
     const config = {};
 
-    if (this._config) {
-      for (const key in this._config) {
-        if (this.constructor.Default[key] !== this._config[key]) {
-          config[key] = this._config[key];
-        }
+    for (const key in this._config) {
+      if (this.constructor.Default[key] !== this._config[key]) {
+        config[key] = this._config[key];
       }
-    }
+    } // In the future can be replaced with:
+    // const keysWithDifferentValues = Object.entries(this._config).filter(entry => this.constructor.Default[entry[0]] !== this._config[entry[0]])
+    // `Object.fromEntries(keysWithDifferentValues)`
+
 
     return config;
   }
 
   _cleanTipClass() {
     const tip = this.getTipElement();
-    const tabClass = tip.getAttribute('class').match(BSCLS_PREFIX_REGEX$1);
+    const basicClassPrefixRegex = new RegExp(`(^|\\s)${this._getBasicClassPrefix()}\\S+`, 'g');
+    const tabClass = tip.getAttribute('class').match(basicClassPrefixRegex);
 
     if (tabClass !== null && tabClass.length > 0) {
       tabClass.map(token => token.trim()).forEach(tClass => tip.classList.remove(tClass));
     }
+  }
+
+  _getBasicClassPrefix() {
+    return CLASS_PREFIX$1;
   }
 
   _handlePopperPlacementChange(popperData) {
@@ -9465,6 +9606,14 @@ class Tooltip extends BaseComponent {
     this._cleanTipClass();
 
     this._addAttachmentClass(this._getAttachment(state.placement));
+  }
+
+  _disposePopper() {
+    if (this._popper) {
+      this._popper.destroy();
+
+      this._popper = null;
+    }
   } // Static
 
 
@@ -9495,7 +9644,7 @@ defineJQueryPlugin(Tooltip);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): popover.js
+ * Bootstrap (v5.1.1): popover.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9509,7 +9658,6 @@ const NAME$3 = 'popover';
 const DATA_KEY$3 = 'bs.popover';
 const EVENT_KEY$3 = `.${DATA_KEY$3}`;
 const CLASS_PREFIX = 'bs-popover';
-const BSCLS_PREFIX_REGEX = new RegExp(`(^|\\s)${CLASS_PREFIX}\\S+`, 'g');
 const Default$2 = { ...Tooltip.Default,
   placement: 'right',
   offset: [0, 8],
@@ -9532,8 +9680,6 @@ const Event$1 = {
   MOUSEENTER: `mouseenter${EVENT_KEY$3}`,
   MOUSELEAVE: `mouseleave${EVENT_KEY$3}`
 };
-const CLASS_NAME_FADE$2 = 'fade';
-const CLASS_NAME_SHOW$2 = 'show';
 const SELECTOR_TITLE = '.popover-header';
 const SELECTOR_CONTENT = '.popover-body';
 /**
@@ -9565,55 +9711,19 @@ class Popover extends Tooltip {
     return this.getTitle() || this._getContent();
   }
 
-  getTipElement() {
-    if (this.tip) {
-      return this.tip;
-    }
+  setContent(tip) {
+    this._sanitizeAndSetContent(tip, this.getTitle(), SELECTOR_TITLE);
 
-    this.tip = super.getTipElement();
-
-    if (!this.getTitle()) {
-      SelectorEngine.findOne(SELECTOR_TITLE, this.tip).remove();
-    }
-
-    if (!this._getContent()) {
-      SelectorEngine.findOne(SELECTOR_CONTENT, this.tip).remove();
-    }
-
-    return this.tip;
-  }
-
-  setContent() {
-    const tip = this.getTipElement(); // we use append for html objects to maintain js events
-
-    this.setElementContent(SelectorEngine.findOne(SELECTOR_TITLE, tip), this.getTitle());
-
-    let content = this._getContent();
-
-    if (typeof content === 'function') {
-      content = content.call(this._element);
-    }
-
-    this.setElementContent(SelectorEngine.findOne(SELECTOR_CONTENT, tip), content);
-    tip.classList.remove(CLASS_NAME_FADE$2, CLASS_NAME_SHOW$2);
+    this._sanitizeAndSetContent(tip, this._getContent(), SELECTOR_CONTENT);
   } // Private
 
 
-  _addAttachmentClass(attachment) {
-    this.getTipElement().classList.add(`${CLASS_PREFIX}-${this.updateAttachment(attachment)}`);
-  }
-
   _getContent() {
-    return this._element.getAttribute('data-bs-content') || this._config.content;
+    return this._resolvePossibleFunction(this._config.content);
   }
 
-  _cleanTipClass() {
-    const tip = this.getTipElement();
-    const tabClass = tip.getAttribute('class').match(BSCLS_PREFIX_REGEX);
-
-    if (tabClass !== null && tabClass.length > 0) {
-      tabClass.map(token => token.trim()).forEach(tClass => tip.classList.remove(tClass));
-    }
+  _getBasicClassPrefix() {
+    return CLASS_PREFIX;
   } // Static
 
 
@@ -9644,7 +9754,7 @@ defineJQueryPlugin(Popover);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): scrollspy.js
+ * Bootstrap (v5.1.1): scrollspy.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9678,6 +9788,7 @@ const SELECTOR_NAV_LIST_GROUP$1 = '.nav, .list-group';
 const SELECTOR_NAV_LINKS = '.nav-link';
 const SELECTOR_NAV_ITEMS = '.nav-item';
 const SELECTOR_LIST_ITEMS = '.list-group-item';
+const SELECTOR_LINK_ITEMS = `${SELECTOR_NAV_LINKS}, ${SELECTOR_LIST_ITEMS}, .${CLASS_NAME_DROPDOWN_ITEM}`;
 const SELECTOR_DROPDOWN$1 = '.dropdown';
 const SELECTOR_DROPDOWN_TOGGLE$1 = '.dropdown-toggle';
 const METHOD_OFFSET = 'offset';
@@ -9693,7 +9804,6 @@ class ScrollSpy extends BaseComponent {
     super(element);
     this._scrollElement = this._element.tagName === 'BODY' ? window : this._element;
     this._config = this._getConfig(config);
-    this._selector = `${this._config.target} ${SELECTOR_NAV_LINKS}, ${this._config.target} ${SELECTOR_LIST_ITEMS}, ${this._config.target} .${CLASS_NAME_DROPDOWN_ITEM}`;
     this._offsets = [];
     this._targets = [];
     this._activeTarget = null;
@@ -9721,7 +9831,7 @@ class ScrollSpy extends BaseComponent {
     this._offsets = [];
     this._targets = [];
     this._scrollHeight = this._getScrollHeight();
-    const targets = SelectorEngine.find(this._selector);
+    const targets = SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target);
     targets.map(element => {
       const targetSelector = getSelectorFromElement(element);
       const target = targetSelector ? SelectorEngine.findOne(targetSelector) : null;
@@ -9753,20 +9863,7 @@ class ScrollSpy extends BaseComponent {
       ...Manipulator.getDataAttributes(this._element),
       ...(typeof config === 'object' && config ? config : {})
     };
-
-    if (typeof config.target !== 'string' && isElement(config.target)) {
-      let {
-        id
-      } = config.target;
-
-      if (!id) {
-        id = getUID(NAME$2);
-        config.target.id = id;
-      }
-
-      config.target = `#${id}`;
-    }
-
+    config.target = getElement(config.target) || document.documentElement;
     typeCheckConfig(NAME$2, config, DefaultType$1);
     return config;
   }
@@ -9826,16 +9923,13 @@ class ScrollSpy extends BaseComponent {
 
     this._clear();
 
-    const queries = this._selector.split(',').map(selector => `${selector}[data-bs-target="${target}"],${selector}[href="${target}"]`);
-
-    const link = SelectorEngine.findOne(queries.join(','));
+    const queries = SELECTOR_LINK_ITEMS.split(',').map(selector => `${selector}[data-bs-target="${target}"],${selector}[href="${target}"]`);
+    const link = SelectorEngine.findOne(queries.join(','), this._config.target);
+    link.classList.add(CLASS_NAME_ACTIVE$1);
 
     if (link.classList.contains(CLASS_NAME_DROPDOWN_ITEM)) {
       SelectorEngine.findOne(SELECTOR_DROPDOWN_TOGGLE$1, link.closest(SELECTOR_DROPDOWN$1)).classList.add(CLASS_NAME_ACTIVE$1);
-      link.classList.add(CLASS_NAME_ACTIVE$1);
     } else {
-      // Set triggered link as active
-      link.classList.add(CLASS_NAME_ACTIVE$1);
       SelectorEngine.parents(link, SELECTOR_NAV_LIST_GROUP$1).forEach(listGroup => {
         // Set triggered links parents as active
         // With both <ul> and <nav> markup a parent is the previous sibling of any nav ancestor
@@ -9853,7 +9947,7 @@ class ScrollSpy extends BaseComponent {
   }
 
   _clear() {
-    SelectorEngine.find(this._selector).filter(node => node.classList.contains(CLASS_NAME_ACTIVE$1)).forEach(node => node.classList.remove(CLASS_NAME_ACTIVE$1));
+    SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target).filter(node => node.classList.contains(CLASS_NAME_ACTIVE$1)).forEach(node => node.classList.remove(CLASS_NAME_ACTIVE$1));
   } // Static
 
 
@@ -9895,7 +9989,7 @@ defineJQueryPlugin(ScrollSpy);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): tab.js
+ * Bootstrap (v5.1.1): tab.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -10093,7 +10187,7 @@ defineJQueryPlugin(Tab);
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.2): toast.js
+ * Bootstrap (v5.1.1): toast.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -10106,7 +10200,6 @@ defineJQueryPlugin(Tab);
 const NAME = 'toast';
 const DATA_KEY = 'bs.toast';
 const EVENT_KEY = `.${DATA_KEY}`;
-const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY}`;
 const EVENT_MOUSEOVER = `mouseover${EVENT_KEY}`;
 const EVENT_MOUSEOUT = `mouseout${EVENT_KEY}`;
 const EVENT_FOCUSIN = `focusin${EVENT_KEY}`;
@@ -10116,7 +10209,8 @@ const EVENT_HIDDEN = `hidden${EVENT_KEY}`;
 const EVENT_SHOW = `show${EVENT_KEY}`;
 const EVENT_SHOWN = `shown${EVENT_KEY}`;
 const CLASS_NAME_FADE = 'fade';
-const CLASS_NAME_HIDE = 'hide';
+const CLASS_NAME_HIDE = 'hide'; // @deprecated - kept here only for backwards compatibility
+
 const CLASS_NAME_SHOW = 'show';
 const CLASS_NAME_SHOWING = 'showing';
 const DefaultType = {
@@ -10129,7 +10223,6 @@ const Default = {
   autohide: true,
   delay: 5000
 };
-const SELECTOR_DATA_DISMISS = '[data-bs-dismiss="toast"]';
 /**
  * ------------------------------------------------------------------------
  * Class Definition
@@ -10177,16 +10270,17 @@ class Toast extends BaseComponent {
     const complete = () => {
       this._element.classList.remove(CLASS_NAME_SHOWING);
 
-      this._element.classList.add(CLASS_NAME_SHOW);
-
       EventHandler.trigger(this._element, EVENT_SHOWN);
 
       this._maybeScheduleHide();
     };
 
-    this._element.classList.remove(CLASS_NAME_HIDE);
+    this._element.classList.remove(CLASS_NAME_HIDE); // @deprecated
+
 
     reflow(this._element);
+
+    this._element.classList.add(CLASS_NAME_SHOW);
 
     this._element.classList.add(CLASS_NAME_SHOWING);
 
@@ -10205,12 +10299,17 @@ class Toast extends BaseComponent {
     }
 
     const complete = () => {
-      this._element.classList.add(CLASS_NAME_HIDE);
+      this._element.classList.add(CLASS_NAME_HIDE); // @deprecated
+
+
+      this._element.classList.remove(CLASS_NAME_SHOWING);
+
+      this._element.classList.remove(CLASS_NAME_SHOW);
 
       EventHandler.trigger(this._element, EVENT_HIDDEN);
     };
 
-    this._element.classList.remove(CLASS_NAME_SHOW);
+    this._element.classList.add(CLASS_NAME_SHOWING);
 
     this._queueCallback(complete, this._element, this._config.animation);
   }
@@ -10278,7 +10377,6 @@ class Toast extends BaseComponent {
   }
 
   _setListeners() {
-    EventHandler.on(this._element, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, () => this.hide());
     EventHandler.on(this._element, EVENT_MOUSEOVER, event => this._onInteraction(event, true));
     EventHandler.on(this._element, EVENT_MOUSEOUT, event => this._onInteraction(event, false));
     EventHandler.on(this._element, EVENT_FOCUSIN, event => this._onInteraction(event, true));
@@ -10306,13 +10404,14 @@ class Toast extends BaseComponent {
   }
 
 }
+
+enableDismissTrigger(Toast);
 /**
  * ------------------------------------------------------------------------
  * jQuery
  * ------------------------------------------------------------------------
  * add .Toast to jQuery only if jQuery is present
  */
-
 
 defineJQueryPlugin(Toast);
 
@@ -11505,17 +11604,6 @@ return Promise$1;
 
 /***/ }),
 
-/***/ "./node_modules/geoportal-access-lib/package.json":
-/*!********************************************************!*\
-  !*** ./node_modules/geoportal-access-lib/package.json ***!
-  \********************************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = JSON.parse('{"_args":[["geoportal-access-lib@2.1.8","/var/www/html/vendor/2lenet/crudit-bundle"]],"_from":"geoportal-access-lib@2.1.8","_id":"geoportal-access-lib@2.1.8","_inBundle":false,"_integrity":"sha512-Z5LFBU5Gh8I3oO22334IPhd/5lqr1ZX6qLPAGGTqnXPxfb/DgUuW/wWP2aGXKLGeQfXz7UYUaYZ9pUxWf4jheQ==","_location":"/geoportal-access-lib","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"geoportal-access-lib@2.1.8","name":"geoportal-access-lib","escapedName":"geoportal-access-lib","rawSpec":"2.1.8","saveSpec":null,"fetchSpec":"2.1.8"},"_requiredBy":["/geoportal-extensions-leaflet"],"_resolved":"https://registry.npmjs.org/geoportal-access-lib/-/geoportal-access-lib-2.1.8.tgz","_spec":"2.1.8","_where":"/var/www/html/vendor/2lenet/crudit-bundle","author":{"name":"IGNF"},"bugs":{"url":"https://github.com/IGNF/geoportal-access-lib/issues"},"bundleDependencies":[],"date":"14/04/2021","dependencies":{"es6-promise":"^4.2.4","node-fetch":"^2.6.1","xmldom":"^0.1.27"},"description":"French Geoportal resources access library","devDependencies":{"@babel/core":"^7.12.10","@babel/plugin-transform-template-literals":"^7.12.1","@babel/preset-env":"^7.12.11","babel-loader":"^8.2.2","chai":"^4.1.2","clean-webpack-plugin":"^3.0.0","copy-webpack-plugin":"^5.1.2","eslint":"^7.18.0","eslint-config-standard":"^16.0.2","eslint-loader":"^4.0.2","eslint-plugin-import":"^2.22.1","eslint-plugin-node":"^11.1.0","eslint-plugin-promise":"^4.2.1","eslint-plugin-standard":"^5.0.0","glob":"^7.1.2","handlebars-layouts":"^3.1.4","handlebars-webpack-plugin":"^1.4.1","html-webpack-plugin":"^4.5.1","istanbul-instrumenter-loader":"^3.0.1","jsdoc-webpack-plugin":"^0.3.0","loglevel":"^1.6.1","mocha":"^7.2.0","mocha-loader":"^5.1.5","mocha-webpack":"^2.0.0-beta.0","mochawesome":"^6.2.1","nyc":"^15.1.0","path":"^0.12.7","replace-bundle-webpack-plugin":"^1.0.0","sinon":"^9.2.4","sinon-es6":"0.0.3","speed-measure-webpack-plugin":"^1.4.2","string-template":"^1.0.0","terser-webpack-plugin":"^2.3.8","webpack":"^4.46.0","webpack-cli":"^3.3.12","webpack-dev-server":"^3.11.2","webpack-node-externals":"^2.5.2","webpack-shell-plugin":"^0.5.0"},"homepage":"https://github.com/IGNF/geoportal-access-lib#readme","keywords":["geoportail","webservice","javascript","es6"],"license":"CECILL-B","main":"dist/GpServices-src.js","module":"src/Gp.js","name":"geoportal-access-lib","nyc":{"include":["src/**/*.js"],"instrument":false,"sourceMap":false},"optionalDependencies":{},"peerDependencies":{},"repository":{"type":"git","url":"git+https://github.com/IGNF/geoportal-access-lib.git"},"scripts":{"build":"webpack --mode=none","build:dev":"webpack --mode=development","build:prod":"webpack --mode=production","clean":"echo \\"Warning: no yet implemented!\\" && exit 0","cover":"nyc --reporter=lcov --reporter=text npm run test","doc":"npm run doc:serve","doc:serve":"webpack-dev-server --content-base jsdoc --port 9001 --open","eslint":"eslint src/","sample":"npm run sample:serve","sample:serve":"webpack-dev-server --mode=none --open-page samples/index-src.html --https --content-base . --output-public-path \'/dist/\' --port 9001 --open","sample:serve:dev":"webpack-dev-server --mode=development --open-page samples/index-map.html --content-base . --output-public-path \'/dist/\' --port 9001 --open","sample:serve:prod":"webpack-dev-server --mode=production --open-page samples/index-prod.html --content-base . --output-public-path \'/dist/\' --port 9001 --open","setup":"npm install","test":"mocha-webpack --reporter mochawesome --reporter-options reportDir=test-report,reportFilename=index --webpack-config ./test/webpack/webpack.test.js --glob \\"test_*.js\\" test/spec/","test:end-to-end:serve":"webpack-dev-server --hot --config ./test/webpack/webpack.end-to-end.serve.js","test:end-to-end:serve:docker":"webpack-dev-server --hot --config ./test/webpack/webpack.end-to-end.serve.docker.js","test:serve":"webpack-dev-server --hot --config ./test/webpack/webpack.test.serve.js","test:serve:docker":"webpack-dev-server --hot --config ./test/webpack/webpack.test.serve.docker.js"},"version":"2.1.8"}');
-
-/***/ }),
-
 /***/ "./node_modules/geoportal-access-lib/src/Exceptions/ErrorService.js":
 /*!**************************************************************************!*\
   !*** ./node_modules/geoportal-access-lib/src/Exceptions/ErrorService.js ***!
@@ -11663,7 +11751,7 @@ var WKT = {
      * @param {Function} error   - fonction callback
      */
     toJson : function (strWkt, success, error) {
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
 
         var json = null;
 
@@ -11794,7 +11882,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function WPS (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur WPS()]");
 
     if (!(this instanceof WPS)) {
@@ -12329,7 +12417,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function XLS (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur XLS()]");
 
     if (!(this instanceof XLS)) {
@@ -12439,7 +12527,7 @@ XLS.prototype = {
             return;
         }
 
-        if (oService instanceof _XLS_AbstractService__WEBPACK_IMPORTED_MODULE_3__.default) {
+        if (oService instanceof _XLS_AbstractService__WEBPACK_IMPORTED_MODULE_3__["default"]) {
             this.oService = oService;
         } else {
             this.logger.error("L'objet n'est pas du type 'LocationUtilityService' ou 'RouteService' !?");
@@ -12540,13 +12628,13 @@ XLS.prototype.build = function () {
     template = template.replace(/__SCHEMALOCATION__/g, this.schemaLocationByDefault);
 
     // header
-    var oHeader = new _XLS_RequestHeader__WEBPACK_IMPORTED_MODULE_1__.default({
+    var oHeader = new _XLS_RequestHeader__WEBPACK_IMPORTED_MODULE_1__["default"]({
         srsName : this.options.srsName
     });
     template = template.replace(/__REQUESTHEADER__/g, oHeader.toString());
 
     // request
-    var oRequest = new _XLS_Request__WEBPACK_IMPORTED_MODULE_2__.default({
+    var oRequest = new _XLS_Request__WEBPACK_IMPORTED_MODULE_2__["default"]({
         maximumResponses : this.options.maximumResponses,
         version : XLS.VERSION, // FIXME même version ?
         methodName : bService ? this.getService().CLASSTYPE : null
@@ -12608,7 +12696,7 @@ __webpack_require__.r(__webpack_exports__);
  * @param {Object} [options] - options
  */
 function AbstractService (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur AbstractService ()]");
 
     if (!(this instanceof AbstractService)) {
@@ -12774,7 +12862,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function LocationUtilityService (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur LocationUtilityService ()]");
 
     if (!(this instanceof LocationUtilityService)) {
@@ -12793,7 +12881,7 @@ function LocationUtilityService (options) {
     this.CLASSTYPE = null;
 
     // appel du constructeur par heritage
-    _AbstractService__WEBPACK_IMPORTED_MODULE_1__.default.apply(this, arguments);
+    _AbstractService__WEBPACK_IMPORTED_MODULE_1__["default"].apply(this, arguments);
 
     // on determine le type de geocodage si les options sont renseignées
     if (this.options) {
@@ -12804,7 +12892,7 @@ function LocationUtilityService (options) {
 /**
  * @lends module:LocationUtilityService#
  */
-LocationUtilityService.prototype = Object.create(_AbstractService__WEBPACK_IMPORTED_MODULE_1__.default.prototype, {
+LocationUtilityService.prototype = Object.create(_AbstractService__WEBPACK_IMPORTED_MODULE_1__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -12841,7 +12929,7 @@ LocationUtilityService.prototype.addRequest = function (oLUSRequest) {
  */
 LocationUtilityService.prototype.addFilter = function (oFilter) {
     // FIXME gestion des filtres à partir des tables de geocodages
-    if (oFilter instanceof _LocationUtilityService_GeocodeFilterExtension__WEBPACK_IMPORTED_MODULE_4__.default) {
+    if (oFilter instanceof _LocationUtilityService_GeocodeFilterExtension__WEBPACK_IMPORTED_MODULE_4__["default"]) {
         this.oFilter = oFilter;
     }
 };
@@ -12868,7 +12956,7 @@ LocationUtilityService.prototype.toString = function () {
                 returnFreeForm : this.options.returnFreeForm,
                 filterOptions : this.options.filterOptions || {}
             };
-            this.oRequest = new _LocationUtilityService_GeocodeRequest__WEBPACK_IMPORTED_MODULE_2__.default(settingsDirect);
+            this.oRequest = new _LocationUtilityService_GeocodeRequest__WEBPACK_IMPORTED_MODULE_2__["default"](settingsDirect);
             // ajout des filtres spécifiques au service du geocodage direct de l'IGN
             if (this.oFilter) {
                 this.oRequest.addFilter(this.oFilter);
@@ -12879,7 +12967,7 @@ LocationUtilityService.prototype.toString = function () {
                 returnFreeForm : this.options.returnFreeForm,
                 filterOptions : this.options.filterOptions || {}
             };
-            this.oRequest = new _LocationUtilityService_ReverseGeocodeRequest__WEBPACK_IMPORTED_MODULE_3__.default(settingsInv);
+            this.oRequest = new _LocationUtilityService_ReverseGeocodeRequest__WEBPACK_IMPORTED_MODULE_3__["default"](settingsInv);
         } else {
             this.logger.error("impossible de determiner le type de geocodage : Direct ou Inverse !?");
         }
@@ -12967,7 +13055,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function GeocodeFilterExtension () {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("GeocodeFilterExtension");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("GeocodeFilterExtension");
     this.logger.trace("[Constructeur GeocodeFilterExtension ()]");
 
     if (!(this instanceof GeocodeFilterExtension)) {
@@ -13182,7 +13270,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function GeocodeRequest (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur GeocodeRequest ()]");
 
     if (!(this instanceof GeocodeRequest)) {
@@ -13247,7 +13335,7 @@ GeocodeRequest.prototype = {
      * @param {Object} oAddress - Adresse
      */
     addAddress : function (oAddress) {
-        if (oAddress instanceof _model_Address__WEBPACK_IMPORTED_MODULE_1__.default) {
+        if (oAddress instanceof _model_Address__WEBPACK_IMPORTED_MODULE_1__["default"]) {
             this.oAddress = oAddress;
         }
     },
@@ -13259,7 +13347,7 @@ GeocodeRequest.prototype = {
      */
     addFilter : function (oFilter) {
         // FIXME gestion des filtres à partir des tables de geocodages
-        if (oFilter instanceof _GeocodeFilterExtension__WEBPACK_IMPORTED_MODULE_2__.default) {
+        if (oFilter instanceof _GeocodeFilterExtension__WEBPACK_IMPORTED_MODULE_2__["default"]) {
             this.oFilter = oFilter;
         }
     },
@@ -13326,7 +13414,7 @@ GeocodeRequest.prototype = {
                 }
             }
 
-            this.oAddress = new _model_Address__WEBPACK_IMPORTED_MODULE_1__.default(settings);
+            this.oAddress = new _model_Address__WEBPACK_IMPORTED_MODULE_1__["default"](settings);
             if (!this.oAddress) {
                 throw new Error("La construction de l'adresse n'est pas correctement definie !?");
             }
@@ -13408,7 +13496,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function ReverseGeocodeRequest (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur ReverseGeocodeRequest ()]");
 
     if (!(this instanceof ReverseGeocodeRequest)) {
@@ -13476,7 +13564,7 @@ ReverseGeocodeRequest.prototype = {
      * @param {Object} oPosition - Position
      */
     addPosition : function (oPosition) {
-        if (oPosition instanceof _model_Position__WEBPACK_IMPORTED_MODULE_1__.default) {
+        if (oPosition instanceof _model_Position__WEBPACK_IMPORTED_MODULE_1__["default"]) {
             this.oPosition = oPosition;
         }
     },
@@ -13488,7 +13576,7 @@ ReverseGeocodeRequest.prototype = {
      * @param {Object} oPreference - Preference
      */
     addPreferences : function (oPreference) {
-        if (oPreference instanceof _model_Preference__WEBPACK_IMPORTED_MODULE_2__.default) {
+        if (oPreference instanceof _model_Preference__WEBPACK_IMPORTED_MODULE_2__["default"]) {
             this.oPreference = oPreference;
         }
     },
@@ -13504,7 +13592,7 @@ ReverseGeocodeRequest.prototype = {
         // si on a déjà un objet Preference instancié,
         // sinon, on le fabrique via les options
         if (!this.oPreference) {
-            this.oPreference = new _model_Preference__WEBPACK_IMPORTED_MODULE_2__.default(this.options.filterOptions.type || ["StreetAddress"]);
+            this.oPreference = new _model_Preference__WEBPACK_IMPORTED_MODULE_2__["default"](this.options.filterOptions.type || ["StreetAddress"]);
             if (!this.oPreference) {
                 throw new Error("Les preferences ne sont pas definies !?");
             }
@@ -13524,7 +13612,7 @@ ReverseGeocodeRequest.prototype = {
                 settings.filter = this.options.filterOptions;
                 delete settings.filter.type; // pas besoin ?
             }
-            this.oPosition = new _model_Position__WEBPACK_IMPORTED_MODULE_1__.default(settings);
+            this.oPosition = new _model_Position__WEBPACK_IMPORTED_MODULE_1__["default"](settings);
             if (!this.oPosition) {
                 throw new Error("La position et ses filtres ne sont pas definis !?");
             }
@@ -13661,7 +13749,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function Address (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Address");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Address");
     this.logger.trace("[Constructeur Address ()]");
 
     if (!(this instanceof Address)) {
@@ -13899,7 +13987,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function Position (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Position");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Position");
     this.logger.trace("[Constructeur Position ()]");
 
     if (!(this instanceof Position)) {
@@ -14069,7 +14157,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function Preference (type) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Preference");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Preference");
     this.logger.trace("[Constructeur Preference ()]");
 
     if (!(this instanceof Preference)) {
@@ -14176,7 +14264,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function Request (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur Request ()]");
 
     if (!(this instanceof Request)) {
@@ -14298,7 +14386,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function RequestHeader (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur RequestHeader ()]");
 
     if (!(this instanceof RequestHeader)) {
@@ -14580,7 +14668,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function RouteService (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur RouteService ()]");
 
     if (!(this instanceof RouteService)) {
@@ -14599,13 +14687,13 @@ function RouteService (options) {
     this.CLASSTYPE = "RouteRequest";
 
     // appel du constructeur par heritage
-    _AbstractService__WEBPACK_IMPORTED_MODULE_1__.default.apply(this, arguments);
+    _AbstractService__WEBPACK_IMPORTED_MODULE_1__["default"].apply(this, arguments);
 }
 
 /**
  * @lends module:RouteService#
  */
-RouteService.prototype = Object.create(_AbstractService__WEBPACK_IMPORTED_MODULE_1__.default.prototype, {
+RouteService.prototype = Object.create(_AbstractService__WEBPACK_IMPORTED_MODULE_1__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -14670,7 +14758,7 @@ RouteService.prototype.toString = function () {
                     expectedStartTime : this.options.expectedStartTime || null
                 }
             };
-            this.oRequest = new _RouteService_DetermineRouteRequest__WEBPACK_IMPORTED_MODULE_2__.default(settings);
+            this.oRequest = new _RouteService_DetermineRouteRequest__WEBPACK_IMPORTED_MODULE_2__["default"](settings);
             // ajout des filtres spécifiques au service
             if (this.oFilter) {
                 this.oRequest.addFilter(this.oFilter);
@@ -14794,7 +14882,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function DetermineRouteRequest (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur DetermineRouteRequest ()]");
 
     if (!(this instanceof DetermineRouteRequest)) {
@@ -14862,7 +14950,7 @@ DetermineRouteRequest.prototype = {
      * @param {Object} oRoutePlan - RoutePlan
      */
     addRoute : function (oRoutePlan) {
-        if (oRoutePlan instanceof _model_RoutePlan__WEBPACK_IMPORTED_MODULE_1__.default) {
+        if (oRoutePlan instanceof _model_RoutePlan__WEBPACK_IMPORTED_MODULE_1__["default"]) {
             this.oRoutePlan = oRoutePlan;
         }
     },
@@ -14887,7 +14975,7 @@ DetermineRouteRequest.prototype = {
         if (!this.oRoutePlan) {
             var settings = this.options.route;
 
-            this.oRoutePlan = new _model_RoutePlan__WEBPACK_IMPORTED_MODULE_1__.default(settings);
+            this.oRoutePlan = new _model_RoutePlan__WEBPACK_IMPORTED_MODULE_1__["default"](settings);
             if (!this.oRoutePlan) {
                 throw new Error("La construction du calcul d'initineraire n'est pas correctement definie !?");
             }
@@ -15049,7 +15137,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function RoutePlan (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("RoutePlan");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("RoutePlan");
     this.logger.trace("[Constructeur RoutePlan ()]");
 
     if (!(this instanceof RoutePlan)) {
@@ -15256,7 +15344,7 @@ function XML (options) {
 
     // FIXME : notion de singleton
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur XML ()]");
 
     /**
@@ -15735,50 +15823,50 @@ Gp.servicesDate = servicesDate;
 
 // Export Protocols
 Gp.Protocols = {};
-Gp.Protocols.XHR = _Protocols_XHR__WEBPACK_IMPORTED_MODULE_27__.default;
+Gp.Protocols.XHR = _Protocols_XHR__WEBPACK_IMPORTED_MODULE_27__["default"];
 // Export services
-Gp.Services = _Services_Services__WEBPACK_IMPORTED_MODULE_0__.default;
+Gp.Services = _Services_Services__WEBPACK_IMPORTED_MODULE_0__["default"];
 // Export DefaultUrls
-Gp.Services.DefaultUrl = _Services_DefaultUrlService__WEBPACK_IMPORTED_MODULE_1__.default;
+Gp.Services.DefaultUrl = _Services_DefaultUrlService__WEBPACK_IMPORTED_MODULE_1__["default"];
 // Export Alti
-Gp.Services.AltiResponse = _Services_Alti_Response_model_AltiResponse__WEBPACK_IMPORTED_MODULE_2__.default;
+Gp.Services.AltiResponse = _Services_Alti_Response_model_AltiResponse__WEBPACK_IMPORTED_MODULE_2__["default"];
 Gp.Services.Alti = {};
-Gp.Services.Alti.Elevation = _Services_Alti_Response_model_Elevation__WEBPACK_IMPORTED_MODULE_3__.default;
+Gp.Services.Alti.Elevation = _Services_Alti_Response_model_Elevation__WEBPACK_IMPORTED_MODULE_3__["default"];
 // Export Autocomplete
-Gp.Services.AutoCompleteResponse = _Services_AutoComplete_Response_model_AutoCompleteResponse__WEBPACK_IMPORTED_MODULE_4__.default;
+Gp.Services.AutoCompleteResponse = _Services_AutoComplete_Response_model_AutoCompleteResponse__WEBPACK_IMPORTED_MODULE_4__["default"];
 Gp.Services.AutoComplete = {};
-Gp.Services.AutoComplete.SuggestedLocation = _Services_AutoComplete_Response_model_SuggestedLocation__WEBPACK_IMPORTED_MODULE_5__.default;
+Gp.Services.AutoComplete.SuggestedLocation = _Services_AutoComplete_Response_model_SuggestedLocation__WEBPACK_IMPORTED_MODULE_5__["default"];
 // Export Autoconf
-Gp.Services.GetConfigResponse = _Services_AutoConf_Response_model_AutoConfResponse__WEBPACK_IMPORTED_MODULE_6__.default;
+Gp.Services.GetConfigResponse = _Services_AutoConf_Response_model_AutoConfResponse__WEBPACK_IMPORTED_MODULE_6__["default"];
 Gp.Services.Config = {};
-Gp.Services.Config.Constraint = _Services_AutoConf_Response_model_Constraint__WEBPACK_IMPORTED_MODULE_7__.default;
-Gp.Services.Config.Format = _Services_AutoConf_Response_model_Format__WEBPACK_IMPORTED_MODULE_8__.default;
-Gp.Services.Config.Layer = _Services_AutoConf_Response_model_Layer__WEBPACK_IMPORTED_MODULE_9__.default;
-Gp.Services.Config.Legend = _Services_AutoConf_Response_model_Legend__WEBPACK_IMPORTED_MODULE_10__.default;
-Gp.Services.Config.Metadata = _Services_AutoConf_Response_model_Metadata__WEBPACK_IMPORTED_MODULE_11__.default;
-Gp.Services.Config.Originator = _Services_AutoConf_Response_model_Originator__WEBPACK_IMPORTED_MODULE_12__.default;
-Gp.Services.Config.Service = _Services_AutoConf_Response_model_Service__WEBPACK_IMPORTED_MODULE_13__.default;
-Gp.Services.Config.Style = _Services_AutoConf_Response_model_Style__WEBPACK_IMPORTED_MODULE_14__.default;
-Gp.Services.Config.Territory = _Services_AutoConf_Response_model_Territory__WEBPACK_IMPORTED_MODULE_15__.default;
-Gp.Services.Config.Thematic = _Services_AutoConf_Response_model_Thematic__WEBPACK_IMPORTED_MODULE_16__.default;
-Gp.Services.Config.TileMatrix = _Services_AutoConf_Response_model_TileMatrix__WEBPACK_IMPORTED_MODULE_17__.default;
-Gp.Services.Config.TileMatrixLimit = _Services_AutoConf_Response_model_TileMatrixLimit__WEBPACK_IMPORTED_MODULE_18__.default;
-Gp.Services.Config.TileMatrixSet = _Services_AutoConf_Response_model_TileMatrixSet__WEBPACK_IMPORTED_MODULE_19__.default;
+Gp.Services.Config.Constraint = _Services_AutoConf_Response_model_Constraint__WEBPACK_IMPORTED_MODULE_7__["default"];
+Gp.Services.Config.Format = _Services_AutoConf_Response_model_Format__WEBPACK_IMPORTED_MODULE_8__["default"];
+Gp.Services.Config.Layer = _Services_AutoConf_Response_model_Layer__WEBPACK_IMPORTED_MODULE_9__["default"];
+Gp.Services.Config.Legend = _Services_AutoConf_Response_model_Legend__WEBPACK_IMPORTED_MODULE_10__["default"];
+Gp.Services.Config.Metadata = _Services_AutoConf_Response_model_Metadata__WEBPACK_IMPORTED_MODULE_11__["default"];
+Gp.Services.Config.Originator = _Services_AutoConf_Response_model_Originator__WEBPACK_IMPORTED_MODULE_12__["default"];
+Gp.Services.Config.Service = _Services_AutoConf_Response_model_Service__WEBPACK_IMPORTED_MODULE_13__["default"];
+Gp.Services.Config.Style = _Services_AutoConf_Response_model_Style__WEBPACK_IMPORTED_MODULE_14__["default"];
+Gp.Services.Config.Territory = _Services_AutoConf_Response_model_Territory__WEBPACK_IMPORTED_MODULE_15__["default"];
+Gp.Services.Config.Thematic = _Services_AutoConf_Response_model_Thematic__WEBPACK_IMPORTED_MODULE_16__["default"];
+Gp.Services.Config.TileMatrix = _Services_AutoConf_Response_model_TileMatrix__WEBPACK_IMPORTED_MODULE_17__["default"];
+Gp.Services.Config.TileMatrixLimit = _Services_AutoConf_Response_model_TileMatrixLimit__WEBPACK_IMPORTED_MODULE_18__["default"];
+Gp.Services.Config.TileMatrixSet = _Services_AutoConf_Response_model_TileMatrixSet__WEBPACK_IMPORTED_MODULE_19__["default"];
 // Export Geocode
-Gp.Services.GeocodeResponse = _Services_Geocode_Response_model_GeocodeResponse__WEBPACK_IMPORTED_MODULE_20__.default;
+Gp.Services.GeocodeResponse = _Services_Geocode_Response_model_GeocodeResponse__WEBPACK_IMPORTED_MODULE_20__["default"];
 Gp.Services.Geocode = {};
-Gp.Services.Geocode.GeocodedLocation = _Services_Geocode_Response_model_GeocodedLocation__WEBPACK_IMPORTED_MODULE_21__.default;
-Gp.Services.Geocode.DirectGeocodedLocation = _Services_Geocode_Response_model_DirectGeocodedLocation__WEBPACK_IMPORTED_MODULE_22__.default;
-Gp.Services.Geocode.ReverseGeocodedLocation = _Services_Geocode_Response_model_ReverseGeocodedLocation__WEBPACK_IMPORTED_MODULE_23__.default;
+Gp.Services.Geocode.GeocodedLocation = _Services_Geocode_Response_model_GeocodedLocation__WEBPACK_IMPORTED_MODULE_21__["default"];
+Gp.Services.Geocode.DirectGeocodedLocation = _Services_Geocode_Response_model_DirectGeocodedLocation__WEBPACK_IMPORTED_MODULE_22__["default"];
+Gp.Services.Geocode.ReverseGeocodedLocation = _Services_Geocode_Response_model_ReverseGeocodedLocation__WEBPACK_IMPORTED_MODULE_23__["default"];
 // Export IsoCurve
-Gp.Services.IsoCurveResponse = _Services_ProcessIsoCurve_Response_model_ProcessIsoCurveResponse__WEBPACK_IMPORTED_MODULE_24__.default;
+Gp.Services.IsoCurveResponse = _Services_ProcessIsoCurve_Response_model_ProcessIsoCurveResponse__WEBPACK_IMPORTED_MODULE_24__["default"];
 // Export Route
-Gp.Services.RouteResponse = _Services_Route_Response_model_RouteResponse__WEBPACK_IMPORTED_MODULE_25__.default;
+Gp.Services.RouteResponse = _Services_Route_Response_model_RouteResponse__WEBPACK_IMPORTED_MODULE_25__["default"];
 Gp.Services.Route = {};
-Gp.Services.Route.RouteInstruction = _Services_Route_Response_model_RouteInstruction__WEBPACK_IMPORTED_MODULE_26__.default;
+Gp.Services.Route.RouteInstruction = _Services_Route_Response_model_RouteInstruction__WEBPACK_IMPORTED_MODULE_26__["default"];
 // Export Erreurs et Outils
-Gp.Error = _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_28__.default;
-Gp.Helper = _Utils_Helper__WEBPACK_IMPORTED_MODULE_29__.default;
+Gp.Error = _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_28__["default"];
+Gp.Helper = _Utils_Helper__WEBPACK_IMPORTED_MODULE_29__["default"];
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Gp);
 
@@ -15861,7 +15949,7 @@ var JSONP = {
      */
     call : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("JSONP");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("JSONP");
         logger.trace("[JSONP::call ()]");
 
         // analyse parametres
@@ -16167,7 +16255,7 @@ var Protocol = {
             params.output = settings.output;
             params.callback = settings.callback;
             delete params.callback; // FIXME non géré !?
-            settings.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_0__.default.normalyzeUrl(options.url, params);
+            settings.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_0__["default"].normalyzeUrl(options.url, params);
         }
 
         // choix de l"implementation :
@@ -16176,22 +16264,22 @@ var Protocol = {
             case "XHR":
                 // on normalise l'url (gestion du cache)
                 if (options.method === "GET" && options.nocache) {
-                    settings.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_0__.default.normalyzeUrl(settings.url, {
+                    settings.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_0__["default"].normalyzeUrl(settings.url, {
                         t : new Date().getTime()
                     });
                 }
                 // appel du service en XHR
-                _XHR__WEBPACK_IMPORTED_MODULE_1__.default.call(settings);
+                _XHR__WEBPACK_IMPORTED_MODULE_1__["default"].call(settings);
                 break;
             case "JSONP":
 
                 // on normalise l'url si les params. sont renseignés dans la string|object "data"
                 if (settings.data) {
-                    settings.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_0__.default.normalyzeUrl(settings.url, settings.data);
+                    settings.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_0__["default"].normalyzeUrl(settings.url, settings.data);
                 }
 
                 // appel du service en JSONP
-                _JSONP__WEBPACK_IMPORTED_MODULE_2__.default.call(settings);
+                _JSONP__WEBPACK_IMPORTED_MODULE_2__["default"].call(settings);
                 break;
             default:
                 throw new Error("protocol not supported (XHR|JSONP) !");
@@ -16261,7 +16349,7 @@ var XHR = {
      */
     call : function (settings) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("XHR");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("XHR");
         logger.trace("[XHR::call()]");
 
         // FIXME
@@ -16357,7 +16445,7 @@ var XHR = {
      * @return {Object} promise
      */
     __call : function (options) {
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("XHR");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("XHR");
         logger.trace("[XHR::__call()]");
 
         var promise = new Promise(
@@ -16367,7 +16455,7 @@ var XHR = {
 
                 // seulement si options.data n'est pas vide (peut être un objet ou une chaine de caractères)
                 if (options.data && ((typeof options.data === "object" && Object.keys(options.data).length) || (typeof options.data === "string" && options.data.length)) && !corps) {
-                    options.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__.default.normalyzeUrl(options.url, options.data);
+                    options.url = _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__["default"].normalyzeUrl(options.url, options.data);
                 }
 
                 logger.trace("URL = ", options.url);
@@ -16735,7 +16823,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function Alti (options) {
     if (!(this instanceof Alti)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("CLASS_CONSTRUCTOR", "Alti"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("CLASS_CONSTRUCTOR", "Alti"));
     }
 
     /**
@@ -16745,9 +16833,9 @@ function Alti (options) {
     this.CLASSNAME = "Alti";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_3__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Gp.Services.Alti");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Gp.Services.Alti");
     this.logger.trace("[Constructeur Alti (options)]");
 
     // #####################
@@ -16755,11 +16843,11 @@ function Alti (options) {
     // #####################
 
     if (!options.positions) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "positions"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "positions"));
     }
 
     if (options.positions.length === 0) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "positions"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "positions"));
     }
 
     // ajout des options spécifiques au service
@@ -16787,7 +16875,7 @@ function Alti (options) {
     // en fonction du type d'api, REST ou WPS, du format de reponse demandé (outputFormat)
     // ainsi que sur le type de service (profil ou elevation)
     if (!this.options.serverUrl) {
-        var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__.default.Alti.url(this.options.apiKey);
+        var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__["default"].Alti.url(this.options.apiKey);
         var urlFound = null;
         switch (this.options.api) {
             case "WPS":
@@ -16798,7 +16886,7 @@ function Alti (options) {
                 urlFound = lstUrlByDefault[key];
                 break;
             default:
-                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_UNKNOWN", "api"));
+                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_UNKNOWN", "api"));
         }
 
         if (!urlFound) {
@@ -16830,7 +16918,7 @@ function Alti (options) {
 /**
  * @lends module:Alti#
  */
-Alti.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__.default.prototype, {
+Alti.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -16866,7 +16954,7 @@ Alti.prototype.buildRequest = function (error, success) {
         zonly : this.options.zonly
     };
 
-    _Request_AltiRequestFactory__WEBPACK_IMPORTED_MODULE_5__.default.build(options);
+    _Request_AltiRequestFactory__WEBPACK_IMPORTED_MODULE_5__["default"].build(options);
 };
 
 /**
@@ -16891,9 +16979,9 @@ Alti.prototype.analyzeResponse = function (error, success) {
             scope : this
         };
 
-        _Response_AltiResponseFactory__WEBPACK_IMPORTED_MODULE_6__.default.build(options);
+        _Response_AltiResponseFactory__WEBPACK_IMPORTED_MODULE_6__["default"].build(options);
     } else {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -16986,7 +17074,7 @@ AltiResponseReader.READERS = {
      */
     elevations : function (root) {
         // INFO : on passe en paramètre l'objet en entrée elevations, vide, à remplir.
-        var altiResponse = new _Response_model_AltiResponse__WEBPACK_IMPORTED_MODULE_0__.default();
+        var altiResponse = new _Response_model_AltiResponse__WEBPACK_IMPORTED_MODULE_0__["default"]();
 
         if (root.hasChildNodes()) {
             var children = root.childNodes;
@@ -17016,7 +17104,7 @@ AltiResponseReader.READERS = {
      * @memberof AltiResponseReader
      */
     elevation : function (node) {
-        var elevation = new _Response_model_Elevation__WEBPACK_IMPORTED_MODULE_1__.default();
+        var elevation = new _Response_model_Elevation__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
         if (node.hasChildNodes()) {
             var children = node.childNodes;
@@ -17083,7 +17171,7 @@ AltiResponseReader.READERS = {
             if (elevation) {
                 elevation.z = parseFloat(textNode.nodeValue);
             } else {
-                elevation = new _Response_model_Elevation__WEBPACK_IMPORTED_MODULE_1__.default();
+                elevation = new _Response_model_Elevation__WEBPACK_IMPORTED_MODULE_1__["default"]();
                 elevation.z = parseFloat(textNode.nodeValue);
                 return elevation;
             }
@@ -17284,7 +17372,7 @@ var AltiRequestFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("AltiRequestFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("AltiRequestFactory");
         logger.trace(["AltiRequestFactory::build()"]);
 
         var request = null;
@@ -17324,11 +17412,11 @@ var AltiRequestFactory = {
         switch (options.api) {
             case "REST":
                 // FIXME les exceptions ne sont pas 'catchées' sur le constructeur !
-                var myReq = new _AltiRequestREST__WEBPACK_IMPORTED_MODULE_2__.default(settings);
+                var myReq = new _AltiRequestREST__WEBPACK_IMPORTED_MODULE_2__["default"](settings);
                 if (!myReq.processRequestString()) {
                     message = "Error in process request (rest) !";
                     if (bOnError) {
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default(message));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"](message));
                         return;
                     }
                     throw new Error(message);
@@ -17345,11 +17433,11 @@ var AltiRequestFactory = {
                     request : null // par defaut
                 };
 
-                request = _AltiRequestWPS__WEBPACK_IMPORTED_MODULE_3__.default.build(settings);
+                request = _AltiRequestWPS__WEBPACK_IMPORTED_MODULE_3__["default"].build(settings);
                 if (!request) {
                     message = "Error in process request (wps) !";
                     if (bOnError) {
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default(message));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"](message));
                         return;
                     }
                     throw new Error(message);
@@ -17358,7 +17446,7 @@ var AltiRequestFactory = {
             default:
                 message = "Type of API is not supported by service (REST or WPS) !";
                 if (bOnError) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default(message));
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"](message));
                     return;
                 }
                 throw new Error(message);
@@ -17449,7 +17537,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function AltiRequestREST (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("AltiRequestREST");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("AltiRequestREST");
     this.logger.trace("[Constructeur AltiRequestREST ()]");
 
     if (!(this instanceof AltiRequestREST)) {
@@ -17460,13 +17548,13 @@ function AltiRequestREST (options) {
 
     // existance des options
     if (!this.options) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "options"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "options"));
     }
 
     // type de requete : Altitude ou Profil
     // (param. à determiner en fonction des parametres d'entrée)
     if (!this.options.type) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "type (Elevation or Profil)"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "type (Elevation or Profil)"));
     }
 
     // construction du modele de requête
@@ -17474,13 +17562,13 @@ function AltiRequestREST (options) {
     this.DataObject = null;
     switch (this.options.type) {
         case "Elevation":
-            this.DataObject = new _model_AltiElevationRequest__WEBPACK_IMPORTED_MODULE_2__.default(this.options.param);
+            this.DataObject = new _model_AltiElevationRequest__WEBPACK_IMPORTED_MODULE_2__["default"](this.options.param);
             break;
         case "Profil":
-            this.DataObject = new _model_AltiProfilRequest__WEBPACK_IMPORTED_MODULE_3__.default(this.options.param);
+            this.DataObject = new _model_AltiProfilRequest__WEBPACK_IMPORTED_MODULE_3__["default"](this.options.param);
             break;
         default:
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_TYPE", "type (Elevation or Profil)"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_TYPE", "type (Elevation or Profil)"));
     }
 
     /**
@@ -17677,18 +17765,18 @@ var AltiRequestWPS = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("AltiRequestWPS");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("AltiRequestWPS");
         logger.trace(["AltiRequestWPS::build()"]);
 
         // existance des options
         if (!options) {
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "options"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "options"));
         }
 
         // type de requete : Altitude ou Profil
         // (param. à determiner en fonction des parametres d'entrée)
         if (!options.type) {
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "type (Elevation or Profil)"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "type (Elevation or Profil)"));
         }
 
         // construction du modele de requête
@@ -17698,15 +17786,15 @@ var AltiRequestWPS = {
             case "Elevation":
                 // surcharge
                 options.wps.identifier = "gs:WPSElevation";
-                DataObject = new _model_AltiElevationRequest__WEBPACK_IMPORTED_MODULE_3__.default(options.param);
+                DataObject = new _model_AltiElevationRequest__WEBPACK_IMPORTED_MODULE_3__["default"](options.param);
                 break;
             case "Profil":
                 // surcharge
                 options.wps.identifier = "gs:WPSLineElevation";
-                DataObject = new _model_AltiProfilRequest__WEBPACK_IMPORTED_MODULE_4__.default(options.param);
+                DataObject = new _model_AltiProfilRequest__WEBPACK_IMPORTED_MODULE_4__["default"](options.param);
                 break;
             default:
-                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_TYPE", "type (Elevation or Profil)"));
+                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_TYPE", "type (Elevation or Profil)"));
         }
 
         // construction de la requête WPS
@@ -17716,7 +17804,7 @@ var AltiRequestWPS = {
             param : options.wps
         };
 
-        var rqstWPS = new _Formats_WPS__WEBPACK_IMPORTED_MODULE_2__.default(settings);
+        var rqstWPS = new _Formats_WPS__WEBPACK_IMPORTED_MODULE_2__["default"](settings);
 
         if (!rqstWPS.processRequestString()) {
             throw new Error("Enable to process request !");
@@ -17771,9 +17859,9 @@ function AltiElevationRequest (options) {
     this.CLASSNAME = "AltiElevationRequest";
 
     // appel du constructeur par heritage
-    _AltiRequest__WEBPACK_IMPORTED_MODULE_1__.default.apply(this, arguments);
+    _AltiRequest__WEBPACK_IMPORTED_MODULE_1__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur AltiElevationRequest ()]");
 
     /**
@@ -17787,7 +17875,7 @@ function AltiElevationRequest (options) {
  * @lends module:AltiElevationRequest#
  */
 
-AltiElevationRequest.prototype = Object.create(_AltiRequest__WEBPACK_IMPORTED_MODULE_1__.default.prototype, {
+AltiElevationRequest.prototype = Object.create(_AltiRequest__WEBPACK_IMPORTED_MODULE_1__["default"].prototype, {
 
     /**
      * Setter/getter pour "zonly"
@@ -17891,9 +17979,9 @@ function AltiProfilRequest (options) {
     this.CLASSNAME = "AltiProfilRequest";
 
     // appel du constructeur par heritage
-    _AltiRequest__WEBPACK_IMPORTED_MODULE_1__.default.apply(this, arguments);
+    _AltiRequest__WEBPACK_IMPORTED_MODULE_1__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur AltiProfilRequest ()]");
 
     /**
@@ -17907,7 +17995,7 @@ function AltiProfilRequest (options) {
  * @lends module:AltiProfilRequest#
  */
 
-AltiProfilRequest.prototype = Object.create(_AltiRequest__WEBPACK_IMPORTED_MODULE_1__.default.prototype, {
+AltiProfilRequest.prototype = Object.create(_AltiRequest__WEBPACK_IMPORTED_MODULE_1__["default"].prototype, {
 
     /**
      * Setter/getter pour "sampling"
@@ -18006,7 +18094,7 @@ function AltiRequest (options) {
         throw new TypeError("AltiRequest constructor cannot be called as a function.");
     }
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur AltiRequest ()]");
 
     /**
@@ -18252,7 +18340,7 @@ var AltiResponseFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("AltiResponseFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("AltiResponseFactory");
         logger.trace(["AltiResponseFactory::build()"]);
 
         var data = null;
@@ -18267,8 +18355,8 @@ var AltiResponseFactory = {
                         logger.trace("analyze response : xml");
 
                         try {
-                            var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__.default({
-                                reader : _Formats_AltiResponseReader__WEBPACK_IMPORTED_MODULE_4__.default
+                            var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__["default"]({
+                                reader : _Formats_AltiResponseReader__WEBPACK_IMPORTED_MODULE_4__["default"]
                             });
 
                             if (typeof options.response === "string") {
@@ -18280,14 +18368,14 @@ var AltiResponseFactory = {
                             data = p.parse();
 
                             if (!data) {
-                                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION_2"));
+                                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION_2"));
                             }
                         } catch (e) {
                             var message = e.message;
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", message),
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", message),
                                 status : 200,
-                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
                             }));
                             return;
                         }
@@ -18308,10 +18396,10 @@ var AltiResponseFactory = {
                         // le service renvoie t il une erreur ?
                         if (JSONResponse && JSONResponse.error) {
                             // ex. {"error": {"code": "BAD_PARAMETER","description": "The values () cannot be parsed as a valid longitude (double value such as -180 < lat < 180)."}}
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", JSONResponse.error.description),
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", JSONResponse.error.description),
                                 status : 200,
-                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
                             }));
                             return;
                         }
@@ -18319,11 +18407,11 @@ var AltiResponseFactory = {
                         // analyse de la reponse
                         if (JSONResponse) {
                             var elevations = JSONResponse.elevations;
-                            var altiResponse = new _model_AltiResponse__WEBPACK_IMPORTED_MODULE_5__.default();
+                            var altiResponse = new _model_AltiResponse__WEBPACK_IMPORTED_MODULE_5__["default"]();
                             var elevation;
                             if (Array.isArray(elevations) && elevations.length) {
                                 for (var i = 0; i < elevations.length; i++) {
-                                    elevation = new _model_Elevation__WEBPACK_IMPORTED_MODULE_6__.default();
+                                    elevation = new _model_Elevation__WEBPACK_IMPORTED_MODULE_6__["default"]();
 
                                     if (typeof elevations[i] === "object") {
                                         // elevations[i] est un objet elevation
@@ -18353,9 +18441,9 @@ var AltiResponseFactory = {
                         }
 
                         if (!data) {
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_ANALYSE_2"),
-                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_UNKERR,
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_ANALYSE_2"),
+                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_UNKERR,
                                 status : -1
                             }));
                             return;
@@ -18363,9 +18451,9 @@ var AltiResponseFactory = {
                         break;
 
                     default:
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                            message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_FORMAT_2"),
-                            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_UNKERR,
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                            message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_FORMAT_2"),
+                            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_UNKERR,
                             status : -1
                         }));
                         return;
@@ -18373,24 +18461,24 @@ var AltiResponseFactory = {
 
                 // Si la réponse contenait une exception renvoyée par le service
                 if (data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR,
                         status : 200
                     }));
                     return;
                 } else if (data.error) {
                     var errorMess = data.error.description;
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", errorMess),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", errorMess),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR,
                         status : 200
                     }));
                     return;
                 }
             }
         } else {
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
             return;
         }
 
@@ -18564,7 +18652,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function AutoComplete (options) {
     if (!(this instanceof AutoComplete)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__.default.getMessage("CLASS_CONSTRUCTOR", "AutoComplete"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__["default"].getMessage("CLASS_CONSTRUCTOR", "AutoComplete"));
     }
 
     /**
@@ -18574,13 +18662,13 @@ function AutoComplete (options) {
     this.CLASSNAME = "AutoComplete";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("Gp.Services.AutoComplete");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("Gp.Services.AutoComplete");
     this.logger.trace("[Constructeur AutoComplete (options)]");
 
     if (!options.text) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__.default.getMessage("PARAM_MISSING", "text"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__["default"].getMessage("PARAM_MISSING", "text"));
     }
 
     // ajout des options spécifiques au service
@@ -18627,7 +18715,7 @@ function AutoComplete (options) {
  * @lends module:AutoComplete#
  */
 
-AutoComplete.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_0__.default.prototype, {
+AutoComplete.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_0__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -18664,7 +18752,7 @@ AutoComplete.prototype.buildRequest = function (error, success) {
     }
 
     // normalisation de la requete avec param KPV
-    this.request = _Utils_Helper__WEBPACK_IMPORTED_MODULE_4__.default.normalyzeParameters({
+    this.request = _Utils_Helper__WEBPACK_IMPORTED_MODULE_4__["default"].normalyzeParameters({
         text : encodeURIComponent(this.options.text),
         type : types,
         terr : territories,
@@ -18672,7 +18760,7 @@ AutoComplete.prototype.buildRequest = function (error, success) {
     });
 
     (!this.request)
-        ? error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_5__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__.default.getMessage("SERVICE_REQUEST_BUILD")))
+        ? error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_5__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__["default"].getMessage("SERVICE_REQUEST_BUILD")))
         : success.call(this, this.request);
 };
 
@@ -18693,9 +18781,9 @@ AutoComplete.prototype.analyzeResponse = function (error, success) {
             scope : this
         };
 
-        _Response_AutoCompleteResponseFactory__WEBPACK_IMPORTED_MODULE_1__.default.build(options);
+        _Response_AutoCompleteResponseFactory__WEBPACK_IMPORTED_MODULE_1__["default"].build(options);
     } else {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_5__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_5__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_3__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -18756,7 +18844,7 @@ var AutoCompleteResponseFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("AutoCompleteResponseFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("AutoCompleteResponseFactory");
         logger.trace(["AutoCompleteResponseFactory::build()"]);
 
         var data = null;
@@ -18778,16 +18866,16 @@ var AutoCompleteResponseFactory = {
                     // le service renvoie t il une erreur ?
                     if (JSONResponse.error) {
                         // ex. ?
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                            message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", JSONResponse.error.description),
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                            message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", JSONResponse.error.description),
                             status : JSONResponse.error.code,
-                            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
                         }));
                         return;
                     }
 
                     // création de l'objet réponse
-                    data = new _model_AutoCompleteResponse__WEBPACK_IMPORTED_MODULE_3__.default();
+                    data = new _model_AutoCompleteResponse__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
                     // boucle sur les résultats de l'autocomplétion
                     if (JSONResponse.results && Array.isArray(JSONResponse.results)) {
@@ -18795,7 +18883,7 @@ var AutoCompleteResponseFactory = {
 
                         for (var i = 0; i < JSONResponse.results.length; i++) {
                             var result = JSONResponse.results[i];
-                            suggestedLocation = new _model_SuggestedLocation__WEBPACK_IMPORTED_MODULE_4__.default();
+                            suggestedLocation = new _model_SuggestedLocation__WEBPACK_IMPORTED_MODULE_4__["default"]();
 
                             if (result) {
                                 if (result.country === "StreetAddress") {
@@ -18821,20 +18909,20 @@ var AutoCompleteResponseFactory = {
                             data.suggestedLocations.push(suggestedLocation);
                         }
                     } else {
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_FORMAT_3")));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_FORMAT_3")));
                         return;
                     }
 
                     if (!data.suggestedLocations.length) {
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_FORMAT_3")));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_FORMAT_3")));
                         return;
                     }
                 }
 
                 if (!data) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_ANALYSE_2"),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_UNKERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_ANALYSE_2"),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_UNKERR,
                         status : -1
                     }));
                     return;
@@ -18842,9 +18930,9 @@ var AutoCompleteResponseFactory = {
 
                 // Si la réponse contenait une exception renvoyée par le service
                 if (data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR,
                         status : 200
                     }));
                     return;
@@ -18852,7 +18940,7 @@ var AutoCompleteResponseFactory = {
             }
         } else {
             // si la réponse (xmlString) est vide, on appelle le callback d'erreur
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
             return;
         }
 
@@ -19101,7 +19189,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function AutoConf (options) {
     if (!(this instanceof AutoConf)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("CLASS_CONSTRUCTOR", "AutoConf"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("CLASS_CONSTRUCTOR", "AutoConf"));
     }
 
     /**
@@ -19117,9 +19205,9 @@ function AutoConf (options) {
     options.protocol = options.protocol || "JSONP";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_5__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_5__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Gp.Services.AutoConf");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Gp.Services.AutoConf");
     this.logger.trace("[Constructeur AutoConf (options)]");
 
     // #####################
@@ -19131,7 +19219,7 @@ function AutoConf (options) {
         // si l'url n'est pas renseignée, il faut utiliser les urls par defaut
         // en fonction du nombre de clés en entrée et du paramètre layerId
         if (!this.options.serverUrl) {
-            var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__.default.AutoConf.url(this.options.apiKey);
+            var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__["default"].AutoConf.url(this.options.apiKey);
 
             if (!this.options.layerId) {
                 // cas d'une autoconf simple
@@ -19170,7 +19258,7 @@ function AutoConf (options) {
  * @lends module:AutoConf#
  */
 
-AutoConf.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_5__.default.prototype, {
+AutoConf.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_5__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -19222,7 +19310,7 @@ AutoConf.prototype.buildRequest = function (error, success) {
 
     // FIXME param. KVP optionnel sur un service uniquement (pas sur un autoconf local !)
     if (!bLocal && this.layerId) {
-        this.request = _Utils_Helper__WEBPACK_IMPORTED_MODULE_2__.default.normalyzeParameters({
+        this.request = _Utils_Helper__WEBPACK_IMPORTED_MODULE_2__["default"].normalyzeParameters({
             layerId : this.layerId
         });
     }
@@ -19230,7 +19318,7 @@ AutoConf.prototype.buildRequest = function (error, success) {
     // normalement pas d'erreur d'autoconf...
     (this.request || this.request === "")
         ? success.call(this, this.request)
-        : error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_3__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_REQUEST_BUILD")));
+        : error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_3__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_REQUEST_BUILD")));
 };
 
 /**
@@ -19250,9 +19338,9 @@ AutoConf.prototype.analyzeResponse = function (error, success) {
             scope : this
         };
 
-        _Response_AutoConfResponseFactory__WEBPACK_IMPORTED_MODULE_6__.default.build(options);
+        _Response_AutoConfResponseFactory__WEBPACK_IMPORTED_MODULE_6__["default"].build(options);
     } else {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_3__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_3__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -19364,7 +19452,7 @@ AutoConfResponseReader.READERS = {
             __checkServiceAttributes(viewContextNode);
 
             // create AutoConfResponse
-            var config = new _Response_model_AutoConfResponse__WEBPACK_IMPORTED_MODULE_0__.default();
+            var config = new _Response_model_AutoConfResponse__WEBPACK_IMPORTED_MODULE_0__["default"]();
 
             __getChildNodes(viewContextNode, config);
 
@@ -19400,7 +19488,7 @@ AutoConfResponseReader.READERS = {
             if (serverId) {
                 if (data && data.services && typeof data.services === "object" && !data.services[serverId]) {
                     // on est dans la balise Services
-                    var s = new _Response_model_Service__WEBPACK_IMPORTED_MODULE_7__.default();
+                    var s = new _Response_model_Service__WEBPACK_IMPORTED_MODULE_7__["default"]();
                     s.title = title;
                     s.version = version;
                     // récupération de l'url du service, dans une balise enfant "OnlineResource"
@@ -19462,7 +19550,7 @@ AutoConfResponseReader.READERS = {
                         var serviceParams = layerConfig.serviceParams;
                         if (serviceParams && serviceParams.id) {
                             if (!config.services[serviceParams.id]) {
-                                var s = new _Response_model_Service__WEBPACK_IMPORTED_MODULE_7__.default();
+                                var s = new _Response_model_Service__WEBPACK_IMPORTED_MODULE_7__["default"]();
                                 if (serviceParams.serverUrl) {
                                     s.serverUrl = serviceParams.serverUrl;
                                 }
@@ -19493,7 +19581,7 @@ AutoConfResponseReader.READERS = {
         Layer : function (layerNode, config) {
             if (config && config.layers) {
                 var lyrData = {
-                    lyr : new _Response_model_Layer__WEBPACK_IMPORTED_MODULE_3__.default(),
+                    lyr : new _Response_model_Layer__WEBPACK_IMPORTED_MODULE_3__["default"](),
                     lyrId : null
                 };
 
@@ -19557,7 +19645,7 @@ AutoConfResponseReader.READERS = {
         /** TODO : jsdoc block */
         Format : function (node, lyrData) {
             if (lyrData && lyrData.lyr) {
-                var f = new _Response_model_Format__WEBPACK_IMPORTED_MODULE_2__.default();
+                var f = new _Response_model_Format__WEBPACK_IMPORTED_MODULE_2__["default"]();
                 var current = node.getAttribute("current");
                 if (current === "1") {
                     f.current = true;
@@ -19577,7 +19665,7 @@ AutoConfResponseReader.READERS = {
         /** TODO : jsdoc block */
         Style : function (node, lyrData) {
             if (lyrData && lyrData.lyr) {
-                var s = new _Response_model_Style__WEBPACK_IMPORTED_MODULE_8__.default();
+                var s = new _Response_model_Style__WEBPACK_IMPORTED_MODULE_8__["default"]();
                 var current = node.getAttribute("current");
                 if (current === "1" || current === 1) {
                     s.current = true;
@@ -19663,7 +19751,7 @@ AutoConfResponseReader.READERS = {
             var tid = territoryNode.getAttribute("id");
             if (tid) {
                 // create a new Territory
-                var t = new _Response_model_Territory__WEBPACK_IMPORTED_MODULE_9__.default();
+                var t = new _Response_model_Territory__WEBPACK_IMPORTED_MODULE_9__["default"]();
 
                 var isDefault = territoryNode.getAttribute("default");
                 if (isDefault === "1") {
@@ -19746,7 +19834,7 @@ AutoConfResponseReader.READERS = {
                             if (!data.multiConstraints) {
                                 data.multiConstraints = [];
                             }
-                            var newConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+                            var newConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
                             newConstraint.bbox = bbox;
                             newConstraint.temporalExtent = [minT, maxT];
                             data.multiConstraints.push(newConstraint);
@@ -19757,7 +19845,7 @@ AutoConfResponseReader.READERS = {
                         }
                     } else { // cas d'une layer
                         if (!data.globalConstraint) {
-                            data.globalConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+                            data.globalConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
                         }
                         data.globalConstraint.bbox = bbox;
                         data.globalConstraint.temporalExtent = [minT, maxT];
@@ -19822,7 +19910,7 @@ AutoConfResponseReader.READERS = {
         // ou : /LayerList/Extension/gpp:Layer/gpp:Originators/gpp:Originator/gpp:Constraints/gpp:Constraint
         /** TODO : jsdoc block */
         Constraint : function (node, data) {
-            var c = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+            var c = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
             __getChildNodes(node, c);
             if (data) {
                 // on peut être dans le cas d'un originator ou d'une layer, tous les deux ont l'attribut constraints
@@ -19833,7 +19921,7 @@ AutoConfResponseReader.READERS = {
                 // cas de plusieurs contraintes (par ex différents territoires)
                 if (c.multiConstraints && Array.isArray(c.multiConstraints)) {
                     // on récupère la première contrainte, stockée normalement
-                    var constraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+                    var constraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
                     constraint.crs = c.crs;
                     constraint.bbox = c.bbox;
                     constraint.minScaleDenominator = c.minScaleDenominator;
@@ -19843,7 +19931,7 @@ AutoConfResponseReader.READERS = {
 
                     // puis on récupère les autres contraintes, à partir de multiConstraints
                     for (var i = 0; i < c.multiConstraints.length; i++) {
-                        constraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+                        constraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
                         constraint.crs = c.crs;
                         constraint.minScaleDenominator = c.minScaleDenominator;
                         constraint.maxScaleDenominator = c.maxScaleDenominator;
@@ -19872,7 +19960,7 @@ AutoConfResponseReader.READERS = {
         /** TODO : jsdoc block */
         Thematic : function (node, lyr) {
             if (lyr) {
-                var t = new _Response_model_Thematic__WEBPACK_IMPORTED_MODULE_10__.default();
+                var t = new _Response_model_Thematic__WEBPACK_IMPORTED_MODULE_10__["default"]();
                 t.inspire = false;
                 t.name = __getChildValue(node);
                 // si aucune thématique n'a été ajoutée, on crée le tableau vide
@@ -19887,7 +19975,7 @@ AutoConfResponseReader.READERS = {
         /** TODO : jsdoc block */
         InspireThematic : function (node, lyr) {
             if (lyr) {
-                var t = new _Response_model_Thematic__WEBPACK_IMPORTED_MODULE_10__.default();
+                var t = new _Response_model_Thematic__WEBPACK_IMPORTED_MODULE_10__["default"]();
                 t.inspire = true;
                 t.name = __getChildValue(node);
                 // si aucune thématique n'a été ajoutée, on crée le tableau vide
@@ -19903,7 +19991,7 @@ AutoConfResponseReader.READERS = {
         Originator : function (node, lyr) {
             if (lyr) {
                 // info : contient des balises Attribution, Logo, URL, et Constraints
-                var o = new _Response_model_Originator__WEBPACK_IMPORTED_MODULE_6__.default();
+                var o = new _Response_model_Originator__WEBPACK_IMPORTED_MODULE_6__["default"]();
                 o.name = node.getAttribute("name");
                 __getChildNodes(node, o);
                 // si aucun originator n'a été ajouté, on crée le tableau vide
@@ -19942,7 +20030,7 @@ AutoConfResponseReader.READERS = {
         /** TODO : jsdoc block */
         Legend : function (node, lyr) {
             // 2 balises : sld:MinScaleDenominator et gpp:LegendURL
-            var l = new _Response_model_Legend__WEBPACK_IMPORTED_MODULE_4__.default();
+            var l = new _Response_model_Legend__WEBPACK_IMPORTED_MODULE_4__["default"]();
             __getChildNodes(node, l);
             if (lyr) {
                 // si aucune légende n'a encore été ajoutée, on crée le tableau vide
@@ -19986,7 +20074,7 @@ AutoConfResponseReader.READERS = {
         MetadataURL : function (node, lyr) {
             if (lyr) {
                 // info : contient une balise OnlineResource avec l'url dans l'attribut "xlink:href"
-                var m = new _Response_model_Metadata__WEBPACK_IMPORTED_MODULE_5__.default();
+                var m = new _Response_model_Metadata__WEBPACK_IMPORTED_MODULE_5__["default"]();
                 m.format = node.getAttribute("format");
                 if (node.hasChildNodes) {
                     var child = node.childNodes[0];
@@ -20062,7 +20150,7 @@ AutoConfResponseReader.READERS = {
                     data.defaultOptions.minScaleDenominator = parseFloat(minScale);
                 } else if (data.lyr) { // cas d'une layer
                     if (!data.lyr.globalConstraint) {
-                        data.lyr.globalConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+                        data.lyr.globalConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
                     }
                     data.lyr.globalConstraint.minScaleDenominator = parseFloat(minScale);
                 } else if (data.hasOwnProperty("minScaleDenominator")) { // cas d'une contrainte ou d'une légende
@@ -20082,7 +20170,7 @@ AutoConfResponseReader.READERS = {
                     data.defaultOptions.maxScaleDenominator = parseFloat(maxScale);
                 } else if (data.lyr) { // cas d'une layer
                     if (!data.lyr.globalConstraint) {
-                        data.lyr.globalConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__.default();
+                        data.lyr.globalConstraint = new _Response_model_Constraint__WEBPACK_IMPORTED_MODULE_1__["default"]();
                     }
                     data.lyr.globalConstraint.maxScaleDenominator = parseFloat(maxScale);
                 } else if (data.hasOwnProperty("maxScaleDenominator")) { // cas d'une contrainte
@@ -20113,7 +20201,7 @@ AutoConfResponseReader.READERS = {
         // info : /LayerList/Layer/Extension/gpp:Layer/wmts:TileMatrixSetLink/wmts:TileMatrixSetLimits/wmts:TileMatrixLimits
         /** TODO : jsdoc block */
         TileMatrixLimits : function (node, limits) {
-            var limit = new _Response_model_TileMatrixLimit__WEBPACK_IMPORTED_MODULE_13__.default();
+            var limit = new _Response_model_TileMatrixLimit__WEBPACK_IMPORTED_MODULE_13__["default"]();
             var limitId;
             if (node.hasChildNodes) {
                 var children = node.childNodes;
@@ -20147,7 +20235,7 @@ AutoConfResponseReader.READERS = {
             if (data && data.tileMatrixSets) { // les tileMatrixSets de General
                 // nouvel objet TileMatrixSet
                 var tmsData = {};
-                tmsData.TMS = new _Response_model_TileMatrixSet__WEBPACK_IMPORTED_MODULE_11__.default();
+                tmsData.TMS = new _Response_model_TileMatrixSet__WEBPACK_IMPORTED_MODULE_11__["default"]();
                 tmsData.resolutions = [];
 
                 // lecture des informations du TMS
@@ -20199,7 +20287,7 @@ AutoConfResponseReader.READERS = {
 
             if (tmsData) {
                 // nouveau niveau de matrice : TileMatrix
-                var tileMatrix = new _Response_model_TileMatrix__WEBPACK_IMPORTED_MODULE_12__.default();
+                var tileMatrix = new _Response_model_TileMatrix__WEBPACK_IMPORTED_MODULE_12__["default"]();
 
                 // lecture des information du TileMatrix
                 __getChildNodes(node, tileMatrix);
@@ -20538,7 +20626,7 @@ var AutoConfReponseFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("AutoConfResponseFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("AutoConfResponseFactory");
         logger.trace(["AutoConfResponseFactory::build()"]);
 
         // data de type AutoConfResponse
@@ -20549,8 +20637,8 @@ var AutoConfReponseFactory = {
                 data = options.response;
             } else {
                 try {
-                    var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__.default({
-                        reader : _Formats_AutoConfResponseReader__WEBPACK_IMPORTED_MODULE_4__.default
+                    var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__["default"]({
+                        reader : _Formats_AutoConfResponseReader__WEBPACK_IMPORTED_MODULE_4__["default"]
                     });
 
                     if (typeof options.response === "string") {
@@ -20569,10 +20657,10 @@ var AutoConfReponseFactory = {
                         message += "\n (raw response service'" + options.response.documentElement.innerHTML + "')";
                     }
 
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", message),
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", message),
                         status : 200,
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
                     }));
                     return;
                 }
@@ -20585,15 +20673,15 @@ var AutoConfReponseFactory = {
                     }
                 }
                 if (isEmpty) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY_2")));
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY_2")));
                     return;
                 }
 
                 // Si la réponse contenait une exception renvoyée par le service, on appelle le callback d'erreur
                 if (data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR,
                         status : 200
                     }));
                     return;
@@ -20601,7 +20689,7 @@ var AutoConfReponseFactory = {
             }
         } else {
             // si la réponse (xmlString) est vide, on appelle le callback d'erreur
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
             return;
         }
 
@@ -22031,10 +22119,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 function CommonService (options) {
     if (!(this instanceof CommonService)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("CLASS_CONSTRUCTOR"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("CLASS_CONSTRUCTOR"));
     }
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("CommonService");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("CommonService");
     this.logger.trace("[Constructeur CommonService (options)]");
 
     // #####################
@@ -22091,7 +22179,7 @@ function CommonService (options) {
 
     // gestion des clefs API
     if (!this.options.apiKey && !this.options.serverUrl) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("PARAM_MISSING", "apiKey", "serverUrl"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("PARAM_MISSING", "apiKey", "serverUrl"));
     }
 
     // modification de la fonction de callback onSuccess dans le cas où la réponse brute est demandée
@@ -22109,7 +22197,7 @@ function CommonService (options) {
     // gestion du callback onSuccess
     var bOnSuccess = !!(this.options.onSuccess !== null && typeof this.options.onSuccess === "function");
     if (!bOnSuccess) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("PARAM_MISSING", "onSuccess()"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("PARAM_MISSING", "onSuccess()"));
     }
 
     // gestion de l'url du service par defaut
@@ -22118,8 +22206,8 @@ function CommonService (options) {
         // gestion de l'url du service par defaut pour les services qui ne possèdent qu'une seul url par defaut
         // les cas particuliers des services avec plusieurs urls (ex. Alti) devront être traité dans la classe du composant
         // donc si l'url n'est pas renseignée, il faut utiliser les urls par defaut
-        _DefaultUrlService__WEBPACK_IMPORTED_MODULE_5__.default.ssl = this.options.ssl;
-        var urlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_5__.default[this.CLASSNAME].url(this.options.apiKey);
+        _DefaultUrlService__WEBPACK_IMPORTED_MODULE_5__["default"].ssl = this.options.ssl;
+        var urlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_5__["default"][this.CLASSNAME].url(this.options.apiKey);
         if (typeof urlByDefault === "string") {
             this.options.serverUrl = urlByDefault;
         } else {
@@ -22149,9 +22237,9 @@ function CommonService (options) {
         case "DELETE":
         case "HEAD":
         case "OPTIONS":
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("PARAM_NOT_SUPPORT", "httpMethod"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("PARAM_NOT_SUPPORT", "httpMethod"));
         default:
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("PARAM_UNKNOWN", "httpMethod"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("PARAM_UNKNOWN", "httpMethod"));
     }
 
     // gestion du protocole
@@ -22163,13 +22251,13 @@ function CommonService (options) {
         case "XHR":
             break;
         default:
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("PARAM_UNKNOWN", "protocol"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("PARAM_UNKNOWN", "protocol"));
     }
 
     // on determine l'environnement d'execution : browser ou non ?
     // et on lance une exception sur l'utilisation du protocole JSONP pour nodeJS...
     if (typeof window === "undefined" && this.options.protocol === "JSONP") {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__.default.getMessage("PARAM_NOT_SUPPORT_NODEJS", "protocol=JSONP (instead use XHR)"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_2__["default"].getMessage("PARAM_NOT_SUPPORT_NODEJS", "protocol=JSONP (instead use XHR)"));
     }
 
     // le protocole JSONP ne fonctionne qu'en GET.
@@ -22242,7 +22330,7 @@ CommonService.prototype = {
             if (result) {
                 this.options.onSuccess.call(this, result);
             } else {
-                return onError.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default("Analyse de la reponse en échec !?"));
+                return onError.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"]("Analyse de la reponse en échec !?"));
             }
         }
 
@@ -22251,8 +22339,8 @@ CommonService.prototype = {
             this.logger.trace("CommonService::onError()");
             // error : l'objet est du type ErrorService ou Error
             var e = error;
-            if (!(e instanceof _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default)) {
-                e = new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default(error.message);
+            if (!(e instanceof _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"])) {
+                e = new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"](error.message);
             }
             this.options.onFailure.call(this, e);
         }
@@ -22303,19 +22391,19 @@ CommonService.prototype = {
 
         // rajout de l'option gpbibaccess
         // INFO : acces au numero de version de package.conf aprés compilation !
-        this.options.serverUrl = _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__.default.normalyzeUrl(this.options.serverUrl, {
+        this.options.serverUrl = _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__["default"].normalyzeUrl(this.options.serverUrl, {
             "gp-access-lib" : _package_json__WEBPACK_IMPORTED_MODULE_6__.version
         }, false);
 
         // si le proxy est renseigné, on proxifie l'url du service
         if (bUrlProxified) {
             if (this.options.httpMethod === "GET") {
-                strUrlProxified = this.options.proxyURL + _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__.default.normalyzeUrl(this.options.serverUrl, this.request, true);
+                strUrlProxified = this.options.proxyURL + _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__["default"].normalyzeUrl(this.options.serverUrl, this.request, true);
                 strData = null;
             }
 
             if (this.options.httpMethod === "POST") {
-                strUrlProxified = this.options.proxyURL + _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__.default.normalyzeUrl(this.options.serverUrl, null, true);
+                strUrlProxified = this.options.proxyURL + _Utils_Helper__WEBPACK_IMPORTED_MODULE_1__["default"].normalyzeUrl(this.options.serverUrl, null, true);
                 strData = this.request;
             }
         }
@@ -22361,10 +22449,10 @@ CommonService.prototype = {
                             // ex. reponse du service en xml
                             // > {http : {status:200, error:null},xml :'réponse du service'}
                             if (response.http.status !== 200) {
-                                error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default({
+                                error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"]({
                                     status : response.http.status,
                                     message : response.http.error,
-                                    type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default.TYPE_SRVERR
+                                    type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"].TYPE_SRVERR
                                 }));
                                 return;
                             } else {
@@ -22379,7 +22467,7 @@ CommonService.prototype = {
                             content = response;
                         }
                     } else {
-                        error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default("Le contenu de la reponse est vide !?"));
+                        error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"]("Le contenu de la reponse est vide !?"));
                         return;
                     }
                 }
@@ -22402,17 +22490,17 @@ CommonService.prototype = {
             onFailure : function (e) {
                 self.logger.trace("callService::onFailure()");
                 // on est forcement sur une erreur levée par un service !
-                e.type = _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default.TYPE_SRVERR;
-                error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default(e));
+                e.type = _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"].TYPE_SRVERR;
+                error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"](e));
             },
             // callback de timeOut
             onTimeOut : function () {
                 self.logger.trace("callService::onTimeOut()");
-                error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__.default("TimeOut!"));
+                error.call(self, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_4__["default"]("TimeOut!"));
             }
         };
 
-        _Protocols_Protocol__WEBPACK_IMPORTED_MODULE_3__.default.send(options);
+        _Protocols_Protocol__WEBPACK_IMPORTED_MODULE_3__["default"].send(options);
     },
 
     /**
@@ -22764,7 +22852,7 @@ DirectGeocodeResponseReader.READERS = {
 
         /** TODO : jsdoc block */
         XLS : function (root) {
-            var geocodeResponse = new _Response_model_GeocodeResponse__WEBPACK_IMPORTED_MODULE_2__.default();
+            var geocodeResponse = new _Response_model_GeocodeResponse__WEBPACK_IMPORTED_MODULE_2__["default"]();
 
             // vérification de la version du service, et des namespaces de l'en-tête
             __checkServiceAttributes(root);
@@ -22777,7 +22865,7 @@ DirectGeocodeResponseReader.READERS = {
 
         /** TODO : jsdoc block */
         GeocodedAddress : function (node, geocodeResponse) {
-            var geocodedLocation = new _Response_model_DirectGeocodedLocation__WEBPACK_IMPORTED_MODULE_3__.default();
+            var geocodedLocation = new _Response_model_DirectGeocodedLocation__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
             __getChildNodes(node, geocodedLocation);
 
@@ -22917,11 +23005,11 @@ DirectGeocodeResponseReader.READERS = {
             // <Error message="Message..." errorCode="InternalServerError"/>
             var srvMess = node.getAttribute("message");
             var errorCode = node.getAttribute("errorCode");
-            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EXCEPTION",
+            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION",
                 "(" + errorCode + ") : " + srvMess);
-            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default({
+            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"]({
                 message : message,
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default.TYPE_SRVERR
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"].TYPE_SRVERR
             });
         }
     },
@@ -23000,10 +23088,10 @@ DirectGeocodeResponseReader.read = function (root) {
         var exceptionReport = DirectGeocodeResponseReader.READERS[root.nodeName](root);
         return exceptionReport;
     } else {
-        var mess = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_ANALYSE", root.nodeName);
-        throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default({
+        var mess = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_ANALYSE", root.nodeName);
+        throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"]({
             message : mess,
-            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default.TYPE_UNKERR,
+            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"].TYPE_UNKERR,
             status : 200
         });
     }
@@ -23245,7 +23333,7 @@ ReverseGeocodeResponseReader.READERS = {
 
         /** TODO : jsdoc block */
         XLS : function (root) {
-            var reverseGeocodeResponse = new _Response_model_GeocodeResponse__WEBPACK_IMPORTED_MODULE_2__.default();
+            var reverseGeocodeResponse = new _Response_model_GeocodeResponse__WEBPACK_IMPORTED_MODULE_2__["default"]();
 
             // vérification de la version du service, et des namespaces de l'en-tête
             __checkServiceAttributes(root);
@@ -23258,7 +23346,7 @@ ReverseGeocodeResponseReader.READERS = {
 
         /** TODO : jsdoc block */
         ReverseGeocodedLocation : function (node, reverseGeocodeResponse) {
-            var reverseGeocodedLocation = new _Response_model_ReverseGeocodedLocation__WEBPACK_IMPORTED_MODULE_3__.default();
+            var reverseGeocodedLocation = new _Response_model_ReverseGeocodedLocation__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
             __getChildNodes(node, reverseGeocodedLocation);
 
@@ -23383,11 +23471,11 @@ ReverseGeocodeResponseReader.READERS = {
             // <Error message="For input string : &quot;2,45&quot;" errorCode="InternalServerError"/>
             var srvMess = node.getAttribute("message");
             var errorCode = node.getAttribute("errorCode");
-            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EXCEPTION",
+            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION",
                 "(" + errorCode + ") : " + srvMess);
-            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default({
+            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"]({
                 message : message,
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default.TYPE_SRVERR
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"].TYPE_SRVERR
             });
         }
     },
@@ -23727,7 +23815,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function Geocode (options) {
     if (!(this instanceof Geocode)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("CLASS_CONSTRUCTOR", "Geocode"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("CLASS_CONSTRUCTOR", "Geocode"));
     }
 
     /**
@@ -23737,20 +23825,20 @@ function Geocode (options) {
     this.CLASSNAME = "Geocode";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_3__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Gp.Services.Geocode");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Gp.Services.Geocode");
     this.logger.trace("[Constructeur Geocode (options)]");
 
     if (!options.location) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "location"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "location"));
     }
 
     // FIXME ECMAScript 5 support
     if (typeof options.location === "object" && Object.keys(options.location).length === 0) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "location"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "location"));
     } else if (typeof options.location === "string" && options.location.length === 0) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "location"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "location"));
     }
 
     // ajout des options spécifiques au service
@@ -23802,7 +23890,7 @@ function Geocode (options) {
 /**
  * @lends module:Geocode#
  */
-Geocode.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__.default.prototype, {
+Geocode.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -23829,11 +23917,11 @@ Geocode.prototype.buildRequest = function (error, success) {
         maximumResponses : this.options.maximumResponses
     };
 
-    this.request = _Request_DirectGeocodeRequestFactory__WEBPACK_IMPORTED_MODULE_4__.default.build(options);
+    this.request = _Request_DirectGeocodeRequestFactory__WEBPACK_IMPORTED_MODULE_4__["default"].build(options);
 
     // on teste si la requete a bien été construite !
     (!this.request)
-        ? error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_REQUEST_BUILD")))
+        ? error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_REQUEST_BUILD")))
         : success.call(this, this.request);
 };
 
@@ -23873,9 +23961,9 @@ Geocode.prototype.analyzeResponse = function (error, success) {
             scope : this
         };
 
-        _Response_DirectGeocodeResponseFactory__WEBPACK_IMPORTED_MODULE_5__.default.build(options);
+        _Response_DirectGeocodeResponseFactory__WEBPACK_IMPORTED_MODULE_5__["default"].build(options);
     } else {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -23947,22 +24035,22 @@ var DirectGeocodeRequestFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("DirectGeocodeRequestFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("DirectGeocodeRequestFactory");
         logger.trace(["DirectGeocodeRequestFactory::build()"]);
 
         var request = null;
 
         // gestion des filtres (table de geocodage) !
         // par defaut, on les ajoute toute ...
-        var oFilter = new _Formats_XLS_LocationUtilityService_GeocodeFilterExtension__WEBPACK_IMPORTED_MODULE_3__.default();
-        oFilter.addFilterExtensions(new _Request_model_Administratif__WEBPACK_IMPORTED_MODULE_7__.default());
-        oFilter.addFilterExtensions(new _Request_model_StreetAddress__WEBPACK_IMPORTED_MODULE_4__.default());
-        oFilter.addFilterExtensions(new _Request_model_PositionOfInterest__WEBPACK_IMPORTED_MODULE_5__.default());
-        oFilter.addFilterExtensions(new _Request_model_CadastralParcel__WEBPACK_IMPORTED_MODULE_6__.default());
+        var oFilter = new _Formats_XLS_LocationUtilityService_GeocodeFilterExtension__WEBPACK_IMPORTED_MODULE_3__["default"]();
+        oFilter.addFilterExtensions(new _Request_model_Administratif__WEBPACK_IMPORTED_MODULE_7__["default"]());
+        oFilter.addFilterExtensions(new _Request_model_StreetAddress__WEBPACK_IMPORTED_MODULE_4__["default"]());
+        oFilter.addFilterExtensions(new _Request_model_PositionOfInterest__WEBPACK_IMPORTED_MODULE_5__["default"]());
+        oFilter.addFilterExtensions(new _Request_model_CadastralParcel__WEBPACK_IMPORTED_MODULE_6__["default"]());
 
         // objet LUS
         // on peut aussi par un objet XLS::GeocodeRequest
-        var oLUS = new _Formats_XLS_LocationUtilityService__WEBPACK_IMPORTED_MODULE_2__.default({
+        var oLUS = new _Formats_XLS_LocationUtilityService__WEBPACK_IMPORTED_MODULE_2__["default"]({
             location : options.location,
             returnFreeForm : options.returnFreeForm,
             filterOptions : options.filterOptions
@@ -23970,7 +24058,7 @@ var DirectGeocodeRequestFactory = {
         oLUS.addFilter(oFilter);
 
         // Format XLS
-        var oXLS = new _Formats_XLS__WEBPACK_IMPORTED_MODULE_1__.default({
+        var oXLS = new _Formats_XLS__WEBPACK_IMPORTED_MODULE_1__["default"]({
             srsName : options.srs,
             maximumResponses : options.maximumResponses
         });
@@ -24124,7 +24212,7 @@ var ReverseGeocodeRequestFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("ReverseGeocodeRequestFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("ReverseGeocodeRequestFactory");
         logger.trace(["ReverseGeocodeRequestFactory::build()"]);
 
         // options non definies
@@ -24133,14 +24221,14 @@ var ReverseGeocodeRequestFactory = {
         var request = null;
 
         // objet LUS
-        var oLUS = new _Formats_XLS_LocationUtilityService__WEBPACK_IMPORTED_MODULE_2__.default({
+        var oLUS = new _Formats_XLS_LocationUtilityService__WEBPACK_IMPORTED_MODULE_2__["default"]({
             position : settings.position,
             returnFreeForm : settings.returnFreeForm,
             filterOptions : settings.filterOptions
         });
 
         // Format XLS
-        var oXLS = new _Formats_XLS__WEBPACK_IMPORTED_MODULE_1__.default({
+        var oXLS = new _Formats_XLS__WEBPACK_IMPORTED_MODULE_1__["default"]({
             srsName : settings.srs,
             maximumResponses : settings.maximumResponses
         });
@@ -24208,7 +24296,7 @@ function Administratif () {
     // INFO
     // appel du constructeur de la classe mère
     // avec passage de param.
-    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
     /**
      * Nom de la classe (heritage)
@@ -24234,7 +24322,7 @@ function Administratif () {
 /**
  * @lends module:Administratif#
  */
-Administratif.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.prototype);
+Administratif.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
 
 /**
  * Constructeur (alias)
@@ -24277,7 +24365,7 @@ function CadastralParcel () {
     // INFO
     // appel du constructeur de la classe mère
     // avec passage de param.
-    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
     /**
      * Nom de la classe (heritage)
@@ -24310,7 +24398,7 @@ function CadastralParcel () {
 /**
  * @lends module:CadastralParcel#
  */
-CadastralParcel.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.prototype);
+CadastralParcel.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
 
 /**
  * Constructeur (alias)
@@ -24353,7 +24441,7 @@ function PositionOfInterest () {
     // INFO
     // appel du constructeur de la classe mère
     // avec passage de param.
-    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
     /**
      * Nom de la classe (heritage)
@@ -24381,7 +24469,7 @@ function PositionOfInterest () {
 /**
  * @lends module:PositionOfInterest#
  */
-PositionOfInterest.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.prototype);
+PositionOfInterest.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
 
 /**
  * Constructeur (alias)
@@ -24424,7 +24512,7 @@ function StreetAddress () {
     // INFO
     // appel du constructeur de la classe mère
     // avec passage de param.
-    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
     /**
      * Nom de la classe (heritage)
@@ -24453,7 +24541,7 @@ function StreetAddress () {
 /**
  * @lends module:StreetAdress#
  */
-StreetAddress.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__.default.prototype);
+StreetAddress.prototype = Object.create(_GeocodeLocation__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
 
 /**
  * Constructeur (alias)
@@ -24524,8 +24612,8 @@ var DirectGeocodeReponseFactory = {
                 data = options.response;
             } else {
                 try {
-                    var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_2__.default({
-                        reader : _Formats_DirectGeocodeResponseReader__WEBPACK_IMPORTED_MODULE_3__.default
+                    var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        reader : _Formats_DirectGeocodeResponseReader__WEBPACK_IMPORTED_MODULE_3__["default"]
                     });
 
                     if (typeof options.response === "string") {
@@ -24546,9 +24634,9 @@ var DirectGeocodeReponseFactory = {
                     } else {
                         message += "('" + options.response.documentElement.innerHTML + "')";
                     }
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_ANALYSE", message),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__.default.TYPE_UNKERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_ANALYSE", message),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__["default"].TYPE_UNKERR,
                         status : -1
                     }));
                     return;
@@ -24556,18 +24644,18 @@ var DirectGeocodeReponseFactory = {
 
                 // Si la réponse contenait une exception renvoyée par le service
                 if (data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__["default"].TYPE_SRVERR,
                         status : 200 // FIXME : 200 ?
                     }));
                     return;
                 }
             }
         } else {
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__.default({
-                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY"),
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__.default.TYPE_SRVERR,
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__["default"]({
+                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY"),
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_0__["default"].TYPE_SRVERR,
                 status : -1 // FIXME : status response
             }));
             return;
@@ -24641,8 +24729,8 @@ var ReverseGeocodeReponseFactory = {
                 data = options.response;
             } else {
                 try {
-                    var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_2__.default({
-                        reader : _Formats_ReverseGeocodeResponseReader__WEBPACK_IMPORTED_MODULE_3__.default
+                    var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        reader : _Formats_ReverseGeocodeResponseReader__WEBPACK_IMPORTED_MODULE_3__["default"]
                     });
 
                     if (typeof options.response === "string") {
@@ -24666,9 +24754,9 @@ var ReverseGeocodeReponseFactory = {
                 // Si la réponse contenait une exception renvoyée par le service
                 // TODO : quand cela arrive-t-il ?
                 if (data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"].TYPE_SRVERR,
                         status : 200
                     }));
                     return;
@@ -24696,9 +24784,9 @@ var ReverseGeocodeReponseFactory = {
                 }
             }
         } else {
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default({
-                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EMPTY"),
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default.TYPE_SRVERR,
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"]({
+                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EMPTY"),
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"].TYPE_SRVERR,
                 status : -1 // FIXME : status response
             }));
             return;
@@ -24745,7 +24833,7 @@ function DirectGeocodedLocation () {
     // INFO
     // appel du constructeur de la classe mère
     // avec passage de param.
-    _GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
     /**
      * Nom de la classe (heritage) : "DirectGeocodedLocation"
@@ -24756,7 +24844,7 @@ function DirectGeocodedLocation () {
     this.accuracy = null;
 }
 
-DirectGeocodedLocation.prototype = Object.create(_GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__.default.prototype);
+DirectGeocodedLocation.prototype = Object.create(_GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
 
 DirectGeocodedLocation.prototype.constructor = DirectGeocodedLocation;
 
@@ -24932,7 +25020,7 @@ function ReverseGeocodedLocation () {
     // INFO
     // appel du constructeur de la classe mère
     // avec passage de param.
-    _GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__.default.apply(this, arguments);
+    _GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__["default"].apply(this, arguments);
 
     /**
      * Nom de la classe (heritage) : "ReverseGeocodedLocation"
@@ -24943,7 +25031,7 @@ function ReverseGeocodedLocation () {
     this.searchCenterDistance = null;
 }
 
-ReverseGeocodedLocation.prototype = Object.create(_GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__.default.prototype);
+ReverseGeocodedLocation.prototype = Object.create(_GeocodedLocation__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
 
 ReverseGeocodedLocation.prototype.constructor = ReverseGeocodedLocation;
 
@@ -25055,7 +25143,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function ReverseGeocode (options) {
     if (!(this instanceof ReverseGeocode)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("CLASS_CONSTRUCTOR", "ReverseGeocode"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("CLASS_CONSTRUCTOR", "ReverseGeocode"));
     }
 
     /**
@@ -25065,22 +25153,22 @@ function ReverseGeocode (options) {
     this.CLASSNAME = "ReverseGeocode";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_3__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Gp.Services.ReverseGeocode");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Gp.Services.ReverseGeocode");
     this.logger.trace("[Constructeur ReverseGeocode (options)]");
 
     if (!options.position) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "position"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "position"));
     }
 
     // on lance une exception afin d'eviter au service de le faire...
     if (options.position.x === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "position.x"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "position.x"));
     }
 
     if (options.position.y === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "position.y"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "position.y"));
     }
 
     // ajout des options spécifiques au service
@@ -25113,7 +25201,7 @@ function ReverseGeocode (options) {
     this.options.filterOptions.type = options.filterOptions.type || ["StreetAddress"];
     // on vérifie que le type est bien dans un tableau
     if (!Array.isArray(this.options.filterOptions.type)) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_TYPE", "filterOptions.type"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_TYPE", "filterOptions.type"));
     }
 
     this.options.maximumResponses = options.maximumResponses || 25;
@@ -25166,7 +25254,7 @@ function ReverseGeocode (options) {
 /**
  * @lends module:ReverseGeocode#
  */
-ReverseGeocode.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__.default.prototype, {
+ReverseGeocode.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -25194,11 +25282,11 @@ ReverseGeocode.prototype.buildRequest = function (error, success) {
         maximumResponses : this.options.maximumResponses
     };
 
-    this.request = _Request_ReverseGeocodeRequestFactory__WEBPACK_IMPORTED_MODULE_4__.default.build(options);
+    this.request = _Request_ReverseGeocodeRequestFactory__WEBPACK_IMPORTED_MODULE_4__["default"].build(options);
 
     // on teste si la requete a bien été construite !
     (!this.request)
-        ? error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_REQUEST_BUILD")))
+        ? error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_REQUEST_BUILD")))
         : success.call(this, this.request);
 };
 
@@ -25219,9 +25307,9 @@ ReverseGeocode.prototype.analyzeResponse = function (error, success) {
             scope : this
         };
 
-        _Response_ReverseGeocodeResponseFactory__WEBPACK_IMPORTED_MODULE_5__.default.build(options);
+        _Response_ReverseGeocodeResponseFactory__WEBPACK_IMPORTED_MODULE_5__["default"].build(options);
     } else {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -25330,7 +25418,7 @@ ProcessIsoCurveResponseReader.READERS = {
     /** TODO : jsdoc block */
     isochronResult : function (root) {
         // racine de la réponse XML : on crée l'objet de réponse
-        var response = new _Response_model_ProcessIsoCurveResponse__WEBPACK_IMPORTED_MODULE_3__.default();
+        var response = new _Response_model_ProcessIsoCurveResponse__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
         if (root.hasChildNodes()) {
             var children = root.childNodes;
@@ -25346,11 +25434,11 @@ ProcessIsoCurveResponseReader.READERS = {
         }
 
         if (response.status === "error") {
-            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EXCEPTION",
+            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION",
                 response.message);
-            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
+            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
                 message : message,
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
             });
         }
         return response;
@@ -25420,11 +25508,11 @@ ProcessIsoCurveResponseReader.READERS = {
             };
             /** TODO : jsdoc block */
             var onWKTError = function () {
-                var msg = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("PARAM_FORMAT", ["wktGeometry"]);
+                var msg = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("PARAM_FORMAT", ["wktGeometry"]);
                 throw new Error(msg);
             };
             if (response.hasOwnProperty("geometry")) {
-                _Formats_WKT__WEBPACK_IMPORTED_MODULE_1__.default.toJson(wktGeometry, onWKTSuccess, onWKTError);
+                _Formats_WKT__WEBPACK_IMPORTED_MODULE_1__["default"].toJson(wktGeometry, onWKTSuccess, onWKTError);
             }
         }
     },
@@ -25495,18 +25583,18 @@ ProcessIsoCurveResponseReader.read = function (root) {
     } else if (ProcessIsoCurveResponseReader.READERS[root.nodeName]) {
         response = ProcessIsoCurveResponseReader.READERS[root.nodeName](root);
         if (response.status === "error") {
-            var errMsg = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EXCEPTION",
+            var errMsg = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION",
                 response.message);
-            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
+            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
                 message : errMsg,
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
             });
         }
         return response;
     } else {
-        throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-            message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_ANALYSE", root.nodeName),
-            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_UNKERR
+        throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+            message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_ANALYSE", root.nodeName),
+            type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_UNKERR
         });
     }
 };
@@ -25651,7 +25739,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ProcessIsoCurve (options) {
     if (!(this instanceof ProcessIsoCurve)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("CLASS_CONSTRUCTOR", "ProcessIsoCurve"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("CLASS_CONSTRUCTOR", "ProcessIsoCurve"));
     }
 
     /**
@@ -25661,22 +25749,22 @@ function ProcessIsoCurve (options) {
     this.CLASSNAME = "ProcessIsoCurve";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_3__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Gp.Services.ProcessIsoCurve");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Gp.Services.ProcessIsoCurve");
     this.logger.trace("[Constructeur ProcessIsoCurve (options)]");
 
     if (!options.position) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "position"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "position"));
     }
 
     // on lance une exception afin d'eviter au service de le faire...
     if (options.position.x === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "position.x"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "position.x"));
     }
 
     if (options.position.y === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "position.y"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "position.y"));
     }
 
     if (!options.time && !options.distance) {
@@ -25720,7 +25808,7 @@ function ProcessIsoCurve (options) {
     // gestion de l'url du service par defaut
     // si l'url n'est pas renseignée, il faut utiliser les urls par defaut
     if (!this.options.serverUrl) {
-        var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__.default.ProcessIsoCurve.url(this.options.apiKey);
+        var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__["default"].ProcessIsoCurve.url(this.options.apiKey);
 
         var urlFound = lstUrlByDefault["iso" + "-" + this.options.outputFormat];
         if (!urlFound) {
@@ -25752,7 +25840,7 @@ function ProcessIsoCurve (options) {
 /**
  * @lends module:ProcessIsoCurve#
  */
-ProcessIsoCurve.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__.default.prototype, {
+ProcessIsoCurve.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -25770,14 +25858,14 @@ ProcessIsoCurve.prototype.constructor = ProcessIsoCurve;
  */
 ProcessIsoCurve.prototype.buildRequest = function (error, success) {
     try {
-        var oIsoCurve = new _Request_ProcessIsoCurveRequest__WEBPACK_IMPORTED_MODULE_5__.default(this.options);
+        var oIsoCurve = new _Request_ProcessIsoCurveRequest__WEBPACK_IMPORTED_MODULE_5__["default"](this.options);
         if (!oIsoCurve.processRequestString()) {
-            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_REQUEST_BUILD"));
+            throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_REQUEST_BUILD"));
         }
 
         this.request = oIsoCurve.requestString;
     } catch (e) {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(e.message));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](e.message));
         return;
     }
 
@@ -25802,9 +25890,9 @@ ProcessIsoCurve.prototype.analyzeResponse = function (onError, onSuccess) {
             scope : this
         };
 
-        _Response_ProcessIsoCurveResponseFactory__WEBPACK_IMPORTED_MODULE_6__.default.build(options);
+        _Response_ProcessIsoCurveResponseFactory__WEBPACK_IMPORTED_MODULE_6__["default"].build(options);
     } else {
-        onError.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        onError.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -25875,7 +25963,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function ProcessIsoCurveRequest (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("ProcessIsoCurveRequest");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("ProcessIsoCurveRequest");
     this.logger.trace("[Constructeur ProcessIsoCurveRequest ()]");
 
     if (!(this instanceof ProcessIsoCurveRequest)) {
@@ -25884,7 +25972,7 @@ function ProcessIsoCurveRequest (options) {
 
     // existance des options
     if (!options) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "options"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "options"));
     }
 
     /**
@@ -26010,7 +26098,7 @@ ProcessIsoCurveRequest.prototype = {
                 this.logger.trace("Process GET Request");
 
                 // Mapping des options avec le service de l'API REST
-                var oParams = new _model_ProcessIsoCurveParam__WEBPACK_IMPORTED_MODULE_2__.default(this.settings);
+                var oParams = new _model_ProcessIsoCurveParam__WEBPACK_IMPORTED_MODULE_2__["default"](this.settings);
                 var params = oParams.getParams();
 
                 for (i = 0; i < params.length; i++) {
@@ -26133,7 +26221,7 @@ function ProcessIsoCurveParam (options) {
         throw new TypeError("ProcessIsoCurveParam constructor cannot be called as a function.");
     }
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur ProcessIsoCurveParam ()]");
 
     /**
@@ -26355,7 +26443,7 @@ var ProcessIsoCurveResponseFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("ProcessIsoCurveResponseFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("ProcessIsoCurveResponseFactory");
         logger.trace(["ProcessIsoCurveResponseFactory::build()"]);
 
         var data = null;
@@ -26370,8 +26458,8 @@ var ProcessIsoCurveResponseFactory = {
                         logger.trace("analyze response : xml");
 
                         try {
-                            var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__.default({
-                                reader : _Formats_ProcessIsoCurveResponseReader__WEBPACK_IMPORTED_MODULE_5__.default
+                            var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__["default"]({
+                                reader : _Formats_ProcessIsoCurveResponseReader__WEBPACK_IMPORTED_MODULE_5__["default"]
                             });
 
                             // FIXME : mode XHR ne retourne que des string ? JSONP aussi à ce niveau ?
@@ -26384,15 +26472,15 @@ var ProcessIsoCurveResponseFactory = {
                             data = p.parse();
 
                             if (!data) {
-                                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION_2"));
+                                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION_2"));
                             }
                         } catch (e) {
                             var message = e.message;
                             message += "\n (raw response service : '" + options.response + "')";
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", message),
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                                message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", message),
                                 status : 200,
-                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
                             }));
                             return;
                         }
@@ -26412,7 +26500,7 @@ var ProcessIsoCurveResponseFactory = {
                         // analyse de la reponse
                         if (JSONResponse && (JSONResponse.status === "OK" || JSONResponse.status === "ok")) {
                             // création de l'objet de réponse
-                            data = new _model_ProcessIsoCurveResponse__WEBPACK_IMPORTED_MODULE_6__.default();
+                            data = new _model_ProcessIsoCurveResponse__WEBPACK_IMPORTED_MODULE_6__["default"]();
 
                             // remplissage de l'objet créé avec les attribtuts de la réponse du service
                             data.time = JSONResponse.time;
@@ -26426,14 +26514,14 @@ var ProcessIsoCurveResponseFactory = {
                             };
                             // callback d'erreur
                             var onWKTError = function () {
-                                options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                                    message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_FORMAT", "wktGeometry")
+                                options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                                    message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_FORMAT", "wktGeometry")
                                 }));
                             };
                             if (data.hasOwnProperty("geometry")) {
-                                _Formats_WKT__WEBPACK_IMPORTED_MODULE_4__.default.toJson(JSONResponse.wktGeometry, onWKTSuccess, onWKTError);
+                                _Formats_WKT__WEBPACK_IMPORTED_MODULE_4__["default"].toJson(JSONResponse.wktGeometry, onWKTSuccess, onWKTError);
                                 if (!data.geometry) {
-                                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_ANALYSE", options.response)));
+                                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_ANALYSE", options.response)));
                                     return;
                                 }
                             }
@@ -26446,13 +26534,13 @@ var ProcessIsoCurveResponseFactory = {
                             // JSHint bug if var message is used !?
                             var mess = JSONResponse.message;
                             mess += "\n (raw response service : '" + JSONResponse + "')";
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", mess)));
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", mess)));
                             return;
                         }
                         break;
 
                     default:
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_FORMAT", "json", "xml")));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_FORMAT", "json", "xml")));
                         return;
                 }
 
@@ -26460,9 +26548,9 @@ var ProcessIsoCurveResponseFactory = {
                 // ex. <ExceptionReport><Exception exceptionCode="MissingParameter">Key does not exist or has expired</Exception></ExceptionReport>
                 // mais le statut est 403, l'erreur est donc remontée plus tôt.
                 if (data && data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
-                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
-                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR,
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
+                        message : _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", data.exceptionReport),
+                        type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR,
                         status : 200
                     }));
                     return;
@@ -26470,7 +26558,7 @@ var ProcessIsoCurveResponseFactory = {
             }
         } else {
             // si la réponse est vide, on appelle le callback d'erreur
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
             return;
         }
 
@@ -26625,7 +26713,7 @@ RouteResponseOLSReader.READERS = {
  */
 RouteResponseOLSReader.read = function (root) {
     // logger
-    var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("RouteResponseOLSReader");
+    var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("RouteResponseOLSReader");
     logger.error("not yet implemented !");
 };
 
@@ -26691,18 +26779,18 @@ RouteResponseRESTReader.READERS = {
      * @returns {Object} response
      */
     routeResult : function (node) {
-        var response = new _Response_model_RouteResponse__WEBPACK_IMPORTED_MODULE_3__.default();
+        var response = new _Response_model_RouteResponse__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
         // on boucle sur les balises "enfant" de la réponse :
         // status, distance, duration, distanceMeters, durationSeconds, bounds, geometryWkt, simplifiedWkt, leg
         __getChildNodes(node, response);
 
         if (response.status === "error") {
-            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("SERVICE_RESPONSE_EXCEPTION",
+            var message = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION",
                 response.message);
-            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default({
+            throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"]({
                 message : message,
-                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default.TYPE_SRVERR
+                type : _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"].TYPE_SRVERR
             });
         }
 
@@ -26786,11 +26874,11 @@ RouteResponseRESTReader.READERS = {
             };
 
             var onWKTError = function () {
-                var msg = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__.default.getMessage("PARAM_FORMAT", ["geometryWkt"]);
+                var msg = _Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_0__["default"].getMessage("PARAM_FORMAT", ["geometryWkt"]);
                 throw new Error(msg);
             };
             // get WKT Geometry from string
-            _Formats_WKT__WEBPACK_IMPORTED_MODULE_1__.default.toJson(geomWkt, onWKTSuccess, onWKTError);
+            _Formats_WKT__WEBPACK_IMPORTED_MODULE_1__["default"].toJson(geomWkt, onWKTSuccess, onWKTError);
         }
     },
 
@@ -26801,7 +26889,7 @@ RouteResponseRESTReader.READERS = {
      */
     step : function (node, response) {
         // création d'une nouvelle instruction
-        var routeInstruction = new _Response_model_RouteInstruction__WEBPACK_IMPORTED_MODULE_4__.default();
+        var routeInstruction = new _Response_model_RouteInstruction__WEBPACK_IMPORTED_MODULE_4__["default"]();
         var name;
 
         // lecture des informations de l'instruction (balises enfants)
@@ -27036,7 +27124,7 @@ var RouteRequestFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("RouteRequestFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("RouteRequestFactory");
         logger.trace(["RouteRequestFactory::build()"]);
 
         var request = null;
@@ -27051,11 +27139,11 @@ var RouteRequestFactory = {
         switch (options.api) {
             case "REST":
                 // FIXME les exceptions ne sont pas 'catchées' sur le constructeur !
-                var myReq = new _RouteRequestREST__WEBPACK_IMPORTED_MODULE_3__.default(settings);
+                var myReq = new _RouteRequestREST__WEBPACK_IMPORTED_MODULE_3__["default"](settings);
                 if (!myReq.processRequestString()) {
                     message = "Error process request (rest) !";
                     if (bOnError) {
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default(message));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"](message));
                         return;
                     }
                     throw new Error(message);
@@ -27063,11 +27151,11 @@ var RouteRequestFactory = {
                 request = myReq.requestString;
                 break;
             case "OLS":
-                request = _RouteRequestOLS__WEBPACK_IMPORTED_MODULE_2__.default.build(settings);
+                request = _RouteRequestOLS__WEBPACK_IMPORTED_MODULE_2__["default"].build(settings);
                 if (!request) {
                     message = "Error process request (ols) !";
                     if (bOnError) {
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default(message));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"](message));
                         return;
                     }
                     throw new Error(message);
@@ -27076,7 +27164,7 @@ var RouteRequestFactory = {
             default:
                 message = "Type of API is not supported by service (REST or OLS) !";
                 if (bOnError) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__.default(message));
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_1__["default"](message));
                     return;
                 }
                 throw new Error(message);
@@ -27135,7 +27223,7 @@ var RouteRequestOLS = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("RouteRequestOLS");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("RouteRequestOLS");
         logger.trace(["RouteRequestOLS::build()"]);
 
         var request = null;
@@ -27155,10 +27243,10 @@ var RouteRequestOLS = {
         };
 
         // objet RouteService
-        var oRS = new _Formats_XLS_RouteService__WEBPACK_IMPORTED_MODULE_2__.default(settings);
+        var oRS = new _Formats_XLS_RouteService__WEBPACK_IMPORTED_MODULE_2__["default"](settings);
 
         // Format XLS
-        var oXLS = new _Formats_XLS__WEBPACK_IMPORTED_MODULE_1__.default({
+        var oXLS = new _Formats_XLS__WEBPACK_IMPORTED_MODULE_1__["default"]({
             srsName : options.srs,
             maximumResponses : options.maximumResponses
         });
@@ -27230,7 +27318,7 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 function RouteRequestREST (options) {
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("RouteRequestREST");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("RouteRequestREST");
     this.logger.trace("[Constructeur RouteRequestREST ()]");
 
     if (!(this instanceof RouteRequestREST)) {
@@ -27239,7 +27327,7 @@ function RouteRequestREST (options) {
 
     // existance des options
     if (!options) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_EMPTY", "options"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_EMPTY", "options"));
     }
 
     /** liste des options */
@@ -27278,7 +27366,7 @@ RouteRequestREST.prototype = {
         this.logger.warn(" PROTOTYPE !");
 
         // Mapping des options avec le service de l'API REST
-        var oParams = new _model_RouteParamREST__WEBPACK_IMPORTED_MODULE_2__.default(this.settings);
+        var oParams = new _model_RouteParamREST__WEBPACK_IMPORTED_MODULE_2__["default"](this.settings);
         var params = oParams.getParams();
 
         var request = "";
@@ -27344,7 +27432,7 @@ function RouteParamREST (options) {
         throw new TypeError("RouteParamREST constructor cannot be called as a function.");
     }
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger();
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger();
     this.logger.trace("[Constructeur RouteParamREST ()]");
 
     /**
@@ -27592,7 +27680,7 @@ var RouteResponseFactory = {
      */
     build : function (options) {
         // logger
-        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("RouteResponseFactory");
+        var logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("RouteResponseFactory");
         logger.trace("RouteResponseFactory::build()");
 
         var data = null;
@@ -27607,10 +27695,10 @@ var RouteResponseFactory = {
                         logger.trace("analyze response : xml");
 
                         // type de reader en fonction de l'API
-                        var routeReader = options.api === "REST" ? _Formats_RouteResponseRESTReader__WEBPACK_IMPORTED_MODULE_5__.default : _Formats_RouteResponseOLSReader__WEBPACK_IMPORTED_MODULE_6__.default;
+                        var routeReader = options.api === "REST" ? _Formats_RouteResponseRESTReader__WEBPACK_IMPORTED_MODULE_5__["default"] : _Formats_RouteResponseOLSReader__WEBPACK_IMPORTED_MODULE_6__["default"];
 
                         try {
-                            var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__.default({
+                            var p = new _Formats_XML__WEBPACK_IMPORTED_MODULE_3__["default"]({
                                 reader : routeReader
                             });
 
@@ -27624,10 +27712,10 @@ var RouteResponseFactory = {
                             data = p.parse();
 
                             if (!data) {
-                                throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_FORMAT", "xml"));
+                                throw new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_FORMAT", "xml"));
                             }
                         } catch (e) {
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_ANALYSE", options.response)));
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_ANALYSE", options.response)));
                             return;
                         }
 
@@ -27646,7 +27734,7 @@ var RouteResponseFactory = {
                         // le service renvoie t il une erreur ?
                         if (JSONResponse && JSONResponse.message) {
                             // ex. {"message":"message not null", "status":"ERROR"}
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION", JSONResponse.message)));
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION", JSONResponse.message)));
                             return;
                         }
 
@@ -27656,7 +27744,7 @@ var RouteResponseFactory = {
                             var legSteps = [];
                             var steps = [];
 
-                            data = new _model_RouteResponse__WEBPACK_IMPORTED_MODULE_7__.default();
+                            data = new _model_RouteResponse__WEBPACK_IMPORTED_MODULE_7__["default"]();
 
                             if (data.hasOwnProperty("totalTime")) {
                                 // info : il y a aussi JSONResponse.duration, qui donne la durée en hh:mm:ss.
@@ -27688,13 +27776,13 @@ var RouteResponseFactory = {
                             */
                             var onWKTError = function (e) {
                                 console.log(e);
-                                options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_FORMAT", ["geometryWkt"])));
+                                options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_FORMAT", ["geometryWkt"])));
                             };
 
                             if (data.hasOwnProperty("routeGeometry")) {
                                 var geometry = JSONResponse.geometryWkt || JSONResponse.simplifiedWkt;
                                 if (geometry) {
-                                    _Formats_WKT__WEBPACK_IMPORTED_MODULE_4__.default.toJson(geometry, onWKTSuccess, onWKTError);
+                                    _Formats_WKT__WEBPACK_IMPORTED_MODULE_4__["default"].toJson(geometry, onWKTSuccess, onWKTError);
                                     if (!data.routeGeometry) {
                                         return;
                                     }
@@ -27721,7 +27809,7 @@ var RouteResponseFactory = {
                                 }
 
                                 steps.forEach(function (step) {
-                                    data.routeInstructions.push(new _model_RouteInstruction__WEBPACK_IMPORTED_MODULE_8__.default());
+                                    data.routeInstructions.push(new _model_RouteInstruction__WEBPACK_IMPORTED_MODULE_8__["default"]());
                                     data.routeInstructions[data.routeInstructions.length - 1].duration = step.durationSeconds;
                                     data.routeInstructions[data.routeInstructions.length - 1].distance = (options.distanceUnit === "m") ? step.distanceMeters : step.distance;
                                     data.routeInstructions[data.routeInstructions.length - 1].code = step.navInstruction;
@@ -27808,24 +27896,24 @@ var RouteResponseFactory = {
                         }
 
                         if (!data) {
-                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_ANALYSE", "json")));
+                            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_ANALYSE", "json")));
                             return;
                         }
                         break;
 
                     default:
-                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_FORMAT", "json", "xml")));
+                        options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_FORMAT", "json", "xml")));
                         return;
                 }
 
                 // Si la réponse contenait une exception renvoyée par le service
                 if (data && data.exceptionReport) {
-                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EXCEPTION_2")));
+                    options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EXCEPTION_2")));
                     return;
                 }
             }
         } else {
-            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+            options.onError.call(options.scope, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
             return;
         }
 
@@ -28076,7 +28164,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function Route (options) {
     if (!(this instanceof Route)) {
-        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("CLASS_CONSTRUCTOR", "Route"));
+        throw new TypeError(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("CLASS_CONSTRUCTOR", "Route"));
     }
 
     /**
@@ -28085,35 +28173,35 @@ function Route (options) {
     this.CLASSNAME = "Route";
 
     // appel du constructeur par heritage
-    _CommonService__WEBPACK_IMPORTED_MODULE_3__.default.apply(this, arguments);
+    _CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].apply(this, arguments);
 
-    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("Gp.Services.Route");
+    this.logger = _Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("Gp.Services.Route");
     this.logger.trace("[Constructeur Route (options)]");
 
     if (!options.startPoint) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "startPoint"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "startPoint"));
     }
 
     // on lance une exception afin d'eviter au service de le faire...
     if (options.startPoint.x === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "startPoint.x"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "startPoint.x"));
     }
 
     if (options.startPoint.y === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "startPoint.y"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "startPoint.y"));
     }
 
     if (!options.endPoint) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "endPoint"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "endPoint"));
     }
 
     // on lance une exception afin d'eviter au service de le faire...
     if (options.endPoint.x === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "endPoint.x"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "endPoint.x"));
     }
 
     if (options.endPoint.y === null) {
-        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_MISSING", "endPoint.y"));
+        throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_MISSING", "endPoint.y"));
     }
 
     // options par defaut
@@ -28147,7 +28235,7 @@ function Route (options) {
     // si l'url n'est pas renseignée, il faut utiliser les urls par defaut
     // en fonction du type d'api, REST ou OLS
     if (!this.options.serverUrl) {
-        var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__.default.Route.url(this.options.apiKey);
+        var lstUrlByDefault = _DefaultUrlService__WEBPACK_IMPORTED_MODULE_4__["default"].Route.url(this.options.apiKey);
         var urlFound = null;
         switch (this.options.api) {
             case "OLS":
@@ -28158,7 +28246,7 @@ function Route (options) {
                 urlFound = lstUrlByDefault[key];
                 break;
             default:
-                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("PARAM_UNKNOWN", "api"));
+                throw new Error(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("PARAM_UNKNOWN", "api"));
         }
 
         if (!urlFound) {
@@ -28190,7 +28278,7 @@ function Route (options) {
 /**
  * @lends module:Route#
  */
-Route.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__.default.prototype, {
+Route.prototype = Object.create(_CommonService__WEBPACK_IMPORTED_MODULE_3__["default"].prototype, {
     // todo
     // getter/setter
 });
@@ -28223,11 +28311,11 @@ Route.prototype.buildRequest = function (error, success) {
         srs : this.options.srs
     };
 
-    this.request = _Request_RouteRequestFactory__WEBPACK_IMPORTED_MODULE_5__.default.build(options);
+    this.request = _Request_RouteRequestFactory__WEBPACK_IMPORTED_MODULE_5__["default"].build(options);
 
     // on teste si la requete a bien été construite !
     if (!this.request) {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_REQUEST_BUILD")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_REQUEST_BUILD")));
     } else {
         success.call(this, this.request);
     }
@@ -28258,9 +28346,9 @@ Route.prototype.analyzeResponse = function (error, success) {
             scope : this
         };
 
-        _Response_RouteResponseFactory__WEBPACK_IMPORTED_MODULE_6__.default.build(options);
+        _Response_RouteResponseFactory__WEBPACK_IMPORTED_MODULE_6__["default"].build(options);
     } else {
-        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__.default(_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__.default.getMessage("SERVICE_RESPONSE_EMPTY")));
+        error.call(this, new _Exceptions_ErrorService__WEBPACK_IMPORTED_MODULE_2__["default"](_Utils_MessagesResources__WEBPACK_IMPORTED_MODULE_1__["default"].getMessage("SERVICE_RESPONSE_EMPTY")));
     }
 };
 
@@ -28324,7 +28412,7 @@ var Services = {
      * @param {Function} [options.onBeforeParse] - Callback function for handling service response before parsing (as an unparsed String). Takes a String as a parameter (the raw service response). Returns a String that will be parsed as the service response. Only use if you know what you are doing.
      */
     getConfig : function (options) {
-        var autoconfService = new _AutoConf_AutoConf__WEBPACK_IMPORTED_MODULE_1__.default(options);
+        var autoconfService = new _AutoConf_AutoConf__WEBPACK_IMPORTED_MODULE_1__["default"](options);
         autoconfService.call();
     },
 
@@ -28357,7 +28445,7 @@ var Services = {
      * @param {String} [options.outputFormat='xml'] - Output format for underlying web service response : 'xml' or 'json'. Only use if you know what you are doing.
      */
     getAltitude : function (options) {
-        var altiService = new _Alti_Alti__WEBPACK_IMPORTED_MODULE_0__.default(options);
+        var altiService = new _Alti_Alti__WEBPACK_IMPORTED_MODULE_0__["default"](options);
         altiService.call();
     },
     /**
@@ -28416,7 +28504,7 @@ var Services = {
      * @param {Function} [options.onBeforeParse] - Callback function for handling service response before parsing (as an unparsed String). Takes a String as a parameter (the raw service response). Returns a String that will be parsed as the service response. Only use if you know what you are doing.
      */
     geocode : function (options) {
-        var geocodeService = new _Geocode_Geocode__WEBPACK_IMPORTED_MODULE_2__.default(options);
+        var geocodeService = new _Geocode_Geocode__WEBPACK_IMPORTED_MODULE_2__["default"](options);
         geocodeService.call();
     },
     /**
@@ -28448,7 +28536,7 @@ var Services = {
      * @param {Function} [options.onBeforeParse] - Callback function for handling service response before parsing (as an unparsed String). Takes a String as a parameter (the raw service response). Returns a String that will be parsed as the service response. Only use if you know what you are doing.
      */
     reverseGeocode : function (options) {
-        var reverseGeocodeService = new _Geocode_ReverseGeocode__WEBPACK_IMPORTED_MODULE_3__.default(options);
+        var reverseGeocodeService = new _Geocode_ReverseGeocode__WEBPACK_IMPORTED_MODULE_3__["default"](options);
         reverseGeocodeService.call();
     },
     /**
@@ -28475,7 +28563,7 @@ var Services = {
      * @param {Function} [options.onBeforeParse] - Callback function for handling service response before parsing (as an unparsed String). Takes a String as a parameter (the raw service response). Returns a String that will be parsed as the service response. Only use if you know what you are doing.
      */
     autoComplete : function (options) {
-        var autoCompleteService = new _AutoComplete_AutoComplete__WEBPACK_IMPORTED_MODULE_4__.default(options);
+        var autoCompleteService = new _AutoComplete_AutoComplete__WEBPACK_IMPORTED_MODULE_4__["default"](options);
         autoCompleteService.call();
     },
     /**
@@ -28508,7 +28596,7 @@ var Services = {
      * @param {Function} [options.onBeforeParse] - Callback function for handling service response before parsing (as an unparsed String). Takes a String as a parameter (the raw service response). Returns a String that will be parsed as the service response. Only use if you know what you are doing.
      */
     route : function (options) {
-        var routeService = new _Route_Route__WEBPACK_IMPORTED_MODULE_5__.default(options);
+        var routeService = new _Route_Route__WEBPACK_IMPORTED_MODULE_5__["default"](options);
         routeService.call();
     },
     /**
@@ -28541,7 +28629,7 @@ var Services = {
      * @param {Function} [options.onBeforeParse] - Callback function for handling service response before parsing (as an unparsed String). Takes a String as a parameter (the raw service response). Returns a String that will be parsed as the service response. Only use if you know what you are doing.
      */
     isoCurve : function (options) {
-        var processIsoCurveService = new _ProcessIsoCurve_ProcessIsoCurve__WEBPACK_IMPORTED_MODULE_6__.default(options);
+        var processIsoCurveService = new _ProcessIsoCurve_ProcessIsoCurve__WEBPACK_IMPORTED_MODULE_6__["default"](options);
         processIsoCurveService.call();
     }
 };
@@ -28847,17 +28935,6 @@ var MessagesResources = {
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MessagesResources);
 
-
-/***/ }),
-
-/***/ "./node_modules/geoportal-extensions-leaflet/package.json":
-/*!****************************************************************!*\
-  !*** ./node_modules/geoportal-extensions-leaflet/package.json ***!
-  \****************************************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = JSON.parse('{"_args":[["geoportal-extensions-leaflet@2.1.10","/var/www/html/vendor/2lenet/crudit-bundle"]],"_from":"geoportal-extensions-leaflet@2.1.10","_id":"geoportal-extensions-leaflet@2.1.10","_inBundle":false,"_integrity":"sha512-JkqH7Q46Fr0Q91lboPVxew44p8y2OXxdaaDQJt+aCFnKehl1d2DGP0QkfUH5oinMIOtYqf6ErYhsr6UpaS9VFg==","_location":"/geoportal-extensions-leaflet","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"geoportal-extensions-leaflet@2.1.10","name":"geoportal-extensions-leaflet","escapedName":"geoportal-extensions-leaflet","rawSpec":"2.1.10","saveSpec":null,"fetchSpec":"2.1.10"},"_requiredBy":["/"],"_resolved":"https://registry.npmjs.org/geoportal-extensions-leaflet/-/geoportal-extensions-leaflet-2.1.10.tgz","_spec":"2.1.10","_where":"/var/www/html/vendor/2lenet/crudit-bundle","author":{"name":"IGNF"},"bundleDependencies":[],"date":"16/06/2021","dependencies":{"geoportal-access-lib":"2.1.8","leaflet":"1.7.1","leaflet-draw":"1.0.4","loglevel":"1.6.6","node-fetch":"^2.6.1","proj4":"2.7.0","proj4leaflet":"1.0.2","sortablejs":"1.8.4","xmldom":"^0.1.27"},"description":"French Geoportal Extension for Leaflet","devDependencies":{},"directories":{},"files":["dist/","src/","LICENCE.md","README.md","package.json"],"homepage":"https://geoservices.ign.fr/documentation/utilisation_web/extension-leaflet.html","keywords":["geoportail","plugin","javascript","leaflet","publish"],"license":"CECILL-B","main":"dist/GpPluginLeaflet-src.js","module":"src/Leaflet/index.js","name":"geoportal-extensions-leaflet","peerDependencies":{},"repository":{"url":"git+https://github.com/IGNF/geoportal-extensions.git","type":"git"},"scripts":{},"version":"2.1.10"}');
 
 /***/ }),
 
@@ -30689,7 +30766,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("LocationSelectorDOM");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("LocationSelectorDOM");
 
 var LocationSelectorDOM = {
 
@@ -30749,11 +30826,11 @@ var LocationSelectorDOM = {
         labelOrigin.htmlFor = "GPlocationOrigin_" + id;
         labelOrigin.innerHTML = text;
         labelOrigin.addEventListener("click", function (e) {
-            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(this.id);
+            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(this.id);
             var points = document.getElementsByClassName(self._addUID("GPlocationPoint"));
             for (var j = 0; j < points.length; j++) {
                 var tag = points[j].childNodes[0].id;
-                var id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                var id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                 document.getElementById(self._addUID("GPlocationPoint_" + id)).style.cssText = "";
             }
             document.getElementById(self._addUID("GPlocationOriginCoords_" + i)).value = "";
@@ -30797,7 +30874,7 @@ var LocationSelectorDOM = {
                 return;
             }
 
-            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(this.id);
+            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(this.id);
             if (document.getElementById(self._addUID("GPlocationOrigin_" + i)).value.length > 2) {
                 document.getElementById(self._addUID("GPlocationAutoCompleteList_" + i)).style.display = "block";
             } else {
@@ -30841,7 +30918,7 @@ var LocationSelectorDOM = {
                 current = curr[0];
             }
 
-            var index = parseInt(_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(current.id), 10);
+            var index = parseInt(_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(current.id), 10);
             var next = (index === length - 1) ? list[0] : list[index + 1];
             var prev = (index === 0) ? list[length - 1] : list[index - 1];
 
@@ -30895,7 +30972,7 @@ var LocationSelectorDOM = {
         inputOriginCoord.type = "text";
         inputOriginCoord.disabled = false;
         inputOriginCoord.addEventListener("click", function () {
-            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(this.id);
+            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(this.id);
             document.getElementById(self._addUID("GPlocationOriginLabel_" + i)).click();
         });
         return inputOriginCoord;
@@ -30932,14 +31009,14 @@ var LocationSelectorDOM = {
         labelOriginPointer.addEventListener("click", function (e) {
             e.preventDefault();
             e.stopPropagation();
-            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(this.id);
+            var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(this.id);
             var points = document.getElementsByClassName(self._addUID("GPlocationPoint"));
             var j;
             var tag;
             var id;
             for (j = 0; j < points.length; j++) {
                 tag = points[j].childNodes[0].id;
-                id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                 if (i !== id) {
                     document.getElementById(self._addUID("GPlocationOriginPointer_" + id)).checked = false;
                     if (document.getElementById(self._addUID("GPlocationOriginCoords_" + id)).value === "Pointer un lieu sur la carte") {
@@ -30953,7 +31030,7 @@ var LocationSelectorDOM = {
                 document.getElementById(self._addUID("GPlocationOriginCoords_" + i)).value = "";
                 for (j = 0; j < points.length; j++) {
                     tag = points[j].childNodes[0].id;
-                    id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                    id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                     document.getElementById(self._addUID("GPlocationPoint_" + id)).style.cssText = "";
                 }
                 if (document.getElementById(self._addUID("GPlocationStageRemove_" + i))) {
@@ -30969,7 +31046,7 @@ var LocationSelectorDOM = {
                 document.getElementById(self._addUID("GPlocationOriginCoords_" + i)).value = "Pointer un lieu sur la carte";
                 for (j = 0; j < points.length; j++) {
                     tag = points[j].childNodes[0].id;
-                    id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                    id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                     if (i === id) {
                         document.getElementById(self._addUID("GPlocationPoint_" + id)).style.cssText = "";
                     } else {
@@ -31016,11 +31093,11 @@ var LocationSelectorDOM = {
             var start = points[0].childNodes[0].id;
             var end = points[last].childNodes[0].id;
 
-            var startID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(start);
-            var endID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(end);
+            var startID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(start);
+            var endID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(end);
 
             if (id !== startID && id !== endID) {
-                var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(this.id);
+                var i = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(this.id);
                 document.getElementById(self._addUID("GPlocationPoint_" + i)).className = "GPflexInput GPlocationStageFlexInputHidden";
                 document.getElementById(self._addUID("GPlocationOrigin_" + i)).value = "";
                 document.getElementById(self._addUID("GPlocationOrigin_" + i)).className = "GPlocationOriginVisible";
@@ -31059,7 +31136,7 @@ var LocationSelectorDOM = {
             var points = document.getElementsByClassName(self._addUID("GPlocationPoint"));
             for (var i = 1; i < points.length - 1; i++) {
                 var tag = points[i].childNodes[0].id;
-                var id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                var id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                 if (document.getElementById(self._addUID("GPlocationPoint_" + id))) {
                     if (document.getElementById(self._addUID("GPlocationPoint_" + id)).className === "GPflexInput GPlocationStageFlexInputHidden") {
                         if (lastStage === 1) {
@@ -31147,13 +31224,13 @@ var LocationSelectorDOM = {
         var points = document.getElementsByClassName(this._addUID("GPlocationPoint"));
         for (var i = 0; i < points.length; i++) {
             var tag = points[i].childNodes[0].id;
-            var id1 = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+            var id1 = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
             if (document.getElementById(this._addUID("GPlocationOriginPointer_" + id1)).checked) {
                 document.getElementById(this._addUID("GPlocationOriginCoords_" + id1)).value = value;
                 document.getElementById(this._addUID("GPlocationOriginCoords_" + id1)).disabled = false;
                 for (var j = 0; j < points.length; j++) {
                     tag = points[j].childNodes[0].id;
-                    var id2 = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                    var id2 = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                     document.getElementById(this._addUID("GPlocationPoint_" + id2)).style.cssText = "";
                     if (document.getElementById(this._addUID("GPlocationStageRemove_" + id2))) {
                         document.getElementById(this._addUID("GPlocationStageRemove_" + id2)).className = "GPlocationStageRemove";
@@ -33717,7 +33794,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("RouteDOM");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("RouteDOM");
 
 var RouteDOM = {
 
@@ -33884,8 +33961,8 @@ var RouteDOM = {
             // Must have at least two origin points
             var start = points[0].childNodes[0].id;
             var end = points[points.length - 1].childNodes[0].id;
-            var startID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(start);
-            var endID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(end);
+            var startID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(start);
+            var endID = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(end);
 
             if ((document.getElementById(self._addUID("GPlocationOrigin_" + startID)).value === "" &&
                     document.getElementById(self._addUID("GPlocationOriginCoords_" + startID)).value === "") ||
@@ -33899,7 +33976,7 @@ var RouteDOM = {
             document.getElementById(self._addUID("GProuteResultsStages")).innerHTML = "";
             for (var i = 0; i < points.length; i++) {
                 var tag = points[i].childNodes[0].id;
-                id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(tag);
+                id = _Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(tag);
                 if (document.getElementById(self._addUID("GPlocationPoint_" + id)).className === "GPflexInput GPlocationStageFlexInput") {
                     var resultStage = document.createElement("div");
                     resultStage.className = "GProuteResultsStages";
@@ -35100,7 +35177,7 @@ var SearchEngineDOM = {
                 current = curr[0];
             }
 
-            var index = parseInt(_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__.default.index(current.id), 10);
+            var index = parseInt(_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_0__["default"].index(current.id), 10);
             var next = (index === length - 1) ? list[0] : list[index + 1];
             var prev = (index === 0) ? list[length - 1] : list[index - 1];
 
@@ -35789,9 +35866,9 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     // test d'existance de la varibale globale Gp.Config
-    if (!geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Config) {
+    if (!geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Config) {
         // appel du service
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.getConfig(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.getConfig(options);
     }
 })();
 
@@ -35831,7 +35908,7 @@ __webpack_require__.r(__webpack_exports__);
     check : function (options) {
         // logger
 
-        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("checkrightmanagement");
+        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("checkrightmanagement");
 
         // si aucune option n'est renseignée...
         if (!options) {
@@ -35878,7 +35955,7 @@ __webpack_require__.r(__webpack_exports__);
         if (!_key) {
             // on verifie si l'autoconfiguration est disponible
 
-            if (!_Config__WEBPACK_IMPORTED_MODULE_1__.default.isConfigLoaded()) {
+            if (!_Config__WEBPACK_IMPORTED_MODULE_1__["default"].isConfigLoaded()) {
                 // si l'autoconfiguration n'est pas chargée,
                 // aucune vérification des droits est possible...
 
@@ -35894,7 +35971,7 @@ __webpack_require__.r(__webpack_exports__);
                 // les droits sur les ressources.
 
                 // FIXME par defaut, on recupere toujours la première...
-                _key = Object.keys(_Config__WEBPACK_IMPORTED_MODULE_1__.default.configuration.generalOptions.apiKeys)[0];
+                _key = Object.keys(_Config__WEBPACK_IMPORTED_MODULE_1__["default"].configuration.generalOptions.apiKeys)[0];
                 logger.log(_key);
             }
         }
@@ -35903,7 +35980,7 @@ __webpack_require__.r(__webpack_exports__);
         if (_key) {
             // on verifie si l'autoconfiguration est disponible
 
-            if (!_Config__WEBPACK_IMPORTED_MODULE_1__.default.isConfigLoaded()) {
+            if (!_Config__WEBPACK_IMPORTED_MODULE_1__["default"].isConfigLoaded()) {
                 // si l'autoconfiguration n'est pas chargée,
                 // il est toujours possible de requeter le service avec une clef API,
                 // mais les droits sur les ressources ne sont pas garantis, on risque
@@ -35948,7 +36025,7 @@ __webpack_require__.r(__webpack_exports__);
                     for (var l = 0; l < _services.length; l++) {
                         var _service = _services[l];
 
-                        var params = _Config__WEBPACK_IMPORTED_MODULE_1__.default.getServiceParams(_resource, _service, _key);
+                        var params = _Config__WEBPACK_IMPORTED_MODULE_1__["default"].getServiceParams(_resource, _service, _key);
                         if (!params || Object.keys(params).length === 0) {
                             logger.warn("WARNING : " +
                                 "The contract key configuration has no rights to load this geoportal " +
@@ -36091,7 +36168,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Common/Utils/LoggerByDefault */ "./node_modules/geoportal-extensions-leaflet/src/Common/Utils/LoggerByDefault.js");
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("config");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("config");
 
 var Config = {
 
@@ -36915,7 +36992,7 @@ var ProxyUtils = {
     proxifyUrl : function (url, proxyOptions) {
         // logger
 
-        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("proxifyUrl");
+        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("proxifyUrl");
 
         if (!proxyOptions ||
             !proxyOptions.hasOwnProperty("proxyUrl") ||
@@ -37885,7 +37962,7 @@ __webpack_require__.r(__webpack_exports__);
 /** autoload function */
 (function () {
     // load all defs into proj4
-    _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__.default.load(proj4__WEBPACK_IMPORTED_MODULE_0__.default);
+    _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__["default"].load(proj4__WEBPACK_IMPORTED_MODULE_0__["default"]);
 })();
 
 /**
@@ -37924,7 +38001,7 @@ var CRS = {
      * @returns {EPSG2154} epsg code
      */
     EPSG2154 : function () {
-        return _EPSG2154__WEBPACK_IMPORTED_MODULE_3__.default.build();
+        return _EPSG2154__WEBPACK_IMPORTED_MODULE_3__["default"].build();
     },
 
     /**
@@ -37936,7 +38013,7 @@ var CRS = {
      * @returns {EPSG27572} epsg code
      */
     EPSG27572 : function () {
-        return _EPSG27572__WEBPACK_IMPORTED_MODULE_4__.default.build();
+        return _EPSG27572__WEBPACK_IMPORTED_MODULE_4__["default"].build();
     },
 
     /**
@@ -37948,7 +38025,7 @@ var CRS = {
      * @returns {EPSG4326} epsg code
      */
     EPSG4326 : function () {
-        return _EPSG4326__WEBPACK_IMPORTED_MODULE_5__.default.build();
+        return _EPSG4326__WEBPACK_IMPORTED_MODULE_5__["default"].build();
     }
 };
 
@@ -38013,7 +38090,7 @@ var EPSG2154 = {
         // singleton
         if (!this.instance) {
             var crs = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Proj.CRS)("EPSG:2154",
-                _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__.default.get("EPSG:2154"), {
+                _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__["default"].get("EPSG:2154"), {
                     // FIXME issue de l'autoconf cf. nativeResolutions
                     resolutions : this._getResolutions(),
                     origin : this._getOrigin()
@@ -38033,8 +38110,8 @@ var EPSG2154 = {
     _getResolutions : function () {
         var resolutions = [];
         // resolutions issues de l'autoconf
-        if (_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.isConfigLoaded()) {
-            var o = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.getTileMatrix("LAMB93");
+        if (_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].isConfigLoaded()) {
+            var o = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].getTileMatrix("LAMB93");
             resolutions = o.nativeResolutions;
         }
 
@@ -38151,7 +38228,7 @@ var EPSG27572 = {
         // singleton
         if (!this.instance) {
             var crs = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Proj.CRS)("EPSG:27572",
-                _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__.default.get("EPSG:27572"), {
+                _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__["default"].get("EPSG:27572"), {
                     // FIXME issue de l'autoconf cf. nativeResolutions
                     resolutions : this._getResolutions(),
                     origin : this._getOrigin()
@@ -38171,8 +38248,8 @@ var EPSG27572 = {
     _getResolutions : function () {
         var resolutions = [];
         // resolutions issues de l'autoconf
-        if (_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.isConfigLoaded()) {
-            var o = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.getTileMatrix("LAMB2E");
+        if (_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].isConfigLoaded()) {
+            var o = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].getTileMatrix("LAMB2E");
             if (o && Object.keys(o).length) {
                 resolutions = o.nativeResolutions;
             }
@@ -38299,7 +38376,7 @@ var EPSG4326 = {
         // singleton
         if (!this.instance) {
             var crs = new (leaflet__WEBPACK_IMPORTED_MODULE_0___default().Proj.CRS)("EPSG:4326",
-                _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__.default.get("EPSG:4326"), {
+                _Common_Utils_Register__WEBPACK_IMPORTED_MODULE_2__["default"].get("EPSG:4326"), {
                     resolutions : this._getResolutions(),
                     origin : [-180, 90] // ???
                 });
@@ -38321,8 +38398,8 @@ var EPSG4326 = {
         // FIXME resolutions issues de l'autoconf
         // mais pas celle du TMS WGS84G
 
-        if (_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.isConfigLoaded()) {
-            resolutions = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.getResolutions();
+        if (_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].isConfigLoaded()) {
+            resolutions = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].getResolutions();
         }
 
         if (resolutions.length) {
@@ -38449,7 +38526,7 @@ var Controls = {
      *  var layerSwitcher = L.geoportalControl.LayerSwitcher(options);
      */
     LayerSwitcher : function (options) {
-        return new _LayerSwitcher__WEBPACK_IMPORTED_MODULE_0__.default(options);
+        return new _LayerSwitcher__WEBPACK_IMPORTED_MODULE_0__["default"](options);
     },
 
     /**
@@ -38487,7 +38564,7 @@ var Controls = {
      *  });
      */
     Isocurve : function (options) {
-        return new _Isocurve__WEBPACK_IMPORTED_MODULE_1__.default(options);
+        return new _Isocurve__WEBPACK_IMPORTED_MODULE_1__["default"](options);
     },
 
     /**
@@ -38555,7 +38632,7 @@ var Controls = {
      *  });
      */
     MousePosition : function (options) {
-        return new _MousePosition__WEBPACK_IMPORTED_MODULE_2__.default(options);
+        return new _MousePosition__WEBPACK_IMPORTED_MODULE_2__["default"](options);
     },
 
     /**
@@ -38584,7 +38661,7 @@ var Controls = {
      *  });
      */
     ReverseGeocode : function (options) {
-        return new _ReverseGeocoding__WEBPACK_IMPORTED_MODULE_3__.default(options);
+        return new _ReverseGeocoding__WEBPACK_IMPORTED_MODULE_3__["default"](options);
     },
 
     /**
@@ -38621,7 +38698,7 @@ var Controls = {
      *  });
      */
     Route : function (options) {
-        return new _Route__WEBPACK_IMPORTED_MODULE_4__.default(options);
+        return new _Route__WEBPACK_IMPORTED_MODULE_4__["default"](options);
     },
 
     /**
@@ -38684,7 +38761,7 @@ var Controls = {
      *  });
      */
     SearchEngine : function (options) {
-        return new _SearchEngine__WEBPACK_IMPORTED_MODULE_5__.default(options);
+        return new _SearchEngine__WEBPACK_IMPORTED_MODULE_5__["default"](options);
     },
 
     /**
@@ -38728,7 +38805,7 @@ var Controls = {
      *  });
      */
     ElevationPath : function (options) {
-        return new _ElevationPath__WEBPACK_IMPORTED_MODULE_6__.default(options);
+        return new _ElevationPath__WEBPACK_IMPORTED_MODULE_6__["default"](options);
     },
 
     /**
@@ -38757,7 +38834,7 @@ var Controls = {
      * logo.addTo(map);
      */
     Logo : function (options) {
-        return new _Logo__WEBPACK_IMPORTED_MODULE_7__.default(options);
+        return new _Logo__WEBPACK_IMPORTED_MODULE_7__["default"](options);
     }
 };
 
@@ -38801,7 +38878,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_3__.default.getLogger("ElevationPath");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_3__["default"].getLogger("ElevationPath");
 
 /**
  * @classdesc
@@ -38817,7 +38894,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_3__.default.
  */
 var ElevationPath = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @lends L.geoportalControl.ElevationPath.prototype */ {
 
-    includes : _Common_Controls_ElevationPathDOM__WEBPACK_IMPORTED_MODULE_8__.default,
+    includes : _Common_Controls_ElevationPathDOM__WEBPACK_IMPORTED_MODULE_8__["default"],
 
     /**
      * Options du service
@@ -38879,7 +38956,7 @@ var ElevationPath = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
         leaflet__WEBPACK_IMPORTED_MODULE_1___default().Util.setOptions(this, options);
 
         // uuid
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__["default"].generate();
 
         // initialisation
         this._initDisplayProfileOptions();
@@ -38976,7 +39053,7 @@ var ElevationPath = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
      * @private
      */
     _checkRightsManagement : function () {
-        var rightManagement = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_4__.default.check({
+        var rightManagement = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_4__["default"].check({
             key : this.options.apiKey,
             resources : ["SERVICE_CALCUL_ALTIMETRIQUE_RSC"],
             services : ["ElevationLine"]
@@ -39513,7 +39590,7 @@ var ElevationPath = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
         this._waitingContainer.className = "GPelevationPathCalcWaitingContainerVisible";
 
         // Request altitude service
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.getAltitude(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.getAltitude(options);
     },
 
     // ################################################################### //
@@ -39530,10 +39607,10 @@ var ElevationPath = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
     _computeElevationMeasure : function (elevations) {
         // Returns the distance from c1 to c2 using the haversine formula
         var _haversineDistance = function (c1, c2) {
-            var lat1 = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__.default.decimalToRadian(c1[1]);
-            var lat2 = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__.default.decimalToRadian(c2[1]);
+            var lat1 = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__["default"].decimalToRadian(c1[1]);
+            var lat2 = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__["default"].decimalToRadian(c2[1]);
             var deltaLatBy2 = (lat2 - lat1) / 2;
-            var deltaLonBy2 = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__.default.decimalToRadian(c2[0] - c1[0]) / 2;
+            var deltaLonBy2 = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__["default"].decimalToRadian(c2[0] - c1[0]) / 2;
             var a = Math.sin(deltaLatBy2) * Math.sin(deltaLatBy2) +
                 Math.sin(deltaLonBy2) * Math.sin(deltaLonBy2) *
                 Math.cos(lat1) * Math.cos(lat2);
@@ -39764,7 +39841,7 @@ ElevationPath.__createProfileMarker = function (context, data) {
 
     // creation d"un marker
     self._marker = leaflet__WEBPACK_IMPORTED_MODULE_1___default().marker(leaflet__WEBPACK_IMPORTED_MODULE_1___default().latLng(data), {
-        icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_7__.default("orange"),
+        icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_7__["default"]("orange"),
         draggable : false,
         clickable : false,
         zIndexOffset : 1000
@@ -39796,7 +39873,7 @@ ElevationPath.__updateProfileMarker = function (context, data) {
     } else {
         // creation d"un marker
         self._marker = leaflet__WEBPACK_IMPORTED_MODULE_1___default().marker(leaflet__WEBPACK_IMPORTED_MODULE_1___default().latLng(data), {
-            icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_7__.default("orange"),
+            icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_7__["default"]("orange"),
             draggable : false,
             clickable : false,
             zIndexOffset : 1000
@@ -39853,7 +39930,7 @@ ElevationPath.__customRawProfileMouseOverEvent = function (context, e) {
 ElevationPath.DISPLAY_PROFILE_BY_DEFAULT = function (data, container, context) {
     logger.trace("ElevationPath.DISPLAY_PROFILE_BY_DEFAULT");
 
-    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__.default.displayProfileByDefault(data, container, context, ElevationPath);
+    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__["default"].displayProfileByDefault(data, container, context, ElevationPath);
     // on sauvegarde le profil du container dans l'objet
     if (profile) {
         this._profile = profile;
@@ -39871,7 +39948,7 @@ ElevationPath.DISPLAY_PROFILE_BY_DEFAULT = function (data, container, context) {
 ElevationPath.DISPLAY_PROFILE_RAW = function (data, container, context) {
     logger.trace("ElevationPath.DISPLAY_PROFILE_RAW");
 
-    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__.default.displayProfileRaw(data, container, context, ElevationPath);
+    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__["default"].displayProfileRaw(data, container, context, ElevationPath);
     // on sauvegarde le profil du container dans l'objet
     if (profile) {
         this._profile = profile;
@@ -39894,7 +39971,7 @@ ElevationPath.DISPLAY_PROFILE_LIB_D3 = function (data, container, context) {
         return;
     }
 
-    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__.default.displayProfileLibD3(data, container, context, ElevationPath);
+    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__["default"].displayProfileLibD3(data, container, context, ElevationPath);
     // on sauvegarde le profil du container dans l'objet
     if (profile) {
         this._profile = profile;
@@ -39918,7 +39995,7 @@ ElevationPath.DISPLAY_PROFILE_LIB_AMCHARTS = function (data, container, context)
         return;
     }
 
-    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__.default.displayProfileLibAmCharts(data, container, context, ElevationPath);
+    var profile = _Common_Controls_ProfileElevationPathDOM__WEBPACK_IMPORTED_MODULE_9__["default"].displayProfileLibAmCharts(data, container, context, ElevationPath);
     // on sauvegarde le profil du container dans l'objet
     if (profile) {
         this._profile = profile;
@@ -39957,7 +40034,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("Isocurve");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("Isocurve");
 
 /**
  * @classdesc
@@ -39973,7 +40050,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.
  */
 var Isocurve = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.extend(/** @lends L.geoportalControl.Isocurve.prototype */ {
 
-    includes : _Common_Controls_IsoDOM__WEBPACK_IMPORTED_MODULE_6__.default,
+    includes : _Common_Controls_IsoDOM__WEBPACK_IMPORTED_MODULE_6__["default"],
 
     /**
      * Options du service
@@ -40031,7 +40108,7 @@ var Isocurve = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.extend(/**
         leaflet__WEBPACK_IMPORTED_MODULE_0___default().Util.setOptions(this, options);
 
         /** uuid */
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].generate();
 
         /** detection du support : desktop ou tactile */
         this._isDesktop = this._detectSupport();
@@ -40296,7 +40373,7 @@ var Isocurve = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.extend(/**
             _res = ["Voiture", "Pieton"];
         }
 
-        var rightManagementIsochrone = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementIsochrone = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["Isochrone"]
@@ -40314,7 +40391,7 @@ var Isocurve = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.extend(/**
             ];
         }
 
-        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["AutoCompletion"]
@@ -40483,7 +40560,7 @@ var Isocurve = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.extend(/**
      */
     _createIsoPanelFormPointElement : function (map) {
         // point de depart
-        this._currentPoint = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__.default({
+        this._currentPoint = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__["default"]({
             apiKey : this.options.apiKey || null,
             tag : {
                 id : 0,
@@ -40860,7 +40937,7 @@ var Isocurve = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.extend(/**
 
         logger.log(options);
 
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_2__.default.Services.isoCurve(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_2__["default"].Services.isoCurve(options);
     },
 
     /**
@@ -41097,7 +41174,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("layerswitcher");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("layerswitcher");
 
 /**
  * @classdesc
@@ -41113,7 +41190,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.
  */
 var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layers.extend(/** @lends L.geoportalControl.LayerSwitcher.prototype */ {
 
-    includes : _Common_Controls_LayerSwitcherDOM__WEBPACK_IMPORTED_MODULE_3__.default,
+    includes : _Common_Controls_LayerSwitcherDOM__WEBPACK_IMPORTED_MODULE_3__["default"],
 
     /**
      * options by default
@@ -41176,7 +41253,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
         leaflet__WEBPACK_IMPORTED_MODULE_0___default().Util.setOptions(this, options);
 
         // uuid
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].generate();
 
         // il faut recuperer tous les layers de la carte (cf. onAdd).
         // si une configuration de layers est renseignée, on exploite cette
@@ -41727,7 +41804,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
      */
     _onVisibilityLayerClick : function (e) {
         var visibilityElement = e.target.id; // ex GPvisibilityPicto_ID_26
-        var visibilityOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.index(visibilityElement); // ex. 26
+        var visibilityOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].index(visibilityElement); // ex. 26
 
         // on met à jour cette interface...
         this._layers[visibilityOrder].visibility = leaflet__WEBPACK_IMPORTED_MODULE_0___default().DomUtil.get(visibilityElement).checked;
@@ -41744,7 +41821,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
      */
     _onDropLayerClick : function (e) {
         var layerElement = e.target.id; // ex GPvisibilityPicto_ID_26
-        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.index(layerElement); // ex. 26
+        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].index(layerElement); // ex. 26
         var layer = this._layers[layerOrder].layer;
 
         this.removeLayer(layer);
@@ -41760,7 +41837,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
      */
     _onChangeLayerOpacity : function (e) {
         var layerElement = e.target.id; // ex GPvisibilityPicto_ID_26
-        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.index(layerElement); // ex. 26
+        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].index(layerElement); // ex. 26
         var layer = this._layers[layerOrder].layer;
 
         var opacityValue = e.target.value;
@@ -41790,7 +41867,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
      */
     _onOpenLayerInfoClick : function (e) {
         var layerElement = e.target.id; // ex GPvisibilityPicto_ID_26
-        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.index(layerElement); // ex. 26
+        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].index(layerElement); // ex. 26
         var layer = this._layers[layerOrder];
 
         // Close layer info panel
@@ -41846,7 +41923,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
      */
     _onDragAndDropLayerClick : function (e) {
         var layerElement = e.target.id; // ex GPvisibilityPicto_ID_26
-        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.index(layerElement); // ex. 26
+        var layerOrder = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].index(layerElement); // ex. 26
         var layer = this._layers[layerOrder];
 
         logger.log(layer);
@@ -41855,7 +41932,7 @@ var LayerSwitcher = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Control.Layer
         this._lastZIndex = matchesLayers.length;
         for (var i = 0; i < matchesLayers.length; i++) {
             var tag = matchesLayers[i].id;
-            var order = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__.default.index(tag);
+            var order = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_2__["default"].index(tag);
 
             var _layer = this._layers[order].layer;
             if (this.options.autoZIndex && _layer.setZIndex) {
@@ -41992,7 +42069,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("locationselector");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("locationselector");
 
 /**
 * @classdesc
@@ -42024,7 +42101,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.
 */
 var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @lends LocationSelector.prototype */ {
 
-    includes : _Common_Controls_LocationSelectorDOM__WEBPACK_IMPORTED_MODULE_5__.default,
+    includes : _Common_Controls_LocationSelectorDOM__WEBPACK_IMPORTED_MODULE_5__["default"],
 
     /**
      * options by default
@@ -42137,7 +42214,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
     onAdd : function (/* map */) {
         // si on ajout ce composant à la carte en tant que objet graphique,
         // un uuid doit être generé automatiquement !
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].generate();
 
         // DOM du composant
         var container = this._initLayout();
@@ -42299,7 +42376,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
             ];
         }
 
-        var rightManagementRerverse = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementRerverse = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["ReverseGeocode"]
@@ -42316,7 +42393,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
             ];
         }
 
-        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["AutoCompletion"]
@@ -42381,8 +42458,8 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
         var lng = null;
 
         // decimal by default !
-        lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__.default.roundToDecimal(oLatLng.lat, 4);
-        lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__.default.roundToDecimal(oLatLng.lng, 4);
+        lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__["default"].roundToDecimal(oLatLng.lat, 4);
+        lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_6__["default"].roundToDecimal(oLatLng.lng, 4);
 
         // on envoie du lon/lat à l'affichage
         var value = lng + " , " + lat;
@@ -42441,7 +42518,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
         if (position) {
             // cf. http://leafletjs.com/reference.html#marker-options
             var options = {
-                icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_7__.default(this.options.tag.color),
+                icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_7__["default"](this.options.tag.color),
                 draggable : true,
                 clickable : true,
                 zIndexOffset : 1000
@@ -42605,7 +42682,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
 
         logger.log(options);
 
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.autoComplete(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.autoComplete(options);
     },
 
     /**
@@ -42714,7 +42791,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
 
         logger.log(options);
 
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.reverseGeocode(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.reverseGeocode(options);
     },
 
     /**
@@ -42864,7 +42941,7 @@ var LocationSelector = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
     onAutoCompletedResultsItemClick : function (e) {
         logger.log("onAutoCompletedResultsItemClick()", e);
 
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].index(e.target.id);
         logger.log(idx);
         logger.log(this._suggestedLocations[idx]);
 
@@ -43268,7 +43345,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("mouseposition");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("mouseposition");
 
 /**
  * @classdesc
@@ -43284,7 +43361,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.
  */
 var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @lends L.geoportalControl.MousePosition.prototype */ {
 
-    includes : _Common_Controls_MousePositionDOM__WEBPACK_IMPORTED_MODULE_6__.default,
+    includes : _Common_Controls_MousePositionDOM__WEBPACK_IMPORTED_MODULE_6__["default"],
 
     /**
      * options by default
@@ -43377,7 +43454,7 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
         leaflet__WEBPACK_IMPORTED_MODULE_1___default().Util.extend(this.options, options);
 
         // uuid
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].generate();
 
         // initialisation des systemes de projections
         this._projectionSystems = [];
@@ -43522,7 +43599,7 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
             type : "Metric"
         }, {
             label : "Lambert 93",
-            crs : _CRS_CRS__WEBPACK_IMPORTED_MODULE_8__.default.EPSG2154,
+            crs : _CRS_CRS__WEBPACK_IMPORTED_MODULE_8__["default"].EPSG2154,
             type : "Metric",
             geoBBox : {
                 left : -9.86,
@@ -43532,7 +43609,7 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
             }
         }, {
             label : "Lambert II \u00e9tendu",
-            crs : _CRS_CRS__WEBPACK_IMPORTED_MODULE_8__.default.EPSG27572,
+            crs : _CRS_CRS__WEBPACK_IMPORTED_MODULE_8__["default"].EPSG27572,
             type : "Metric",
             geoBBox : {
                 left : -4.87,
@@ -43669,7 +43746,7 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
      * @private
      */
     _checkRightsManagement : function () {
-        var rightManagement = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagement = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : this.options.apiKey,
             resources : ["SERVICE_CALCUL_ALTIMETRIQUE_RSC"],
             services : ["Elevation"]
@@ -43899,8 +43976,8 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
      */
     _displayDEC : function (oLatLng) {
         var coordinate = {};
-        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.roundToDecimal(oLatLng.lat, 6);
-        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.roundToDecimal(oLatLng.lng, 6);
+        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].roundToDecimal(oLatLng.lat, 6);
+        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].roundToDecimal(oLatLng.lng, 6);
         coordinate.unit = "°";
         return coordinate;
     },
@@ -43914,8 +43991,8 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
      */
     _displayDMS : function (oLatLng) {
         var coordinate = {};
-        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.decimalLatToDMS(oLatLng.lat, true);
-        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.decimalLonToDMS(oLatLng.lng, true);
+        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].decimalLatToDMS(oLatLng.lat, true);
+        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].decimalLonToDMS(oLatLng.lng, true);
         return coordinate;
     },
 
@@ -43928,8 +44005,8 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
      */
     _displayRAD : function (oLatLng) {
         var coordinate = {};
-        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.decimalToRadian(oLatLng.lat);
-        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.decimalToRadian(oLatLng.lng);
+        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].decimalToRadian(oLatLng.lat);
+        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].decimalToRadian(oLatLng.lng);
         coordinate.unit = "rad";
         return coordinate;
     },
@@ -43943,8 +44020,8 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
      */
     _displayGON : function (oLatLng) {
         var coordinate = {};
-        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.decimalToGrade(oLatLng.lat);
-        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__.default.decimalToGrade(oLatLng.lng);
+        coordinate.lat = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].decimalToGrade(oLatLng.lat);
+        coordinate.lng = _Utils_PositionFormater__WEBPACK_IMPORTED_MODULE_7__["default"].decimalToGrade(oLatLng.lng);
         coordinate.unit = "gon";
         return coordinate;
     },
@@ -44311,7 +44388,7 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
 
         logger.log(options);
 
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.getAltitude(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.getAltitude(options);
     },
 
     /**
@@ -44478,11 +44555,11 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
         }
 
         degrees = degrees.replace(",", ".");
-        if (!_Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__.default.isInteger(degrees)) {
+        if (!_Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__["default"].isInteger(degrees)) {
             return null;
         }
 
-        var result = _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__.default.toInteger(degrees);
+        var result = _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__["default"].toInteger(degrees);
         if (result < Number(inputDegrees.dataset.min) || result > Number(inputDegrees.dataset.max)) {
             return null;
         }
@@ -44493,8 +44570,8 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
         var minutes = inputMinutes.value;
         if (minutes) {
             minutes = minutes.replace(",", ".");
-            if (_Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__.default.isInteger(minutes)) {
-                var mins = _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__.default.toInteger(minutes);
+            if (_Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__["default"].isInteger(minutes)) {
+                var mins = _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__["default"].toInteger(minutes);
                 if (mins >= Number(inputMinutes.dataset.min) && mins <= Number(inputMinutes.dataset.max)) {
                     result += (mins / 60);
                 }
@@ -44505,7 +44582,7 @@ var MousePosition = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.exten
         var seconds = inputSeconds.value;
         if (seconds) {
             seconds = seconds.replace(",", ".");
-            var secs = _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__.default.toFloat(seconds);
+            var secs = _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_5__["default"].toFloat(seconds);
             if (secs && secs >= Number(inputSeconds.dataset.min) && secs <= Number(inputSeconds.dataset.max)) {
                 result += (secs / 3600);
             }
@@ -44836,7 +44913,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_3__.default.getLogger("reversegeocoding");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_3__["default"].getLogger("reversegeocoding");
 
 /**
  * @classdesc
@@ -44852,7 +44929,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_3__.default.
  */
 var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @lends L.geoportalControl.ReverseGeocode.prototype */ {
 
-    includes : _Common_Controls_ReverseGeocodingDOM__WEBPACK_IMPORTED_MODULE_7__.default,
+    includes : _Common_Controls_ReverseGeocodingDOM__WEBPACK_IMPORTED_MODULE_7__["default"],
 
     /**
      * options by default
@@ -44908,7 +44985,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
         this._checkInputOptions();
 
         /** uuid */
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__["default"].generate();
 
         // Type de géocodage sélectionné (StreetAddress, PositionOfInterest, ...)
         this._currentGeocodingType = null;
@@ -45044,7 +45121,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
                 "PositionOfInterest"
             ];
         }
-        var rightManagementGeocode = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_4__.default.check({
+        var rightManagementGeocode = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_4__["default"].check({
             key : _key || this.options.apiKey,
             resources : _resources,
             services : ["Geocode"]
@@ -45584,7 +45661,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
         this._displayWaitingContainer();
 
         // envoi de la requête
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.reverseGeocode(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.reverseGeocode(options);
     },
 
     // ################################################################### //
@@ -45735,7 +45812,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
         function _setHighLight (e) {
             var layer = e.target;
 
-            layer.setIcon(new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__.default("red"));
+            layer.setIcon(new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__["default"]("red"));
 
             var div = leaflet__WEBPACK_IMPORTED_MODULE_1___default().DomUtil.get("ReverseGeocodedLocation_" + layer.options.id + "-" + self._uid);
             leaflet__WEBPACK_IMPORTED_MODULE_1___default().DomUtil.addClass(div, "GPreverseGeocodedLocationHighlight");
@@ -45746,7 +45823,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
         function _resetHighLight (e) {
             var layer = e.target;
 
-            layer.setIcon(new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__.default("green"));
+            layer.setIcon(new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__["default"]("green"));
 
             var div = leaflet__WEBPACK_IMPORTED_MODULE_1___default().DomUtil.get("ReverseGeocodedLocation_" + layer.options.id + "-" + self._uid);
             leaflet__WEBPACK_IMPORTED_MODULE_1___default().DomUtil.removeClass(div, "GPreverseGeocodedLocationHighlight");
@@ -45766,7 +45843,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
 
             var options = {
                 id : i,
-                icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__.default("green"),
+                icon : new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__["default"]("green"),
                 riseOnHover : true,
                 draggable : false,
                 clickable : true,
@@ -45973,7 +46050,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
      */
     onReverseGeocodingResultMouseOver : function (e) {
         // récupération de l'id du résultat survolé
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__["default"].index(e.target.id);
 
         // on passe le texte en gras
         if (e.target.classList) {
@@ -46001,7 +46078,7 @@ var ReverseGeocoding = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.ex
      */
     onReverseGeocodingResultMouseOut : function (e) {
         // récupération de l'id du résultat survolé
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_5__["default"].index(e.target.id);
 
         // on repasse le texte en style normal
         if (e.target.classList) {
@@ -46143,7 +46220,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("route(plus)");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("route(plus)");
 
 /**
  * @classdesc
@@ -46159,7 +46236,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.
  */
 var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @lends L.geoportalControl.Route.prototype */ {
 
-    includes : _Common_Controls_RouteDOM__WEBPACK_IMPORTED_MODULE_6__.default,
+    includes : _Common_Controls_RouteDOM__WEBPACK_IMPORTED_MODULE_6__["default"],
 
     /**
      * Options du service
@@ -46212,7 +46289,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
         leaflet__WEBPACK_IMPORTED_MODULE_1___default().Util.setOptions(this, options);
 
         /** uuid */
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].generate();
 
         // initialisation
         this._initTransport();
@@ -46420,7 +46497,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
             _res = ["Voiture", "Pieton"];
         }
 
-        var rightManagementRoute = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementRoute = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["Itineraire"]
@@ -46439,7 +46516,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
             ];
         }
 
-        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["AutoCompletion"]
@@ -46598,7 +46675,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
 
         var count = 1;
         // point de depart
-        var start = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__.default({
+        var start = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__["default"]({
             apiKey : this.options.apiKey || null,
             tag : {
                 id : count,
@@ -46626,7 +46703,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
         this._currentPoints.push(start);
         // points intermediaires
         for (count = 2; count < 7; count++) {
-            var step = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__.default({
+            var step = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__["default"]({
                 apiKey : this.options.apiKey || null,
                 tag : {
                     id : count,
@@ -46644,7 +46721,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
             this._currentPoints.push(step);
         }
         // point d'arrivé
-        var end = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__.default({
+        var end = new _LocationSelector__WEBPACK_IMPORTED_MODULE_5__["default"]({
             apiKey : this.options.apiKey || null,
             tag : {
                 id : count,
@@ -46937,7 +47014,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
     onRouteResultsDetailsMouseOver : function (e) {
         logger.log("onRouteResultsDetailsMouseOver", e);
 
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].index(e.target.id);
 
         // valable uniquement pour le mode desktop !
         if (!this._isDesktop) {
@@ -46971,7 +47048,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
     onRouteResultsDetailsMouseOut : function (e) {
         logger.log("onRouteResultsDetailsMouseOut", e);
 
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].index(e.target.id);
 
         // valable uniquement pour le mode desktop !
         if (!this._isDesktop) {
@@ -47006,7 +47083,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
     onRouteResultsDetailsClick : function (e) {
         logger.log("onRouteResultsDetailsClick", e);
 
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].index(e.target.id);
 
         var self = this;
 
@@ -47135,7 +47212,7 @@ var Route = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @l
 
         logger.log(options);
 
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.route(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.route(options);
     },
 
     /**
@@ -47656,7 +47733,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("searchengine");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("searchengine");
 
 /**
  * @classdesc
@@ -47676,7 +47753,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.
  */
 var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend(/** @lends L.geoportalControl.SearchEngine.prototype */ {
 
-    includes : _Common_Controls_SearchEngineDOM__WEBPACK_IMPORTED_MODULE_7__.default,
+    includes : _Common_Controls_SearchEngineDOM__WEBPACK_IMPORTED_MODULE_7__["default"],
 
     /**
      * options by default
@@ -47760,7 +47837,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
         leaflet__WEBPACK_IMPORTED_MODULE_1___default().Util.setOptions(this, options);
 
         /** uuid */
-        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.generate();
+        this._uid = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].generate();
 
         /** affichage du container de saisie */
         this._showContainer = null;
@@ -47920,7 +47997,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
             ];
         }
 
-        var rightManagementGeocode = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementGeocode = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["Geocode"]
@@ -47940,7 +48017,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
             ];
         }
 
-        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__.default.check({
+        var rightManagementAutoComplete = _Common_Utils_CheckRightManagement__WEBPACK_IMPORTED_MODULE_3__["default"].check({
             key : _key || this.options.apiKey,
             resources : _res,
             services : ["AutoCompletion"]
@@ -48439,7 +48516,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
 
         logger.log(options);
 
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.autoComplete(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.autoComplete(options);
     },
 
     /**
@@ -48546,7 +48623,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
         });
 
         logger.log(options);
-        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Services.geocode(options);
+        geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Services.geocode(options);
     },
 
     /**
@@ -48698,7 +48775,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
 
             if (key === "auto") {
                 logger.trace("zoom auto");
-                zoom = _Common_Utils_SearchEngineUtils__WEBPACK_IMPORTED_MODULE_5__.default.zoomToResultsByDefault(info);
+                zoom = _Common_Utils_SearchEngineUtils__WEBPACK_IMPORTED_MODULE_5__["default"].zoomToResultsByDefault(info);
             } else {
                 logger.trace("zoom level parsing");
                 var value = parseInt(key, 10);
@@ -48761,11 +48838,11 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
         if (position) {
             var _icon = null;
             if (typeof marker === "string") {
-                _icon = new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__.default(marker);
+                _icon = new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__["default"](marker);
             } else if (marker instanceof (leaflet__WEBPACK_IMPORTED_MODULE_1___default().Icon)) {
                 _icon = marker;
             } else {
-                _icon = new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__.default("blue");
+                _icon = new _Utils_IconDefault__WEBPACK_IMPORTED_MODULE_6__["default"]("blue");
                 logger.log("Utilisation du marker par défaut !");
             }
 
@@ -49048,7 +49125,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
      * @private
      */
     onAutoCompletedResultsItemClick : function (e) {
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].index(e.target.id);
         var label = e.target.innerHTML;
         logger.log(idx, label);
         logger.log(this._locationsToBeDisplayed[idx]);
@@ -49141,7 +49218,7 @@ var SearchEngine = leaflet__WEBPACK_IMPORTED_MODULE_1___default().Control.extend
      * @private
      */
     onGeocodedResultsItemClick : function (e) {
-        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__.default.index(e.target.id);
+        var idx = _Common_Utils_SelectorID__WEBPACK_IMPORTED_MODULE_4__["default"].index(e.target.id);
         var label = e.target.innerHTML;
 
         logger.log(idx, label);
@@ -49354,7 +49431,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("icondefault");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("icondefault");
 
 /**  cf. http://leafletjs.com/reference.html#icon */
 var IconDefault = leaflet__WEBPACK_IMPORTED_MODULE_0___default().Icon.Default.extend(/** @lends IconDefault.prototype */ {
@@ -49616,7 +49693,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("layer-config");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("layer-config");
 
 /**
  * @classdesc
@@ -49636,13 +49713,13 @@ var LayerConfig = {
         var params = {};
 
         // Gestion de l'autoconf
-        if (!_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.isConfigLoaded()) {
+        if (!_Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].isConfigLoaded()) {
             logger.warn("WARNING AUTOCONF_MISSING : contract key configuration has to be loaded to load Geoportal layers !");
             return;
         }
 
         // gestion des parametres
-        params = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__.default.getLayerParams(options.layer, options.service, options.key);
+        params = _Common_Utils_Config__WEBPACK_IMPORTED_MODULE_1__["default"].getLayerParams(options.layer, options.service, options.key);
 
         if (!params || Object.keys(params).length === 0) {
             logger.warn("WARNING AUTOCONF_FAILED : params not found ?!");
@@ -49650,8 +49727,8 @@ var LayerConfig = {
         }
 
         // gestion des zoom
-        params.minZoom = _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_2__.default.getZoomLevelFromScaleDenominator(params.maxScale) || 1;
-        params.maxZoom = _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_2__.default.getZoomLevelFromScaleDenominator(params.minScale) || 21;
+        params.minZoom = _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_2__["default"].getZoomLevelFromScaleDenominator(params.maxScale) || 1;
+        params.maxZoom = _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_2__["default"].getZoomLevelFromScaleDenominator(params.minScale) || 21;
 
         return params;
     }
@@ -49679,7 +49756,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__.default.getLogger("layer-event");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_0__["default"].getLogger("layer-event");
 
 /**
  * @classdesc
@@ -49843,7 +49920,7 @@ var LayerEvent = {
             visibility : this._visibility
         };
         logger.log(params);
-        var attributionsOriginators = _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_1__.default.getAttributions(params);
+        var attributionsOriginators = _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_1__["default"].getAttributions(params);
         logger.log(attributionsOriginators);
         if (attributionsOriginators && attributionsOriginators.length !== 0) {
             // on les ajoute dans la liste
@@ -49885,7 +49962,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("layers");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("layers");
 
 /**
  * Geoportal Layers Factory to be used together with Leaflet Maps.
@@ -49950,7 +50027,7 @@ var Layers = {
         }
 
         // Gestion de l'autoconf
-        this.params = _LayerConfig__WEBPACK_IMPORTED_MODULE_2__.default.get({
+        this.params = _LayerConfig__WEBPACK_IMPORTED_MODULE_2__["default"].get({
             key : this.options.apiKey,
             layer : this.options.layer,
             service : service
@@ -49999,7 +50076,7 @@ var Layers = {
      */
     WMS : function (options, settings) {
         // gestion du logger
-        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("layers-wms");
+        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("layers-wms");
 
         /** options du plugins */
         this.options = options || {};
@@ -50050,7 +50127,7 @@ var Layers = {
         // merge des autres options natives de leaflet
         leaflet__WEBPACK_IMPORTED_MODULE_0___default().Util.extend(paramsNative, this.settings);
 
-        return new _WMS__WEBPACK_IMPORTED_MODULE_3__.default(
+        return new _WMS__WEBPACK_IMPORTED_MODULE_3__["default"](
             serviceUrl.replace(/(http|https):\/\//, this.protocol), {
                 paramsNative : paramsNative,
                 paramsWms : paramsWms,
@@ -50098,7 +50175,7 @@ var Layers = {
      */
     WMTS : function (options, settings) {
         // gestion du logger
-        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__.default.getLogger("layers-wmts");
+        var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_1__["default"].getLogger("layers-wmts");
 
         /** options du plugins */
         this.options = options || {};
@@ -50158,7 +50235,7 @@ var Layers = {
         // merge des autres options natives de leaflet
         leaflet__WEBPACK_IMPORTED_MODULE_0___default().Util.extend(paramsNative, this.settings);
 
-        return new _WMTS__WEBPACK_IMPORTED_MODULE_4__.default(
+        return new _WMTS__WEBPACK_IMPORTED_MODULE_4__["default"](
             serviceUrl.replace(/(http|https):\/\//, this.protocol), {
                 paramsNative : paramsNative,
                 paramsWmts : paramsWmts,
@@ -50208,7 +50285,7 @@ __webpack_require__.r(__webpack_exports__);
 // package.json (extract version)
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("wms");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("wms");
 
 /**
  * @namespace
@@ -50224,7 +50301,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.
  */
 var WMS = leaflet__WEBPACK_IMPORTED_MODULE_1___default().TileLayer.WMS.extend(/** @lends WMS.prototype */ {
 
-    includes : _LayerEvent__WEBPACK_IMPORTED_MODULE_3__.default,
+    includes : _LayerEvent__WEBPACK_IMPORTED_MODULE_3__["default"],
 
     /**
      *
@@ -50274,7 +50351,7 @@ var WMS = leaflet__WEBPACK_IMPORTED_MODULE_1___default().TileLayer.WMS.extend(/*
             this,
             // tracker extension leaflet
             // FIXME : gp-ext version en mode AMD
-            geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Helper.normalyzeUrl(url, {
+            geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Helper.normalyzeUrl(url, {
                 "gp-leaflet-ext" : _package_json__WEBPACK_IMPORTED_MODULE_4__.leafletExtVersion || _package_json__WEBPACK_IMPORTED_MODULE_4__.version
             }, false),
             settings
@@ -50480,7 +50557,7 @@ __webpack_require__.r(__webpack_exports__);
 // package.json (extract version)
 
 
-var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.getLogger("wmts");
+var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__["default"].getLogger("wmts");
 
 /**
  * @namespace
@@ -50496,7 +50573,7 @@ var logger = _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_2__.default.
  */
 var WMTS = leaflet__WEBPACK_IMPORTED_MODULE_1___default().TileLayer.extend(/** @lends WMTS.prototype */ {
 
-    includes : _LayerEvent__WEBPACK_IMPORTED_MODULE_3__.default,
+    includes : _LayerEvent__WEBPACK_IMPORTED_MODULE_3__["default"],
 
     defaultWmtsParams : {
         service : "WMTS",
@@ -50563,7 +50640,7 @@ var WMTS = leaflet__WEBPACK_IMPORTED_MODULE_1___default().TileLayer.extend(/** @
             this,
             // tracker extension leaflet
             // FIXME : gp-ext version en mode AMD
-            geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__.default.Helper.normalyzeUrl(url, {
+            geoportal_access_lib__WEBPACK_IMPORTED_MODULE_0__["default"].Helper.normalyzeUrl(url, {
                 "gp-leaflet-ext" : _package_json__WEBPACK_IMPORTED_MODULE_4__.leafletExtVersion || _package_json__WEBPACK_IMPORTED_MODULE_4__.version
             }, false),
             options.paramsNative
@@ -50808,11 +50885,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "servicesVersion": () => (/* binding */ servicesVersion),
 /* harmony export */   "leafletExtVersion": () => (/* binding */ leafletExtVersion),
 /* harmony export */   "leafletExtDate": () => (/* binding */ leafletExtDate),
-/* harmony export */   "LayerUtils": () => (/* reexport safe */ _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_10__.default),
-/* harmony export */   "ProxyUtils": () => (/* reexport safe */ _Common_Utils_ProxyUtils__WEBPACK_IMPORTED_MODULE_11__.default),
-/* harmony export */   "ColorUtils": () => (/* reexport safe */ _Common_Utils_ColorUtils__WEBPACK_IMPORTED_MODULE_12__.default),
-/* harmony export */   "MathUtils": () => (/* reexport safe */ _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_13__.default),
-/* harmony export */   "Logger": () => (/* reexport safe */ _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_14__.default),
+/* harmony export */   "LayerUtils": () => (/* reexport safe */ _Common_Utils_LayerUtils__WEBPACK_IMPORTED_MODULE_10__["default"]),
+/* harmony export */   "ProxyUtils": () => (/* reexport safe */ _Common_Utils_ProxyUtils__WEBPACK_IMPORTED_MODULE_11__["default"]),
+/* harmony export */   "ColorUtils": () => (/* reexport safe */ _Common_Utils_ColorUtils__WEBPACK_IMPORTED_MODULE_12__["default"]),
+/* harmony export */   "MathUtils": () => (/* reexport safe */ _Common_Utils_MathUtils__WEBPACK_IMPORTED_MODULE_13__["default"]),
+/* harmony export */   "Logger": () => (/* reexport safe */ _Common_Utils_LoggerByDefault__WEBPACK_IMPORTED_MODULE_14__["default"]),
 /* harmony export */   "LExtended": () => (/* reexport default from dynamic */ leaflet__WEBPACK_IMPORTED_MODULE_1___default.a)
 /* harmony export */ });
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../package.json */ "./node_modules/geoportal-extensions-leaflet/package.json");
@@ -50889,12 +50966,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // reconstruction des ns
-var Services = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__.default.Services;
-var Error = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__.default.Error;
-var Helper = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__.default.Helper;
-var Protocols = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__.default.Protocols;
-var servicesDate = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__.default.servicesDate;
-var servicesVersion = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__.default.servicesVersion;
+var Services = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__["default"].Services;
+var Error = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__["default"].Error;
+var Helper = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__["default"].Helper;
+var Protocols = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__["default"].Protocols;
+var servicesDate = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__["default"].servicesDate;
+var servicesVersion = geoportal_access_lib__WEBPACK_IMPORTED_MODULE_9__["default"].servicesVersion;
 
 
 
@@ -50912,21 +50989,21 @@ const leafletExtDate = _package_json__WEBPACK_IMPORTED_MODULE_0__.date;
 
 
 // creation du namespace pour les extensions leaflet
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalLayer) = _Layers_Layers__WEBPACK_IMPORTED_MODULE_6__.default; // WMS et WMTS
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalLayer) = _Layers_Layers__WEBPACK_IMPORTED_MODULE_6__["default"]; // WMS et WMTS
 // L.geoportalLayers = {};
 // L.geoportalLayers.WMTS = WMTS;
 // L.geoportalLayers.WMS = WMS;
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl) = _Controls_Controls__WEBPACK_IMPORTED_MODULE_4__.default; // IsoChrone, SearchEngine, ...
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl) = _Controls_Controls__WEBPACK_IMPORTED_MODULE_4__["default"]; // IsoChrone, SearchEngine, ...
 
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_LIB_D3) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__.default.DISPLAY_PROFILE_LIB_D3;
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_LIB_AMCHARTS) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__.default.DISPLAY_PROFILE_LIB_AMCHARTS;
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_RAW) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__.default.DISPLAY_PROFILE_RAW;
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_BY_DEFAULT) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__.default.DISPLAY_PROFILE_BY_DEFAULT;
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_LIB_D3) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__["default"].DISPLAY_PROFILE_LIB_D3;
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_LIB_AMCHARTS) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__["default"].DISPLAY_PROFILE_LIB_AMCHARTS;
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_RAW) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__["default"].DISPLAY_PROFILE_RAW;
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalControl.ElevationPath.DISPLAY_PROFILE_BY_DEFAULT) = _Controls_ElevationPath__WEBPACK_IMPORTED_MODULE_5__["default"].DISPLAY_PROFILE_BY_DEFAULT;
 
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__.default; // lambert 93 et lambert 2 étendu
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS.EPSG2154) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__.default.EPSG2154(); // lambert 93
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS.EPSG27572) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__.default.EPSG27572(); // lambert 2 étendu
-(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS.EPSG4326) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__.default.EPSG4326();
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__["default"]; // lambert 93 et lambert 2 étendu
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS.EPSG2154) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__["default"].EPSG2154(); // lambert 93
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS.EPSG27572) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__["default"].EPSG27572(); // lambert 2 étendu
+(leaflet__WEBPACK_IMPORTED_MODULE_1___default().geoportalCRS.EPSG4326) = _CRS_CRS__WEBPACK_IMPORTED_MODULE_7__["default"].EPSG4326();
 
 
 
@@ -77718,7 +77795,7 @@ module.exports = exports = global.fetch;
 
 // Needed for TypeScript and Webpack.
 if (global.fetch) {
-	exports.default = global.fetch.bind(global);
+	exports["default"] = global.fetch.bind(global);
 }
 
 exports.Headers = global.Headers;
@@ -77814,7 +77891,7 @@ function Projection(srsCode,callback) {
       throw error;
     }
   };
-  var json = (0,_parseCode__WEBPACK_IMPORTED_MODULE_0__.default)(srsCode);
+  var json = (0,_parseCode__WEBPACK_IMPORTED_MODULE_0__["default"])(srsCode);
   if(typeof json !== 'object'){
     callback(srsCode);
     return;
@@ -77825,7 +77902,7 @@ function Projection(srsCode,callback) {
     return;
   }
   if (json.datumCode && json.datumCode !== 'none') {
-    var datumDef = (0,_match__WEBPACK_IMPORTED_MODULE_6__.default)(_constants_Datum__WEBPACK_IMPORTED_MODULE_4__.default, json.datumCode);
+    var datumDef = (0,_match__WEBPACK_IMPORTED_MODULE_6__["default"])(_constants_Datum__WEBPACK_IMPORTED_MODULE_4__["default"], json.datumCode);
     if (datumDef) {
       json.datum_params = datumDef.towgs84 ? datumDef.towgs84.split(',') : null;
       json.ellps = datumDef.ellipse;
@@ -77838,11 +77915,11 @@ function Projection(srsCode,callback) {
   var sphere_ = (0,_deriveConstants__WEBPACK_IMPORTED_MODULE_3__.sphere)(json.a, json.b, json.rf, json.ellps, json.sphere);
   var ecc = (0,_deriveConstants__WEBPACK_IMPORTED_MODULE_3__.eccentricity)(sphere_.a, sphere_.b, sphere_.rf, json.R_A);
   var nadgrids = (0,_nadgrid__WEBPACK_IMPORTED_MODULE_7__.getNadgrids)(json.nadgrids);
-  var datumObj = json.datum || (0,_datum__WEBPACK_IMPORTED_MODULE_5__.default)(json.datumCode, json.datum_params, sphere_.a, sphere_.b, ecc.es, ecc.ep2,
+  var datumObj = json.datum || (0,_datum__WEBPACK_IMPORTED_MODULE_5__["default"])(json.datumCode, json.datum_params, sphere_.a, sphere_.b, ecc.es, ecc.ep2,
     nadgrids);
 
-  (0,_extend__WEBPACK_IMPORTED_MODULE_1__.default)(this, json); // transfer everything over from the projection because we don't know what we'll need
-  (0,_extend__WEBPACK_IMPORTED_MODULE_1__.default)(this, ourProj); // transfer all the methods from the projection
+  (0,_extend__WEBPACK_IMPORTED_MODULE_1__["default"])(this, json); // transfer everything over from the projection because we don't know what we'll need
+  (0,_extend__WEBPACK_IMPORTED_MODULE_1__["default"])(this, ourProj); // transfer all the methods from the projection
 
   // copy the 4 things over we calulated in deriveConstants.sphere
   this.a = sphere_.a;
@@ -77865,7 +77942,7 @@ function Projection(srsCode,callback) {
   callback(null, this);
 
 }
-Projection.projections = _projections__WEBPACK_IMPORTED_MODULE_2__.default;
+Projection.projections = _projections__WEBPACK_IMPORTED_MODULE_2__["default"];
 Projection.projections.start();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Projection);
 
@@ -77995,7 +78072,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
-  return (Math.abs(x) < _constants_values__WEBPACK_IMPORTED_MODULE_0__.HALF_PI) ? x : (x - ((0,_sign__WEBPACK_IMPORTED_MODULE_1__.default)(x) * Math.PI));
+  return (Math.abs(x) < _constants_values__WEBPACK_IMPORTED_MODULE_0__.HALF_PI) ? x : (x - ((0,_sign__WEBPACK_IMPORTED_MODULE_1__["default"])(x) * Math.PI));
 }
 
 
@@ -78019,7 +78096,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
-  return (Math.abs(x) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.SPI) ? x : (x - ((0,_sign__WEBPACK_IMPORTED_MODULE_1__.default)(x) * _constants_values__WEBPACK_IMPORTED_MODULE_0__.TWO_PI));
+  return (Math.abs(x) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.SPI) ? x : (x - ((0,_sign__WEBPACK_IMPORTED_MODULE_1__["default"])(x) * _constants_values__WEBPACK_IMPORTED_MODULE_0__.TWO_PI));
 }
 
 
@@ -78041,7 +78118,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(zone, lon) {
   if (zone === undefined) {
-    zone = Math.floor(((0,_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon) + Math.PI) * 30 / Math.PI) + 1;
+    zone = Math.floor(((0,_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon) + Math.PI) * 30 / Math.PI) + 1;
 
     if (zone < 0) {
       return 0;
@@ -78073,7 +78150,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
   var y = Math.abs(x);
-  y = (0,_log1py__WEBPACK_IMPORTED_MODULE_1__.default)(y * (1 + y / ((0,_hypot__WEBPACK_IMPORTED_MODULE_0__.default)(1, y) + 1)));
+  y = (0,_log1py__WEBPACK_IMPORTED_MODULE_1__["default"])(y * (1 + y / ((0,_hypot__WEBPACK_IMPORTED_MODULE_0__["default"])(1, y) + 1)));
 
   return x < 0 ? -y : y;
 }
@@ -78150,8 +78227,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(pp, arg_r, arg_i) {
   var sin_arg_r = Math.sin(arg_r);
   var cos_arg_r = Math.cos(arg_r);
-  var sinh_arg_i = (0,_sinh__WEBPACK_IMPORTED_MODULE_0__.default)(arg_i);
-  var cosh_arg_i = (0,_cosh__WEBPACK_IMPORTED_MODULE_1__.default)(arg_i);
+  var sinh_arg_i = (0,_sinh__WEBPACK_IMPORTED_MODULE_0__["default"])(arg_i);
+  var cosh_arg_i = (0,_cosh__WEBPACK_IMPORTED_MODULE_1__["default"])(arg_i);
   var r = 2 * cos_arg_r * cosh_arg_i;
   var i = -2 * sin_arg_r * sinh_arg_i;
   var j = pp.length - 1;
@@ -78569,7 +78646,7 @@ var MAX_ITER = 20;
     var t = 1 - es * s * s;
     //t = this.pj_mlfn(phi, s, Math.cos(phi), en) - arg;
     //phi -= t * (t * Math.sqrt(t)) * k;
-    t = ((0,_pj_mlfn__WEBPACK_IMPORTED_MODULE_0__.default)(phi, s, Math.cos(phi), en) - arg) * (t * Math.sqrt(t)) * k;
+    t = ((0,_pj_mlfn__WEBPACK_IMPORTED_MODULE_0__["default"])(phi, s, Math.cos(phi), en) - arg) * (t * Math.sqrt(t)) * k;
     phi -= t;
     if (Math.abs(t) < _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
       return phi;
@@ -79249,12 +79326,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _transform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transform */ "./node_modules/proj4/lib/transform.js");
 
 
-var wgs84 = (0,_Proj__WEBPACK_IMPORTED_MODULE_0__.default)('WGS84');
+var wgs84 = (0,_Proj__WEBPACK_IMPORTED_MODULE_0__["default"])('WGS84');
 
 function transformer(from, to, coords) {
   var transformedArray, out, keys;
   if (Array.isArray(coords)) {
-    transformedArray = (0,_transform__WEBPACK_IMPORTED_MODULE_1__.default)(from, to, coords) || {x: NaN, y: NaN};
+    transformedArray = (0,_transform__WEBPACK_IMPORTED_MODULE_1__["default"])(from, to, coords) || {x: NaN, y: NaN};
     if (coords.length > 2) {
       if ((typeof from.name !== 'undefined' && from.name === 'geocent') || (typeof to.name !== 'undefined' && to.name === 'geocent')) {
         if (typeof transformedArray.z === 'number') {
@@ -79269,7 +79346,7 @@ function transformer(from, to, coords) {
       return [transformedArray.x, transformedArray.y];
     }
   } else {
-    out = (0,_transform__WEBPACK_IMPORTED_MODULE_1__.default)(from, to, coords);
+    out = (0,_transform__WEBPACK_IMPORTED_MODULE_1__["default"])(from, to, coords);
     keys = Object.keys(coords);
     if (keys.length === 2) {
       return out;
@@ -79291,13 +79368,13 @@ function transformer(from, to, coords) {
 }
 
 function checkProj(item) {
-  if (item instanceof _Proj__WEBPACK_IMPORTED_MODULE_0__.default) {
+  if (item instanceof _Proj__WEBPACK_IMPORTED_MODULE_0__["default"]) {
     return item;
   }
   if (item.oProj) {
     return item.oProj;
   }
-  return (0,_Proj__WEBPACK_IMPORTED_MODULE_0__.default)(item);
+  return (0,_Proj__WEBPACK_IMPORTED_MODULE_0__["default"])(item);
 }
 
 function proj4(fromProj, toProj, coord) {
@@ -79794,7 +79871,7 @@ function applySubgridShift(pin, inverse, ct) {
   var tb = {x: pin.x, y: pin.y};
   tb.x -= ct.ll[0];
   tb.y -= ct.ll[1];
-  tb.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__.default)(tb.x - Math.PI) + Math.PI;
+  tb.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__["default"])(tb.x - Math.PI) + Math.PI;
   var t = nadInterpolate(tb, ct);
   if (inverse) {
     if (isNaN(t.x)) {
@@ -79818,7 +79895,7 @@ function applySubgridShift(pin, inverse, ct) {
       console.log("Inverse grid shift iterator failed to converge.");
       return val;
     }
-    val.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__.default)(t.x + ct.ll[0]);
+    val.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__["default"])(t.x + ct.ll[0]);
     val.y = t.y + ct.ll[1];
   } else {
     if (!isNaN(t.x)) {
@@ -79884,10 +79961,10 @@ function defs(name) {
     var def = arguments[1];
     if (typeof def === 'string') {
       if (def.charAt(0) === '+') {
-        defs[name] = (0,_projString__WEBPACK_IMPORTED_MODULE_1__.default)(arguments[1]);
+        defs[name] = (0,_projString__WEBPACK_IMPORTED_MODULE_1__["default"])(arguments[1]);
       }
       else {
-        defs[name] = (0,wkt_parser__WEBPACK_IMPORTED_MODULE_2__.default)(arguments[1]);
+        defs[name] = (0,wkt_parser__WEBPACK_IMPORTED_MODULE_2__["default"])(arguments[1]);
       }
     } else {
       defs[name] = def;
@@ -79926,7 +80003,7 @@ function defs(name) {
 
 
 }
-(0,_global__WEBPACK_IMPORTED_MODULE_0__.default)(defs);
+(0,_global__WEBPACK_IMPORTED_MODULE_0__["default"])(defs);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (defs);
 
 
@@ -79972,7 +80049,7 @@ function eccentricity(a, b, rf, R_A) {
 }
 function sphere(a, b, rf, ellps, sphere) {
   if (!a) { // do we have an ellipsoid?
-    var ellipse = (0,_match__WEBPACK_IMPORTED_MODULE_2__.default)(_constants_Ellipsoid__WEBPACK_IMPORTED_MODULE_1__.default, ellps);
+    var ellipse = (0,_match__WEBPACK_IMPORTED_MODULE_2__["default"])(_constants_Ellipsoid__WEBPACK_IMPORTED_MODULE_1__["default"], ellps);
     if (!ellipse) {
       ellipse = _constants_Ellipsoid__WEBPACK_IMPORTED_MODULE_1__.WGS84;
     }
@@ -80084,18 +80161,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-_core__WEBPACK_IMPORTED_MODULE_0__.default.defaultDatum = 'WGS84'; //default datum
-_core__WEBPACK_IMPORTED_MODULE_0__.default.Proj = _Proj__WEBPACK_IMPORTED_MODULE_1__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.WGS84 = new _core__WEBPACK_IMPORTED_MODULE_0__.default.Proj('WGS84');
-_core__WEBPACK_IMPORTED_MODULE_0__.default.Point = _Point__WEBPACK_IMPORTED_MODULE_2__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.toPoint = _common_toPoint__WEBPACK_IMPORTED_MODULE_3__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.defs = _defs__WEBPACK_IMPORTED_MODULE_4__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.nadgrid = _nadgrid__WEBPACK_IMPORTED_MODULE_5__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.transform = _transform__WEBPACK_IMPORTED_MODULE_6__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.mgrs = mgrs__WEBPACK_IMPORTED_MODULE_7__.default;
-_core__WEBPACK_IMPORTED_MODULE_0__.default.version = '__VERSION__';
-(0,_projs__WEBPACK_IMPORTED_MODULE_8__.default)(_core__WEBPACK_IMPORTED_MODULE_0__.default);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_core__WEBPACK_IMPORTED_MODULE_0__.default);
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].defaultDatum = 'WGS84'; //default datum
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].Proj = _Proj__WEBPACK_IMPORTED_MODULE_1__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].WGS84 = new _core__WEBPACK_IMPORTED_MODULE_0__["default"].Proj('WGS84');
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].Point = _Point__WEBPACK_IMPORTED_MODULE_2__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].toPoint = _common_toPoint__WEBPACK_IMPORTED_MODULE_3__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].defs = _defs__WEBPACK_IMPORTED_MODULE_4__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].nadgrid = _nadgrid__WEBPACK_IMPORTED_MODULE_5__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].transform = _transform__WEBPACK_IMPORTED_MODULE_6__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].mgrs = mgrs__WEBPACK_IMPORTED_MODULE_7__["default"];
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].version = '__VERSION__';
+(0,_projs__WEBPACK_IMPORTED_MODULE_8__["default"])(_core__WEBPACK_IMPORTED_MODULE_0__["default"]);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_core__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 /***/ }),
@@ -80313,7 +80390,7 @@ function testObj(code){
   return typeof code === 'string';
 }
 function testDef(code){
-  return code in _defs__WEBPACK_IMPORTED_MODULE_0__.default;
+  return code in _defs__WEBPACK_IMPORTED_MODULE_0__["default"];
 }
 var codeWords = ['PROJECTEDCRS', 'PROJCRS', 'GEOGCS','GEOCCS','PROJCS','LOCAL_CS', 'GEODCRS', 'GEODETICCRS', 'GEODETICDATUM', 'ENGCRS', 'ENGINEERINGCRS'];
 function testWKT(code){
@@ -80323,19 +80400,19 @@ function testWKT(code){
 }
 var codes = ['3857', '900913', '3785', '102113'];
 function checkMercator(item) {
-  var auth = (0,_match__WEBPACK_IMPORTED_MODULE_3__.default)(item, 'authority');
+  var auth = (0,_match__WEBPACK_IMPORTED_MODULE_3__["default"])(item, 'authority');
   if (!auth) {
     return;
   }
-  var code = (0,_match__WEBPACK_IMPORTED_MODULE_3__.default)(auth, 'epsg');
+  var code = (0,_match__WEBPACK_IMPORTED_MODULE_3__["default"])(auth, 'epsg');
   return code && codes.indexOf(code) > -1;
 }
 function checkProjStr(item) {
-  var ext = (0,_match__WEBPACK_IMPORTED_MODULE_3__.default)(item, 'extension');
+  var ext = (0,_match__WEBPACK_IMPORTED_MODULE_3__["default"])(item, 'extension');
   if (!ext) {
     return;
   }
-  return (0,_match__WEBPACK_IMPORTED_MODULE_3__.default)(ext, 'proj4');
+  return (0,_match__WEBPACK_IMPORTED_MODULE_3__["default"])(ext, 'proj4');
 }
 function testProj(code){
   return code[0] === '+';
@@ -80344,22 +80421,22 @@ function parse(code){
   if (testObj(code)) {
     //check to see if this is a WKT string
     if (testDef(code)) {
-      return _defs__WEBPACK_IMPORTED_MODULE_0__.default[code];
+      return _defs__WEBPACK_IMPORTED_MODULE_0__["default"][code];
     }
     if (testWKT(code)) {
-      var out = (0,wkt_parser__WEBPACK_IMPORTED_MODULE_1__.default)(code);
+      var out = (0,wkt_parser__WEBPACK_IMPORTED_MODULE_1__["default"])(code);
       // test of spetial case, due to this being a very common and often malformed
       if (checkMercator(out)) {
-        return _defs__WEBPACK_IMPORTED_MODULE_0__.default["EPSG:3857"];
+        return _defs__WEBPACK_IMPORTED_MODULE_0__["default"]["EPSG:3857"];
       }
       var maybeProjStr = checkProjStr(out);
       if (maybeProjStr) {
-        return (0,_projString__WEBPACK_IMPORTED_MODULE_2__.default)(maybeProjStr);
+        return (0,_projString__WEBPACK_IMPORTED_MODULE_2__["default"])(maybeProjStr);
       }
       return out;
     }
     if (testProj(code)) {
-      return (0,_projString__WEBPACK_IMPORTED_MODULE_2__.default)(code);
+      return (0,_projString__WEBPACK_IMPORTED_MODULE_2__["default"])(code);
     }
   }else{
     return code;
@@ -80474,7 +80551,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     units: function(v) {
       self.units = v;
-      var unit = (0,_match__WEBPACK_IMPORTED_MODULE_3__.default)(_constants_units__WEBPACK_IMPORTED_MODULE_2__.default, v);
+      var unit = (0,_match__WEBPACK_IMPORTED_MODULE_3__["default"])(_constants_units__WEBPACK_IMPORTED_MODULE_2__["default"], v);
       if (unit) {
         self.to_meter = unit.to_meter;
       }
@@ -80483,7 +80560,7 @@ __webpack_require__.r(__webpack_exports__);
       self.from_greenwich = v * _constants_values__WEBPACK_IMPORTED_MODULE_0__.D2R;
     },
     pm: function(v) {
-      var pm = (0,_match__WEBPACK_IMPORTED_MODULE_3__.default)(_constants_PrimeMeridian__WEBPACK_IMPORTED_MODULE_1__.default, v);
+      var pm = (0,_match__WEBPACK_IMPORTED_MODULE_3__["default"])(_constants_PrimeMeridian__WEBPACK_IMPORTED_MODULE_1__["default"], v);
       self.from_greenwich = (pm ? pm : parseFloat(v)) * _constants_values__WEBPACK_IMPORTED_MODULE_0__.D2R;
     },
     nadgrids: function(v) {
@@ -80546,7 +80623,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _projections_longlat__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./projections/longlat */ "./node_modules/proj4/lib/projections/longlat.js");
 
 
-var projs = [_projections_merc__WEBPACK_IMPORTED_MODULE_0__.default, _projections_longlat__WEBPACK_IMPORTED_MODULE_1__.default];
+var projs = [_projections_merc__WEBPACK_IMPORTED_MODULE_0__["default"], _projections_longlat__WEBPACK_IMPORTED_MODULE_1__["default"]];
 var names = {};
 var projStore = [];
 
@@ -80627,19 +80704,19 @@ function init() {
   this.cos_po = Math.cos(this.lat1);
   this.t1 = this.sin_po;
   this.con = this.sin_po;
-  this.ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e3, this.sin_po, this.cos_po);
-  this.qs1 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e3, this.sin_po, this.cos_po);
+  this.ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e3, this.sin_po, this.cos_po);
+  this.qs1 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e3, this.sin_po, this.cos_po);
 
   this.sin_po = Math.sin(this.lat2);
   this.cos_po = Math.cos(this.lat2);
   this.t2 = this.sin_po;
-  this.ms2 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e3, this.sin_po, this.cos_po);
-  this.qs2 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e3, this.sin_po, this.cos_po);
+  this.ms2 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e3, this.sin_po, this.cos_po);
+  this.qs2 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e3, this.sin_po, this.cos_po);
 
   this.sin_po = Math.sin(this.lat0);
   this.cos_po = Math.cos(this.lat0);
   this.t3 = this.sin_po;
-  this.qs0 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e3, this.sin_po, this.cos_po);
+  this.qs0 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e3, this.sin_po, this.cos_po);
 
   if (Math.abs(this.lat1 - this.lat2) > _constants_values__WEBPACK_IMPORTED_MODULE_4__.EPSLN) {
     this.ns0 = (this.ms1 * this.ms1 - this.ms2 * this.ms2) / (this.qs2 - this.qs1);
@@ -80661,9 +80738,9 @@ function forward(p) {
   this.sin_phi = Math.sin(lat);
   this.cos_phi = Math.cos(lat);
 
-  var qs = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e3, this.sin_phi, this.cos_phi);
+  var qs = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e3, this.sin_phi, this.cos_phi);
   var rh1 = this.a * Math.sqrt(this.c - this.ns0 * qs) / this.ns0;
-  var theta = this.ns0 * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__.default)(lon - this.long0);
+  var theta = this.ns0 * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__["default"])(lon - this.long0);
   var x = rh1 * Math.sin(theta) + this.x0;
   var y = this.rh - rh1 * Math.cos(theta) + this.y0;
 
@@ -80698,7 +80775,7 @@ function inverse(p) {
     lat = this.phi1z(this.e3, qs);
   }
 
-  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__.default)(theta / this.ns0 + this.long0);
+  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__["default"])(theta / this.ns0 + this.long0);
   p.x = lon;
   p.y = lat;
   return p;
@@ -80709,7 +80786,7 @@ function inverse(p) {
 -------------------------------------------*/
 function phi1z(eccent, qs) {
   var sinphi, cosphi, con, com, dphi;
-  var phi = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_3__.default)(0.5 * qs);
+  var phi = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_3__["default"])(0.5 * qs);
   if (eccent < _constants_values__WEBPACK_IMPORTED_MODULE_4__.EPSLN) {
     return phi;
   }
@@ -80790,7 +80867,7 @@ function forward(p) {
   var lat = p.y;
   var sinphi = Math.sin(p.y);
   var cosphi = Math.cos(p.y);
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
   var e0, e1, e2, e3, Mlp, Ml, tanphi, Nl1, Nl, psi, Az, G, H, GH, Hs, c, kp, cos_c, s, s2, s3, s4, s5;
   if (this.sphere) {
     if (Math.abs(this.sin_p12 - 1) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
@@ -80816,22 +80893,22 @@ function forward(p) {
     }
   }
   else {
-    e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_3__.default)(this.es);
-    e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_4__.default)(this.es);
-    e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_5__.default)(this.es);
-    e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_6__.default)(this.es);
+    e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_3__["default"])(this.es);
+    e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_4__["default"])(this.es);
+    e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_5__["default"])(this.es);
+    e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_6__["default"])(this.es);
     if (Math.abs(this.sin_p12 - 1) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
       //North Pole case
-      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
-      Ml = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(e0, e1, e2, e3, lat);
+      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
+      Ml = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(e0, e1, e2, e3, lat);
       p.x = this.x0 + (Mlp - Ml) * Math.sin(dlon);
       p.y = this.y0 - (Mlp - Ml) * Math.cos(dlon);
       return p;
     }
     else if (Math.abs(this.sin_p12 + 1) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
       //South Pole case
-      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
-      Ml = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(e0, e1, e2, e3, lat);
+      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
+      Ml = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(e0, e1, e2, e3, lat);
       p.x = this.x0 + (Mlp + Ml) * Math.sin(dlon);
       p.y = this.y0 + (Mlp + Ml) * Math.cos(dlon);
       return p;
@@ -80839,8 +80916,8 @@ function forward(p) {
     else {
       //Default case
       tanphi = sinphi / cosphi;
-      Nl1 = (0,_common_gN__WEBPACK_IMPORTED_MODULE_7__.default)(this.a, this.e, this.sin_p12);
-      Nl = (0,_common_gN__WEBPACK_IMPORTED_MODULE_7__.default)(this.a, this.e, sinphi);
+      Nl1 = (0,_common_gN__WEBPACK_IMPORTED_MODULE_7__["default"])(this.a, this.e, this.sin_p12);
+      Nl = (0,_common_gN__WEBPACK_IMPORTED_MODULE_7__["default"])(this.a, this.e, sinphi);
       psi = Math.atan((1 - this.es) * tanphi + this.es * Nl1 * this.sin_p12 / (Nl * cosphi));
       Az = Math.atan2(Math.sin(dlon), this.cos_p12 * Math.tan(psi) - this.sin_p12 * Math.cos(dlon));
       if (Az === 0) {
@@ -80889,14 +80966,14 @@ function inverse(p) {
       lat = this.lat0;
     }
     else {
-      lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_8__.default)(cosz * this.sin_p12 + (p.y * sinz * this.cos_p12) / rh);
+      lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_8__["default"])(cosz * this.sin_p12 + (p.y * sinz * this.cos_p12) / rh);
       con = Math.abs(this.lat0) - _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI;
       if (Math.abs(con) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
         if (this.lat0 >= 0) {
-          lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.atan2(p.x, - p.y));
+          lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.atan2(p.x, - p.y));
         }
         else {
-          lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 - Math.atan2(-p.x, p.y));
+          lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 - Math.atan2(-p.x, p.y));
         }
       }
       else {
@@ -80907,7 +80984,7 @@ function inverse(p) {
           var temp = Math.atan2((p.x * sinz * this.cos_p12), (con * rh));
           lon = adjust_lon(this.long0 + Math.atan2((p.x * sinz * this.cos_p12), (con * rh)));
         }*/
-        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.atan2(p.x * sinz, rh * this.cos_p12 * cosz - p.y * this.sin_p12 * sinz));
+        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.atan2(p.x * sinz, rh * this.cos_p12 * cosz - p.y * this.sin_p12 * sinz));
       }
     }
 
@@ -80916,29 +80993,29 @@ function inverse(p) {
     return p;
   }
   else {
-    e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_3__.default)(this.es);
-    e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_4__.default)(this.es);
-    e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_5__.default)(this.es);
-    e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_6__.default)(this.es);
+    e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_3__["default"])(this.es);
+    e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_4__["default"])(this.es);
+    e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_5__["default"])(this.es);
+    e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_6__["default"])(this.es);
     if (Math.abs(this.sin_p12 - 1) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
       //North pole case
-      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
+      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
       rh = Math.sqrt(p.x * p.x + p.y * p.y);
       M = Mlp - rh;
-      lat = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_9__.default)(M / this.a, e0, e1, e2, e3);
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.atan2(p.x, - 1 * p.y));
+      lat = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_9__["default"])(M / this.a, e0, e1, e2, e3);
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.atan2(p.x, - 1 * p.y));
       p.x = lon;
       p.y = lat;
       return p;
     }
     else if (Math.abs(this.sin_p12 + 1) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
       //South pole case
-      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
+      Mlp = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(e0, e1, e2, e3, _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI);
       rh = Math.sqrt(p.x * p.x + p.y * p.y);
       M = rh - Mlp;
 
-      lat = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_9__.default)(M / this.a, e0, e1, e2, e3);
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.atan2(p.x, p.y));
+      lat = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_9__["default"])(M / this.a, e0, e1, e2, e3);
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.atan2(p.x, p.y));
       p.x = lon;
       p.y = lat;
       return p;
@@ -80947,7 +81024,7 @@ function inverse(p) {
       //default case
       rh = Math.sqrt(p.x * p.x + p.y * p.y);
       Az = Math.atan2(p.x, p.y);
-      N1 = (0,_common_gN__WEBPACK_IMPORTED_MODULE_7__.default)(this.a, this.e, this.sin_p12);
+      N1 = (0,_common_gN__WEBPACK_IMPORTED_MODULE_7__["default"])(this.a, this.e, this.sin_p12);
       cosAz = Math.cos(Az);
       tmp = this.e * this.cos_p12 * cosAz;
       A = -tmp * tmp / (1 - this.es);
@@ -80956,7 +81033,7 @@ function inverse(p) {
       Ee = D - A * (1 + A) * Math.pow(D, 3) / 6 - B * (1 + 3 * A) * Math.pow(D, 4) / 24;
       F = 1 - A * Ee * Ee / 2 - D * Ee * Ee * Ee / 6;
       psi = Math.asin(this.sin_p12 * Math.cos(Ee) + this.cos_p12 * Math.sin(Ee) * cosAz);
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.asin(Math.sin(Az) * Math.sin(Ee) / Math.cos(psi)));
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.asin(Math.sin(Az) * Math.sin(Ee) / Math.cos(psi)));
       sinpsi = Math.sin(psi);
       lat = Math.atan2((sinpsi - this.es * F * this.sin_p12) * Math.tan(psi), sinpsi * (1 - this.es));
       p.x = lon;
@@ -81016,11 +81093,11 @@ __webpack_require__.r(__webpack_exports__);
 
 function init() {
   if (!this.sphere) {
-    this.e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_1__.default)(this.es);
-    this.e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_2__.default)(this.es);
-    this.e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_3__.default)(this.es);
-    this.e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_4__.default)(this.es);
-    this.ml0 = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_0__.default)(this.e0, this.e1, this.e2, this.e3, this.lat0);
+    this.e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_1__["default"])(this.es);
+    this.e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_2__["default"])(this.es);
+    this.e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_3__["default"])(this.es);
+    this.e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_4__["default"])(this.es);
+    this.ml0 = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e0, this.e1, this.e2, this.e3, this.lat0);
   }
 }
 
@@ -81033,7 +81110,7 @@ function forward(p) {
   var x, y;
   var lam = p.x;
   var phi = p.y;
-  lam = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__.default)(lam - this.long0);
+  lam = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__["default"])(lam - this.long0);
 
   if (this.sphere) {
     x = this.a * Math.asin(Math.cos(phi) * Math.sin(lam));
@@ -81043,12 +81120,12 @@ function forward(p) {
     //ellipsoid
     var sinphi = Math.sin(phi);
     var cosphi = Math.cos(phi);
-    var nl = (0,_common_gN__WEBPACK_IMPORTED_MODULE_5__.default)(this.a, this.e, sinphi);
+    var nl = (0,_common_gN__WEBPACK_IMPORTED_MODULE_5__["default"])(this.a, this.e, sinphi);
     var tl = Math.tan(phi) * Math.tan(phi);
     var al = lam * Math.cos(phi);
     var asq = al * al;
     var cl = this.es * cosphi * cosphi / (1 - this.es);
-    var ml = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_0__.default)(this.e0, this.e1, this.e2, this.e3, phi);
+    var ml = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e0, this.e1, this.e2, this.e3, phi);
 
     x = nl * al * (1 - asq * tl * (1 / 6 - (8 - tl + 8 * cl) * asq / 120));
     y = ml - this.ml0 + nl * sinphi / cosphi * asq * (0.5 + (5 - tl + 6 * cl) * asq / 24);
@@ -81078,7 +81155,7 @@ function inverse(p) {
   else {
     /* ellipsoid */
     var ml1 = this.ml0 / this.a + y;
-    var phi1 = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_8__.default)(ml1, this.e0, this.e1, this.e2, this.e3);
+    var phi1 = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_8__["default"])(ml1, this.e0, this.e1, this.e2, this.e3);
     if (Math.abs(Math.abs(phi1) - _constants_values__WEBPACK_IMPORTED_MODULE_9__.HALF_PI) <= _constants_values__WEBPACK_IMPORTED_MODULE_9__.EPSLN) {
       p.x = this.long0;
       p.y = _constants_values__WEBPACK_IMPORTED_MODULE_9__.HALF_PI;
@@ -81087,7 +81164,7 @@ function inverse(p) {
       }
       return p;
     }
-    var nl1 = (0,_common_gN__WEBPACK_IMPORTED_MODULE_5__.default)(this.a, this.e, Math.sin(phi1));
+    var nl1 = (0,_common_gN__WEBPACK_IMPORTED_MODULE_5__["default"])(this.a, this.e, Math.sin(phi1));
 
     var rl1 = nl1 * nl1 * nl1 / this.a / this.a * (1 - this.es);
     var tl1 = Math.pow(Math.tan(phi1), 2);
@@ -81098,8 +81175,8 @@ function inverse(p) {
 
   }
 
-  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__.default)(lam + this.long0);
-  p.y = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_7__.default)(phi);
+  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__["default"])(lam + this.long0);
+  p.y = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_7__["default"])(phi);
   return p;
 
 }
@@ -81148,7 +81225,7 @@ __webpack_require__.r(__webpack_exports__);
 function init() {
   //no-op
   if (!this.sphere) {
-    this.k0 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_2__.default)(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
+    this.k0 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_2__["default"])(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
   }
 }
 
@@ -81160,13 +81237,13 @@ function forward(p) {
   var x, y;
   /* Forward equations
       -----------------*/
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
   if (this.sphere) {
     x = this.x0 + this.a * dlon * Math.cos(this.lat_ts);
     y = this.y0 + this.a * Math.sin(lat) / Math.cos(this.lat_ts);
   }
   else {
-    var qs = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, Math.sin(lat));
+    var qs = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, Math.sin(lat));
     x = this.x0 + this.a * this.k0 * dlon;
     y = this.y0 + this.a * qs * 0.5 / this.k0;
   }
@@ -81184,12 +81261,12 @@ function inverse(p) {
   var lon, lat;
 
   if (this.sphere) {
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + (p.x / this.a) / Math.cos(this.lat_ts));
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + (p.x / this.a) / Math.cos(this.lat_ts));
     lat = Math.asin((p.y / this.a) * Math.cos(this.lat_ts));
   }
   else {
-    lat = (0,_common_iqsfnz__WEBPACK_IMPORTED_MODULE_3__.default)(this.e, 2 * p.y * this.k0 / this.a);
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + p.x / (this.a * this.k0));
+    lat = (0,_common_iqsfnz__WEBPACK_IMPORTED_MODULE_3__["default"])(this.e, 2 * p.y * this.k0 / this.a);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + p.x / (this.a * this.k0));
   }
 
   p.x = lon;
@@ -81247,8 +81324,8 @@ function forward(p) {
   var lon = p.x;
   var lat = p.y;
 
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
-  var dlat = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_1__.default)(lat - this.lat0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
+  var dlat = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_1__["default"])(lat - this.lat0);
   p.x = this.x0 + (this.a * dlon * this.rc);
   p.y = this.y0 + (this.a * dlat);
   return p;
@@ -81261,8 +81338,8 @@ function inverse(p) {
   var x = p.x;
   var y = p.y;
 
-  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + ((x - this.x0) / (this.a * this.rc)));
-  p.y = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_1__.default)(this.lat0 + ((y - this.y0) / (this.a)));
+  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + ((x - this.x0) / (this.a * this.rc)));
+  p.y = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_1__["default"])(this.lat0 + ((y - this.y0) / (this.a)));
   return p;
 }
 
@@ -81325,16 +81402,16 @@ function init() {
   this.temp = this.b / this.a;
   this.es = 1 - Math.pow(this.temp, 2);
   this.e = Math.sqrt(this.es);
-  this.e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_0__.default)(this.es);
-  this.e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_1__.default)(this.es);
-  this.e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_2__.default)(this.es);
-  this.e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_3__.default)(this.es);
+  this.e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_0__["default"])(this.es);
+  this.e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_1__["default"])(this.es);
+  this.e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_2__["default"])(this.es);
+  this.e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_3__["default"])(this.es);
 
   this.sinphi = Math.sin(this.lat1);
   this.cosphi = Math.cos(this.lat1);
 
-  this.ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_4__.default)(this.e, this.sinphi, this.cosphi);
-  this.ml1 = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__.default)(this.e0, this.e1, this.e2, this.e3, this.lat1);
+  this.ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_4__["default"])(this.e, this.sinphi, this.cosphi);
+  this.ml1 = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__["default"])(this.e0, this.e1, this.e2, this.e3, this.lat1);
 
   if (Math.abs(this.lat1 - this.lat2) < _constants_values__WEBPACK_IMPORTED_MODULE_9__.EPSLN) {
     this.ns = this.sinphi;
@@ -81342,12 +81419,12 @@ function init() {
   else {
     this.sinphi = Math.sin(this.lat2);
     this.cosphi = Math.cos(this.lat2);
-    this.ms2 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_4__.default)(this.e, this.sinphi, this.cosphi);
-    this.ml2 = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__.default)(this.e0, this.e1, this.e2, this.e3, this.lat2);
+    this.ms2 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_4__["default"])(this.e, this.sinphi, this.cosphi);
+    this.ml2 = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__["default"])(this.e0, this.e1, this.e2, this.e3, this.lat2);
     this.ns = (this.ms1 - this.ms2) / (this.ml2 - this.ml1);
   }
   this.g = this.ml1 + this.ms1 / this.ns;
-  this.ml0 = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__.default)(this.e0, this.e1, this.e2, this.e3, this.lat0);
+  this.ml0 = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__["default"])(this.e0, this.e1, this.e2, this.e3, this.lat0);
   this.rh = this.a * (this.g - this.ml0);
 }
 
@@ -81364,10 +81441,10 @@ function forward(p) {
     rh1 = this.a * (this.g - lat);
   }
   else {
-    var ml = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__.default)(this.e0, this.e1, this.e2, this.e3, lat);
+    var ml = (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_5__["default"])(this.e0, this.e1, this.e2, this.e3, lat);
     rh1 = this.a * (this.g - ml);
   }
-  var theta = this.ns * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__.default)(lon - this.long0);
+  var theta = this.ns * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__["default"])(lon - this.long0);
   var x = this.x0 + rh1 * Math.sin(theta);
   var y = this.y0 + this.rh - rh1 * Math.cos(theta);
   p.x = x;
@@ -81395,16 +81472,16 @@ function inverse(p) {
   }
 
   if (this.sphere) {
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__.default)(this.long0 + theta / this.ns);
-    lat = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_7__.default)(this.g - rh1 / this.a);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__["default"])(this.long0 + theta / this.ns);
+    lat = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_7__["default"])(this.g - rh1 / this.a);
     p.x = lon;
     p.y = lat;
     return p;
   }
   else {
     var ml = this.g - rh1 / this.a;
-    lat = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_8__.default)(ml, this.e0, this.e1, this.e2, this.e3);
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__.default)(this.long0 + theta / this.ns);
+    lat = (0,_common_imlfn__WEBPACK_IMPORTED_MODULE_8__["default"])(ml, this.e0, this.e1, this.e2, this.e3);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_6__["default"])(this.long0 + theta / this.ns);
     p.x = lon;
     p.y = lat;
     return p;
@@ -81464,9 +81541,9 @@ function init() {
   }
   if (this.approx) {
     // When '+approx' is set, use tmerc instead
-    _projections_tmerc__WEBPACK_IMPORTED_MODULE_0__.default.init.apply(this);
-    this.forward = _projections_tmerc__WEBPACK_IMPORTED_MODULE_0__.default.forward;
-    this.inverse = _projections_tmerc__WEBPACK_IMPORTED_MODULE_0__.default.inverse;
+    _projections_tmerc__WEBPACK_IMPORTED_MODULE_0__["default"].init.apply(this);
+    this.forward = _projections_tmerc__WEBPACK_IMPORTED_MODULE_0__["default"].forward;
+    this.inverse = _projections_tmerc__WEBPACK_IMPORTED_MODULE_0__["default"].inverse;
   }
 
   this.x0 = this.x0 !== undefined ? this.x0 : 0;
@@ -81531,25 +81608,25 @@ function init() {
   this.utg[5] = np * (-20648693 / 638668800);
   this.gtu[5] = np * (212378941 / 319334400);
 
-  var Z = (0,_common_gatg__WEBPACK_IMPORTED_MODULE_4__.default)(this.cbg, this.lat0);
-  this.Zb = -this.Qn * (Z + (0,_common_clens__WEBPACK_IMPORTED_MODULE_5__.default)(this.gtu, 2 * Z));
+  var Z = (0,_common_gatg__WEBPACK_IMPORTED_MODULE_4__["default"])(this.cbg, this.lat0);
+  this.Zb = -this.Qn * (Z + (0,_common_clens__WEBPACK_IMPORTED_MODULE_5__["default"])(this.gtu, 2 * Z));
 }
 
 function forward(p) {
-  var Ce = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_7__.default)(p.x - this.long0);
+  var Ce = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_7__["default"])(p.x - this.long0);
   var Cn = p.y;
 
-  Cn = (0,_common_gatg__WEBPACK_IMPORTED_MODULE_4__.default)(this.cbg, Cn);
+  Cn = (0,_common_gatg__WEBPACK_IMPORTED_MODULE_4__["default"])(this.cbg, Cn);
   var sin_Cn = Math.sin(Cn);
   var cos_Cn = Math.cos(Cn);
   var sin_Ce = Math.sin(Ce);
   var cos_Ce = Math.cos(Ce);
 
   Cn = Math.atan2(sin_Cn, cos_Ce * cos_Cn);
-  Ce = Math.atan2(sin_Ce * cos_Cn, (0,_common_hypot__WEBPACK_IMPORTED_MODULE_2__.default)(sin_Cn, cos_Cn * cos_Ce));
-  Ce = (0,_common_asinhy__WEBPACK_IMPORTED_MODULE_3__.default)(Math.tan(Ce));
+  Ce = Math.atan2(sin_Ce * cos_Cn, (0,_common_hypot__WEBPACK_IMPORTED_MODULE_2__["default"])(sin_Cn, cos_Cn * cos_Ce));
+  Ce = (0,_common_asinhy__WEBPACK_IMPORTED_MODULE_3__["default"])(Math.tan(Ce));
 
-  var tmp = (0,_common_clens_cmplx__WEBPACK_IMPORTED_MODULE_6__.default)(this.gtu, 2 * Cn, 2 * Ce);
+  var tmp = (0,_common_clens_cmplx__WEBPACK_IMPORTED_MODULE_6__["default"])(this.gtu, 2 * Cn, 2 * Ce);
 
   Cn = Cn + tmp[0];
   Ce = Ce + tmp[1];
@@ -81583,22 +81660,22 @@ function inverse(p) {
   var lat;
 
   if (Math.abs(Ce) <= 2.623395162778) {
-    var tmp = (0,_common_clens_cmplx__WEBPACK_IMPORTED_MODULE_6__.default)(this.utg, 2 * Cn, 2 * Ce);
+    var tmp = (0,_common_clens_cmplx__WEBPACK_IMPORTED_MODULE_6__["default"])(this.utg, 2 * Cn, 2 * Ce);
 
     Cn = Cn + tmp[0];
     Ce = Ce + tmp[1];
-    Ce = Math.atan((0,_common_sinh__WEBPACK_IMPORTED_MODULE_1__.default)(Ce));
+    Ce = Math.atan((0,_common_sinh__WEBPACK_IMPORTED_MODULE_1__["default"])(Ce));
 
     var sin_Cn = Math.sin(Cn);
     var cos_Cn = Math.cos(Cn);
     var sin_Ce = Math.sin(Ce);
     var cos_Ce = Math.cos(Ce);
 
-    Cn = Math.atan2(sin_Cn * cos_Ce, (0,_common_hypot__WEBPACK_IMPORTED_MODULE_2__.default)(sin_Ce, cos_Ce * cos_Cn));
+    Cn = Math.atan2(sin_Cn * cos_Ce, (0,_common_hypot__WEBPACK_IMPORTED_MODULE_2__["default"])(sin_Ce, cos_Ce * cos_Cn));
     Ce = Math.atan2(sin_Ce, cos_Ce * cos_Cn);
 
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_7__.default)(Ce + this.long0);
-    lat = (0,_common_gatg__WEBPACK_IMPORTED_MODULE_4__.default)(this.cgb, Cn);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_7__["default"])(Ce + this.long0);
+    lat = (0,_common_gatg__WEBPACK_IMPORTED_MODULE_4__["default"])(this.cgb, Cn);
   }
   else {
     lon = Infinity;
@@ -81651,14 +81728,14 @@ function init() {
   this.C = Math.sqrt(1 + this.es * cphi * cphi / (1 - this.es));
   this.phic0 = Math.asin(sphi / this.C);
   this.ratexp = 0.5 * this.C * this.e;
-  this.K = Math.tan(0.5 * this.phic0 + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI) / (Math.pow(Math.tan(0.5 * this.lat0 + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI), this.C) * (0,_common_srat__WEBPACK_IMPORTED_MODULE_0__.default)(this.e * sphi, this.ratexp));
+  this.K = Math.tan(0.5 * this.phic0 + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI) / (Math.pow(Math.tan(0.5 * this.lat0 + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI), this.C) * (0,_common_srat__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e * sphi, this.ratexp));
 }
 
 function forward(p) {
   var lon = p.x;
   var lat = p.y;
 
-  p.y = 2 * Math.atan(this.K * Math.pow(Math.tan(0.5 * lat + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI), this.C) * (0,_common_srat__WEBPACK_IMPORTED_MODULE_0__.default)(this.e * Math.sin(lat), this.ratexp)) - _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI;
+  p.y = 2 * Math.atan(this.K * Math.pow(Math.tan(0.5 * lat + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI), this.C) * (0,_common_srat__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e * Math.sin(lat), this.ratexp)) - _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI;
   p.x = this.C * lon;
   return p;
 }
@@ -81669,7 +81746,7 @@ function inverse(p) {
   var lat = p.y;
   var num = Math.pow(Math.tan(0.5 * lat + _constants_values__WEBPACK_IMPORTED_MODULE_1__.FORTPI) / this.K, 1 / this.C);
   for (var i = MAX_ITER; i > 0; --i) {
-    lat = 2 * Math.atan(num * (0,_common_srat__WEBPACK_IMPORTED_MODULE_0__.default)(this.e * Math.sin(p.y), - 0.5 * this.e)) - _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI;
+    lat = 2 * Math.atan(num * (0,_common_srat__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e * Math.sin(p.y), - 0.5 * this.e)) - _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI;
     if (Math.abs(lat - p.y) < DEL_TOL) {
       break;
     }
@@ -81790,7 +81867,7 @@ function forward(p) {
   var lat = p.y;
   /* Forward equations
       -----------------*/
-  dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
 
   sinphi = Math.sin(lat);
   cosphi = Math.cos(lat);
@@ -81839,9 +81916,9 @@ function inverse(p) {
     sinc = Math.sin(c);
     cosc = Math.cos(c);
 
-    lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_1__.default)(cosc * this.sin_p14 + (p.y * sinc * this.cos_p14) / rh);
+    lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_1__["default"])(cosc * this.sin_p14 + (p.y * sinc * this.cos_p14) / rh);
     lon = Math.atan2(p.x * sinc, rh * this.cos_p14 * cosc - p.y * this.sin_p14 * sinc);
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + lon);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + lon);
   }
   else {
     lat = this.phic0;
@@ -81921,7 +81998,7 @@ function forward(p) {
   var gfi, u, deltav, s, d, eps, ro;
   var lon = p.x;
   var lat = p.y;
-  var delta_lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  var delta_lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
   /* Transformation */
   gfi = Math.pow(((1 + this.e * Math.sin(lat)) / (1 - this.e * Math.sin(lat))), (this.alfa * this.e / 2));
   u = 2 * (Math.atan(this.k * Math.pow(Math.tan(lat / 2 + this.s45), this.alfa) / gfi) - this.s45);
@@ -82046,7 +82123,7 @@ function init() {
   if (this.es > 0) {
     var sinphi;
 
-    this.qp = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, 1);
+    this.qp = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, 1);
     this.mmf = 0.5 / (1 - this.es);
     this.apa = authset(this.es);
     switch (this.mode) {
@@ -82065,7 +82142,7 @@ function init() {
     case this.OBLIQ:
       this.rq = Math.sqrt(0.5 * this.qp);
       sinphi = Math.sin(this.lat0);
-      this.sinb1 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, sinphi) / this.qp;
+      this.sinb1 = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, sinphi) / this.qp;
       this.cosb1 = Math.sqrt(1 - this.sinb1 * this.sinb1);
       this.dd = Math.cos(this.lat0) / (Math.sqrt(1 - this.es * sinphi * sinphi) * this.rq * this.cosb1);
       this.ymf = (this.xmf = this.rq) / this.dd;
@@ -82091,7 +82168,7 @@ function forward(p) {
   var lam = p.x;
   var phi = p.y;
 
-  lam = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__.default)(lam - this.long0);
+  lam = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__["default"])(lam - this.long0);
   if (this.sphere) {
     sinphi = Math.sin(phi);
     cosphi = Math.cos(phi);
@@ -82125,7 +82202,7 @@ function forward(p) {
     coslam = Math.cos(lam);
     sinlam = Math.sin(lam);
     sinphi = Math.sin(phi);
-    q = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, sinphi);
+    q = (0,_common_qsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, sinphi);
     if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
       sinb = q / this.qp;
       cosb = Math.sqrt(1 - sinb * sinb);
@@ -82266,7 +82343,7 @@ function inverse(p) {
     phi = authlat(Math.asin(ab), this.apa);
   }
 
-  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__.default)(this.long0 + lam);
+  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_2__["default"])(this.long0 + lam);
   p.y = phi;
   return p;
 }
@@ -82371,15 +82448,15 @@ function init() {
 
   var sin1 = Math.sin(this.lat1);
   var cos1 = Math.cos(this.lat1);
-  var ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, sin1, cos1);
-  var ts1 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, this.lat1, sin1);
+  var ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, sin1, cos1);
+  var ts1 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, this.lat1, sin1);
 
   var sin2 = Math.sin(this.lat2);
   var cos2 = Math.cos(this.lat2);
-  var ms2 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, sin2, cos2);
-  var ts2 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, this.lat2, sin2);
+  var ms2 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, sin2, cos2);
+  var ts2 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, this.lat2, sin2);
 
-  var ts0 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, this.lat0, Math.sin(this.lat0));
+  var ts0 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, this.lat0, Math.sin(this.lat0));
 
   if (Math.abs(this.lat1 - this.lat2) > _constants_values__WEBPACK_IMPORTED_MODULE_5__.EPSLN) {
     this.ns = Math.log(ms1 / ms2) / Math.log(ts1 / ts2);
@@ -82406,13 +82483,13 @@ function forward(p) {
 
   // singular cases :
   if (Math.abs(2 * Math.abs(lat) - Math.PI) <= _constants_values__WEBPACK_IMPORTED_MODULE_5__.EPSLN) {
-    lat = (0,_common_sign__WEBPACK_IMPORTED_MODULE_2__.default)(lat) * (_constants_values__WEBPACK_IMPORTED_MODULE_5__.HALF_PI - 2 * _constants_values__WEBPACK_IMPORTED_MODULE_5__.EPSLN);
+    lat = (0,_common_sign__WEBPACK_IMPORTED_MODULE_2__["default"])(lat) * (_constants_values__WEBPACK_IMPORTED_MODULE_5__.HALF_PI - 2 * _constants_values__WEBPACK_IMPORTED_MODULE_5__.EPSLN);
   }
 
   var con = Math.abs(Math.abs(lat) - _constants_values__WEBPACK_IMPORTED_MODULE_5__.HALF_PI);
   var ts, rh1;
   if (con > _constants_values__WEBPACK_IMPORTED_MODULE_5__.EPSLN) {
-    ts = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__.default)(this.e, lat, Math.sin(lat));
+    ts = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_1__["default"])(this.e, lat, Math.sin(lat));
     rh1 = this.a * this.f0 * Math.pow(ts, this.ns);
   }
   else {
@@ -82422,7 +82499,7 @@ function forward(p) {
     }
     rh1 = 0;
   }
-  var theta = this.ns * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__.default)(lon - this.long0);
+  var theta = this.ns * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__["default"])(lon - this.long0);
   p.x = this.k0 * (rh1 * Math.sin(theta)) + this.x0;
   p.y = this.k0 * (this.rh - rh1 * Math.cos(theta)) + this.y0;
 
@@ -82452,7 +82529,7 @@ function inverse(p) {
   if ((rh1 !== 0) || (this.ns > 0)) {
     con = 1 / this.ns;
     ts = Math.pow((rh1 / (this.a * this.f0)), con);
-    lat = (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_4__.default)(this.e, ts);
+    lat = (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_4__["default"])(this.e, ts);
     if (lat === -9999) {
       return null;
     }
@@ -82460,7 +82537,7 @@ function inverse(p) {
   else {
     lat = -_constants_values__WEBPACK_IMPORTED_MODULE_5__.HALF_PI;
   }
-  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__.default)(theta / this.ns + this.long0);
+  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__["default"])(theta / this.ns + this.long0);
 
   p.x = lon;
   p.y = lat;
@@ -82554,7 +82631,7 @@ function init() {
       this.k0 = Math.cos(this.lat_ts);
     }
     else {
-      this.k0 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
+      this.k0 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
     }
   }
   else {
@@ -82586,13 +82663,13 @@ function forward(p) {
   }
   else {
     if (this.sphere) {
-      x = this.x0 + this.a * this.k0 * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(lon - this.long0);
+      x = this.x0 + this.a * this.k0 * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(lon - this.long0);
       y = this.y0 + this.a * this.k0 * Math.log(Math.tan(_constants_values__WEBPACK_IMPORTED_MODULE_4__.FORTPI + 0.5 * lat));
     }
     else {
       var sinphi = Math.sin(lat);
-      var ts = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_2__.default)(this.e, lat, sinphi);
-      x = this.x0 + this.a * this.k0 * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(lon - this.long0);
+      var ts = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_2__["default"])(this.e, lat, sinphi);
+      x = this.x0 + this.a * this.k0 * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(lon - this.long0);
       y = this.y0 - this.a * this.k0 * Math.log(ts);
     }
     p.x = x;
@@ -82614,12 +82691,12 @@ function inverse(p) {
   }
   else {
     var ts = Math.exp(-y / (this.a * this.k0));
-    lat = (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_3__.default)(this.e, ts);
+    lat = (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_3__["default"])(this.e, ts);
     if (lat === -9999) {
       return null;
     }
   }
-  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(this.long0 + x / (this.a * this.k0));
+  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(this.long0 + x / (this.a * this.k0));
 
   p.x = lon;
   p.y = lat;
@@ -82675,7 +82752,7 @@ function forward(p) {
   var lat = p.y;
   /* Forward equations
       -----------------*/
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
   var x = this.x0 + this.a * dlon;
   var y = this.y0 + this.a * Math.log(Math.tan((Math.PI / 4) + (lat / 2.5))) * 1.25;
 
@@ -82690,7 +82767,7 @@ function inverse(p) {
   p.x -= this.x0;
   p.y -= this.y0;
 
-  var lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + p.x / this.a);
+  var lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + p.x / this.a);
   var lat = 2.5 * (Math.atan(Math.exp(0.8 * p.y / this.a)) - Math.PI / 4);
 
   p.x = lon;
@@ -82738,7 +82815,7 @@ function forward(p) {
   var lon = p.x;
   var lat = p.y;
 
-  var delta_lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  var delta_lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
   var theta = lat;
   var con = Math.PI * Math.sin(lat);
 
@@ -82784,7 +82861,7 @@ function inverse(p) {
     arg = 0.999999999999;
   }
   theta = Math.asin(arg);
-  var lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + (p.x / (0.900316316158 * this.a * Math.cos(theta))));
+  var lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + (p.x / (0.900316316158 * this.a * Math.cos(theta))));
   if (lon < (-Math.PI)) {
     lon = -Math.PI;
   }
@@ -83099,7 +83176,7 @@ function init() {
 
   this.bl = Math.sqrt(1 + this.es / (1 - this.es) * Math.pow(coslat, 4));
   this.al = this.a * this.bl * this.k0 * Math.sqrt(1 - this.es) / (1 - con * con);
-  var t0 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, this.lat0, sinlat);
+  var t0 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, this.lat0, sinlat);
   var dl = this.bl / coslat * Math.sqrt((1 - this.es) / (1 - con * con));
   if (dl * dl < 1) {
     dl = 1;
@@ -83123,8 +83200,8 @@ function init() {
   }
   else {
     //2 points method
-    var t1 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, this.lat1, Math.sin(this.lat1));
-    var t2 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, this.lat2, Math.sin(this.lat2));
+    var t1 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, this.lat1, Math.sin(this.lat1));
+    var t2 = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, this.lat2, Math.sin(this.lat2));
     if (this.lat0 >= 0) {
       this.el = (dl + Math.sqrt(dl * dl - 1)) * Math.pow(t0, this.bl);
     }
@@ -83137,10 +83214,10 @@ function init() {
     gl = 0.5 * (fl - 1 / fl);
     var jl = (this.el * this.el - ll * hl) / (this.el * this.el + ll * hl);
     var pl = (ll - hl) / (ll + hl);
-    var dlon12 = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(this.long1 - this.long2);
+    var dlon12 = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(this.long1 - this.long2);
     this.long0 = 0.5 * (this.long1 + this.long2) - Math.atan(jl * Math.tan(0.5 * this.bl * (dlon12)) / pl) / this.bl;
-    this.long0 = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(this.long0);
-    var dlon10 = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(this.long1 - this.long0);
+    this.long0 = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(this.long0);
+    var dlon10 = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(this.long1 - this.long0);
     this.gamma0 = Math.atan(Math.sin(this.bl * (dlon10)) / gl);
     this.alpha = Math.asin(dl * Math.sin(this.gamma0));
   }
@@ -83164,7 +83241,7 @@ function init() {
 function forward(p) {
   var lon = p.x;
   var lat = p.y;
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(lon - this.long0);
   var us, vs;
   var con;
   if (Math.abs(Math.abs(lat) - _constants_values__WEBPACK_IMPORTED_MODULE_3__.HALF_PI) <= _constants_values__WEBPACK_IMPORTED_MODULE_3__.EPSLN) {
@@ -83178,7 +83255,7 @@ function forward(p) {
     us = -1 * con * _constants_values__WEBPACK_IMPORTED_MODULE_3__.HALF_PI * this.al / this.bl;
   }
   else {
-    var t = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__.default)(this.e, lat, Math.sin(lat));
+    var t = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_0__["default"])(this.e, lat, Math.sin(lat));
     var ql = this.el / Math.pow(t, this.bl);
     var sl = 0.5 * (ql - 1 / ql);
     var tl = 0.5 * (ql + 1 / ql);
@@ -83237,8 +83314,8 @@ function inverse(p) {
     p.y = -1 * _constants_values__WEBPACK_IMPORTED_MODULE_3__.HALF_PI;
   }
   else {
-    p.y = (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_2__.default)(this.e, ts);
-    p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(this.long0 - Math.atan2(sp * Math.cos(this.gamma0) - vp * Math.sin(this.gamma0), Math.cos(this.bl * us / this.al)) / this.bl);
+    p.y = (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_2__["default"])(this.e, ts);
+    p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(this.long0 - Math.atan2(sp * Math.cos(this.gamma0) - vp * Math.sin(this.gamma0), Math.cos(this.bl * us / this.al)) / this.bl);
   }
   return p;
 }
@@ -83297,7 +83374,7 @@ function forward(p) {
   var lat = p.y;
   /* Forward equations
       -----------------*/
-  dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
 
   sinphi = Math.sin(lat);
   cosphi = Math.cos(lat);
@@ -83325,7 +83402,7 @@ function inverse(p) {
   p.x -= this.x0;
   p.y -= this.y0;
   rh = Math.sqrt(p.x * p.x + p.y * p.y);
-  z = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_1__.default)(rh / this.a);
+  z = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_1__["default"])(rh / this.a);
 
   sinz = Math.sin(z);
   cosz = Math.cos(z);
@@ -83337,20 +83414,20 @@ function inverse(p) {
     p.y = lat;
     return p;
   }
-  lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_1__.default)(cosz * this.sin_p14 + (p.y * sinz * this.cos_p14) / rh);
+  lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_1__["default"])(cosz * this.sin_p14 + (p.y * sinz * this.cos_p14) / rh);
   con = Math.abs(this.lat0) - _constants_values__WEBPACK_IMPORTED_MODULE_2__.HALF_PI;
   if (Math.abs(con) <= _constants_values__WEBPACK_IMPORTED_MODULE_2__.EPSLN) {
     if (this.lat0 >= 0) {
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.atan2(p.x, - p.y));
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.atan2(p.x, - p.y));
     }
     else {
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 - Math.atan2(-p.x, p.y));
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 - Math.atan2(-p.x, p.y));
     }
     p.x = lon;
     p.y = lat;
     return p;
   }
-  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.atan2((p.x * sinz), rh * this.cos_p14 * cosz - p.y * this.sin_p14 * sinz));
+  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.atan2((p.x * sinz), rh * this.cos_p14 * cosz - p.y * this.sin_p14 * sinz));
   p.x = lon;
   p.y = lat;
   return p;
@@ -83409,11 +83486,11 @@ function init() {
   this.temp = this.b / this.a;
   this.es = 1 - Math.pow(this.temp, 2); // devait etre dans tmerc.js mais n y est pas donc je commente sinon retour de valeurs nulles
   this.e = Math.sqrt(this.es);
-  this.e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_0__.default)(this.es);
-  this.e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_1__.default)(this.es);
-  this.e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_2__.default)(this.es);
-  this.e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_3__.default)(this.es);
-  this.ml0 = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_6__.default)(this.e0, this.e1, this.e2, this.e3, this.lat0); //si que des zeros le calcul ne se fait pas
+  this.e0 = (0,_common_e0fn__WEBPACK_IMPORTED_MODULE_0__["default"])(this.es);
+  this.e1 = (0,_common_e1fn__WEBPACK_IMPORTED_MODULE_1__["default"])(this.es);
+  this.e2 = (0,_common_e2fn__WEBPACK_IMPORTED_MODULE_2__["default"])(this.es);
+  this.e3 = (0,_common_e3fn__WEBPACK_IMPORTED_MODULE_3__["default"])(this.es);
+  this.ml0 = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_6__["default"])(this.e0, this.e1, this.e2, this.e3, this.lat0); //si que des zeros le calcul ne se fait pas
 }
 
 /* Polyconic forward equations--mapping lat,long to x,y
@@ -83422,7 +83499,7 @@ function forward(p) {
   var lon = p.x;
   var lat = p.y;
   var x, y, el;
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__["default"])(lon - this.long0);
   el = dlon * Math.sin(lat);
   if (this.sphere) {
     if (Math.abs(lat) <= _constants_values__WEBPACK_IMPORTED_MODULE_7__.EPSLN) {
@@ -83431,7 +83508,7 @@ function forward(p) {
     }
     else {
       x = this.a * Math.sin(el) / Math.tan(lat);
-      y = this.a * ((0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_5__.default)(lat - this.lat0) + (1 - Math.cos(el)) / Math.tan(lat));
+      y = this.a * ((0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_5__["default"])(lat - this.lat0) + (1 - Math.cos(el)) / Math.tan(lat));
     }
   }
   else {
@@ -83440,9 +83517,9 @@ function forward(p) {
       y = -1 * this.ml0;
     }
     else {
-      var nl = (0,_common_gN__WEBPACK_IMPORTED_MODULE_8__.default)(this.a, this.e, Math.sin(lat)) / Math.tan(lat);
+      var nl = (0,_common_gN__WEBPACK_IMPORTED_MODULE_8__["default"])(this.a, this.e, Math.sin(lat)) / Math.tan(lat);
       x = nl * Math.sin(el);
-      y = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_6__.default)(this.e0, this.e1, this.e2, this.e3, lat) - this.ml0 + nl * (1 - Math.cos(el));
+      y = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_6__["default"])(this.e0, this.e1, this.e2, this.e3, lat) - this.ml0 + nl * (1 - Math.cos(el));
     }
 
   }
@@ -83462,7 +83539,7 @@ function inverse(p) {
 
   if (this.sphere) {
     if (Math.abs(y + this.a * this.lat0) <= _constants_values__WEBPACK_IMPORTED_MODULE_7__.EPSLN) {
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__.default)(x / this.a + this.long0);
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__["default"])(x / this.a + this.long0);
       lat = 0;
     }
     else {
@@ -83479,13 +83556,13 @@ function inverse(p) {
           break;
         }
       }
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__.default)(this.long0 + (Math.asin(x * Math.tan(phi) / this.a)) / Math.sin(lat));
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__["default"])(this.long0 + (Math.asin(x * Math.tan(phi) / this.a)) / Math.sin(lat));
     }
   }
   else {
     if (Math.abs(y + this.ml0) <= _constants_values__WEBPACK_IMPORTED_MODULE_7__.EPSLN) {
       lat = 0;
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__.default)(this.long0 + x / this.a);
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__["default"])(this.long0 + x / this.a);
     }
     else {
 
@@ -83497,7 +83574,7 @@ function inverse(p) {
       for (i = MAX_ITER; i; --i) {
         con = this.e * Math.sin(phi);
         cl = Math.sqrt(1 - con * con) * Math.tan(phi);
-        mln = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_6__.default)(this.e0, this.e1, this.e2, this.e3, phi);
+        mln = this.a * (0,_common_mlfn__WEBPACK_IMPORTED_MODULE_6__["default"])(this.e0, this.e1, this.e2, this.e3, phi);
         mlnp = this.e0 - 2 * this.e1 * Math.cos(2 * phi) + 4 * this.e2 * Math.cos(4 * phi) - 6 * this.e3 * Math.cos(6 * phi);
         ma = mln / this.a;
         dphi = (al * (cl * ma + 1) - ma - 0.5 * cl * (ma * ma + bl)) / (this.es * Math.sin(2 * phi) * (ma * ma + bl - 2 * al * ma) / (4 * cl) + (al - ma) * (cl * mlnp - 2 / Math.sin(2 * phi)) - mlnp);
@@ -83510,7 +83587,7 @@ function inverse(p) {
 
       //lat=phi4z(this.e,this.e0,this.e1,this.e2,this.e3,al,bl,0,0);
       cl = Math.sqrt(1 - this.es * Math.pow(Math.sin(lat), 2)) * Math.tan(lat);
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__.default)(this.long0 + Math.asin(x * cl / this.a) / Math.sin(lat));
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_4__["default"])(this.long0 + Math.asin(x * cl / this.a) / Math.sin(lat));
     }
   }
 
@@ -84021,7 +84098,7 @@ function init() {
 }
 
 function forward(ll) {
-    var lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(ll.x - this.long0);
+    var lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(ll.x - this.long0);
 
     var dphi = Math.abs(ll.y);
     var i = Math.floor(dphi * C1);
@@ -84085,7 +84162,7 @@ function inverse(xy) {
         }
     }
 
-    ll.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(ll.x + this.long0);
+    ll.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(ll.x + this.long0);
     return ll;
 }
 
@@ -84139,7 +84216,7 @@ function init() {
 
 
   if (!this.sphere) {
-    this.en = (0,_common_pj_enfn__WEBPACK_IMPORTED_MODULE_2__.default)(this.es);
+    this.en = (0,_common_pj_enfn__WEBPACK_IMPORTED_MODULE_2__["default"])(this.es);
   }
   else {
     this.n = 1;
@@ -84159,7 +84236,7 @@ function forward(p) {
   var lat = p.y;
   /* Forward equations
     -----------------*/
-  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
 
   if (this.sphere) {
     if (!this.m) {
@@ -84183,7 +84260,7 @@ function forward(p) {
 
     var s = Math.sin(lat);
     var c = Math.cos(lat);
-    y = this.a * (0,_common_pj_mlfn__WEBPACK_IMPORTED_MODULE_3__.default)(lat, s, c, this.en);
+    y = this.a * (0,_common_pj_mlfn__WEBPACK_IMPORTED_MODULE_3__["default"])(lat, s, c, this.en);
     x = this.a * lon * c / Math.sqrt(1 - this.es * s * s);
   }
 
@@ -84204,22 +84281,22 @@ function inverse(p) {
     lat /= this.C_y;
     lon = lon / (this.C_x * (this.m + Math.cos(lat)));
     if (this.m) {
-      lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_6__.default)((this.m * lat + Math.sin(lat)) / this.n);
+      lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_6__["default"])((this.m * lat + Math.sin(lat)) / this.n);
     }
     else if (this.n !== 1) {
-      lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_6__.default)(Math.sin(lat) / this.n);
+      lat = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_6__["default"])(Math.sin(lat) / this.n);
     }
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon + this.long0);
-    lat = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_1__.default)(lat);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon + this.long0);
+    lat = (0,_common_adjust_lat__WEBPACK_IMPORTED_MODULE_1__["default"])(lat);
   }
   else {
-    lat = (0,_common_pj_inv_mlfn__WEBPACK_IMPORTED_MODULE_4__.default)(p.y / this.a, this.es, this.en);
+    lat = (0,_common_pj_inv_mlfn__WEBPACK_IMPORTED_MODULE_4__["default"])(p.y / this.a, this.es, this.en);
     s = Math.abs(lat);
     if (s < _constants_values__WEBPACK_IMPORTED_MODULE_5__.HALF_PI) {
       s = Math.sin(lat);
       temp = this.long0 + p.x * Math.sqrt(1 - this.es * s * s) / (this.a * Math.cos(lat));
       //temp = this.long0 + p.x / (this.a * Math.cos(lat));
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(temp);
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(temp);
     }
     else if ((s - _constants_values__WEBPACK_IMPORTED_MODULE_5__.EPSLN) < _constants_values__WEBPACK_IMPORTED_MODULE_5__.HALF_PI) {
       lon = this.long0;
@@ -84386,7 +84463,7 @@ function init() {
   this.sinlat0 = Math.sin(this.lat0);
   if (this.sphere) {
     if (this.k0 === 1 && !isNaN(this.lat_ts) && Math.abs(this.coslat0) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN) {
-      this.k0 = 0.5 * (1 + (0,_common_sign__WEBPACK_IMPORTED_MODULE_1__.default)(this.lat0) * Math.sin(this.lat_ts));
+      this.k0 = 0.5 * (1 + (0,_common_sign__WEBPACK_IMPORTED_MODULE_1__["default"])(this.lat0) * Math.sin(this.lat_ts));
     }
   }
   else {
@@ -84404,9 +84481,9 @@ function init() {
     }
     this.cons = Math.sqrt(Math.pow(1 + this.e, 1 + this.e) * Math.pow(1 - this.e, 1 - this.e));
     if (this.k0 === 1 && !isNaN(this.lat_ts) && Math.abs(this.coslat0) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN) {
-      this.k0 = 0.5 * this.cons * (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_2__.default)(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts)) / (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_3__.default)(this.e, this.con * this.lat_ts, this.con * Math.sin(this.lat_ts));
+      this.k0 = 0.5 * this.cons * (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_2__["default"])(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts)) / (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_3__["default"])(this.e, this.con * this.lat_ts, this.con * Math.sin(this.lat_ts));
     }
-    this.ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_2__.default)(this.e, this.sinlat0, this.coslat0);
+    this.ms1 = (0,_common_msfnz__WEBPACK_IMPORTED_MODULE_2__["default"])(this.e, this.sinlat0, this.coslat0);
     this.X0 = 2 * Math.atan(this.ssfn_(this.lat0, this.sinlat0, this.e)) - _constants_values__WEBPACK_IMPORTED_MODULE_0__.HALF_PI;
     this.cosX0 = Math.cos(this.X0);
     this.sinX0 = Math.sin(this.X0);
@@ -84420,7 +84497,7 @@ function forward(p) {
   var sinlat = Math.sin(lat);
   var coslat = Math.cos(lat);
   var A, X, sinX, cosX, ts, rh;
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__["default"])(lon - this.long0);
 
   if (Math.abs(Math.abs(lon - this.long0) - Math.PI) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN && Math.abs(lat + this.lat0) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN) {
     //case of the origine point
@@ -84441,7 +84518,7 @@ function forward(p) {
     cosX = Math.cos(X);
     sinX = Math.sin(X);
     if (Math.abs(this.coslat0) <= _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN) {
-      ts = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_3__.default)(this.e, lat * this.con, this.con * sinlat);
+      ts = (0,_common_tsfnz__WEBPACK_IMPORTED_MODULE_3__["default"])(this.e, lat * this.con, this.con * sinlat);
       rh = 2 * this.a * this.k0 * ts / this.cons;
       p.x = this.x0 + rh * Math.sin(lon - this.long0);
       p.y = this.y0 - this.con * rh * Math.cos(lon - this.long0);
@@ -84484,14 +84561,14 @@ function inverse(p) {
     lat = Math.asin(Math.cos(c) * this.sinlat0 + p.y * Math.sin(c) * this.coslat0 / rh);
     if (Math.abs(this.coslat0) < _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN) {
       if (this.lat0 > 0) {
-        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__.default)(this.long0 + Math.atan2(p.x, - 1 * p.y));
+        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__["default"])(this.long0 + Math.atan2(p.x, - 1 * p.y));
       }
       else {
-        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__.default)(this.long0 + Math.atan2(p.x, p.y));
+        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__["default"])(this.long0 + Math.atan2(p.x, p.y));
       }
     }
     else {
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__.default)(this.long0 + Math.atan2(p.x * Math.sin(c), rh * this.coslat0 * Math.cos(c) - p.y * this.sinlat0 * Math.sin(c)));
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__["default"])(this.long0 + Math.atan2(p.x * Math.sin(c), rh * this.coslat0 * Math.cos(c) - p.y * this.sinlat0 * Math.sin(c)));
     }
     p.x = lon;
     p.y = lat;
@@ -84510,8 +84587,8 @@ function inverse(p) {
       p.x *= this.con;
       p.y *= this.con;
       ts = rh * this.cons / (2 * this.a * this.k0);
-      lat = this.con * (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_4__.default)(this.e, ts);
-      lon = this.con * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__.default)(this.con * this.long0 + Math.atan2(p.x, - 1 * p.y));
+      lat = this.con * (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_4__["default"])(this.e, ts);
+      lon = this.con * (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__["default"])(this.con * this.long0 + Math.atan2(p.x, - 1 * p.y));
     }
     else {
       ce = 2 * Math.atan(rh * this.cosX0 / (2 * this.a * this.k0 * this.ms1));
@@ -84521,9 +84598,9 @@ function inverse(p) {
       }
       else {
         Chi = Math.asin(Math.cos(ce) * this.sinX0 + p.y * Math.sin(ce) * this.cosX0 / rh);
-        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__.default)(this.long0 + Math.atan2(p.x * Math.sin(ce), rh * this.cosX0 * Math.cos(ce) - p.y * this.sinX0 * Math.sin(ce)));
+        lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_5__["default"])(this.long0 + Math.atan2(p.x * Math.sin(ce), rh * this.cosX0 * Math.cos(ce) - p.y * this.sinX0 * Math.sin(ce)));
       }
-      lat = -1 * (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_4__.default)(this.e, Math.tan(0.5 * (_constants_values__WEBPACK_IMPORTED_MODULE_0__.HALF_PI + Chi)));
+      lat = -1 * (0,_common_phi2z__WEBPACK_IMPORTED_MODULE_4__["default"])(this.e, Math.tan(0.5 * (_constants_values__WEBPACK_IMPORTED_MODULE_0__.HALF_PI + Chi)));
     }
   }
   p.x = lon;
@@ -84567,7 +84644,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function init() {
-  _gauss__WEBPACK_IMPORTED_MODULE_0__.default.init.apply(this);
+  _gauss__WEBPACK_IMPORTED_MODULE_0__["default"].init.apply(this);
   if (!this.rc) {
     return;
   }
@@ -84581,8 +84658,8 @@ function init() {
 
 function forward(p) {
   var sinc, cosc, cosl, k;
-  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(p.x - this.long0);
-  _gauss__WEBPACK_IMPORTED_MODULE_0__.default.forward.apply(this, [p]);
+  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(p.x - this.long0);
+  _gauss__WEBPACK_IMPORTED_MODULE_0__["default"].forward.apply(this, [p]);
   sinc = Math.sin(p.y);
   cosc = Math.cos(p.y);
   cosl = Math.cos(p.x);
@@ -84615,8 +84692,8 @@ function inverse(p) {
 
   p.x = lon;
   p.y = lat;
-  _gauss__WEBPACK_IMPORTED_MODULE_0__.default.inverse.apply(this, [p]);
-  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__.default)(p.x + this.long0);
+  _gauss__WEBPACK_IMPORTED_MODULE_0__["default"].inverse.apply(this, [p]);
+  p.x = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_1__["default"])(p.x + this.long0);
   return p;
 }
 
@@ -84670,8 +84747,8 @@ function init() {
   this.lat0 = this.lat0 !== undefined ? this.lat0 : 0;
 
   if (this.es) {
-    this.en = (0,_common_pj_enfn__WEBPACK_IMPORTED_MODULE_0__.default)(this.es);
-    this.ml0 = (0,_common_pj_mlfn__WEBPACK_IMPORTED_MODULE_1__.default)(this.lat0, Math.sin(this.lat0), Math.cos(this.lat0), this.en);
+    this.en = (0,_common_pj_enfn__WEBPACK_IMPORTED_MODULE_0__["default"])(this.es);
+    this.ml0 = (0,_common_pj_mlfn__WEBPACK_IMPORTED_MODULE_1__["default"])(this.lat0, Math.sin(this.lat0), Math.cos(this.lat0), this.en);
   }
 }
 
@@ -84683,7 +84760,7 @@ function forward(p) {
   var lon = p.x;
   var lat = p.y;
 
-  var delta_lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__.default)(lon - this.long0);
+  var delta_lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__["default"])(lon - this.long0);
   var con;
   var x, y;
   var sin_phi = Math.sin(lat);
@@ -84729,7 +84806,7 @@ function forward(p) {
     var ts = Math.pow(t, 2);
     con = 1 - this.es * Math.pow(sin_phi, 2);
     al = al / Math.sqrt(con);
-    var ml = (0,_common_pj_mlfn__WEBPACK_IMPORTED_MODULE_1__.default)(lat, sin_phi, cos_phi, this.en);
+    var ml = (0,_common_pj_mlfn__WEBPACK_IMPORTED_MODULE_1__["default"])(lat, sin_phi, cos_phi, this.en);
 
     x = this.a * (this.k0 * al * (1 +
       als / 6 * (1 - t + c +
@@ -84776,12 +84853,12 @@ function inverse(p) {
       lon = 0;
     }
     else {
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__.default)(Math.atan2(g, h) + this.long0);
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__["default"])(Math.atan2(g, h) + this.long0);
     }
   }
   else { // ellipsoidal form
     con = this.ml0 + y / this.k0;
-    phi = (0,_common_pj_inv_mlfn__WEBPACK_IMPORTED_MODULE_2__.default)(con, this.es, this.en);
+    phi = (0,_common_pj_inv_mlfn__WEBPACK_IMPORTED_MODULE_2__["default"])(con, this.es, this.en);
 
     if (Math.abs(phi) < _constants_values__WEBPACK_IMPORTED_MODULE_4__.HALF_PI) {
       var sin_phi = Math.sin(phi);
@@ -84801,13 +84878,13 @@ function inverse(p) {
         ds / 30 * (61 + 90 * t - 252 * c * t + 45 * ts + 46 * c -
         ds / 56 * (1385 + 3633 * t + 4095 * ts + 1574 * ts * t))));
 
-      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__.default)(this.long0 + (d * (1 -
+      lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_3__["default"])(this.long0 + (d * (1 -
         ds / 6 * (1 + 2 * t + c -
         ds / 20 * (5 + 28 * t + 24 * ts + 8 * c * t + 6 * c -
         ds / 42 * (61 + 662 * t + 1320 * ts + 720 * ts * t)))) / cos_phi));
     }
     else {
-      lat = _constants_values__WEBPACK_IMPORTED_MODULE_4__.HALF_PI * (0,_common_sign__WEBPACK_IMPORTED_MODULE_5__.default)(y);
+      lat = _constants_values__WEBPACK_IMPORTED_MODULE_4__.HALF_PI * (0,_common_sign__WEBPACK_IMPORTED_MODULE_5__["default"])(y);
       lon = 0;
     }
   }
@@ -84972,7 +85049,7 @@ function inverse(p) {
   p.x = bm * this.cg + bq * this.sg;
   p.y = bq * this.cg - bm * this.sg;
 
-  var rh = (0,_common_hypot__WEBPACK_IMPORTED_MODULE_1__.default)(p.x, p.y);
+  var rh = (0,_common_hypot__WEBPACK_IMPORTED_MODULE_1__["default"])(p.x, p.y);
   if (Math.abs(rh) < _constants_values__WEBPACK_IMPORTED_MODULE_0__.EPSLN) {
     r.x = 0;
     r.y = p.y;
@@ -85043,7 +85120,7 @@ var dependsOn = 'etmerc';
 
 
 function init() {
-  var zone = (0,_common_adjust_zone__WEBPACK_IMPORTED_MODULE_0__.default)(this.zone, this.long0);
+  var zone = (0,_common_adjust_zone__WEBPACK_IMPORTED_MODULE_0__["default"])(this.zone, this.long0);
   if (zone === undefined) {
     throw new Error('unknown utm zone');
   }
@@ -85053,9 +85130,9 @@ function init() {
   this.y0 = this.utmSouth ? 10000000 : 0;
   this.k0 = 0.9996;
 
-  _etmerc__WEBPACK_IMPORTED_MODULE_1__.default.init.apply(this);
-  this.forward = _etmerc__WEBPACK_IMPORTED_MODULE_1__.default.forward;
-  this.inverse = _etmerc__WEBPACK_IMPORTED_MODULE_1__.default.inverse;
+  _etmerc__WEBPACK_IMPORTED_MODULE_1__["default"].init.apply(this);
+  this.forward = _etmerc__WEBPACK_IMPORTED_MODULE_1__["default"].forward;
+  this.inverse = _etmerc__WEBPACK_IMPORTED_MODULE_1__["default"].inverse;
 }
 
 var names = ["Universal Transverse Mercator System", "utm"];
@@ -85106,14 +85183,14 @@ function forward(p) {
 
   /* Forward equations
     -----------------*/
-  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(lon - this.long0);
+  var dlon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(lon - this.long0);
   var x, y;
 
   if (Math.abs(lat) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) {
     x = this.x0 + this.R * dlon;
     y = this.y0;
   }
-  var theta = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_2__.default)(2 * Math.abs(lat / Math.PI));
+  var theta = (0,_common_asinz__WEBPACK_IMPORTED_MODULE_2__["default"])(2 * Math.abs(lat / Math.PI));
   if ((Math.abs(dlon) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN) || (Math.abs(Math.abs(lat) - _constants_values__WEBPACK_IMPORTED_MODULE_1__.HALF_PI) <= _constants_values__WEBPACK_IMPORTED_MODULE_1__.EPSLN)) {
     x = this.x0;
     if (lat >= 0) {
@@ -85200,7 +85277,7 @@ function inverse(p) {
     lon = this.long0;
   }
   else {
-    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__.default)(this.long0 + Math.PI * (xys - 1 + Math.sqrt(1 + 2 * (xx * xx - yy * yy) + xys * xys)) / 2 / xx);
+    lon = (0,_common_adjust_lon__WEBPACK_IMPORTED_MODULE_0__["default"])(this.long0 + Math.PI * (xys - 1 + Math.sqrt(1 + 2 * (xx * xx - yy * yy) + xys * xys)) / 2 / xx);
   }
 
   p.x = lon;
@@ -85250,18 +85327,18 @@ function checkNotWGS(source, dest) {
 function transform(source, dest, point) {
   var wgs84;
   if (Array.isArray(point)) {
-    point = (0,_common_toPoint__WEBPACK_IMPORTED_MODULE_4__.default)(point);
+    point = (0,_common_toPoint__WEBPACK_IMPORTED_MODULE_4__["default"])(point);
   }
-  (0,_checkSanity__WEBPACK_IMPORTED_MODULE_5__.default)(point);
+  (0,_checkSanity__WEBPACK_IMPORTED_MODULE_5__["default"])(point);
   // Workaround for datum shifts towgs84, if either source or destination projection is not wgs84
   if (source.datum && dest.datum && checkNotWGS(source, dest)) {
-    wgs84 = new _Proj__WEBPACK_IMPORTED_MODULE_3__.default('WGS84');
+    wgs84 = new _Proj__WEBPACK_IMPORTED_MODULE_3__["default"]('WGS84');
     point = transform(source, wgs84, point);
     source = wgs84;
   }
   // DGR, 2010/11/12
   if (source.axis !== 'enu') {
-    point = (0,_adjust_axis__WEBPACK_IMPORTED_MODULE_2__.default)(source, false, point);
+    point = (0,_adjust_axis__WEBPACK_IMPORTED_MODULE_2__["default"])(source, false, point);
   }
   // Transform source points to long/lat, if they aren't already.
   if (source.projName === 'longlat') {
@@ -85289,7 +85366,7 @@ function transform(source, dest, point) {
   }
 
   // Convert datums if needed, and if possible.
-  point = (0,_datum_transform__WEBPACK_IMPORTED_MODULE_1__.default)(source.datum, dest.datum, point);
+  point = (0,_datum_transform__WEBPACK_IMPORTED_MODULE_1__["default"])(source.datum, dest.datum, point);
   if (!point) {
     return;
   }
@@ -85323,7 +85400,7 @@ function transform(source, dest, point) {
 
   // DGR, 2010/11/12
   if (dest.axis !== 'enu') {
-    return (0,_adjust_axis__WEBPACK_IMPORTED_MODULE_2__.default)(dest, true, point);
+    return (0,_adjust_axis__WEBPACK_IMPORTED_MODULE_2__["default"])(dest, true, point);
   }
 
   return point;
@@ -85400,34 +85477,34 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(proj4){
-  proj4.Proj.projections.add(_lib_projections_tmerc__WEBPACK_IMPORTED_MODULE_0__.default);
-  proj4.Proj.projections.add(_lib_projections_etmerc__WEBPACK_IMPORTED_MODULE_1__.default);
-  proj4.Proj.projections.add(_lib_projections_utm__WEBPACK_IMPORTED_MODULE_2__.default);
-  proj4.Proj.projections.add(_lib_projections_sterea__WEBPACK_IMPORTED_MODULE_3__.default);
-  proj4.Proj.projections.add(_lib_projections_stere__WEBPACK_IMPORTED_MODULE_4__.default);
-  proj4.Proj.projections.add(_lib_projections_somerc__WEBPACK_IMPORTED_MODULE_5__.default);
-  proj4.Proj.projections.add(_lib_projections_omerc__WEBPACK_IMPORTED_MODULE_6__.default);
-  proj4.Proj.projections.add(_lib_projections_lcc__WEBPACK_IMPORTED_MODULE_7__.default);
-  proj4.Proj.projections.add(_lib_projections_krovak__WEBPACK_IMPORTED_MODULE_8__.default);
-  proj4.Proj.projections.add(_lib_projections_cass__WEBPACK_IMPORTED_MODULE_9__.default);
-  proj4.Proj.projections.add(_lib_projections_laea__WEBPACK_IMPORTED_MODULE_10__.default);
-  proj4.Proj.projections.add(_lib_projections_aea__WEBPACK_IMPORTED_MODULE_11__.default);
-  proj4.Proj.projections.add(_lib_projections_gnom__WEBPACK_IMPORTED_MODULE_12__.default);
-  proj4.Proj.projections.add(_lib_projections_cea__WEBPACK_IMPORTED_MODULE_13__.default);
-  proj4.Proj.projections.add(_lib_projections_eqc__WEBPACK_IMPORTED_MODULE_14__.default);
-  proj4.Proj.projections.add(_lib_projections_poly__WEBPACK_IMPORTED_MODULE_15__.default);
-  proj4.Proj.projections.add(_lib_projections_nzmg__WEBPACK_IMPORTED_MODULE_16__.default);
-  proj4.Proj.projections.add(_lib_projections_mill__WEBPACK_IMPORTED_MODULE_17__.default);
-  proj4.Proj.projections.add(_lib_projections_sinu__WEBPACK_IMPORTED_MODULE_18__.default);
-  proj4.Proj.projections.add(_lib_projections_moll__WEBPACK_IMPORTED_MODULE_19__.default);
-  proj4.Proj.projections.add(_lib_projections_eqdc__WEBPACK_IMPORTED_MODULE_20__.default);
-  proj4.Proj.projections.add(_lib_projections_vandg__WEBPACK_IMPORTED_MODULE_21__.default);
-  proj4.Proj.projections.add(_lib_projections_aeqd__WEBPACK_IMPORTED_MODULE_22__.default);
-  proj4.Proj.projections.add(_lib_projections_ortho__WEBPACK_IMPORTED_MODULE_23__.default);
-  proj4.Proj.projections.add(_lib_projections_qsc__WEBPACK_IMPORTED_MODULE_24__.default);
-  proj4.Proj.projections.add(_lib_projections_robin__WEBPACK_IMPORTED_MODULE_25__.default);
-  proj4.Proj.projections.add(_lib_projections_geocent__WEBPACK_IMPORTED_MODULE_26__.default);
-  proj4.Proj.projections.add(_lib_projections_tpers__WEBPACK_IMPORTED_MODULE_27__.default);
+  proj4.Proj.projections.add(_lib_projections_tmerc__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  proj4.Proj.projections.add(_lib_projections_etmerc__WEBPACK_IMPORTED_MODULE_1__["default"]);
+  proj4.Proj.projections.add(_lib_projections_utm__WEBPACK_IMPORTED_MODULE_2__["default"]);
+  proj4.Proj.projections.add(_lib_projections_sterea__WEBPACK_IMPORTED_MODULE_3__["default"]);
+  proj4.Proj.projections.add(_lib_projections_stere__WEBPACK_IMPORTED_MODULE_4__["default"]);
+  proj4.Proj.projections.add(_lib_projections_somerc__WEBPACK_IMPORTED_MODULE_5__["default"]);
+  proj4.Proj.projections.add(_lib_projections_omerc__WEBPACK_IMPORTED_MODULE_6__["default"]);
+  proj4.Proj.projections.add(_lib_projections_lcc__WEBPACK_IMPORTED_MODULE_7__["default"]);
+  proj4.Proj.projections.add(_lib_projections_krovak__WEBPACK_IMPORTED_MODULE_8__["default"]);
+  proj4.Proj.projections.add(_lib_projections_cass__WEBPACK_IMPORTED_MODULE_9__["default"]);
+  proj4.Proj.projections.add(_lib_projections_laea__WEBPACK_IMPORTED_MODULE_10__["default"]);
+  proj4.Proj.projections.add(_lib_projections_aea__WEBPACK_IMPORTED_MODULE_11__["default"]);
+  proj4.Proj.projections.add(_lib_projections_gnom__WEBPACK_IMPORTED_MODULE_12__["default"]);
+  proj4.Proj.projections.add(_lib_projections_cea__WEBPACK_IMPORTED_MODULE_13__["default"]);
+  proj4.Proj.projections.add(_lib_projections_eqc__WEBPACK_IMPORTED_MODULE_14__["default"]);
+  proj4.Proj.projections.add(_lib_projections_poly__WEBPACK_IMPORTED_MODULE_15__["default"]);
+  proj4.Proj.projections.add(_lib_projections_nzmg__WEBPACK_IMPORTED_MODULE_16__["default"]);
+  proj4.Proj.projections.add(_lib_projections_mill__WEBPACK_IMPORTED_MODULE_17__["default"]);
+  proj4.Proj.projections.add(_lib_projections_sinu__WEBPACK_IMPORTED_MODULE_18__["default"]);
+  proj4.Proj.projections.add(_lib_projections_moll__WEBPACK_IMPORTED_MODULE_19__["default"]);
+  proj4.Proj.projections.add(_lib_projections_eqdc__WEBPACK_IMPORTED_MODULE_20__["default"]);
+  proj4.Proj.projections.add(_lib_projections_vandg__WEBPACK_IMPORTED_MODULE_21__["default"]);
+  proj4.Proj.projections.add(_lib_projections_aeqd__WEBPACK_IMPORTED_MODULE_22__["default"]);
+  proj4.Proj.projections.add(_lib_projections_ortho__WEBPACK_IMPORTED_MODULE_23__["default"]);
+  proj4.Proj.projections.add(_lib_projections_qsc__WEBPACK_IMPORTED_MODULE_24__["default"]);
+  proj4.Proj.projections.add(_lib_projections_robin__WEBPACK_IMPORTED_MODULE_25__["default"]);
+  proj4.Proj.projections.add(_lib_projections_geocent__WEBPACK_IMPORTED_MODULE_26__["default"]);
+  proj4.Proj.projections.add(_lib_projections_tpers__WEBPACK_IMPORTED_MODULE_27__["default"]);
 }
 
 /***/ }),
@@ -88197,7 +88274,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /**
-* Tom Select v1.7.5
+* Tom Select v1.7.8
 * Licensed under the Apache License, Version 2.0 (the "License");
 */
 
@@ -88285,7 +88362,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 */
 	function MicroPlugin(Interface) {
 	  Interface.plugins = {};
-	  return class mixin extends Interface {
+	  return class extends Interface {
 	    constructor(...args) {
 	      super(...args);
 	      this.plugins = {
@@ -88299,7 +88376,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    /**
 	     * Registers a plugin.
 	     *
-	     * @param {string} name
 	     * @param {function} fn
 	     */
 	    static define(name, fn) {
@@ -88326,19 +88402,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 
 	    initializePlugins(plugins) {
-	      var i, n, key;
+	      var key, name;
 	      const self = this;
 	      const queue = [];
 
 	      if (Array.isArray(plugins)) {
-	        for (i = 0, n = plugins.length; i < n; i++) {
-	          if (typeof plugins[i] === 'string') {
-	            queue.push(plugins[i]);
+	        plugins.forEach(plugin => {
+	          if (typeof plugin === 'string') {
+	            queue.push(plugin);
 	          } else {
-	            self.plugins.settings[plugins[i].name] = plugins[i].options;
-	            queue.push(plugins[i].name);
+	            self.plugins.settings[plugin.name] = plugin.options;
+	            queue.push(plugin.name);
 	          }
-	        }
+	        });
 	      } else if (plugins) {
 	        for (key in plugins) {
 	          if (plugins.hasOwnProperty(key)) {
@@ -88348,14 +88424,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	        }
 	      }
 
-	      while (queue.length) {
-	        self.require(queue.shift());
+	      while (name = queue.shift()) {
+	        self.require(name);
 	      }
 	    }
-	    /**
-	     * @param {string} name
-	     */
-
 
 	    loadPlugin(name) {
 	      var self = this;
@@ -88373,7 +88445,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    /**
 	     * Initializes a plugin.
 	     *
-	     * @param {string} name
 	     */
 
 
@@ -88395,101 +88466,163 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  };
 	}
 
-	/*! sifter.js | https://github.com/orchidjs/sifter.js | Apache License (v2) */
 	// https://github.com/andrewrk/node-diacritics/blob/master/index.js
+	var latin_pat;
+	const accent_pat = '[\u0300-\u036F\u{b7}\u{2be}]'; // \u{2bc}
+
+	const accent_reg = new RegExp(accent_pat, 'g');
+	var diacritic_patterns;
+	const latin_convert = {
+	  'æ': 'ae',
+	  'ⱥ': 'a',
+	  'ø': 'o'
+	};
+	const convert_pat = new RegExp(Object.keys(latin_convert).join('|'), 'g');
 	/**
 	 * code points generated from toCodePoints();
 	 * removed 65339 to 65345
 	 */
 
-	var code_points = [[67, 67], [160, 160], [192, 438], [452, 652], [961, 961], [1019, 1019], [1083, 1083], [1281, 1289], [1984, 1984], [5095, 5095], [7429, 7441], [7545, 7549], [7680, 7935], [8580, 8580], [9398, 9449], [11360, 11391], [42792, 42793], [42802, 42851], [42873, 42897], [42912, 42922], [64256, 64260], [65313, 65338], [65345, 65370]];
+	const code_points = [[67, 67], [160, 160], [192, 438], [452, 652], [961, 961], [1019, 1019], [1083, 1083], [1281, 1289], [1984, 1984], [5095, 5095], [7429, 7441], [7545, 7549], [7680, 7935], [8580, 8580], [9398, 9449], [11360, 11391], [42792, 42793], [42802, 42851], [42873, 42897], [42912, 42922], [64256, 64260], [65313, 65338], [65345, 65370]];
 	/**
 	 * Remove accents
 	 * via https://github.com/krisk/Fuse/issues/133#issuecomment-318692703
 	 *
 	 */
 
-	function asciifold(str) {
-	  return str.normalize('NFD').replace(/[\u0300-\u036F]/g, '').normalize('NFKD').toLowerCase();
-	}
+	const asciifold = str => {
+	  return str.normalize('NFKD').replace(accent_reg, '').toLowerCase().replace(convert_pat, function (foreignletter) {
+	    return latin_convert[foreignletter];
+	  });
+	};
+	/**
+	 * Convert array of strings to a regular expression
+	 *	ex ['ab','a'] => (?:ab|a)
+	 *
+	 */
+
+
+	const arrayToPattern = (chars, glue = '|') => {
+	  if (chars.length > 1) {
+	    return '(?:' + chars.join(glue) + ')';
+	  }
+
+	  return chars[0];
+	};
+	/**
+	 * Get all possible combinations of substrings that add up to the given string
+	 * https://stackoverflow.com/questions/30169587/find-all-the-combination-of-substrings-that-add-up-to-the-given-string
+	 *
+	 */
+
+	const allSubstrings = input => {
+	  if (input.length === 1) return [[input]];
+	  var result = [];
+	  allSubstrings(input.substring(1)).forEach(function (subresult) {
+	    var tmp = subresult.slice(0);
+	    tmp[0] = input.charAt(0) + tmp[0];
+	    result.push(tmp);
+	    tmp = subresult.slice(0);
+	    tmp.unshift(input.charAt(0));
+	    result.push(tmp);
+	  });
+	  return result;
+	};
 	/**
 	 * Generate a list of diacritics from the list of code points
 	 *
 	 */
 
-
-	function generateDiacritics() {
-	  var latin_convert = {
-	    'l·': 'l',
-	    'ʼn': 'n',
-	    'æ': 'ae',
-	    'ø': 'o',
-	    'aʾ': 'a',
-	    'dž': 'dz'
-	  };
-	  var diacritics = {}; //var no_latin	= [];
-
+	const generateDiacritics = () => {
+	  var diacritics = {};
 	  code_points.forEach(code_range => {
 	    for (let i = code_range[0]; i <= code_range[1]; i++) {
 	      let diacritic = String.fromCharCode(i);
-	      let latin = diacritic.normalize('NFD').replace(/[\u0300-\u036F]/g, '').normalize('NFKD');
+	      let latin = asciifold(diacritic);
 
-	      if (latin == diacritic) {
-	        //no_latin.push(diacritic);
+	      if (latin == diacritic.toLowerCase()) {
 	        continue;
 	      }
 
-	      latin = latin.toLowerCase();
-
-	      if (latin in latin_convert) {
-	        latin = latin_convert[latin];
-	      }
-
 	      if (!(latin in diacritics)) {
-	        diacritics[latin] = latin + latin.toUpperCase();
+	        diacritics[latin] = [latin];
 	      }
 
-	      diacritics[latin] += diacritic;
+	      diacritics[latin].push(diacritic);
 	    }
-	  }); //console.log('no_latin',JSON.stringify(no_latin));
+	  });
+	  var latin_chars = Object.keys(diacritics); // latin character pattern
+	  // match longer substrings first
 
-	  return diacritics;
-	}
+	  latin_chars = latin_chars.sort((a, b) => b.length - a.length);
+	  latin_pat = new RegExp('(' + arrayToPattern(latin_chars) + accent_pat + '*)', 'g'); // build diacritic patterns
+	  // ae needs: 
+	  //	(?:(?:ae|Æ|Ǽ|Ǣ)|(?:A|Ⓐ|Ａ...)(?:E|ɛ|Ⓔ...))
+
+	  var diacritic_patterns = {};
+	  latin_chars.sort((a, b) => a.length - b.length).forEach(latin => {
+	    var substrings = allSubstrings(latin);
+	    var pattern = substrings.map(sub_pat => {
+	      sub_pat = sub_pat.map(l => {
+	        if (diacritics.hasOwnProperty(l)) {
+	          return arrayToPattern(diacritics[l]);
+	        }
+
+	        return l;
+	      });
+	      return arrayToPattern(sub_pat, '');
+	    });
+	    diacritic_patterns[latin] = arrayToPattern(pattern);
+	  });
+	  return diacritic_patterns;
+	};
 	/**
 	 * Expand a regular expression pattern to include diacritics
 	 * 	eg /a/ becomes /aⓐａẚàáâầấẫẩãāăằắẵẳȧǡäǟảåǻǎȁȃạậặḁąⱥɐɑAⒶＡÀÁÂẦẤẪẨÃĀĂẰẮẴẲȦǠÄǞẢÅǺǍȀȂẠẬẶḀĄȺⱯ/
 	 *
 	 */
 
-	var diacritics = null;
-	function diacriticRegexPoints(regex) {
-	  if (diacritics === null) {
-	    diacritics = generateDiacritics();
+	const diacriticRegexPoints = regex => {
+	  if (diacritic_patterns === undefined) {
+	    diacritic_patterns = generateDiacritics();
 	  }
 
-	  for (let latin in diacritics) {
-	    if (diacritics.hasOwnProperty(latin)) {
-	      regex = regex.replace(new RegExp(latin, 'g'), '[' + diacritics[latin] + ']');
+	  const decomposed = regex.normalize('NFKD').toLowerCase();
+	  return decomposed.split(latin_pat).map(part => {
+	    if (part == '') {
+	      return '';
+	    } // "ﬄ" or "ffl"
+
+
+	    const no_accent = asciifold(part);
+
+	    if (diacritic_patterns.hasOwnProperty(no_accent)) {
+	      return diacritic_patterns[no_accent];
+	    } // 'أهلا' (\u{623}\u{647}\u{644}\u{627}) or 'أهلا' (\u{627}\u{654}\u{647}\u{644}\u{627})
+
+
+	    const composed_part = part.normalize('NFC');
+
+	    if (composed_part != part) {
+	      return arrayToPattern([part, composed_part]);
 	    }
-	  }
 
-	  return regex;
-	}
+	    return part;
+	  }).join('');
+	};
 
-	/*! sifter.js | https://github.com/orchidjs/sifter.js | Apache License (v2) */
+	// @ts-ignore TS2691 "An import path cannot end with a '.ts' extension"
 
-	// @ts-ignore
 	/**
 	 * A property getter resolving dot-notation
 	 * @param  {Object}  obj     The root object to fetch property on
 	 * @param  {String}  name    The optionally dotted property name to fetch
 	 * @return {Object}          The resolved property value
 	 */
-
-	function getAttr(obj, name) {
+	const getAttr = (obj, name) => {
 	  if (!obj) return;
 	  return obj[name];
-	}
+	};
 	/**
 	 * A property getter resolving dot-notation
 	 * @param  {Object}  obj     The root object to fetch property on
@@ -88497,23 +88630,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 * @return {Object}          The resolved property value
 	 */
 
-	function getAttrNesting(obj, name) {
+	const getAttrNesting = (obj, name) => {
 	  if (!obj) return;
-	  var names = name.split(".");
+	  var part,
+	      names = name.split(".");
 
-	  while (names.length && (obj = obj[names.shift()]));
+	  while ((part = names.shift()) && (obj = obj[part]));
 
 	  return obj;
-	}
+	};
 	/**
 	 * Calculates how close of a match the
 	 * given value is against a search token.
 	 *
-	 * @param {object} token
-	 * @return {number}
 	 */
 
-	function scoreValue(value, token, weight) {
+	const scoreValue = (value, token, weight) => {
 	  var score, pos;
 	  if (!value) return 0;
 	  value = value + '';
@@ -88522,22 +88654,27 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  score = token.string.length / value.length;
 	  if (pos === 0) score += 0.5;
 	  return score * weight;
-	}
-	function escape_regex(str) {
-	  return (str + '').replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
-	}
+	};
+	/**
+	 *
+	 * https://stackoverflow.com/questions/63006601/why-does-u-throw-an-invalid-escape-error
+	 */
+
+	const escape_regex = str => {
+	  return (str + '').replace(/([\$\(-\+\.\?\[-\^\{-\}])/g, '\\$1');
+	};
 	/**
 	 * Cast object property to an array if it exists and has a value
 	 *
 	 */
 
-	function propToArray(obj, key) {
+	const propToArray = (obj, key) => {
 	  var value = obj[key];
 
 	  if (value && !Array.isArray(value)) {
 	    obj[key] = [value];
 	  }
-	}
+	};
 	/**
 	 * Iterates over arrays and hashes.
 	 *
@@ -88547,10 +88684,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 * });
 	 * ```
 	 *
-	 * @param {array|object} object
 	 */
 
-	function iterate(object, callback) {
+	const iterate = (object, callback) => {
 	  if (Array.isArray(object)) {
 	    object.forEach(callback);
 	  } else {
@@ -88560,8 +88696,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	      }
 	    }
 	  }
-	}
-	function cmp(a, b) {
+	};
+	const cmp = (a, b) => {
 	  if (typeof a === 'number' && typeof b === 'number') {
 	    return a > b ? 1 : a < b ? -1 : 0;
 	  }
@@ -88571,9 +88707,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  if (a > b) return 1;
 	  if (b > a) return -1;
 	  return 0;
-	}
-
-	/*! sifter.js | https://github.com/orchidjs/sifter.js | Apache License (v2) */
+	};
 
 	/**
 	 * sifter.js
@@ -88590,19 +88724,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 *
 	 * @author Brian Reavis <brian@thirdroute.com>
 	 */
+
 	class Sifter {
+	  // []|{};
+
 	  /**
 	   * Textually searches arrays and hashes of objects
 	   * by property (or multiple properties). Designed
 	   * specifically for autocomplete.
 	   *
-	   * @constructor
-	   * @param {array|object} items
-	   * @param {object} items
 	   */
 	  constructor(items, settings) {
-	    this.items = void 0;
-	    this.settings = void 0;
 	    this.items = items;
 	    this.settings = settings || {
 	      diacritics: true
@@ -88642,12 +88774,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	        }
 
 	        if (respect_word_boundaries) regex = "\\b" + regex;
-	        regex = new RegExp(regex, 'i');
 	      }
 
 	      tokens.push({
 	        string: word,
-	        regex: regex,
+	        regex: regex ? new RegExp(regex, 'iu') : null,
 	        field: field
 	      });
 	    });
@@ -88691,9 +88822,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	     * Calculates the score of an object
 	     * against the search query.
 	     *
-	     * @param {TToken} token
-	     * @param {object} data
-	     * @return {number}
 	     */
 
 
@@ -88770,19 +88898,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  }
 
 	  _getSortFunction(search) {
-	    var i, n, sort_fld, sort_flds_count, multiplier, implicit_score;
+	    var i, n, implicit_score;
 	    const self = this,
 	          options = search.options,
-	          sort = !search.query && options.sort_empty || options.sort,
+	          sort = !search.query && options.sort_empty ? options.sort_empty : options.sort,
 	          sort_flds = [],
 	          multipliers = [];
 	    /**
 	     * Fetches the specified sort field value
 	     * from a search result item.
 	     *
-	     * @param  {string} name
-	     * @param  {object} result
-	     * @return {string}
 	     */
 
 	    const get_field = function get_field(name, result) {
@@ -88831,13 +88956,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    } // build function
 
 
-	    sort_flds_count = sort_flds.length;
+	    const sort_flds_count = sort_flds.length;
 
 	    if (!sort_flds_count) {
 	      return null;
 	    } else if (sort_flds_count === 1) {
-	      sort_fld = sort_flds[0].field;
-	      multiplier = multipliers[0];
+	      const sort_fld = sort_flds[0].field;
+	      const multiplier = multipliers[0];
 	      return function (a, b) {
 	        return multiplier * cmp(get_field(sort_fld, a), get_field(sort_fld, b));
 	      };
@@ -88870,26 +88995,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 	    if (options.fields) {
 	      propToArray(options, 'fields');
+	      const fields = [];
+	      options.fields.forEach(field => {
+	        if (typeof field == 'string') {
+	          field = {
+	            field: field,
+	            weight: 1
+	          };
+	        }
 
-	      if (Array.isArray(options.fields) && typeof options.fields[0] !== 'object') {
-	        var fields = [];
-	        options.fields.forEach(fld_name => {
-	          fields.push({
-	            field: fld_name
-	          });
-	        });
-	        options.fields = fields;
-	      }
-
-	      options.fields.forEach(field_params => {
-	        weights[field_params.field] = 'weight' in field_params ? field_params.weight : 1;
+	        fields.push(field);
+	        weights[field.field] = 'weight' in field ? field.weight : 1;
 	      });
+	      options.fields = fields;
 	    }
 
-	    query = asciifold(query + '').toLowerCase().trim();
 	    return {
 	      options: options,
-	      query: query,
+	      query: query.toLowerCase().trim(),
 	      tokens: this.tokenize(query, options.respect_word_boundaries, weights),
 	      total: 0,
 	      items: [],
@@ -88906,13 +89029,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    var self = this,
 	        score,
 	        search;
-	    var fn_sort;
-	    var fn_score;
 	    search = this.prepareSearch(query, options);
 	    options = search.options;
 	    query = search.query; // generate result scoring function
 
-	    fn_score = options.score || self._getScoreFunction(search); // perform search and sort
+	    const fn_score = options.score || self._getScoreFunction(search); // perform search and sort
+
 
 	    if (query.length) {
 	      iterate(self.items, (item, id) => {
@@ -88934,7 +89056,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	      });
 	    }
 
-	    fn_sort = self._getSortFunction(search);
+	    const fn_sort = self._getSortFunction(search);
+
 	    if (fn_sort) search.items.sort(fn_sort); // apply limits
 
 	    search.total = search.items.length;
@@ -89125,7 +89248,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    if (val == null) {
 	      el.removeAttribute(attr);
 	    } else {
-	      el.setAttribute(attr, val);
+	      el.setAttribute(attr, '' + val);
 	    }
 	  }
 	};
@@ -89467,6 +89590,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	const addSlashes = str => {
 	  return str.replace(/[\\"']/g, '\\$&');
 	};
+	/**
+	 *
+	 */
+
+	const append = (parent, node) => {
+	  if (node) parent.append(node);
+	};
 
 	function getSettings(input, settings_user) {
 	  var settings = Object.assign({}, defaults, settings_user);
@@ -89587,16 +89717,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 
 	  var init_textbox = () => {
-	    var values, option;
-	    var data_raw = input.getAttribute(attr_data);
+	    const data_raw = input.getAttribute(attr_data);
 
 	    if (!data_raw) {
 	      var value = input.value.trim() || '';
 	      if (!settings.allowEmptyOption && !value.length) return;
-	      values = value.split(settings.delimiter);
+	      const values = value.split(settings.delimiter);
 
 	      for (const _value of values) {
-	        option = {};
+	        const option = {};
 	        option[field_label] = _value;
 	        option[field_value] = _value;
 	        settings_element.options.push(option);
@@ -89625,24 +89754,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	class TomSelect extends MicroPlugin(MicroEvent) {
 	  constructor(input_arg, settings) {
 	    super();
-	    this.control_input = void 0;
-	    this.wrapper = void 0;
-	    this.dropdown = void 0;
-	    this.control = void 0;
-	    this.dropdown_content = void 0;
 	    this.order = 0;
-	    this.settings = void 0;
-	    this.input = void 0;
-	    this.tabIndex = void 0;
-	    this.is_select_tag = void 0;
-	    this.rtl = void 0;
-	    this.inputId = void 0;
-	    this._destroy = void 0;
-	    this.sifter = void 0;
 	    this.tab_key = false;
 	    this.isOpen = false;
 	    this.isDisabled = false;
-	    this.isRequired = void 0;
 	    this.isInvalid = false;
 	    this.isLocked = false;
 	    this.isFocused = false;
@@ -89650,7 +89765,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    this.isSetup = false;
 	    this.ignoreFocus = false;
 	    this.hasOptions = false;
-	    this.currentResults = null;
 	    this.lastValue = '';
 	    this.caretPos = 0;
 	    this.loading = 0;
@@ -89668,6 +89782,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    instance_i++;
 	    var dir;
 	    var input = getDom(input_arg);
+	    var self = this;
 
 	    if (input.tomselect) {
 	      throw new Error('Tom Select already initialized on this element');
@@ -89721,18 +89836,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    this.initializePlugins(this.settings.plugins);
 	    this.setupCallbacks();
 	    this.setupTemplates();
-	    this.setup();
-	  } // methods
-	  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	    /**
+	     * Create all elements and set up event bindings.
+	     *
+	     */
 
-	  /**
-	   * Creates all elements and sets up event bindings.
-	   *
-	   */
-
-
-	  setup() {
-	    var self = this;
 	    var settings = self.settings;
 	    var wrapper;
 	    var control;
@@ -89754,12 +89862,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    addClasses(wrapper, settings.wrapperClass, classes, inputMode);
 	    control = getDom('<div class="items">');
 	    addClasses(control, settings.inputClass);
-	    wrapper.append(control);
+	    append(wrapper, control);
 	    dropdown = self._render('dropdown');
 	    addClasses(dropdown, settings.dropdownClass, inputMode);
 	    dropdown_content = getDom(`<div role="listbox" id="${listboxId}" tabindex="-1">`);
 	    addClasses(dropdown_content, settings.dropdownContentClass);
-	    dropdown.append(dropdown_content);
+	    append(dropdown, dropdown_content);
 	    getDom(settings.dropdownParent || wrapper).appendChild(dropdown);
 
 	    if (settings.controlInput) {
@@ -89837,11 +89945,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	      this.settings.load = loadDebounce(this.settings.load, this.settings.loadThrottle);
 	    }
 
-	    self.control = control;
-	    self.control_input = control_input;
-	    self.wrapper = wrapper;
-	    self.dropdown = dropdown;
-	    self.dropdown_content = dropdown_content;
+	    this.control = control;
+	    this.control_input = control_input;
+	    this.wrapper = wrapper;
+	    this.dropdown = dropdown;
+	    this.dropdown_content = dropdown_content;
 	    self.control_input.type = input.type; // clicking on an option should select it
 
 	    addEvent(dropdown, 'click', evt => {
@@ -89887,7 +89995,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    const doc_mousedown = evt => {
 	      // blur if target is outside of this instance
 	      // dropdown is not always inside wrapper
-	      if (!wrapper.contains(evt.target) && !dropdown.contains(evt.target)) {
+	      const target = evt.composedPath()[0];
+
+	      if (!wrapper.contains(target) && !dropdown.contains(target)) {
 	        if (self.isFocused) {
 	          self.blur();
 	        }
@@ -89906,11 +90016,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	      }
 	    };
 
-	    addEvent(document, 'mousedown', e => doc_mousedown(e));
+	    addEvent(document, 'mousedown', doc_mousedown);
 	    addEvent(window, 'sroll', win_scroll, passive_event);
 	    addEvent(window, 'resize', win_scroll, passive_event);
 
-	    self._destroy = () => {
+	    this._destroy = () => {
 	      document.removeEventListener('mousedown', doc_mousedown);
 	      window.removeEventListener('sroll', win_scroll);
 	      window.removeEventListener('resize', win_scroll);
@@ -89954,7 +90064,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    if (settings.preload === true) {
 	      self.load('');
 	    }
+
+	    self.setup();
 	  }
+	  /**
+	   * @deprecated v1.7.6
+	   *
+	   */
+
+
+	  setup() {}
 	  /**
 	   * Register options and optgroups
 	   *
@@ -90897,15 +91016,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 
 	    for (i = 0; i < n; i++) {
-	      // get option dom element, don't re-render if we
-	      let option = self.options[results.items[i].id];
-	      let opt_value = get_hash(option[self.settings.valueField]);
-	      let option_el = self.getOption(opt_value);
-
-	      if (!option_el) {
-	        option_el = self._render('option', option);
-	      } // toggle 'selected' class
-
+	      // get option dom element
+	      let opt_value = results.items[i].id;
+	      let option = self.options[opt_value];
+	      let option_el = self.getOption(opt_value, true); // toggle 'selected' class
 
 	      if (!self.settings.hideSelected) {
 	        option_el.classList.toggle('selected', self.items.includes(opt_value));
@@ -90962,20 +91076,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	      if (self.optgroups.hasOwnProperty(optgroup) && groups[optgroup].children.length) {
 	        let group_options = document.createDocumentFragment();
 	        let header = self.render('optgroup_header', self.optgroups[optgroup]);
-	        if (header) group_options.append(header);
-	        group_options.append(groups[optgroup]);
+	        append(group_options, header);
+	        append(group_options, groups[optgroup]);
 	        let group_html = self.render('optgroup', {
 	          group: self.optgroups[optgroup],
 	          options: group_options
 	        });
-	        html.append(group_html);
+	        append(html, group_html);
 	      } else {
-	        html.append(groups[optgroup]);
+	        append(html, groups[optgroup]);
 	      }
 	    }
 
 	    dropdown_content.innerHTML = '';
-	    dropdown_content.append(html); // highlight matching terms inline
+	    append(dropdown_content, html); // highlight matching terms inline
 
 	    if (self.settings.highlight) {
 	      removeHighlight(dropdown_content);
@@ -91035,7 +91149,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 	          active_option = self.selectable()[active_index];
 	        }
-	      } else {
+	      } else if (create) {
 	        active_option = create;
 	      }
 
@@ -91279,9 +91393,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	   */
 
 
-	  getOption(value) {
+	  getOption(value, create = false) {
 	    var hashed = hash_key(value);
-	    return this.rendered('option', hashed);
+	    var option_el = this.rendered('option', hashed);
+
+	    if (!option_el && create && hashed !== null) {
+	      option_el = this._render('option', this.options[hashed]);
+	    }
+
+	    return option_el;
 	  }
 	  /**
 	   * Returns the dom element of the next or previous dom element of the same type
@@ -91331,7 +91451,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    }
 
 	    var value = hash_key(item);
-	    return value ? this.control.querySelector(`[data-value="${addSlashes(value)}"]`) : null;
+	    return value !== null ? this.control.querySelector(`[data-value="${addSlashes(value)}"]`) : null;
 	  }
 	  /**
 	   * "Selects" multiple items at once. Adds them to the list
@@ -91483,7 +91603,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    var self = this;
 	    var caret = self.caretPos;
 	    var output;
-	    input = input || self.inputValue(); //if (typeof callback !== 'function') callback = () => {};
+	    input = input || self.inputValue();
 
 	    if (!self.canCreate(input)) {
 	      callback();
@@ -91620,18 +91740,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    var i, value, option, option_el, label;
 
 	    if (self.is_select_tag) {
-	      const selected = document.createDocumentFragment();
+	      const selected = [];
 
 	      function AddSelected(option_el, value, label) {
 	        if (!option_el) {
 	          option_el = getDom('<option value="' + escape_html(value) + '">' + escape_html(label) + '</option>');
 	        }
 
-	        option_el.selected = true;
+	        self.input.prepend(option_el);
+	        selected.push(option_el);
 	        setAttr(option_el, {
 	          selected: 'true'
 	        });
-	        selected.append(option_el);
+	        option_el.selected = true;
 	        return option_el;
 	      } // unselect all selected options
 
@@ -91647,22 +91768,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	        option_el = self.input.querySelector('option[value=""]');
 	        AddSelected(option_el, "", ""); // order selected <option> tags for values in self.items
 	      } else {
-	        for (i = 0; i < self.items.length; i++) {
+	        for (i = self.items.length - 1; i >= 0; i--) {
 	          value = self.items[i];
 	          option = self.options[value];
 	          label = option[self.settings.labelField] || '';
 
-	          if (selected.contains(option.$option)) {
-	            const reuse_opt = self.input.querySelector(`option[value="${addSlashes(value)}"]`);
+	          if (selected.includes(option.$option)) {
+	            const reuse_opt = self.input.querySelector(`option[value="${addSlashes(value)}"]:not([selected])`);
 	            AddSelected(reuse_opt, value, label);
 	          } else {
 	            option.$option = AddSelected(option.$option, value, label);
 	          }
 	        }
-	      } // prepend all of the selected options
-
-
-	      self.input.prepend(selected);
+	      }
 	    } else {
 	      self.input.value = self.getValue();
 	    }
@@ -91773,18 +91891,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    var items = self.controlChildren();
 
 	    for (const item of items) {
-	      item.remove();
+	      self.removeItem(item, true);
 	    }
 
-	    self.items = [];
-	    self.lastQuery = null;
-	    self.setCaret(0);
-	    self.clearActiveItems();
-	    self.updateOriginalInput({
-	      silent: silent
-	    });
-	    self.refreshState();
 	    self.showInput();
+	    if (!silent) self.updateOriginalInput();
 	    self.trigger('clear');
 	  }
 	  /**
@@ -92063,9 +92174,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 	    return this._render(templateName, data);
 	  }
+	  /**
+	   * _render() can be called directly when we know we don't want to hit the cache
+	   * return type could be null for some templates, we need https://github.com/microsoft/TypeScript/issues/33014
+	   */
+
 
 	  _render(templateName, data) {
-	    var value, id, html;
+	    var value = '',
+	        id,
+	        html;
 	    const self = this;
 
 	    if (templateName === 'option' || templateName === 'item') {
@@ -92080,7 +92198,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 
 	    html = self.settings.render[templateName].call(this, data, escape_html);
 
-	    if (!html) {
+	    if (html == null) {
 	      return html;
 	    }
 
@@ -92280,8 +92398,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  self.hook('after', 'setupTemplates', () => {
 	    var orig_render_option = self.settings.render.option;
 
-	    self.settings.render.option = function (data) {
-	      var rendered = getDom(orig_render_option.apply(self, arguments));
+	    self.settings.render.option = (data, escape_html) => {
+	      var rendered = getDom(orig_render_option.call(self, data, escape_html));
 	      var checkbox = document.createElement('input');
 	      checkbox.addEventListener('click', function (evt) {
 	        preventDefault(evt);
@@ -92309,7 +92427,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    }
 	  }); // remove items when selected option is clicked
 
-	  self.hook('instead', 'onOptionSelect', function (evt, option) {
+	  self.hook('instead', 'onOptionSelect', (evt, option) => {
 	    if (option.classList.contains('selected')) {
 	      option.classList.remove('selected');
 	      self.removeItem(option.dataset.value);
@@ -92318,7 +92436,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	      return;
 	    }
 
-	    orig_onOptionSelect.apply(self, arguments);
+	    orig_onOptionSelect.call(self, evt, option);
 	    UpdateCheckbox(option);
 	  });
 	});
@@ -92337,16 +92455,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 * governing permissions and limitations under the License.
 	 *
 	 */
-	TomSelect.define('clear_button', function (options) {
-	  var self = this;
-	  options = Object.assign({
+	TomSelect.define('clear_button', function (userOptions) {
+	  const self = this;
+	  const options = Object.assign({
 	    className: 'clear-button',
 	    title: 'Clear All',
 	    html: data => {
 	      return `<div class="${data.className}" title="${data.title}">&times;</div>`;
 	    }
-	  }, options);
-	  self.hook('after', 'setup', () => {
+	  }, userOptions);
+	  self.on('initialize', () => {
 	    var button = getDom(options.html(options));
 	    button.addEventListener('click', evt => {
 	      self.clear();
@@ -92377,17 +92495,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  if (self.settings.mode !== 'multi') return;
 	  var orig_lock = self.lock;
 	  var orig_unlock = self.unlock;
-	  self.hook('instead', 'lock', function () {
+	  self.hook('instead', 'lock', () => {
 	    var sortable = $(self.control).data('sortable');
 	    if (sortable) sortable.disable();
-	    return orig_lock.apply(self, arguments);
+	    return orig_lock.call(self);
 	  });
-	  self.hook('instead', 'unlock', function () {
+	  self.hook('instead', 'unlock', () => {
 	    var sortable = $(self.control).data('sortable');
 	    if (sortable) sortable.enable();
-	    return orig_unlock.apply(self, arguments);
+	    return orig_unlock.call(self);
 	  });
-	  self.hook('after', 'setup', () => {
+	  self.on('initialize', () => {
 	    var $control = $(self.control).sortable({
 	      items: '[data-value]',
 	      forcePlaceholderSize: true,
@@ -92426,9 +92544,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 * governing permissions and limitations under the License.
 	 *
 	 */
-	TomSelect.define('dropdown_header', function (options) {
-	  var self = this;
-	  options = Object.assign({
+	TomSelect.define('dropdown_header', function (userOptions) {
+	  const self = this;
+	  const options = Object.assign({
 	    title: 'Untitled',
 	    headerClass: 'dropdown-header',
 	    titleRowClass: 'dropdown-header-title',
@@ -92437,8 +92555,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    html: data => {
 	      return '<div class="' + data.headerClass + '">' + '<div class="' + data.titleRowClass + '">' + '<span class="' + data.labelClass + '">' + data.title + '</span>' + '<a class="' + data.closeClass + '">&times;</a>' + '</div>' + '</div>';
 	    }
-	  }, options);
-	  self.hook('after', 'setup', () => {
+	  }, userOptions);
+	  self.on('initialize', () => {
 	    var header = getDom(options.html(options));
 	    var close_link = header.querySelector('.' + options.closeClass);
 
@@ -92481,11 +92599,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  self.settings.controlInput = input;
 	  self.settings.shouldOpen = true; // make sure the input is shown even if there are no options to display in the dropdown
 
-	  self.hook('after', 'setup', () => {
-	    // set tabIndex on wrapper
-	    setAttr(self.wrapper, {
-	      tabindex: self.input.disabled ? '-1' : '' + self.tabIndex
-	    }); // keyboard navigation
+	  self.on('initialize', () => {
+	    // open/close dropdown when tabbing focus on wrapper
+	    addEvent(self.wrapper, 'focus', evt => {
+	      self.onFocus(evt);
+	    });
+
+	    const setTabIndex = () => {
+	      setAttr(self.wrapper, {
+	        tabindex: self.input.disabled ? '-1' : self.tabIndex
+	      });
+	    };
+
+	    self.on('dropdown_close', setTabIndex);
+	    self.on('dropdown_open', () => setAttr(self.wrapper, {
+	      tabindex: '-1'
+	    }));
+	    setTabIndex(); // keyboard navigation
 
 	    addEvent(self.wrapper, 'keypress', evt => {
 	      if (self.control.contains(evt.target)) {
@@ -92524,7 +92654,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 */
 	TomSelect.define('input_autogrow', function () {
 	  var self = this;
-	  self.hook('after', 'setup', () => {
+	  self.on('initialize', () => {
 	    var test_input = document.createElement('span');
 	    var control = self.control_input;
 	    test_input.style.cssText = 'position:absolute; top:-99999px; left:-99999px; width:auto; padding:0; white-space:pre; ';
@@ -92532,6 +92662,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    var transfer_styles = ['letterSpacing', 'fontSize', 'fontFamily', 'fontWeight', 'textTransform'];
 
 	    for (const style_name of transfer_styles) {
+	      // @ts-ignore TS7015 https://stackoverflow.com/a/50506154/697576
 	      test_input.style[style_name] = control.style[style_name];
 	    }
 	    /**
@@ -92574,9 +92705,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	TomSelect.define('no_backspace_delete', function () {
 	  var self = this;
 	  var orig_deleteSelection = self.deleteSelection;
-	  this.hook('instead', 'deleteSelection', function () {
+	  this.hook('instead', 'deleteSelection', evt => {
 	    if (self.activeItems.length) {
-	      return orig_deleteSelection.apply(self, arguments);
+	      return orig_deleteSelection.call(self, evt);
 	    }
 
 	    return false;
@@ -92618,15 +92749,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	TomSelect.define('optgroup_columns', function () {
 	  var self = this;
 	  var orig_keydown = self.onKeyDown;
-	  self.hook('instead', 'onKeyDown', function (evt) {
+	  self.hook('instead', 'onKeyDown', evt => {
 	    var index, option, options, optgroup;
 
 	    if (!self.isOpen || !(evt.keyCode === KEY_LEFT || evt.keyCode === KEY_RIGHT)) {
-	      return orig_keydown.apply(self, arguments);
+	      return orig_keydown.call(self, evt);
 	    }
 
 	    optgroup = parentMatch(self.activeOption, '[data-group]');
 	    index = nodeIndex(self.activeOption, '[data-selectable]');
+
+	    if (!optgroup) {
+	      return;
+	    }
 
 	    if (evt.keyCode === KEY_LEFT) {
 	      optgroup = optgroup.previousSibling;
@@ -92661,13 +92796,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 * governing permissions and limitations under the License.
 	 *
 	 */
-	TomSelect.define('remove_button', function (options) {
-	  options = Object.assign({
+	TomSelect.define('remove_button', function (userOptions) {
+	  const options = Object.assign({
 	    label: '&times;',
 	    title: 'Remove',
 	    className: 'remove',
 	    append: true
-	  }, options); //options.className = 'remove-single';
+	  }, userOptions); //options.className = 'remove-single';
 
 	  var self = this; // override the render method to add remove button to each item
 
@@ -92679,8 +92814,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	  self.hook('after', 'setupTemplates', () => {
 	    var orig_render_item = self.settings.render.item;
 
-	    self.settings.render.item = function () {
-	      var rendered = getDom(orig_render_item.apply(self, arguments));
+	    self.settings.render.item = (data, escape) => {
+	      var rendered = getDom(orig_render_item.call(self, data, escape));
 	      var close_button = getDom(html);
 	      rendered.appendChild(close_button);
 	      addEvent(close_button, 'mousedown', evt => {
@@ -92713,13 +92848,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	 * governing permissions and limitations under the License.
 	 *
 	 */
-	TomSelect.define('restore_on_backspace', function (options) {
-	  var self = this;
-
-	  options.text = options.text || function (option) {
-	    return option[self.settings.labelField];
-	  };
-
+	TomSelect.define('restore_on_backspace', function (userOptions) {
+	  const self = this;
+	  const options = Object.assign({
+	    text: option => {
+	      return option[self.settings.labelField];
+	    }
+	  }, userOptions);
 	  self.on('item_remove', function (value) {
 	    if (self.control_input.value.trim() === '') {
 	      var option = self.options[value];
@@ -92816,12 +92951,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    return canLoadMore(query);
 	  }); // wrap the load
 
-	  self.hook('instead', 'loadCallback', (value, options, optgroups) => {
+	  self.hook('instead', 'loadCallback', (options, optgroups) => {
 	    if (!loading_more) {
 	      self.clearOptions();
 	    }
 
-	    orig_loadCallback.call(self, value, options, optgroups);
+	    orig_loadCallback.call(self, options, optgroups);
 	    loading_more = false;
 	  }); // add templates to dropdown
 	  //	loading_more if we have another url in the queue
@@ -92848,7 +92983,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**!
 	    }
 	  }); // add scroll listener and default templates
 
-	  self.hook('after', 'setup', () => {
+	  self.on('initialize', () => {
 	    dropdown_content = self.dropdown_content; // default templates
 
 	    self.settings.render = Object.assign({}, {
@@ -93094,7 +93229,7 @@ function cleanWKT(wkt) {
   }
 }
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(wkt) {
-  var lisp = (0,_parser__WEBPACK_IMPORTED_MODULE_0__.default)(wkt);
+  var lisp = (0,_parser__WEBPACK_IMPORTED_MODULE_0__["default"])(wkt);
   var type = lisp.shift();
   var name = lisp.shift();
   lisp.unshift(['name', name]);
@@ -95575,6 +95710,28 @@ function split(source,start){
 exports.XMLReader = XMLReader;
 
 
+
+/***/ }),
+
+/***/ "./node_modules/geoportal-access-lib/package.json":
+/*!********************************************************!*\
+  !*** ./node_modules/geoportal-access-lib/package.json ***!
+  \********************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"_args":[["geoportal-access-lib@2.1.8","/var/www/html/vendor/2lenet/crudit-bundle"]],"_from":"geoportal-access-lib@2.1.8","_id":"geoportal-access-lib@2.1.8","_inBundle":false,"_integrity":"sha512-Z5LFBU5Gh8I3oO22334IPhd/5lqr1ZX6qLPAGGTqnXPxfb/DgUuW/wWP2aGXKLGeQfXz7UYUaYZ9pUxWf4jheQ==","_location":"/geoportal-access-lib","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"geoportal-access-lib@2.1.8","name":"geoportal-access-lib","escapedName":"geoportal-access-lib","rawSpec":"2.1.8","saveSpec":null,"fetchSpec":"2.1.8"},"_requiredBy":["/geoportal-extensions-leaflet"],"_resolved":"https://registry.npmjs.org/geoportal-access-lib/-/geoportal-access-lib-2.1.8.tgz","_spec":"2.1.8","_where":"/var/www/html/vendor/2lenet/crudit-bundle","author":{"name":"IGNF"},"bugs":{"url":"https://github.com/IGNF/geoportal-access-lib/issues"},"bundleDependencies":[],"date":"14/04/2021","dependencies":{"es6-promise":"^4.2.4","node-fetch":"^2.6.1","xmldom":"^0.1.27"},"description":"French Geoportal resources access library","devDependencies":{"@babel/core":"^7.12.10","@babel/plugin-transform-template-literals":"^7.12.1","@babel/preset-env":"^7.12.11","babel-loader":"^8.2.2","chai":"^4.1.2","clean-webpack-plugin":"^3.0.0","copy-webpack-plugin":"^5.1.2","eslint":"^7.18.0","eslint-config-standard":"^16.0.2","eslint-loader":"^4.0.2","eslint-plugin-import":"^2.22.1","eslint-plugin-node":"^11.1.0","eslint-plugin-promise":"^4.2.1","eslint-plugin-standard":"^5.0.0","glob":"^7.1.2","handlebars-layouts":"^3.1.4","handlebars-webpack-plugin":"^1.4.1","html-webpack-plugin":"^4.5.1","istanbul-instrumenter-loader":"^3.0.1","jsdoc-webpack-plugin":"^0.3.0","loglevel":"^1.6.1","mocha":"^7.2.0","mocha-loader":"^5.1.5","mocha-webpack":"^2.0.0-beta.0","mochawesome":"^6.2.1","nyc":"^15.1.0","path":"^0.12.7","replace-bundle-webpack-plugin":"^1.0.0","sinon":"^9.2.4","sinon-es6":"0.0.3","speed-measure-webpack-plugin":"^1.4.2","string-template":"^1.0.0","terser-webpack-plugin":"^2.3.8","webpack":"^4.46.0","webpack-cli":"^3.3.12","webpack-dev-server":"^3.11.2","webpack-node-externals":"^2.5.2","webpack-shell-plugin":"^0.5.0"},"homepage":"https://github.com/IGNF/geoportal-access-lib#readme","keywords":["geoportail","webservice","javascript","es6"],"license":"CECILL-B","main":"dist/GpServices-src.js","module":"src/Gp.js","name":"geoportal-access-lib","nyc":{"include":["src/**/*.js"],"instrument":false,"sourceMap":false},"optionalDependencies":{},"peerDependencies":{},"repository":{"type":"git","url":"git+https://github.com/IGNF/geoportal-access-lib.git"},"scripts":{"build":"webpack --mode=none","build:dev":"webpack --mode=development","build:prod":"webpack --mode=production","clean":"echo \\"Warning: no yet implemented!\\" && exit 0","cover":"nyc --reporter=lcov --reporter=text npm run test","doc":"npm run doc:serve","doc:serve":"webpack-dev-server --content-base jsdoc --port 9001 --open","eslint":"eslint src/","sample":"npm run sample:serve","sample:serve":"webpack-dev-server --mode=none --open-page samples/index-src.html --https --content-base . --output-public-path \'/dist/\' --port 9001 --open","sample:serve:dev":"webpack-dev-server --mode=development --open-page samples/index-map.html --content-base . --output-public-path \'/dist/\' --port 9001 --open","sample:serve:prod":"webpack-dev-server --mode=production --open-page samples/index-prod.html --content-base . --output-public-path \'/dist/\' --port 9001 --open","setup":"npm install","test":"mocha-webpack --reporter mochawesome --reporter-options reportDir=test-report,reportFilename=index --webpack-config ./test/webpack/webpack.test.js --glob \\"test_*.js\\" test/spec/","test:end-to-end:serve":"webpack-dev-server --hot --config ./test/webpack/webpack.end-to-end.serve.js","test:end-to-end:serve:docker":"webpack-dev-server --hot --config ./test/webpack/webpack.end-to-end.serve.docker.js","test:serve":"webpack-dev-server --hot --config ./test/webpack/webpack.test.serve.js","test:serve:docker":"webpack-dev-server --hot --config ./test/webpack/webpack.test.serve.docker.js"},"version":"2.1.8"}');
+
+/***/ }),
+
+/***/ "./node_modules/geoportal-extensions-leaflet/package.json":
+/*!****************************************************************!*\
+  !*** ./node_modules/geoportal-extensions-leaflet/package.json ***!
+  \****************************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"_args":[["geoportal-extensions-leaflet@2.1.10","/var/www/html/vendor/2lenet/crudit-bundle"]],"_from":"geoportal-extensions-leaflet@2.1.10","_id":"geoportal-extensions-leaflet@2.1.10","_inBundle":false,"_integrity":"sha512-JkqH7Q46Fr0Q91lboPVxew44p8y2OXxdaaDQJt+aCFnKehl1d2DGP0QkfUH5oinMIOtYqf6ErYhsr6UpaS9VFg==","_location":"/geoportal-extensions-leaflet","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"geoportal-extensions-leaflet@2.1.10","name":"geoportal-extensions-leaflet","escapedName":"geoportal-extensions-leaflet","rawSpec":"2.1.10","saveSpec":null,"fetchSpec":"2.1.10"},"_requiredBy":["/"],"_resolved":"https://registry.npmjs.org/geoportal-extensions-leaflet/-/geoportal-extensions-leaflet-2.1.10.tgz","_spec":"2.1.10","_where":"/var/www/html/vendor/2lenet/crudit-bundle","author":{"name":"IGNF"},"bundleDependencies":[],"date":"16/06/2021","dependencies":{"geoportal-access-lib":"2.1.8","leaflet":"1.7.1","leaflet-draw":"1.0.4","loglevel":"1.6.6","node-fetch":"^2.6.1","proj4":"2.7.0","proj4leaflet":"1.0.2","sortablejs":"1.8.4","xmldom":"^0.1.27"},"description":"French Geoportal Extension for Leaflet","devDependencies":{},"directories":{},"files":["dist/","src/","LICENCE.md","README.md","package.json"],"homepage":"https://geoservices.ign.fr/documentation/utilisation_web/extension-leaflet.html","keywords":["geoportail","plugin","javascript","leaflet","publish"],"license":"CECILL-B","main":"dist/GpPluginLeaflet-src.js","module":"src/Leaflet/index.js","name":"geoportal-extensions-leaflet","peerDependencies":{},"repository":{"url":"git+https://github.com/IGNF/geoportal-extensions.git","type":"git"},"scripts":{},"version":"2.1.10"}');
 
 /***/ })
 
