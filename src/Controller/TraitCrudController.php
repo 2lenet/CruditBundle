@@ -107,7 +107,7 @@ trait TraitCrudController
         $rqParams = new DatasourceParams(
             $limit,
             $offset,
-            [], []
+            []
         );
         $nb_items = $dataSource->count_query("libelle", $request->query->get("q", ""));
 

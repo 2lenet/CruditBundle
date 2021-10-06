@@ -4,27 +4,27 @@ namespace Lle\CruditBundle\Datasource;
 
 class DatasourceParams
 {
-
     protected $count = 100;
-    protected int $limit;
-    protected int $offset;
-    protected array $sorts;
-    protected array $filters;
 
-    public function __construct(int $limit, int $offset, array $sorts, array $filters)
+    protected int $limit;
+
+    protected int $offset;
+
+    protected array $sorts;
+
+    public function __construct(int $limit, int $offset, array $sorts)
     {
         $this->limit = $limit;
         $this->offset = $offset;
         $this->sorts = $sorts;
-        $this->filters = $filters;
     }
 
-    public function setCount($count)
+    public function setCount(int $count)
     {
         $this->count = $count;
     }
 
-    public function getCount()
+    public function getCount(): int
     {
         return $this->count;
     }
@@ -88,14 +88,6 @@ class DatasourceParams
     }
 
     /**
-     * @return array
-     */
-    public function getFilters(): array
-    {
-        return $this->filters;
-    }
-
-    /**
      * @return int
      */
     public function getLimit(): int
@@ -117,17 +109,6 @@ class DatasourceParams
     public function getSorts(): array
     {
         return $this->sorts;
-    }
-
-
-    /**
-     * @param array $filters
-     * @return DatasourceParams
-     */
-    public function setFilters(array $filters): DatasourceParams
-    {
-        $this->filters = $filters;
-        return $this;
     }
 
     /**

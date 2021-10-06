@@ -147,19 +147,33 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getDatasourceParams(Request $request): DatasourceParams
     {
-        $limit = $request->query->get(strtolower($this->getName()) . '_limit', $this->getNbItems());
-        $offset = $request->query->get(strtolower($this->getName()) . '_offset', 0);
+        // this session will be reset when the filters are reset (see Lle\CruditBundle\Filter\FilterState)
+        $sessionKey = strtolower("crudit_datasourceparams_" . $this->getName());
+        $params = $request->getSession()->get($sessionKey, [
+            "limit" => $this->getNbItems(),
+            "offset" => 0,
+            "sorts" => $this->getDefaultSort()
+        ]);
 
-        $sortField = $request->query->get(strtolower($this->getName()) . '_sort', "");
-        $sortOrder = $request->query->get(strtolower($this->getName()) . '_sort_order', "");
-
-        if ($sortField) {
-            $sortArray = [[$sortField, $sortOrder]];
-        } else {
-            $sortArray = $this->getDefaultSort();
+        $limit = $request->query->get(strtolower($this->getName()) . "_limit");
+        if ($limit) {
+            $params["limit"] = (int)$limit;
         }
 
-        return new DatasourceParams(intval($limit), intval($offset), $sortArray, []);
+        $offset = $request->query->get(strtolower($this->getName()) . "_offset") ;
+        if ($offset) {
+            $params["offset"] = (int)$offset;
+        }
+
+        $sortField = $request->query->get(strtolower($this->getName()) . "_sort", null);
+        $sortOrder = $request->query->get(strtolower($this->getName()) . "_sort_order", null);
+        if ($sortField) {
+            $params["sorts"] = [[$sortField, $sortOrder]];
+        }
+
+        $request->getSession()->set($sessionKey, $params);
+
+        return new DatasourceParams(...array_values($params));
     }
 
     public function getController(): ?string
