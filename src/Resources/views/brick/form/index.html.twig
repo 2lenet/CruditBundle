@@ -1,6 +1,6 @@
 {% set form = view.data.form %}
 <div class="card shadow mb-4">
-    {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
+    {{ form_start(form, {'attr': {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
     <div class="card-body">
         <div class="table-responsive">
             {{ form_errors(form) }}
