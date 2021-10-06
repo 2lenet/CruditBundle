@@ -4953,15 +4953,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 window.addEventListener('load', function () {
   document.querySelectorAll(".crudit-eip").forEach(function (eip_elem) {
     var eip_val = eip_elem.querySelector(".crudit-eip-value");
+    var eip_submit = eip_elem.querySelector(".crudit-eip-submit");
+    var eip_input = eip_elem.querySelector(".crudit-eip-input");
+    var eip_cancel = eip_elem.querySelector(".crudit-eip-cancel");
+    var eip_form = eip_elem.querySelector("form");
 
     if (eip_val) {
       eip_val.addEventListener('click', function () {
         eip_val.classList.toggle('d-none');
-        eip_elem.querySelector('form').classList.toggle('d-none');
+
+        if (eip_form) {
+          eip_form.classList.toggle('d-none');
+        } // put user cursor in the text input
+
+
+        if (eip_input.type === "text" || eip_input.tagName === "TEXTAREA") {
+          eip_input.focus();
+          setTimeout(function () {
+            eip_input.selectionStart = eip_input.selectionEnd = 10000;
+          }, 0);
+        }
       });
     }
-
-    var eip_cancel = eip_elem.querySelector(".crudit-eip-cancel");
 
     if (eip_cancel && eip_val) {
       eip_cancel.addEventListener('click', function () {
@@ -4970,38 +4983,49 @@ window.addEventListener('load', function () {
       });
     }
 
-    var eip_submit = eip_elem.querySelector(".crudit-eip-submit");
-    eip_submit.addEventListener('click', function () {
-      var input = eip_elem.querySelector(".crudit-eip-input");
-      var url = eip_elem.dataset.edit_url;
-      var formData = new FormData();
-      var value = input.type === "checkbox" ? input.checked : input.value;
-
-      var data = _defineProperty({}, eip_elem.dataset.field, value);
-
-      formData.append("data", JSON.stringify(data));
-      fetch(url, {
-        body: formData,
-        method: "post"
+    if (eip_form) {
+      eip_form.addEventListener("submit", function (e) {
+        // disable submit, because the save is async
+        e.preventDefault();
+        submitEIP(eip_elem, eip_input, eip_val);
       });
+    }
 
-      if (eip_val) {
-        if (input.type === "date") {
-          eip_val.textContent = new Date(input.value).toLocaleDateString();
-        } else {
-          eip_val.textContent = input.value;
-        }
-
-        eip_val.classList.toggle('d-none');
-      }
-
-      var form = eip_elem.querySelector('form');
-
-      if (form) {
-        form.classList.toggle('d-none');
-      }
+    eip_submit.addEventListener("click", function () {
+      return submitEIP(eip_elem, eip_input, eip_val);
     });
   });
+
+  function submitEIP(eip_elem, eip_input, eip_val) {
+    eip_input = eip_elem.querySelector(".crudit-eip-input");
+    var url = eip_elem.dataset.edit_url;
+    var formData = new FormData();
+    var value = eip_input.type === "checkbox" ? eip_input.checked : eip_input.value;
+
+    var data = _defineProperty({}, eip_elem.dataset.field, value);
+
+    formData.append("data", JSON.stringify(data));
+    fetch(url, {
+      body: formData,
+      method: "post"
+    });
+
+    if (eip_val) {
+      if (eip_input.type === "date") {
+        eip_val.textContent = new Date(eip_input.value).toLocaleDateString();
+      } else {
+        eip_val.textContent = eip_input.value;
+      }
+
+      eip_val.classList.toggle('d-none');
+    }
+
+    var form = eip_elem.querySelector('form');
+
+    if (form) {
+      form.classList.toggle('d-none');
+    }
+  }
 });
 
 /***/ }),
