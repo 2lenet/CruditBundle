@@ -97,6 +97,10 @@ class ExcelExporter extends AbstractExporter
 
     protected function getType(FieldView $field)
     {
+        if ($field->getRawValue() === null) {
+            return DataType::TYPE_NULL;
+        }
+
         switch ($field->getField()->getType()) {
             case "bigint":
             case "smallint":
