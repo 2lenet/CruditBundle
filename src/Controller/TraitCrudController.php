@@ -91,7 +91,7 @@ trait TraitCrudController
 
         $dataSource->delete($dataSource->getIdentifier($resource));
 
-        return $this->index($request);
+        return $this->redirectToRoute($this->config->getRootRoute() . "_index");
     }
 
     /**
