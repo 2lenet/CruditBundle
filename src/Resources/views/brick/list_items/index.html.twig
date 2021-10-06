@@ -16,17 +16,24 @@
                                 {% if field.ruptGroup == 0 %}
                                     <th class="{{ field.options.tableCssClass|default("text-nowrap") }}">{{ field.label |trans }}
                                         {% if field.sortable %}
+                                            {% set name = view.config.name | lower %}
                                             {% set merge_params = {
-                                                ((view.config.name|lower)~'_sort'): field.name,
-                                                ((view.config.name|lower)~'_sort_order'): 'asc'
+                                                (name ~ '_sort'): field.name,
+                                                (name ~ '_sort_order'): 'asc'
                                             } %}
-                                            {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
-                                            {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
+                                            {% set params = app.request.session.get('crudit_datasourceparams_' ~ name) %}
+                                            {% set sorts = params.sorts ?? [
+                                                [app.request.query.get(name ~ '_sort_order'), app.request.query.get(name ~ '_sort')]
+                                            ] %}
+
+                                            {% set order = sorts | first | last %}
+                                            {% set sorted = (sorts | first | first == field.name) %}
+
                                             {% set icon = 'fa-sort' %}
                                             {% if sorted %}
                                                 {% set icon = 'fa-sort-amount-up-alt' %}
                                             {% endif %}
-                                            {% if sorted and order=='asc' %}
+                                            {% if sorted and order == 'asc' %}
                                                 {% set icon = 'fa-sort-amount-down-alt' %}
                                                 {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
                                             {% endif %}

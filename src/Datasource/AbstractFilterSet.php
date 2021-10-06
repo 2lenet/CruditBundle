@@ -15,6 +15,6 @@ class AbstractFilterSet implements \Lle\CruditBundle\Contracts\FilterSetInterfac
     public function getId(): string
     {
         $className = get_class($this);
-        return strtolower(str_replace("Filterset", "", (substr($className, strrpos($className, '\\') + 1))));
+        return strtolower(str_replace("FilterSet", "", (substr($className, strrpos($className, '\\') + 1))));
     }
 }
