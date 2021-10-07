@@ -12,11 +12,14 @@ class DatasourceParams
 
     protected array $sorts;
 
-    public function __construct(int $limit, int $offset, array $sorts)
+    protected array $filters;
+
+    public function __construct(int $limit, int $offset, array $sorts, array $filters = [])
     {
         $this->limit = $limit;
         $this->offset = $offset;
         $this->sorts = $sorts;
+        $this->filters = $filters;
     }
 
     public function setCount(int $count)
@@ -96,11 +99,33 @@ class DatasourceParams
     }
 
     /**
+     * @param int $limit
+     * @return DatasourceParams
+     */
+    public function setLimit(?int $limit): DatasourceParams
+    {
+        $this->limit = $limit;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getOffset(): int
     {
         return $this->offset;
+    }
+
+    /**
+     * @param int $offset
+     * @return DatasourceParams
+     */
+    public function setOffset(?int $offset): DatasourceParams
+    {
+        $this->offset = $offset;
+
+        return $this;
     }
 
     /**
@@ -112,32 +137,32 @@ class DatasourceParams
     }
 
     /**
-     * @param int $limit
-     * @return DatasourceParams
-     */
-    public function setLimit(?int $limit): DatasourceParams
-    {
-        $this->limit = $limit;
-        return $this;
-    }
-
-    /**
-     * @param int $offset
-     * @return DatasourceParams
-     */
-    public function setOffset(?int $offset): DatasourceParams
-    {
-        $this->offset = $offset;
-        return $this;
-    }
-
-    /**
      * @param array $sorts
      * @return DatasourceParams
      */
     public function setSorts(array $sorts): DatasourceParams
     {
         $this->sorts = $sorts;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
+    /**
+     * @param array $sorts
+     * @return DatasourceParams
+     */
+    public function setFilters(array $filters): DatasourceParams
+    {
+        $this->filters = $filters;
+
         return $this;
     }
 }

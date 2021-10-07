@@ -227,7 +227,16 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
      */
     public function buildQueryBuilder(?DataSourceParams $requestParams): \Doctrine\ORM\QueryBuilder
     {
-        return $this->getRepository()->createQueryBuilder('root');
+        $qb = $this->getRepository()->createQueryBuilder("root");
+
+        if ($requestParams) {
+            foreach ($requestParams->getFilters() as $filter) {
+                $alias = $filter->getAlias() ?? "root";
+                $qb->andWhere($alias . "." . $filter->getField() . $filter->getOperator() . $filter->getValue());
+            }
+        }
+
+        return $qb;
     }
 
     /**
