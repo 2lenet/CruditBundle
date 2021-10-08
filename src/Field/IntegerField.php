@@ -6,28 +6,26 @@ namespace Lle\CruditBundle\Field;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class NumberField extends AbstractField
+class IntegerField extends AbstractField
 {
-    
+
     public function support(string $type): bool
     {
-        return (in_array($type, ['float', 'decimal', self::class]));
+        return (in_array($type, ['integer', 'smallint', 'bigint', self::class]));
     }
 
     public function getDefaultTemplate(): ?string
     {
-        return '@LleCrudit/field/number.html.twig';
+        return '@LleCrudit/field/integer.html.twig';
     }
-    
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
             "tableCssClass"=>"text-end",
-            'decimals' => '2',
-            'decimal_separator' => ',',
             'thousands_separator' => ' ',
         ]);
     }
-    
+
 }

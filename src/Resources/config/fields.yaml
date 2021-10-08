@@ -29,3 +29,6 @@ services:
   Lle\CruditBundle\Field\TelephoneField:
     arguments: [ '@twig' ]
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\IntegerField:
+    arguments: [ '@twig' ]
+    tags: [ 'crudit.field' ]

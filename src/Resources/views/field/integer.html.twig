@@ -1,0 +1,28 @@
+{% if view.field.editInPlace %}
+    {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
+
+    <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
+        <form class="form-inline d-none">
+            <div class="control-group form-group d-flex justify-content-around align-items-center">
+                <input type="text" class="form-control form-control-sm crudit-eip-input" autocomplete="off" value="{{ value }}">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-primary crudit-eip-submit">
+                        <i class="fa fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-default crudit-eip-cancel">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="editable-error-block help-block" style="display: none;">
+            </div>
+        </form>
+        <div class="crudit-eip-value">{{ value }}</div>
+    </div>
+{% else %}
+    <div class="text-end me-3">
+        {%  if value %}
+            {{ value | number_format(null, null, options.thousands_separator) }}
+        {% endif %}
+    </div>
+{% endif %}
