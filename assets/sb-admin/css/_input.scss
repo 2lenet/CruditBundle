@@ -1,8 +1,10 @@
 $input-group-length: 220px;
+$input-group-prepend-length: 60px;
 
 // Used into filters
 .input-group-prepend {
     .dropdown-toggle, .dropdown-toggle:hover {
+        width: $input-group-prepend-length;
         height: 100%;
         color: #000000;
         border-color: $gray-400;
@@ -11,12 +13,12 @@ $input-group-length: 220px;
     }
 
     &:empty + .form-floating {
-        width: $input-group-length+57;
+        width: $input-group-length+$input-group-prepend-length;
     }
 
     & + .form-floating {
         display: flex;
-        min-width: $input-group-length;
+        min-width: calc(100% - #{$input-group-prepend-length});
 
         .form-control, .entity-select {
             background-color: transparent;
@@ -94,7 +96,7 @@ $input-group-length: 220px;
 
     & .ts-dropdown {
         margin: 0;
-        background-color: #FFFFFF;
+        background-color: #FFFFFF !important;
     }
 }
 
