@@ -1,36 +1,38 @@
-{% block operator %}
-    <div class="input-group-prepend">
-        <input id="{{ id }}_op" type="hidden" name="{{ id }}_op" value="{{ data['op']|default(filter.operators|keys|first) }}">
-        <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            {% set found = 0 %}
-            {% for k, options in filter.operators %}
-                {% if data and data.op and k == data.op %}
-                    {% set found = 1 %}
+<div class="input-group">
+    {% block operator %}
+        <div class="input-group-prepend">
+            <input id="{{ id }}_op" type="hidden" name="{{ id }}_op" value="{{ data['op']|default(filter.operators|keys|first) }}">
+            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                {% set found = 0 %}
+                {% for k, options in filter.operators %}
+                    {% if data and data.op and k == data.op %}
+                        {% set found = 1 %}
+                        <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}"></i>
+                    {% endif %}
+                {% endfor %}
+                {% if found == 0 %}
+                    {% set k = filter.operators|keys|first %}
+                    {% set options = filter.operators|first %}
                     <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}"></i>
                 {% endif %}
-            {% endfor %}
-            {% if found == 0 %}
-                {% set k = filter.operators|keys|first %}
-                {% set options = filter.operators|first %}
-                <i id="{{ id }}_op_icon" class="{{ options['icon'] }}" title="{{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}"></i>
-            {% endif %}
-        </button>
-        <div class="dropdown-menu">
-            {% for k, options in filter.operators %}
-                <a class="dropdown-item valuesetter" href="#" data-value="{{ k }}" data-valueid="{{ id }}_op">
-                    <i class="{{ options['icon'] }}"></i>&nbsp;
-                    {{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}
-                </a>
-            {% endfor %}
+            </button>
+            <div class="dropdown-menu">
+                {% for k, options in filter.operators %}
+                    <a class="dropdown-item valuesetter" href="#" data-value="{{ k }}" data-valueid="{{ id }}_op">
+                        <i class="{{ options['icon'] }}"></i>&nbsp;
+                        {{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}
+                    </a>
+                {% endfor %}
+            </div>
         </div>
-    </div>
-{% endblock %}
+    {% endblock %}
 
-{% block input %}
-    <div class="form-floating">
-        <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value" value="{{ data['value']|default('') }}" placeholder="" />
-        <label for="input_{{ id }}">
-            {{ filter.label|trans() }}
-        </label>
-    </div>
-{% endblock %}
+    {% block input %}
+        <div class="form-floating">
+            <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value" value="{{ data['value']|default('') }}" placeholder="" />
+            <label for="input_{{ id }}">
+                {{ filter.label|trans() }}
+            </label>
+        </div>
+    {% endblock %}
+</div>
