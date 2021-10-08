@@ -32,6 +32,8 @@ class FilterState
 
             if ($request->query->get($filterId.'_reset')) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
+                // we remove cached sort & page
+                $this->session->remove("crudit_datasourceparams_" . $filterId);
             } else {
 
                 foreach ($filterset->getFilters() as $filterType) {

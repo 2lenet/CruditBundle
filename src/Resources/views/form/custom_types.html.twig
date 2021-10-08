@@ -1,5 +1,9 @@
 {% block autocomplete_widget %}
-    <input type="hidden" id="{{ id }}_items" name="{{ id }}_items">
+    <input
+            type="hidden"
+            id="{{ id }}_items"
+            name="{{ id }}_items"
+    >
     <input class="form-control entity-select"
            data-url="{{ url }}?q="
            data-options="{{ items | default('[]') | escape('html_attr') }}"
@@ -7,6 +11,7 @@
            id="{{ id }}"
            name="{{ full_name }}"
            value="{{ value | default('') }}"
+           {{ required ? 'required' }}
     />
 {% endblock %}
 

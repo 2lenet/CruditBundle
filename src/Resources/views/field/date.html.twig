@@ -8,7 +8,7 @@
                         type="date"
                         class="form-control form-control-sm crudit-eip-input"
                         autocomplete="off"
-                        {% if value %} value="{{ value | date("Y-m-d") }}" {% endif %}
+                        value="{{ value ? value | date("Y-m-d") }}"
                 >
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">
@@ -22,8 +22,8 @@
             <div class="editable-error-block help-block" style="display: none;">
             </div>
         </form>
-        <div class="crudit-eip-value">{{ value | date(options.format) }}</div>
+        <div class="crudit-eip-value">{{ value ? value | date(options.format) }}</div>
     </div>
 {% elseif value %}
-    {{ value | date(options.format) }}
+    {{ value ? value | date(options.format) }}
 {% endif %}

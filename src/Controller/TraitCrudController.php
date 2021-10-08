@@ -91,7 +91,7 @@ trait TraitCrudController
 
         $dataSource->delete($dataSource->getIdentifier($resource));
 
-        return $this->index($request);
+        return $this->redirectToRoute($this->config->getRootRoute() . "_index");
     }
 
     /**
@@ -107,7 +107,7 @@ trait TraitCrudController
         $rqParams = new DatasourceParams(
             $limit,
             $offset,
-            [], []
+            []
         );
         $nb_items = $dataSource->count_query("libelle", $request->query->get("q", ""));
 
