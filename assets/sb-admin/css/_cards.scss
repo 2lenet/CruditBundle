@@ -1,3 +1,7 @@
 #card-toggle.collapsed {
     transform: rotate(180deg);
 }
+
+.card-body {
+    overflow-x: auto;
+}
