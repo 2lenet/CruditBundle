@@ -1,12 +1,12 @@
-## To integrate crudit with webpack
+# How to integrate Webpack Encore to Crudit
 
-update your base.html.twig template with this : 
+## Setup
+If you want to use Webpack Encore, just add the following lines in your template/base.html.twig
 
 ```twig
 {% extends crudit.template('layout') %}
 
 {% block stylesheets %}
-    {# { parent() }#}
     {{ encore_entry_link_tags('app') }}
 {% endblock %}
 
@@ -16,17 +16,37 @@ update your base.html.twig template with this :
 {% endblock %}
 ```
 
-note the comment to not load the parent stylesheets.
 
-And in you app.js entry add the following:
+Then, in your assets/js/app.js, you have to add this line :
 
-```scss
-@import "variables.scss";
-@import "../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss";
+```js
+import '../styles/app.scss';
 ```
 
-you can know customise the colors or other bootstrap variables in the _variables.scss file
-
+And in your assets/styles/app.scss, add this :
 ```scss
-$primary: #c18b8b;
+@import 'variables.scss';
+@import '../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss';
 ```
+
+
+## Features
+With that, you can now :
+* customize the colors or other Bootstrap variables in your assets/styles/_variables.scss:
+  ```scss
+  $primary: #C18B8B;
+  ```
+
+* use responsive mixin present and used by CruditBundle:
+  ```scss
+  @include media('>tablet') {
+    // Your responsive rules
+  }
+  ```
+  This is the list of all responsive breakpoints used :
+
+  | Name | Value |
+      | --- | --- |
+  | mobile | 768px |
+  | tablet | 992px |
+  | laptop | 1200px |
