@@ -33,7 +33,7 @@
                                             {% if sorted %}
                                                 {% set icon = 'fa-sort-amount-up-alt' %}
                                             {% endif %}
-                                            {% if sorted and order == 'asc' %}
+                                            {% if sorted and order | lower == 'asc' %}
                                                 {% set icon = 'fa-sort-amount-down-alt' %}
                                                 {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
                                             {% endif %}

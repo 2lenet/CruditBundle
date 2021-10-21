@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
@@ -120,6 +121,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->select('count(root.id)');
+
         if ($this->filterset) {
             $this->applyFilters($qb);
         }
@@ -223,9 +225,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     /**
      * @param DataSourceParams|null $requestParams
-     * @return \Doctrine\ORM\QueryBuilder
+     * @return QueryBuilder
      */
-    public function buildQueryBuilder(?DataSourceParams $requestParams): \Doctrine\ORM\QueryBuilder
+    public function buildQueryBuilder(?DataSourceParams $requestParams): QueryBuilder
     {
         $qb = $this->getRepository()->createQueryBuilder("root");
 
@@ -247,7 +249,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    protected function applyFilters(\Doctrine\ORM\QueryBuilder $qb)
+    protected function applyFilters(QueryBuilder $qb)
     {
         foreach ($this->filterset->getFilters() as $filter) {
             $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
@@ -255,15 +257,28 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
     }
 
-    protected function addOrderBy(\Doctrine\ORM\QueryBuilder $qb, $column, $order)
+    protected function addOrderBy(QueryBuilder $qb, $column, $order)
     {
-        $field = explode(".", $column);
-        if (count($field)==2) {
-            $qb->join('root.'.$field[0], $field[0]);
-            $qb->addOrderBy($field[0].'.'.$field[1], $order);
-        } else {
-            $qb->addOrderBy('root.'.$column, $order);
-        }
-    }
+        // parts (e.g. : user.post.title => [user, post, title]
+        $fields = explode(".", $column);
 
+        // column to join (i.e. root.user, user.post, etc.)
+        $join = $qb->getRootAliases()[0];
+
+        $field = array_shift($fields);
+
+        // while we aren't at the last part
+        while (!empty($fields)) {
+            $alias = isset($alias) ? $alias . "_" . $field : $field;
+
+            if (!in_array($alias, $qb->getAllAliases())) {
+                $qb->join($join . "." . $field, $alias);
+            }
+
+            $join = $alias;
+            $field = array_shift($fields);
+        }
+
+        $qb->addOrderBy($join . "." . $field, $order);
+    }
 }
