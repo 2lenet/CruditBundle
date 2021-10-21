@@ -18,18 +18,13 @@ $input-group-prepend-length: 60px;
 
     & + .form-floating {
         display: flex;
-        min-width: calc(100% - #{$input-group-prepend-length});
+        width: calc(100% - #{$input-group-prepend-length});
 
         .form-control, .entity-select {
             background-color: transparent;
             border: solid 1px $gray-400;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
-            z-index: 1002;
-        }
-
-        .entity-select {
-            z-index: 1003;
         }
 
         .form-control:not(:last-of-type) {
@@ -44,7 +39,7 @@ $input-group-prepend-length: 60px;
                 left: 0;
                 flex-direction: column;
                 justify-content: flex-start;
-                align-items: flex-end;
+                align-items: flex-start;
                 border: none;
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
@@ -62,6 +57,11 @@ $input-group-prepend-length: 60px;
                         background: $gray-200;
                     }
                 }
+            }
+            &.ts-dropdown {
+                left: -#{$input-group-prepend-length};
+                min-width: min(400px, 75vw);
+                z-index: $zindex-dropdown;
             }
         }
     }
@@ -124,6 +124,7 @@ $input-group-prepend-length: 60px;
     }
 
     .form-control.entity-select {
+        min-height: 42px;
         padding-top: 0;
         & .ts-input {
             height: 42px;
