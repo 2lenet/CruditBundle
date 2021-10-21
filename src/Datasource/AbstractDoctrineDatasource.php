@@ -262,6 +262,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         // parts (e.g. : user.post.title => [user, post, title]
         $fields = explode(".", $column);
 
+        // join alias
+        $alias = null;
+
         // column to join (i.e. root.user, user.post, etc.)
         $join = $qb->getRootAliases()[0];
 
@@ -269,7 +272,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         // while we aren't at the last part
         while (!empty($fields)) {
-            $alias = isset($alias) ? $alias . "_" . $field : $field;
+            $alias = $alias ? $alias . "_" . $field : $field;
 
             if (!in_array($alias, $qb->getAllAliases())) {
                 $qb->join($join . "." . $field, $alias);
