@@ -17,11 +17,12 @@ class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
     {
         return <?= $entityClass ?>::class;
     }
-<?php if($hasFilterset) { ?>
+    <?php if($hasFilterset) { ?>
     /**
     * @required
+    * @param <?= $entityClass ?>FilterSet $filterSet
     */
-    public function setFilterset(<?= $entityClass ?>FilterSet $filterSet)
+    public function setFilterset(<?= $entityClass ?>FilterSet $filterSet): void
     {
          $this->filterset = $filterSet;
     }<?php } ?>

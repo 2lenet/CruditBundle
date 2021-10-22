@@ -30,6 +30,10 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         $this->datasource = $datasource;
     }
 
+    /**
+    * @param string $key
+    * @return Field[]
+    */
     public function getFields($key): array
     {
 <?php foreach ($fields as $field) { if ($field != 'id') { ?>

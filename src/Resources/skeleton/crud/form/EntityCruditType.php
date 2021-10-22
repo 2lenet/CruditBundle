@@ -12,14 +12,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class <?= $entityClass ?>Type extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 <?php foreach($fields as $field) { if ($field !='id') { ?>
         $builder->add('<?= $field ?>');
 <?php }} ?>
     }
 
-    public function getName()
+    public function getName(): string
     {
         return '<?= strtolower($entityClass) ?>_form';
     }
