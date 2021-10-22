@@ -179,7 +179,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
         return [
             "." . $field,
-            $alias,
+            $alias ?? $join,
             $paramname,
         ];
     }
