@@ -66,8 +66,8 @@ abstract class AbstractFilterType implements FilterTypeInterface
     {
         return $this->label;
     }
-    
-    
+
+
     public function setLabel(string $label): self
     {
         $this->label = $label;
@@ -147,23 +147,40 @@ abstract class AbstractFilterType implements FilterTypeInterface
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
+     * @param QueryBuilder $qb
      * @return array
      */
-    protected function getQueryParams(QueryBuilder $queryBuilder): array
+    protected function getQueryParams(QueryBuilder $qb): array
     {
-        $arr = explode(':', $this->id);
-        if (count($arr) > 1) {
-            $id = $arr[1];
-            $alias = $arr[0] . '.';
-            if (!in_array($arr[0], $queryBuilder->getAllAliases())) {
-                $queryBuilder->join($this->alias . $arr[0], $arr[0]);
+        // parts (e.g. : user:post:title => [user, post, title]
+        $fields = explode(':', $this->id);
+
+        // join alias
+        $alias = null;
+
+        // column to join (i.e. root.user, user.post, etc.)
+        $join = $qb->getRootAliases()[0];
+
+        $field = array_shift($fields);
+
+        // while we aren't at the last part
+        while (!empty($fields)) {
+            $alias = $alias ? $alias . "_" . $field : $field;
+
+            if (!in_array($alias, $qb->getAllAliases())) {
+                $qb->join($join . "." . $field, $alias);
             }
-        } else {
-            $id = $this->id;
-            $alias = $this->alias;
+
+            $join = $alias;
+            $field = array_shift($fields);
         }
-        $paramname = str_replace('.','_', $alias . $id);
-        return array($id, $alias, $paramname);
+
+        $paramname = str_replace('.','_', $alias . "_" . $field);
+
+        return [
+            "." . $field,
+            $alias,
+            $paramname,
+        ];
     }
 }
