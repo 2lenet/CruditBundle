@@ -45,11 +45,12 @@ class EntityFilterType extends AbstractFilterType
             list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
             switch ($this->data['op']) {
-                case "eq":
-                    $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $id, ':'.$paramname));
-                    break;
                 case "neq":
                     $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $id, ':'.$paramname));
+                    break;
+                case "eq":
+                default:
+                    $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $id, ':'.$paramname));
                     break;
             }
 
