@@ -2,4 +2,10 @@
     &-menu {
         z-index: 1001;
     }
+
+    &--no-arrow {
+        .dropdown-toggle::after {
+            display: none;
+        }
+    }
 }

@@ -1,7 +1,7 @@
-{%  set  has_batch = view.data.batch_actions|length %}
+{% set has_batch = view.data.batch_actions|length %}
 <div class="card shadow mb-4">
     <div class="card-header py-1">
-        {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
+        {% include('@LleCrudit/brick/list_items/_pager.html.twig') %}
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -14,9 +14,10 @@
                             {% endif %}
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 %}
-                                    <th class="{{ field.options.tableCssClass|default("text-nowrap") }}">{{ field.label |trans }}
+                                    <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
+                                        {{ field.label|trans }}
                                         {% if field.sortable %}
-                                            {% set name = view.config.name | lower %}
+                                            {% set name = view.config.name|lower %}
                                             {% set merge_params = {
                                                 (name ~ '_sort'): field.name,
                                                 (name ~ '_sort_order'): 'asc'
@@ -26,14 +27,14 @@
                                                 [app.request.query.get(name ~ '_sort_order'), app.request.query.get(name ~ '_sort')]
                                             ] %}
 
-                                            {% set order = sorts | first | last %}
-                                            {% set sorted = (sorts | first | first == field.name) %}
+                                            {% set order = sorts|first|last %}
+                                            {% set sorted = (sorts|first|first == field.name) %}
 
                                             {% set icon = 'fa-sort' %}
                                             {% if sorted %}
                                                 {% set icon = 'fa-sort-amount-up-alt' %}
                                             {% endif %}
-                                            {% if sorted and order | lower == 'asc' %}
+                                            {% if sorted and order|lower == 'asc' %}
                                                 {% set icon = 'fa-sort-amount-down-alt' %}
                                                 {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
                                             {% endif %}
@@ -49,39 +50,48 @@
                                 {% endif %}
                             {% endfor %}
                             {% if view.config.actions|length %}
-                                <th>{{ 'crudit.action'|trans }}</th>
+                                {% set hasActions = false %}
+                                {% for action in view.config.actions %}
+                                    {% if action.path.role is null or is_granted(action.path.role) %}
+                                        {% set hasActions = true %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if hasActions %}
+                                    <th>{{ 'crudit.action'|trans }}</th>
+                                {% endif %}
                             {% endif %}
                         </tr>
                     </thead>
                 {% endif %}
+
                 <tbody>
-                    {% set ruptval1 = "" %}
-                    {% set ruptval2 = "" %}
+                    {% set ruptval1 = '' %}
+                    {% set ruptval2 = '' %}
                     {% for line in view.data.lines %}
                         {% set line_opened = 0 %}
                         {% for column in line.fields %}
                             {# RUPTURE NIVEAU 1 #}
-                            {% if column.field.ruptGroup==1 %}
+                            {% if column.field.ruptGroup == 1 %}
                                 {% if ruptval1 != column.value %}
                                     <tr>
-                                        <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
                                     </tr>
-                                    {% set ruptval2 = "" %}
+                                    {% set ruptval2 = '' %}
                                 {% endif %}
                                 {% set ruptval1 = column.value %}
                             {% endif %}
 
                             {# RUPTURE NIVEAU 2 #}
-                            {% if column.field.ruptGroup==2 %}
+                            {% if column.field.ruptGroup == 2 %}
                                 {% if ruptval2 != column.value %}
                                     <tr>
-                                        <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
                                     </tr>
                                 {% endif %}
                                 {% set ruptval2 = column.value %}
                             {% endif %}
 
-                            {% if column.field.ruptGroup==0 %}
+                            {% if column.field.ruptGroup == 0 %}
                                 {% if line_opened == 0 %}
                                     <tr>
                                     {% set line_opened = 1 %}
@@ -101,32 +111,7 @@
                             {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
-                            <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    {% for action in view.config.actions %}
-                                        {% if action.path.role is null or is_granted(action.path.role) %}
-                                            {% set params = { 'id': line.resource.id } %}
-                                            {% do action.setResource(line.resource) %}
-                                            {% if action.modal %}
-                                                {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
-                                            {% endif %}
-                                            <span class="btn-wrapper" title="{{ action.title|trans }}">
-                                                <a
-                                                        class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
-                                                        {% if action.modal %}
-                                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                                                        {% elseif not action.disabled %}
-                                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                                        {% endif %}
-                                                >
-                                                    {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                                    {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
-                                                </a>
-                                            </span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </td>
+                            {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
                         {% endif %}
                         </tr>
                     {% endfor %}
@@ -135,6 +120,6 @@
         </div>
     </div>
     <div class="card-footer py-1">
-        {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
+        {% include('@LleCrudit/brick/list_items/_pager.html.twig') %}
     </div>
 </div>
