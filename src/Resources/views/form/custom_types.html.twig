@@ -5,37 +5,39 @@
             name="{{ id }}_items"
     >
     <input class="form-control entity-select"
-           data-url="{{ url }}?q="
-           data-options="{{ items | default('[]') | escape('html_attr') }}"
-           data-maxitems="{{ multiple ? 'null' : '1' }}"
-           id="{{ id }}"
-           name="{{ full_name }}"
-           value="{{ value | default('') }}"
-           {{ required ? 'required' }}
+            data-url="{{ url }}?q="
+            data-options="{{ items|default('[]')|escape('html_attr') }}"
+            data-maxitems="{{ multiple ? 'null' : '1' }}"
+            id="{{ id }}"
+            name="{{ full_name }}"
+            value="{{ value|default('') }}"
+            {{ required ? 'required' }}
     />
 {% endblock %}
 
 {% block crudit_gedmo_translatable_widget %}
-        {% set fieldname = form.vars.name %}
-        <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs" role="tablist">
-                {% for locale in locales %}
-                    {% set isActiveTab = (locale == currentlocale) ? 'active' : '' %}
-                    <li class="nav-item {{ isActiveTab }}" role="presentation">
-                        <a class="nav-link {{ isActiveTab }}" aria-expanded="true" href="{{ '#' ~ fieldname ~ '_' ~ locale }}" data-bs-toggle="tab">
-                            {{ tablabels[locale] }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-            <div class="tab-content">
-                {% for locale in locales %}
-                    {% set isActiveTabContent = (locale == currentlocale) ? 'active' : '' %}
-                    {# TAB CONTENT #}
-                    <div  role="tabpanel" class="tab-pane {{ isActiveTabContent }}" id="{{ fieldname ~ '_' ~ locale }}">
-                        {{ form_widget(attribute(form, locale)) }}
+    {% set fieldname = form.vars.name %}
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs" role="tablist">
+            {% for locale in locales %}
+                {% set isActiveTab = (locale == currentlocale) ? 'active' : '' %}
+                <li class="nav-item {{ isActiveTab }}" role="presentation">
+                    <a class="nav-link {{ isActiveTab }}" href="{{ '#' ~ fieldname ~ '_' ~ locale }}" aria-expanded="true" data-bs-toggle="tab">
+                        {{ tablabels[locale] }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content">
+            {% for locale in locales %}
+                {% set isActiveTabContent = (locale == currentlocale) ? 'active' : '' %}
+                <div id="{{ fieldname ~ '_' ~ locale }}" class="tab-pane {{ isActiveTabContent }}" role="tabpanel">
+                    <div class="form-floating">
+                        {{ form_widget(attribute(form, locale), {'attr': {'class': 'form-control', 'placeholder': '', 'autocomplete': 'new-password'}}) }}
+                        {{ form_label(form) }}
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
+    </div>
 {% endblock %}

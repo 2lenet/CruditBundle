@@ -102,13 +102,13 @@ $input-height: 42px;
 }
 
 .form-floating {
-    & > input.form-control:focus,
-    & > input.form-control:not(:placeholder-shown),
+    & input.form-control:focus,
+    & input.form-control:not(:placeholder-shown),
     & input[type="file"].form-control,
-    & > select.form-control:focus,
-    & > select.form-control:not(:placeholder-shown),
-    & > textarea.form-control:focus,
-    & > textarea.form-control:not(:placeholder-shown) {
+    & select.form-control:focus,
+    & select.form-control:not(:placeholder-shown),
+    & textarea.form-control:focus,
+    & textarea.form-control:not(:placeholder-shown) {
         padding-top: 0.9rem;
     }
 
