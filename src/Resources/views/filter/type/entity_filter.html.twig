@@ -8,9 +8,10 @@
                 name="{{ id }}_value"
                 value="{{ data['value']|default('') }}"
                 placeholder=""
+                autocomplete="new-password"
                 data-url="{{ path(filter.dataRoute) }}?q="
                 data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
         />
-        <label>{{ filter.label|trans() }}</label>
+        <label>{{ filter.label|trans }}</label>
     </div>
 {% endblock %}

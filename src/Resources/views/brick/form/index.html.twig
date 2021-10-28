@@ -8,7 +8,9 @@
                 {% if field.vars.name != '_token' %}
                     <div class="form-floating mb-4">
                         {{ form_widget(field, {'attr': {'class': 'form-control', 'placeholder': '', 'autocomplete': 'new-password'}}) }}
-                        {{ form_label(field) }}
+                        {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
+                            {{ form_label(field) }}
+                        {% endif %}
                         <div class="px-2">
                             {{ form_help(field) }}
                             {{ form_errors(field) }}

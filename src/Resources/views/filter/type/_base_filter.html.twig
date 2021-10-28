@@ -29,9 +29,9 @@
 
     {% block input %}
         <div class="form-floating">
-            <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value" value="{{ data['value']|default('') }}" placeholder="" />
+            <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value" value="{{ data['value']|default('') }}" placeholder="" autocomplete="new-password" />
             <label for="input_{{ id }}">
-                {{ filter.label|trans() }}
+                {{ filter.label|trans }}
             </label>
         </div>
     {% endblock %}
