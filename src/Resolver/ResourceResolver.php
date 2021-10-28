@@ -8,6 +8,7 @@ use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
+use Symfony\Component\Security\Core\Security;
 
 class ResourceResolver
 {
@@ -15,10 +16,14 @@ class ResourceResolver
     /** @var FieldResolver */
     private $fieldResolver;
 
+    private Security $security;
+
     public function __construct(
-        FieldResolver $fieldResolver
+        FieldResolver $fieldResolver,
+        Security $security
     ) {
         $this->fieldResolver = $fieldResolver;
+        $this->security = $security;
     }
 
     /**
@@ -40,7 +45,9 @@ class ResourceResolver
     {
         $fieldViews = [];
         foreach ($fields as $field) {
-            $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource);
+            if ($field->getRole() == null || $this->security->isGranted($field->getRole())) {
+                $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource);
+            }
         }
         return $fieldViews;
     }
