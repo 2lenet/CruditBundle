@@ -24,10 +24,6 @@ services:
     arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder']
     tags: [ 'crudit.brick' ]
 
-  Lle\CruditBundle\Brick\MapBrick\MapFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
-    tags: [ 'crudit.brick' ]
-
   Lle\CruditBundle\Brick\TemplateBrick\TemplateFactory:
     arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
     tags: [ 'crudit.brick' ]

@@ -1,6 +1,5 @@
 import "bootstrap";
 
-import "./map";
 import "./editinplace";
 import "./batch_actions";
 import "./input_format";
