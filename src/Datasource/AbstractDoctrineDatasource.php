@@ -106,7 +106,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function count_query(string $queryColumn, $queryTerm): int
     {
         $qb = $this->buildQueryBuilder(null);
-        $qb->select('count(root.id)');
+        $qb->select('count( DISTINCT root.id)');
         $orStatements = $qb->expr()->orX();
         foreach ($this->searchFields as $field) {
             $orStatements->add(
@@ -120,7 +120,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function count(?DataSourceParams $requestParams): int
     {
         $qb = $this->buildQueryBuilder($requestParams);
-        $qb->select('count(root.id)');
+        $qb->select('count( DISTINCT root.id)');
 
         if ($this->filterset) {
             $this->applyFilters($qb);
@@ -229,7 +229,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
      */
     public function buildQueryBuilder(?DataSourceParams $requestParams): QueryBuilder
     {
-        $qb = $this->getRepository()->createQueryBuilder("root");
+        $qb = $this->getRepository()->createQueryBuilder("root")->distinct();
 
         if ($requestParams) {
             foreach ($requestParams->getFilters() as $filter) {
