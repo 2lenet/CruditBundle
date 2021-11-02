@@ -24,7 +24,6 @@ use Symfony\Component\Console\Question\Question;
 
 final class MakeCrudit extends AbstractMaker
 {
-
     /** @var FileManager */
     private $fileManager;
 
@@ -70,11 +69,17 @@ final class MakeCrudit extends AbstractMaker
                 InputArgument::OPTIONAL,
                 sprintf('Do you want some filters ?')
             )
+            ->addArgument(
+                "workflow",
+                InputArgument::OPTIONAL,
+                "Will you use a workflow ?"
+            )
             ->setHelp((string)file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'));
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
         $inputConfig->setArgumentAsNonInteractive('filter');
+        $inputConfig->setArgumentAsNonInteractive("workflow");
 
     }
 
@@ -108,6 +113,13 @@ final class MakeCrudit extends AbstractMaker
             $question = new ConfirmationQuestion($argument->getDescription(), true);
             $value = $io->askQuestion($question);
             $input->setArgument('filter', $value);
+        }
+
+        if (null === $input->getArgument("workflow")) {
+            $argument = $command->getDefinition()->getArgument("workflow");
+            $question = new ConfirmationQuestion($argument->getDescription(), false);
+            $value = $io->askQuestion($question);
+            $input->setArgument("workflow", $value);
         }
     }
 
@@ -154,8 +166,7 @@ final class MakeCrudit extends AbstractMaker
         }
     }
 
-    private
-    function getStringArgument(string $name, InputInterface $input): string
+    private function getStringArgument(string $name, InputInterface $input): string
     {
         if (is_string($input->getArgument($name)) || is_null($input->getArgument($name))) {
             return (string)$input->getArgument($name);
@@ -212,12 +223,11 @@ final class MakeCrudit extends AbstractMaker
                 $fields[] = $fieldassoc;
             }
         }
-        //dd($fields);
+
         return $fields;
     }
 
-    private
-    function getSkeletonTemplate(string $templateName): string
+    private function getSkeletonTemplate(string $templateName): string
     {
         return __DIR__ . '/../Resources/skeleton/crud/' . $templateName;
     }
@@ -252,8 +262,7 @@ final class MakeCrudit extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    private
-    function getBoolArgument(string $name, InputInterface $input): bool
+    private function getBoolArgument(string $name, InputInterface $input): bool
     {
         if (is_string($input->getArgument($name)) || is_bool($input->getArgument($name))) {
             return (bool)$input->getArgument($name);
@@ -308,7 +317,8 @@ final class MakeCrudit extends AbstractMaker
                 'entityClass' => $shortEntity,
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
-                'strictType' => true
+                'strictType' => true,
+                "hasWorkflow" => $this->getBoolArgument("workflow", $input),
             ]
         );
         $generator->writeChanges();
@@ -341,8 +351,7 @@ final class MakeCrudit extends AbstractMaker
         return $controllerClassNameDetails->getFullName();
     }
 
-    public
-    function configureDependencies(DependencyBuilder $dependencies): void
+    public function configureDependencies(DependencyBuilder $dependencies): void
     {
         $dependencies->addClassDependency(
             Annotation::class,
@@ -350,8 +359,7 @@ final class MakeCrudit extends AbstractMaker
         );
     }
 
-    private
-    function getPathOfClass(string $class): string
+    private function getPathOfClass(string $class): string
     {
         if (class_exists($class)) {
             return (string)(new \ReflectionClass($class))->getFileName();

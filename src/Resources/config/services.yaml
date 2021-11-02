@@ -81,3 +81,7 @@ services:
     Lle\CruditBundle\Exporter\ExcelExporter:
         arguments:
             $translator: "@translator"
+
+    # override, so we are able to access the property name that contains the wf state
+    workflow.marking_store.method:
+        class: Lle\CruditBundle\Workflow\CruditMarkingStore

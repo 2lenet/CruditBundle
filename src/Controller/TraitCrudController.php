@@ -12,12 +12,14 @@ use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Lle\CruditBundle\Workflow\CruditMarkingStore;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Workflow\Registry;
 
 trait TraitCrudController
 {
@@ -286,6 +288,37 @@ trait TraitCrudController
         );
 
         return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
+    }
+
+    /**
+     * @Route("/workflow/{id}")
+     */
+    public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
+    {
+        $transition = $request->get("transition");
+        $field = $request->get("field");
+        $dataSource = $this->config->getDatasource();
+        $item = $dataSource->get($id);
+
+        if ($item && $transition && $field) {
+
+            $this->denyAccessUnlessGranted(
+                "ROLE_" . $this->config->getName() . "_WF_" . strtoupper($transition)
+            );
+
+            foreach ($wfRegistry->all($item) as $wf) {
+
+                /** @var CruditMarkingStore $markingStore */
+                $markingStore = $wf->getMarkingStore();
+
+                if ($field === $markingStore->getProperty() && $wf->can($item, $transition)) {
+                    $wf->apply($item, $transition);
+                    $dataSource->save($item);
+                }
+            }
+        }
+
+        return $this->redirectToReferrer($request);
     }
 
     private function getResource(Request $request, $allowCreate = true): object
