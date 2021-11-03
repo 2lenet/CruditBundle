@@ -19,6 +19,8 @@ class CruditTelephoneCallFilterExtension extends AbstractExtension
 
     public function formatTelephone($telephone)
     {
+        $telephone = str_replace(' ', '', $telephone);
+
         if (strlen($telephone) == 10 && substr($telephone, 0, 1) == '0') {
             $substr = substr($telephone, 1);
             return str_replace(' ', '', '+33' . $substr);
