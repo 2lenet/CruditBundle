@@ -34,7 +34,7 @@
         </div>
 
         <div class="card-footer py-1">
-            <button class="btn btn-sm btn-primary" name="filter" value="filter" type="submit">
+            <button class="btn btn-sm btn-primary" name="{{ view.data.filterset.id}}_filter" value="filter" type="submit">
                 <i class="fa fa-filter"></i>&nbsp;
                 {{ 'crudit.filter.action'|trans({}, 'LleCruditBundle') }}
             </button>
