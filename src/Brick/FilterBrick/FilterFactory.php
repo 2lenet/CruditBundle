@@ -11,18 +11,23 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Security;
 
 class FilterFactory extends AbstractBasicBrickFactory
 {
     private FilterState $filterState;
+    private Security $security;
 
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack,
-        FilterState $filterState
-    ) {
+        RequestStack     $requestStack,
+        FilterState      $filterState,
+        Security         $security
+    )
+    {
         parent::__construct($resourceResolver, $requestStack);
         $this->filterState = $filterState;
+        $this->security = $security;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -46,11 +51,16 @@ class FilterFactory extends AbstractBasicBrickFactory
         return $view;
     }
 
-    public function buildFilterMap(FilterSetInterface $filterset): array {
+    public function buildFilterMap(FilterSetInterface $filterset): array
+    {
         $ret = [];
         foreach ($filterset->getFilters() as $filter) {
-            $filter->setData($this->filterState->getData($filterset->getId(), $filter->getId() ));
-            $ret[$filterset->getId().'_'.$filter->getId()] = $filter;
+            if ($filter->getRole() != null && $this->security->isGranted($filter->getRole()) == false) {
+                continue;
+            }
+
+            $filter->setData($this->filterState->getData($filterset->getId(), $filter->getId()));
+            $ret[$filterset->getId() . '_' . $filter->getId()] = $filter;
         }
         return $ret;
     }
