@@ -22,11 +22,7 @@
   "dependencies": {
     "@popperjs/core": "^2.9.2",
     "bootstrap": "^5.0.2",
-    "geoportal-extensions-leaflet": "^2.1.10",
     "jquery": "^3.6.0",
-    "leaflet": "^1.7.1",
-    "leaflet-ajax": "^2.1.0",
-    "leaflet-easybutton": "^2.4.0",
     "tom-select": "^1.7.5"
   }
 }

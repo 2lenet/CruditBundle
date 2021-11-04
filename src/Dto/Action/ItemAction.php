@@ -32,6 +32,9 @@ class ItemAction
 
     protected ?string $modal = null;
 
+    /** @var bool */
+    protected $dropdown = false;
+
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
         return (new static($label, $path))
@@ -131,6 +134,18 @@ class ItemAction
     public function setModal(?string $modal): self
     {
         $this->modal = $modal;
+
+        return $this;
+    }
+
+    public function isDropdown(): bool
+    {
+        return $this->dropdown;
+    }
+
+    public function setDropdown(bool $dropdown): self
+    {
+        $this->dropdown = $dropdown;
 
         return $this;
     }

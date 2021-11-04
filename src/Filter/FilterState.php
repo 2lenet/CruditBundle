@@ -29,6 +29,8 @@ class FilterState
         foreach ($this->filtersets as $filterset) {
             $filterId = $filterset->getId();
 
+            $sessionKey = "crudit_datasourceparams_" . $filterId;
+
             if (!isset($filterdata[$filterId])) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
             }
@@ -36,8 +38,17 @@ class FilterState
             if ($request->query->get($filterId.'_reset')) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
                 // we remove cached sort & page
-                $this->session->remove("crudit_datasourceparams_" . $filterId);
+                $this->session->remove($sessionKey);
             } else {
+
+                if ($request->query->get($filterId.'_filter')) {
+                    //go back to the first page
+                    $params = $this->session->get($sessionKey);
+                    if (isset($params) && isset($params["offset"])) {
+                        $params["offset"] = 0;
+                        $this->session->set($sessionKey, $params);
+                    }
+                }
 
                 foreach ($filterset->getFilters() as $filterType) {
                     if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {

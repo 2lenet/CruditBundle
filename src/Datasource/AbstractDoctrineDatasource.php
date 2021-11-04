@@ -190,10 +190,13 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
-            if ($metadata->getAssociationMapping($property)) {
+            if (isset($metadata->getAssociationMappings()[$property])) {
                 $type = DoctrineEntityField::class;
+            } else {
+                $type = "string";
             }
         }
+
         return $type;
     }
 
