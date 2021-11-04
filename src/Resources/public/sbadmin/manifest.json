@@ -1,26 +1,3 @@
 {
-  "bundles/crudit/app.css": "/app.css",
-  "bundles/crudit/app.js": "/app.js",
-  "bundles/crudit/images/GPisochronOptions.png": "/images/GPisochronOptions.6a2be22f.png",
-  "bundles/crudit/images/GPlocationOptions.png": "/images/GPlocationOptions.cfbfca4d.png",
-  "bundles/crudit/images/GProuteOptions.png": "/images/GProuteOptions.cfbfca4d.png",
-  "bundles/crudit/images/GPlayerTools.png": "/images/GPlayerTools.429300bf.png",
-  "bundles/crudit/images/GPmapCenter.png": "/images/GPmapCenter.14f23925.png",
-  "bundles/crudit/images/GPshowLayersList.png": "/images/GPshowLayersList.29ceebe3.png",
-  "bundles/crudit/images/GPsearchEngineOpen.png": "/images/GPsearchEngineOpen.f44b0f99.png",
-  "bundles/crudit/images/waiting.gif": "/images/waiting.84926d9a.gif",
-  "bundles/crudit/images/GPisochronCheck.png": "/images/GPisochronCheck.ad86be89.png",
-  "bundles/crudit/images/GProuteCheck.png": "/images/GProuteCheck.ad86be89.png",
-  "bundles/crudit/images/GPisochronOpen.png": "/images/GPisochronOpen.0d12401c.png",
-  "bundles/crudit/images/GPreverseGeocodingOpen.png": "/images/GPreverseGeocodingOpen.3f51fa0b.png",
-  "bundles/crudit/images/GPshowElevationPath.png": "/images/GPshowElevationPath.35d96173.png",
-  "bundles/crudit/images/GPmousePositionEditCoordinates.png": "/images/GPmousePositionEditCoordinates.60dbd1b4.png",
-  "bundles/crudit/images/GPsearchEngineClose.png": "/images/GPsearchEngineClose.ef62ef75.png",
-  "bundles/crudit/images/GProuteOpen.png": "/images/GProuteOpen.39c42b59.png",
-  "bundles/crudit/images/GPlayerInfo.png": "/images/GPlayerInfo.d0ff860a.png",
-  "bundles/crudit/images/GPmousePositionOpen.png": "/images/GPmousePositionOpen.81e78061.png",
-  "bundles/crudit/images/GPlayerInfoClose.png": "/images/GPlayerInfoClose.a1313dac.png",
-  "bundles/crudit/images/GPreverseGeocodingReturn.png": "/images/GPreverseGeocodingReturn.4746b8f0.png",
-  "bundles/crudit/images/GPshowMoreOptions.png": "/images/GPshowMoreOptions.4262b26b.png",
-  "bundles/crudit/images/GPopacitySlider.png": "/images/GPopacitySlider.8e3f7dc4.png"
+  "bundles/crudit/app.js": "/app.js"
 }
