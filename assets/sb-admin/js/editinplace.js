@@ -1,5 +1,17 @@
 'use strict';
 
+//called when the DOM tree is built (before load)
+//avoid checkbox to be checked/unchecked before the click event is set
+window.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll(".crudit-eip-input[type='checkbox']").forEach(eip_checkbox => {
+        if (eip_checkbox.disabled) {
+            //save the initial disabled value
+            eip_checkbox.setAttribute("initial-disabled", eip_checkbox.getAttribute("disabled"));
+        }
+        eip_checkbox.disabled = true;
+    });
+});
+
 window.addEventListener('load', function () {
 
     document.querySelectorAll(".crudit-eip").forEach(eip_elem => {
@@ -8,6 +20,16 @@ window.addEventListener('load', function () {
         let eip_input = eip_elem.querySelector(".crudit-eip-input");
         let eip_cancel = eip_elem.querySelector(".crudit-eip-cancel");
         let eip_form = eip_elem.querySelector("form");
+
+        //if input type is checkbox retrieve initial disabled value
+        if (eip_input.type === "checkbox") {
+            if (eip_input.hasAttribute("initial-disabled")) {
+                eip_input.setAttribute("disabled", eip_input.getAttribute("initial-disabled"));
+                eip_input.removeAttribute("initial-disabled");
+            } else {
+                eip_input.disabled = false;
+            }
+        }
 
         if (eip_val) {
             eip_val.addEventListener('click', () => {
