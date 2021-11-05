@@ -2,29 +2,13 @@ Crudit supports Symfony's Workflow component.
 
 ### Usage
 
-To enable workflows for a resource, you need to add this in the datasource :
+To enable workflows for a field, you need to set the type :
 ```php
-/**
- * @required
- */
-public function setWfRegistry(Registry $wfRegistry)
-{
-    $this->wfRegistry = $wfRegistry;
-}
+$status = Field::new("status")->setType(WorkflowField::class);
 ```
-
-> :warning: **The PHPDoc `@required` is mandatory, otherwise the method will be ignored.**
 
 And it's done !  
-Note that the maker can do it for you.
-
-### Disable the workflow
-
-If you want to disable the workflow for a specific field (e.g. you don't want it in the list but still in the show),
-you can change the type of the field, like this :
-```php
-$status = Field::new("status")->setType("string")
-```
+Note that "workflow" also works.
 
 ### Roles
 

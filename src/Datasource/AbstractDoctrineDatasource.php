@@ -13,10 +13,7 @@ use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Field\DoctrineEntityField;
 use Lle\CruditBundle\Field\EmailField;
 use Lle\CruditBundle\Field\TelephoneField;
-use Lle\CruditBundle\Field\WorkflowField;
 use Lle\CruditBundle\Filter\FilterState;
-use Lle\CruditBundle\Workflow\CruditMarkingStore;
-use Symfony\Component\Workflow\Registry;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
@@ -25,8 +22,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     protected ?FilterSetInterface $filterset;
     protected FilterState $filterState;
     protected array $searchFields = [];
-
-    protected ?Registry $wfRegistry = null;
 
     public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
     {
@@ -184,19 +179,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function getType(string $property, object $resource): string
     {
         $metadata = $this->entityManager->getClassMetadata(get_class($resource));
-
-        // Automatically detect workflows
-        if ($this->wfRegistry) {
-            foreach ($this->wfRegistry->all($resource) as $wf) {
-
-                /** @var CruditMarkingStore $markingStore */
-                $markingStore = $wf->getMarkingStore();
-
-                if ($property === $markingStore->getProperty()) {
-                    return WorkflowField::class;
-                }
-            }
-        }
 
         if (in_array($property, ['email','mail'])) {
             return EmailField::class;

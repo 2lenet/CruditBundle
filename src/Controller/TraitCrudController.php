@@ -12,7 +12,6 @@ use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
-use Lle\CruditBundle\Workflow\CruditMarkingStore;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -296,11 +295,10 @@ trait TraitCrudController
     public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
     {
         $transition = $request->get("transition");
-        $field = $request->get("field");
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
 
-        if ($item && $transition && $field) {
+        if ($item && $transition) {
 
             $this->denyAccessUnlessGranted(
                 "ROLE_" . $this->config->getName() . "_WF_" . strtoupper($transition)
@@ -308,10 +306,7 @@ trait TraitCrudController
 
             foreach ($wfRegistry->all($item) as $wf) {
 
-                /** @var CruditMarkingStore $markingStore */
-                $markingStore = $wf->getMarkingStore();
-
-                if ($field === $markingStore->getProperty() && $wf->can($item, $transition)) {
+                if ($wf->can($item, $transition)) {
                     $wf->apply($item, $transition);
                     $dataSource->save($item);
                 }

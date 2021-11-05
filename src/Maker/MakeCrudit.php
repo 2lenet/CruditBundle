@@ -69,17 +69,11 @@ final class MakeCrudit extends AbstractMaker
                 InputArgument::OPTIONAL,
                 sprintf('Do you want some filters ?')
             )
-            ->addArgument(
-                "workflow",
-                InputArgument::OPTIONAL,
-                "Will you use a workflow ?"
-            )
             ->setHelp((string)file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'));
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
         $inputConfig->setArgumentAsNonInteractive('filter');
-        $inputConfig->setArgumentAsNonInteractive("workflow");
 
     }
 
@@ -113,13 +107,6 @@ final class MakeCrudit extends AbstractMaker
             $question = new ConfirmationQuestion($argument->getDescription(), true);
             $value = $io->askQuestion($question);
             $input->setArgument('filter', $value);
-        }
-
-        if (null === $input->getArgument("workflow")) {
-            $argument = $command->getDefinition()->getArgument("workflow");
-            $question = new ConfirmationQuestion($argument->getDescription(), false);
-            $value = $io->askQuestion($question);
-            $input->setArgument("workflow", $value);
         }
     }
 
@@ -318,7 +305,6 @@ final class MakeCrudit extends AbstractMaker
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'strictType' => true,
-                "hasWorkflow" => $this->getBoolArgument("workflow", $input),
             ]
         );
         $generator->writeChanges();
