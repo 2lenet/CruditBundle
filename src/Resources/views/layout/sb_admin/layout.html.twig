@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block page_title %}CrudIt{% endblock %}</title>
+    {% block favicon %}
+        <link rel="shortcut icon" href="/img/logo.png" />
+        <link rel="apple-touch-icon" href="/img/logo.png" />
+    {% endblock %}
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('bundles/llecrudit/sbadmin/app.css') }}">
     {% endblock %}
