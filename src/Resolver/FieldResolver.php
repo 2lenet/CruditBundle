@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Resolver;
 
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
@@ -25,7 +26,12 @@ class FieldResolver
         $this->fieldRegistry = $fieldRegistry;
     }
 
-    public function resolveView(Field $field, object $resource, DatasourceInterface $datasource): FieldView
+    public function resolveView(
+        Field $field,
+        object $resource,
+        DatasourceInterface $datasource,
+        ?CrudConfigInterface $crudConfig = null
+    ): FieldView
     {
         $subResource = $resource;
         $name = $field->getName();
@@ -50,7 +56,8 @@ class FieldResolver
         }
         $fieldView = (new FieldView($field, $value))
             ->setResource($resource)
-            ->setParentResource($subResource);
+            ->setParentResource($subResource)
+            ->setConfig($crudConfig);
 
         return $this->fieldRegistry->get($type)
             ->buildView($fieldView, $value);

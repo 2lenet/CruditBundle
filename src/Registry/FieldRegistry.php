@@ -24,6 +24,6 @@ class FieldRegistry
                 return $field;
             }
         }
-        throw new CruditException('field ' . $type . ' not found');
+        throw new CruditException("There are no fields that support type '$type'");
     }
 }

@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Workflow\Registry;
 
 trait TraitCrudController
 {
@@ -286,6 +287,33 @@ trait TraitCrudController
         );
 
         return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
+    }
+
+    /**
+     * @Route("/workflow/{id}")
+     */
+    public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
+    {
+        $transition = $request->get("transition");
+        $dataSource = $this->config->getDatasource();
+        $item = $dataSource->get($id);
+
+        if ($item && $transition) {
+
+            $this->denyAccessUnlessGranted(
+                "ROLE_" . $this->config->getName() . "_WF_" . strtoupper($transition)
+            );
+
+            foreach ($wfRegistry->all($item) as $wf) {
+
+                if ($wf->can($item, $transition)) {
+                    $wf->apply($item, $transition);
+                    $dataSource->save($item);
+                }
+            }
+        }
+
+        return $this->redirectToReferrer($request);
     }
 
     private function getResource(Request $request, $allowCreate = true): object

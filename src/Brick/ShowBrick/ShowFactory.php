@@ -57,7 +57,8 @@ class ShowFactory extends AbstractBasicBrickFactory
             return $this->resourceResolver->resolve(
                 $resource,
                 $this->getFields($brickConfigurator),
-                $brickConfigurator->getDataSource()
+                $brickConfigurator->getDataSource(),
+                $brickConfigurator->getCrudConfig()
             );
         }
         return null;

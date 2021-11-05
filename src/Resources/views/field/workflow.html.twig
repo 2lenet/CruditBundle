@@ -1,0 +1,37 @@
+{# Get allowed transitions #}
+{% set transitions = workflow_transitions(resource) %}
+{# Filter by user role #}
+{% if view.config %}
+    {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (view.config.name) ~ '_WF_' ~ (t.name | upper))) %}
+{% endif %}
+
+{% if transitions is not empty %}
+    {# There are allowed transitions #}
+    <div class="dropdown crudit-wf-dropdown">
+        <span class="badge rounded-pill bg-primary text-start crudit-wf-badge crudit-wf-state-{{ value }}" data-bs-toggle="dropdown">
+            <div
+                    class="dropdown-toggle text-decoration-none align-middle"
+                    role="button">
+                {{ ('wf.state.' ~ value) | trans }}
+            </div>
+        </span>
+        <ul class="dropdown-menu">
+            {% for transition in transitions %}
+                <a
+                        class="dropdown-item crudit-wf-transition-{{ transition.name }}"
+                        href="{{ view.config ? path(view.config.rootRoute ~ '_workflowtransition', {
+                            id : resource.id,
+                            transition: transition.name,
+                            field: view.field.name,
+                        }) : '#' }}">
+                    {{ ('wf.transition.' ~ transition.name) | trans }}
+                </a>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    {# There are no allowed transitions #}
+    <span class="badge rounded-pill bg-primary text-start crudit-wf-badge crudit-wf-state-{{ value }}">
+        {{ ('wf.state.' ~ value) | trans }}
+    </span>
+{% endif %}

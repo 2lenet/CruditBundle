@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Resolver;
 
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
@@ -29,26 +30,37 @@ class ResourceResolver
     /**
      * @param Field[] $fields
      */
-    public function resolve(object $resource, array $fields, DatasourceInterface $datasource): ResourceView
+    public function resolve(
+        object $resource,
+        array $fields,
+        DatasourceInterface $datasource,
+        ?CrudConfigInterface $crudConfig = null
+    ): ResourceView
     {
         return new ResourceView(
             $datasource->getIdentifier($resource),
             $resource,
-            $this->getFieldViews($fields, $resource, $datasource)
+            $this->getFieldViews($fields, $resource, $datasource, $crudConfig)
         );
     }
 
     /**
      * @return FieldView[]
      */
-    private function getFieldViews(array $fields, object $resource, DatasourceInterface $datasource): array
+    private function getFieldViews(
+        array $fields,
+        object $resource,
+        DatasourceInterface $datasource,
+        ?CrudConfigInterface $crudConfig = null
+    ): array
     {
         $fieldViews = [];
         foreach ($fields as $field) {
             if ($field->getRole() == null || $this->security->isGranted($field->getRole())) {
-                $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource);
+                $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource, $crudConfig);
             }
         }
+
         return $fieldViews;
     }
 }

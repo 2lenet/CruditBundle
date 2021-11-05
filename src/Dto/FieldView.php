@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto;
 
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 
 class FieldView
 {
-
     /** @var Field  */
     private $field;
 
@@ -20,12 +20,13 @@ class FieldView
 
     private $options;
 
-
     /** @var ?object */
     private $resource = null;
 
     /** @var ?object */
     private $parentResource = null;
+
+    private ?CrudConfigInterface $config = null;
 
     /** @param mixed $value */
     public function __construct(Field $field, $value)
@@ -96,4 +97,15 @@ class FieldView
         return $this;
     }
 
+    public function getConfig(): ?CrudConfigInterface
+    {
+        return $this->config;
+    }
+
+    public function setConfig(?CrudConfigInterface $config): self
+    {
+        $this->config = $config;
+
+        return $this;
+    }
 }

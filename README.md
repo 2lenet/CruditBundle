@@ -48,6 +48,18 @@ $secondary: #00B6BE;
 ```
 
 
+## Recipes
+
+- [Create a CRUD](doc/crud.md)
+- [Submenu](doc/submenu.md)
+- [Filters](doc/filter.md)
+- [Sublist](doc/sublist.md)
+- [Use a FilterSet in your own Controller](doc/filterset_controller.md)
+- [Form types](doc/form_types.md)
+- [Add a map to a list or to a show](doc/map_config.md)
+- [How to export data](doc/export.md)
+- [Workflows](doc/workflow.md)
+
 ## Principle
 
 A crud is composed by 
@@ -108,18 +120,6 @@ See [Add a map to a list or to a show](doc/map_config.md) for details
 
 Some help to check the input validity ( upper, email, ip, etc... )
 - [inputFormat](doc/input_format.md)
-
-## Recipe
-
-- [Create crud](doc/crud.md)
-- [Submenu](doc/submenu.md)
-- [Filters](doc/filter.md)
-- [Sublist](doc/sublist.md)
-- [Use a FilterSet in your own Controller](doc/filterset_controller.md)
-- [Form types](doc/form_types.md)
-- [Add a map to a list or to a show](doc/map_config.md)
-- [How to export data](doc/export.md)
-
 
 ## Dependencies
 
