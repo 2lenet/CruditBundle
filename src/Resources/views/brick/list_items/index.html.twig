@@ -13,7 +13,7 @@
                                 <td></td>
                             {% endif %}
                             {% for field in view.config.fields %}
-                                {% if field.ruptGroup == 0 %}
+                                {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
                                     <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
                                         {{ field.label|trans }}
                                         {% if field.sortable %}

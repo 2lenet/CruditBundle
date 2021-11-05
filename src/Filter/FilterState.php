@@ -5,17 +5,20 @@ namespace Lle\CruditBundle\Filter;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Security;
 
 class FilterState
 {
     private iterable $filtersets;
     private SessionInterface $session;
     private ?array $filterdata;
+    private Security $security;
 
-    public function __construct(iterable $filtersets, SessionInterface $session)
+    public function __construct(iterable $filtersets, SessionInterface $session, Security $security)
     {
         $this->filtersets = $filtersets;
         $this->session = $session;
+        $this->security = $security;
         $this->filterdata = null;
     }
 
@@ -26,6 +29,8 @@ class FilterState
         foreach ($this->filtersets as $filterset) {
             $filterId = $filterset->getId();
 
+            $sessionKey = "crudit_datasourceparams_" . $filterId;
+
             if (!isset($filterdata[$filterId])) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
             }
@@ -33,10 +38,23 @@ class FilterState
             if ($request->query->get($filterId.'_reset')) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
                 // we remove cached sort & page
-                $this->session->remove("crudit_datasourceparams_" . $filterId);
+                $this->session->remove($sessionKey);
             } else {
 
+                if ($request->query->get($filterId.'_filter')) {
+                    //go back to the first page
+                    $params = $this->session->get($sessionKey);
+                    if (isset($params) && isset($params["offset"])) {
+                        $params["offset"] = 0;
+                        $this->session->set($sessionKey, $params);
+                    }
+                }
+
                 foreach ($filterset->getFilters() as $filterType) {
+                    if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {
+                        unset($filterdata[$filterId][$filterType->getId()]);
+                        continue;
+                    }
                     $key = "filter_" . $filterId . '_' . $filterType->getId();
 
                     $data = $request->query->get($key . '_value');
@@ -77,6 +95,9 @@ class FilterState
     {
         $filterdata = [];
         foreach ($filterset->getFilters() as $filterType) {
+            if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {
+                continue;
+            }
             $data = $filterType->getDefault();
             if ($data !== null && $data !== "") {
                 $filterdata[$filterType->getId()] = $data;

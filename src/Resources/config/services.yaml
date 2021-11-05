@@ -18,12 +18,13 @@ services:
         arguments:
             - !tagged_iterator crudit.filterset
             - '@session'
+            - '@security.helper'
 
     Lle\CruditBundle\Resolver\FieldResolver:
         arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']
 
     Lle\CruditBundle\Resolver\ResourceResolver:
-        arguments: ['@Lle\CruditBundle\Resolver\FieldResolver']
+        arguments: ['@Lle\CruditBundle\Resolver\FieldResolver', '@security.helper']
 
     Lle\CruditBundle\Maker\MakeCrudit:
         arguments: ["@maker.file_manager","@maker.doctrine_helper"]
