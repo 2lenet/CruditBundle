@@ -300,8 +300,9 @@ trait TraitCrudController
 
         if ($item && $transition) {
 
+            $role_transition = str_replace("-", "_", strtoupper($transition));
             $this->denyAccessUnlessGranted(
-                "ROLE_" . $this->config->getName() . "_WF_" . strtoupper($transition)
+                "ROLE_" . $this->config->getName() . "_WF_" . $role_transition
             );
 
             foreach ($wfRegistry->all($item) as $wf) {

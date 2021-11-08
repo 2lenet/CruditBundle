@@ -1,8 +1,7 @@
-{% if data['value'] is not empty %}
-    <span class="filter-state">
-        <small>{{ filtertype.label|trans }}</small>
-        {% for val in data['value'] %}
-            <span class="badge">{{ ('wf.etat.' ~ val)|trans }}</span>
-        {% endfor %}
-    </span>
-{% endif %}
+{% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
+
+{% block value %}
+    {% for state in data.value %}
+        <span class="badge bg-secondary">{{ ('wf.state.' ~ state) | trans }}</span>
+    {% endfor %}
+{% endblock %}

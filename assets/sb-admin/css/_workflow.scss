@@ -1,8 +1,14 @@
 .crudit-wf-badge {
     min-width: 120px;
 
+    // position the toggle arrow inside the badge
     .dropdown-toggle::after {
         float: right;
         margin-top: 0.25rem;
     }
+}
+
+.crudit-filter-workflow .tom-select {
+    // prevent rounding on the left side
+    border-radius: 0 0.35rem 0.35rem 0;
 }
