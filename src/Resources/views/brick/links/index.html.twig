@@ -11,7 +11,11 @@
                 {% set params = action.path.params|merge({id: id}) %}
             {% endif %}
 
-            {% if action.path.role is null or is_granted(action.path.role) %}
+            {% if
+                (action.path.role is null or is_granted(action.path.role))
+                and (is_granted('ROLE_VOTER', action))
+                and not action.dropdown
+            %}
                 {% if action.modal %}
                     {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
                 {% endif %}

@@ -2,9 +2,13 @@
     <div class="btn-group btn-group-sm" role="group">
         {% set hasDropdown = false %}
         {% for action in view.config.actions %}
-            {% if (action.path.role is null or is_granted(action.path.role)) and not action.dropdown %}
+            {% do action.setResource(line.resource) %}
+            {% if
+                (action.path.role is null or is_granted(action.path.role))
+                and (is_granted('ROLE_VOTER', action))
+                and not action.dropdown
+            %}
                 {% set params = { 'id': line.resource.id } %}
-                {% do action.setResource(line.resource) %}
                 {% if action.modal %}
                     {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                 {% endif %}

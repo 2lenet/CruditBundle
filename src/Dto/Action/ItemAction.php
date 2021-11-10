@@ -35,6 +35,12 @@ class ItemAction
     /** @var bool */
     protected $dropdown = false;
 
+    /** @var string */
+    protected $title = null;
+
+    /** @var bool */
+    protected $disabled = false;
+
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
         return (new static($label, $path))
@@ -105,7 +111,18 @@ class ItemAction
 
     public function getTitle(): string
     {
+        if ($this->title !== null) {
+            return $this->title;
+        }
+
         return $this->getLabel();
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     /** exists only when rendering */
@@ -123,7 +140,14 @@ class ItemAction
 
     public function isDisabled(): bool
     {
-        return false;
+        return $this->disabled;
+    }
+
+    public function setDisabled(bool $disabled): self
+    {
+        $this->disabled = $disabled;
+
+        return $this;
     }
 
     public function getModal(): ?string
