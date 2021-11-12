@@ -76,4 +76,29 @@ window.addEventListener('DOMContentLoaded', function () {
         );
     });
 
+    // Normal select
+    document.querySelectorAll(".tom-select").forEach(select => {
+        new TomSelect("#" + select.id,
+            {
+                maxItems: select.dataset.maxitems,
+                plugins: [
+                    "remove_button"
+                ],
+                onChange(value) {
+                    let items = [];
+                    if (value != '') {
+                        value.split(',').forEach(v => {
+                            items.push({id: v, text: this.options[v].text});
+                        });
+                    }
+                    document.getElementById(select.id + "_items").value = JSON.stringify(items);
+                },
+                onItemAdd() {
+                    select.parentElement.querySelector('.ts-input > input').value = "";
+                    select.parentElement.querySelector('.ts-dropdown').style.display = "none";
+                },
+            }
+        );
+    });
+
 });

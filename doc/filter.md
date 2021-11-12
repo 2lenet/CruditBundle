@@ -49,4 +49,4 @@ In the getFilters() method, you can declare the desired filters
 - NumberFilterType : simple number search
 - NumberRangeFilterType : number ranges
 - TreeFilterType (still WIP) : for Gedmo trees (to include children)
-- WorkflowFilterType (still WIP) : for Symfony workflows
+- WorkflowFilterType : for Symfony workflows (see Workflow doc)

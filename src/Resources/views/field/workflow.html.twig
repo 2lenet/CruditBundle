@@ -2,7 +2,7 @@
 {% set transitions = workflow_transitions(resource) %}
 {# Filter by user role #}
 {% if view.config %}
-    {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (view.config.name) ~ '_WF_' ~ (t.name | upper))) %}
+    {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (view.config.name) ~ '_WF_' ~ (t.name | upper | replace({'-': '_'})))) %}
 {% endif %}
 
 {% if transitions is not empty %}
