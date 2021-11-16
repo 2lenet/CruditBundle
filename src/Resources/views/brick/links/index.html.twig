@@ -14,9 +14,10 @@
             {% if action.modal %}
                 {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
             {% endif %}
+            {% set disabled = action.disabled or (action.path.role is not null and not is_granted(action.path.role, view.data.resource)) %}
             <span class="btn-wrapper" title="{{ action.title|trans }}">
                 <a
-                        class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }} {% if action.disabled or not is_granted(action.path.role, view.data.resource) %}disabled{% endif %}"
+                        class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }} {% if disabled %}disabled{% endif %}"
                         {% if action.modal %}
                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
                         {% elseif not action.disabled %}
