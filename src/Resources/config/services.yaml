@@ -8,6 +8,11 @@ services:
         resource: '../../Controller'
         tags: [ 'controller.service_arguments' ]
 
+    Lle\CruditBundle\DataCollector\DataCollector:
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        tags:
+            - { name: 'data_collector', template: "@LleCrudit//profiler/crudit.html.twig", id: "crudit", priority: 200 }
+
     Lle\CruditBundle\Registry\FieldRegistry:
         arguments :
             - !tagged_iterator crudit.field
