@@ -8,7 +8,8 @@
                 {% if action.modal %}
                     {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                 {% endif %}
-                {% set disabled = action.disabled or (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
+                {% set disabled = action.disabled or
+                    (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
                 <span class="btn-wrapper" title="{{ action.title|trans }}">
                     <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
                             {% if action.modal %}
@@ -34,9 +35,11 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="#actions_{{ line.resource.id }}">
                     {% for action in view.config.actions %}
-                        {% if (action.path.role is null or is_granted(action.path.role)) and action.dropdown %}
+                        {% if action.dropdown %}
+                            {% set disabled = action.disabled or
+                                (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
                             <li>
-                                <a class="dropdown-item {% if action.disabled %}disabled{% endif %}"
+                                <a class="dropdown-item {% if disabled %}disabled{% endif %}"
                                         {% if action.modal %}
                                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                                         {% elseif not action.disabled %}
