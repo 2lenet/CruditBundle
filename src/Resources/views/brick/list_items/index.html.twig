@@ -100,13 +100,15 @@
                                     {% endif %}
                                 {% endif %}
                                 <td>
-                                    {% if column.field.path %}
+                                {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                        {% endif %}
-                                        {{ column.value|raw }}
-                                        {% if column.field.path %}
+                                {% elseif column.field.entityPath %}
+                                    <a href="{{ path(column.field.entityPath.route, column.field.entityPath.params({'id': column.getRawValue().id})) }}">
+                                {% endif %}
+                                    {{ column.value|raw }}
+                                {% if column.field.path or column.field.entityPath %}
                                     </a>
-                                    {% endif %}
+                                {% endif %}
                                 </td>
                             {% endif %}
                         {% endfor %}

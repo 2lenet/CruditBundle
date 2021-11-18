@@ -27,6 +27,8 @@ class Field
     /** @var ?Path */
     private $path;
 
+    private ?Path $entityPath = null;
+
     /** @var array */
     private $options;
 
@@ -160,9 +162,20 @@ class Field
         return $this;
     }
 
+    public function linkToEntity(Path $path): self
+    {
+        $this->entityPath = $path;
+        return $this;
+    }
+
     public function getPath(): ?Path
     {
         return $this->path;
+    }
+
+    public function getEntityPath(): ?Path
+    {
+        return $this->entityPath;
     }
 
     public function getTemplate(): ?string
