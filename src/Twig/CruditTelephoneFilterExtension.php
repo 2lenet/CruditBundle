@@ -21,7 +21,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
     {
         $telephone = str_replace(' ', '', $telephone);
 
-        if (strpos($telephone, '+33') !== false) {
+        if (strpos($telephone, '+33') === 0) {
             $start = substr($telephone, 0, 3);
             $middle = substr($telephone, -9, 1);
             $end = substr($telephone, 4);
