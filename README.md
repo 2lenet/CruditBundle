@@ -8,48 +8,16 @@ Crudit bundle for 2le.
 
 ## Installation
 
-```composer require 2lenet/crudit-bundle```
+Webpack Encore is required and you need to have a security on your application.
 
-webpack encore is required and you need to have a security on your application
-
-```
+```bash
+require 2lenet/crudit-bundle
 npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free leaflet --save
 ```
 
-Please add app.scss in your app.js file
-```javascript
-
-/*
-* Welcome to your app's main JavaScript file!
-*
-* We recommend including the built version of this JavaScript file
-* (and its CSS file) in your base layout (base.html.twig).
-  */
-
-// any CSS you import will output into a single css file (app.css in this case)
-import './styles/app.scss';
-
-// start the Stimulus application
-import './bootstrap';
-```
-
-rename your app.css to app.scss with this content
-
-```scss
-@import "variables";
-@import "../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss";
-```
-
-in variables.scss you can configure the main color design
-
-```scss
-$primary: #264467;
-$secondary: #00B6BE;
-```
-
-
 ## Recipes
 
+- [Setup Webpack Encore](doc/webpack_encore.md)
 - [Create a CRUD](doc/crud.md)
 - [Submenu](doc/submenu.md)
 - [Filters](doc/filter.md)
@@ -62,13 +30,13 @@ $secondary: #00B6BE;
 
 ## Principle
 
-A crud is composed by 
+A crud is composed by
 - an independent controller
 - a crud config class
 - a datasource
 - a filterset if needed
 
-The layout and menu are independant from the crud. You can integrate easily you own controller in a Crudit Layout 
+The layout and menu are independant from the crud. You can integrate easily you own controller in a Crudit Layout
 
 ## Feature
 
@@ -90,7 +58,7 @@ The list view need a Datasource but is not bounded to Doctrine or any ORM.
 The show view has the following feature :
 - Show all fields
 - Title can use the entity to title the object by its name
-- Tabs 
+- Tabs
 - Sublists to show related data ( see [Sublist](doc/sublist.md) )
 - Layout customisation is possible ( doc TODO / Block principle )
 
@@ -104,18 +72,6 @@ Crudit provides some help to be nicely integrated :
 - DoctrineFormGuesser to automatically use Crudit FormType.
 - Layout customisation is possible ( doc TODO / Block principle )
 
-### Maps
-If you work with geographic data you can integrate it easily as Leaflet Map in Crudit Screen
-
-![](doc/map.png)
-
-The map Bloc can show Markers and Polylines.
-You can provide your own Geojson datasource too.
-
-Maps can be used in the list ( like the screenshot ) or in the show view to basically show the position of the object in a Tab, for example.
-
-See [Add a map to a list or to a show](doc/map_config.md) for details
-
 ## JS Format input helper
 
 Some help to check the input validity ( upper, email, ip, etc... )
@@ -126,13 +82,9 @@ Some help to check the input validity ( upper, email, ip, etc... )
 Crudit wants to minimise dependencies on not really popular bundles or components
 in order to be able to maintain this bundle for many years and to follow the Symfony Stack development without dependency problems.
 
-The layout is inspired by sb-admin-2 but partially rewritten. Many of the features of sbAdmin wasn't useful for this project.
+The layout is inspired by [SB Admin 2](https://startbootstrap.com/theme/sb-admin-2) but partially rewritten. Many of the features of SB Admin wasn't useful for this project.
 
-https://startbootstrap.com/theme/sb-admin-2 ( inspired from ).
-
-The CSS framework used is Bootstrap5. ( It could be possible to change that without much difficulty ).
-
-The map component uses Leaflet.
+The CSS framework used is [Bootstrap 5](https://getbootstrap.com/docs/5.1/getting-started/introduction/).
 
 Excel export uses phpoffice/phpspreadsheet.
 
@@ -142,16 +94,13 @@ Doctrine is needed for the pre-version but the project is designed to work witho
 # Development
 
 TO COMPLETE
-- [Design principle ](doc/design.md)
+- [Design principle](doc/design.md)
 
-## js / css Developpement
+## JS / CSS Developpement
 
-To update the JS or the CSS please run 
+To update the JS or the CSS please run in the bundle
 
-`npm install`
-
-and 
-
-`npm run build` or `npm run watch`
-
-in the bundle
+```bash
+npm install
+npm run build
+```
