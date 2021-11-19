@@ -12,8 +12,36 @@ Webpack Encore is required and you need to have a security on your application.
 
 ```bash
 require 2lenet/crudit-bundle
-npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free leaflet --save
+npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free --save
 ```
+
+Just add the following lines in your template/base.html.twig
+
+```twig
+{% extends crudit.template('layout') %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('app') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+```
+
+Then, in your assets/js/app.js, you have to add this line :
+
+```js
+import '../styles/app.scss';
+```
+
+And in your assets/styles/app.scss, add this :
+```scss
+@import '../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss';
+```
+
+All new SCSS files must be imported before the import of Crudit SCSS.
 
 ## Recipes
 

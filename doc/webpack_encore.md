@@ -1,7 +1,7 @@
 # How to integrate Webpack Encore to Crudit
 
 ## Setup
-If you want to use Webpack Encore, just add the following lines in your template/base.html.twig
+To use Webpack Encore, just add the following lines in your template/base.html.twig
 
 ```twig
 {% extends crudit.template('layout') %}
@@ -16,7 +16,6 @@ If you want to use Webpack Encore, just add the following lines in your template
 {% endblock %}
 ```
 
-
 Then, in your assets/js/app.js, you have to add this line :
 
 ```js
@@ -28,7 +27,7 @@ And in your assets/styles/app.scss, add this :
 @import '../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss';
 ```
 
-All new files must be imported before the import of Crudit SCSS.
+All new SCSS files must be imported before the import of Crudit SCSS.
 
 
 ## Features
