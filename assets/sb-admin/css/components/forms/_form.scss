@@ -20,3 +20,11 @@ fieldset.form_row {
         }
     }
 }
+
+label.required:not(.form-check-label), legend.required {
+    &::after {
+        content: '*';
+        margin-left: 7px;
+        color: red;
+    }
+}

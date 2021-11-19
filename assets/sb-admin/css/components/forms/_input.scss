@@ -125,36 +125,55 @@ $input-height: 42px;
         min-height: 64px;
     }
 
-    .form-control.entity-select {
-        min-height: $input-height;
-        padding-top: 0;
-        & .ts-input {
-            height: $input-height;
-            & > input {
-                height: 21px !important;
-                margin-bottom: -7px !important;
+    .form-control {
+        height: auto;
+        min-height: $form-floating-height;
+
+        &.entity-select {
+            min-height: $input-height;
+            padding-top: 0;
+
+            & .ts-input {
+                height: $input-height;
+
+                & > input {
+                    height: 21px !important;
+                    margin-bottom: -7px !important;
+                }
+            }
+
+            & + .form-label {
+                z-index: 1;
             }
         }
-        & + .form-label {
-            z-index: 1;
+
+        div[class^="col-"] {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+
+            .form-label {
+                width: 10rem;
+            }
+
+            & + div[class^="col-"] {
+                margin-top: 1rem;
+            }
         }
     }
-}
 
-label.required:not(.form-check-label), legend.required {
-    &::after {
-        content: '*';
-        margin-left: 7px;
-        color: red;
+    & .col-form-label {
+        position: absolute;
+        top: -8px;
+        left: -50%;
+        transform: scale(0.7) translateX(calc(50% + 0.8rem));
     }
 }
 
 // Used for file inputs
 .vich-image {
-    height: $input-height;
-
     input[type="file"] {
-        height: 100%;
+        height: $form-floating-height;
         color: transparent !important;
         &:valid {
             color: $body-color !important;
