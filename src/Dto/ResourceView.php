@@ -7,13 +7,13 @@ namespace Lle\CruditBundle\Dto;
 class ResourceView
 {
 
-    /** @var int|string  */
+    /** @var int|string */
     private $id;
 
     /** @var object */
     private $resource;
 
-    /** @var FieldView[]  */
+    /** @var FieldView[] */
     private $fields;
 
     /**
@@ -31,7 +31,7 @@ class ResourceView
     {
         return $this->id;
     }
-
+    
     /** @return object */
     public function getResource(): object
     {
@@ -42,5 +42,39 @@ class ResourceView
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    public function getLinkId(string $fieldName)
+    {
+        if ($fieldName === 'id') {
+            return $this->getId();
+        }
+        $keys = explode(':', $fieldName);
+        if (!isset($keys[0])) {
+            return null;
+        }
+
+        $fieldName = $keys[0];
+
+        unset($keys[0]);
+
+        foreach ($this->fields as $field) {
+            if ($field->getField()->getName() == $fieldName) {
+                return $this->getValue($keys, $field->getRawValue());
+            }
+        }
+        return null;
+    }
+
+    private function getValue(array $keys, object $value)
+    {
+        $key = array_key_first($keys);
+        $value = $value->{'get'.ucfirst($keys[$key])}();
+
+        if (count($keys) > 1) {
+            unset($key);
+            return $this->getValue($keys, $value);
+        }
+        return $value;
     }
 }

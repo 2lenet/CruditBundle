@@ -27,7 +27,8 @@ class Field
     /** @var ?Path */
     private $path;
 
-    private ?Path $entityPath = null;
+    /** @var string */
+    private string $linkId = 'id';
 
     /** @var array */
     private $options;
@@ -156,16 +157,16 @@ class Field
         return $this;
     }
 
-    public function linkTo(Path $path): self
+    public function linkTo(Path $path, string $linkId = "id"): self
     {
         $this->path = $path;
+        $this->linkId = $linkId;
         return $this;
     }
 
-    public function linkToEntity(Path $path): self
+    public function getLinkId(): string
     {
-        $this->entityPath = $path;
-        return $this;
+        return $this->linkId;
     }
 
     public function getPath(): ?Path

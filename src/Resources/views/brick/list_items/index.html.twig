@@ -101,12 +101,10 @@
                                 {% endif %}
                                 <td>
                                 {% if column.field.path %}
-                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                {% elseif column.field.entityPath %}
-                                    <a href="{{ path(column.field.entityPath.route, column.field.entityPath.params({'id': column.getRawValue().id})) }}">
+                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
                                 {% endif %}
                                     {{ column.value|raw }}
-                                {% if column.field.path or column.field.entityPath %}
+                                {% if column.field.path %}
                                     </a>
                                 {% endif %}
                                 </td>
