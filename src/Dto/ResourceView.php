@@ -31,7 +31,7 @@ class ResourceView
     {
         return $this->id;
     }
-    
+
     /** @return object */
     public function getResource(): object
     {
@@ -72,7 +72,7 @@ class ResourceView
         $value = $value->{'get'.ucfirst($keys[$key])}();
 
         if (count($keys) > 1) {
-            unset($key);
+            unset($keys[$key]);
             return $this->getValue($keys, $value);
         }
         return $value;
