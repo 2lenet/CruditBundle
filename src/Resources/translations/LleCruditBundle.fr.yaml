@@ -37,6 +37,9 @@ crudit:
         delete:
             message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
             action: "Supprimer"
+        transition:
+            message: "Voulez-vous vraiment modifier le statut de cet élément ?"
+            action: "Valider"
 
     field:
         createdAt: "Créé le"
