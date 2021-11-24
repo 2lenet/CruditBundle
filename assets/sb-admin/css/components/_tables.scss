@@ -1,3 +1,10 @@
 .table-responsive {
     overflow-x: initial;
+
+    img {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 50px;
+    }
 }
