@@ -17,18 +17,43 @@
         </span>
         <ul class="dropdown-menu">
             {% for transition in transitions %}
-                <a
+                <button
                         class="dropdown-item crudit-wf-transition-{{ transition.name }}"
-                        href="{{ view.config ? path(view.config.rootRoute ~ '_workflowtransition', {
-                            id : resource.id,
-                            transition: transition.name,
-                            field: view.field.name,
-                        }) : '#' }}">
+                        data-bs-toggle="modal"
+                        data-bs-target="#validate-action-{{ transition.name }}-{{ view.resource.id }}"
+                >
                     {{ ('wf.transition.' ~ transition.name) | trans }}
-                </a>
+                </button>
             {% endfor %}
         </ul>
     </div>
+
+    {% for transition in transitions %}
+        <div class="modal fade" id="validate-action-{{ transition.name }}-{{ view.resource.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {{ 'crudit.modal.transition.message' | trans({}, 'LleCruditBundle') }}
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+                            {{ 'crudit.modal.cancel' | trans({}, 'LleCruditBundle') }}
+                        </button>
+                        <a
+                                href="{{ view.config ? path(view.config.rootRoute ~ '_workflowtransition', {
+                                    id : resource.id,
+                                    transition: transition.name,
+                                    field: view.field.name,
+                                }) : '#' }}"
+                                class="btn btn-primary">
+                            {{ 'crudit.modal.transition.action'|trans({}, 'LleCruditBundle') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
 {% else %}
     {# There are no allowed transitions #}
     <span class="badge rounded-pill bg-primary text-start crudit-wf-badge crudit-wf-state-{{ value }}">
