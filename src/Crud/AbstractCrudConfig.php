@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Crud;
 use App\Entity\Objet;
 use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
+use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
@@ -256,6 +257,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getTabs(): array
     {
+        if (is_subclass_of($this->datasource->getClassName(), "Gedmo\Loggable\Loggable")) {
+            return ["tab.history" => HistoryConfig::new()];
+        }
+
         return [];
     }
 

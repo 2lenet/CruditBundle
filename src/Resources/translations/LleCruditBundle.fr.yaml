@@ -74,3 +74,9 @@ crudit:
     yes: "Oui"
     no: "Non"
     by: "par"
+
+    history:
+        action:
+            create: "Création"
+            update: "Mise à jour"
+            remove: "Suppression"
