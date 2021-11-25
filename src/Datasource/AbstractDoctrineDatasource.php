@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
@@ -100,6 +101,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                 $qb->setFirstResult($requestParams->getOffset());
             }
         }
+
         return $qb->getQuery()->execute();
     }
 
@@ -114,6 +116,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             );
         }
         $qb->andWhere($orStatements);
+
         return intval($qb->getQuery()->getSingleScalarResult());
     }
 
@@ -232,12 +235,26 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
      */
     public function buildQueryBuilder(?DataSourceParams $requestParams): QueryBuilder
     {
+        /** @var QueryBuilder $qb */
         $qb = $this->getRepository()->createQueryBuilder("root");
+
+        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
 
         if ($requestParams) {
             foreach ($requestParams->getFilters() as $filter) {
                 $alias = $filter->getAlias() ?? "root";
-                $qb->andWhere($alias . "." . $filter->getField() . $filter->getOperator() . $filter->getValue());
+                $field = $alias . "." . $filter->getField();
+
+                if ($metadata->hasAssociation($filter->getField())
+                    && $metadata->getAssociationMapping($filter->getField())["type"] === ClassMetadataInfo::MANY_TO_MANY
+                ) {
+                    // it's a ManyToMany, we need to join.
+                    $joinAlias = $alias . "_" . $filter->getField();
+                    $qb->join($alias . "." . $filter->getField(), $joinAlias);
+                    $field = $joinAlias;
+                }
+
+                $qb->andWhere($field . $filter->getOperator() . $filter->getValue());
             }
         }
 
