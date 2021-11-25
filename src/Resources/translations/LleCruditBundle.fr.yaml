@@ -80,3 +80,10 @@ crudit:
             create: "Création"
             update: "Mise à jour"
             remove: "Suppression"
+
+    flash:
+        error:
+            eip:
+                generic: "La valeur n'a pa pu être modifiée."
+                access_denied: "Vous n'avez pas le droit de modifier cette valeur."
+                bad_request: "Vous essayez de modifer une valeur inexistante."

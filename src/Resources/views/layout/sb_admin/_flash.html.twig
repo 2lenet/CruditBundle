@@ -1,10 +1,14 @@
-{% for flashMessage in app.session.flashbag.get('error') %}
-<div class="alert alert-danger alert-dismissible" role="alert">
-    {{ flashMessage|raw|trans }}
+<div id="crudit-flash">
+    {% for flashMessage in app.session.flashbag.get('error') %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            {{ flashMessage | raw | trans }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+    {% for flashMessage in app.session.flashbag.get('success') %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+            {{ flashMessage | raw | trans }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
 </div>
-{%  endfor %}
-{% for flashMessage in app.session.flashbag.get('success') %}
-<div class="alert alert-success alert-dismissible" role="alert">
-    {{ flashMessage|raw|trans }}
-</div>
-{%  endfor %}

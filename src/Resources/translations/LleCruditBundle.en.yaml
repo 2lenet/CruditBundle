@@ -71,3 +71,10 @@ crudit:
     yes: "Yes"
     no: "No"
     by: "by"
+
+    flash:
+        error:
+            eip:
+                generic: "Value couldn't be edited."
+                access_denied: "You are not allowed to change this value."
+                bad_request: "You are trying to edit a non-existing value."
