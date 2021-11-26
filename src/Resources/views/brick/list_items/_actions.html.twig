@@ -10,6 +10,12 @@
                 {% endif %}
                 {% set disabled = action.disabled or
                     (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
+
+                {# if action uses a voter, check it #}
+                {% set disabled = disabled or (
+                    action.hasVoter and not is_granted(action.roleVoter, line.resource)
+                ) %}
+
                 <span class="btn-wrapper" title="{{ action.title|trans }}">
                     <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
                             {% if action.modal %}
