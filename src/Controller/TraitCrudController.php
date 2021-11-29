@@ -18,7 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait TraitCrudController
 {
@@ -139,64 +141,79 @@ trait TraitCrudController
     /**
      * @Route("/editdata/{id}")
      */
-    public function editdata(Request $request, $id): Response
+    public function editdata($id, Request $request, TranslatorInterface $translator): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
+        try {
+            $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
 
-        $dataSource = $this->config->getDatasource();
-        $item = $dataSource->get($id);
+            $dataSource = $this->config->getDatasource();
+            $item = $dataSource->get($id);
 
-        if ($item) {
-            $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-                ->getPropertyAccessor();
+            if ($item) {
+                $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+                    ->getPropertyAccessor();
 
-            $reflection = new \ReflectionClass($item);
-            $annotationReader = new AnnotationReader();
+                $reflection = new \ReflectionClass($item);
+                $annotationReader = new AnnotationReader();
 
-            $data = json_decode($request->request->get("data", []), true);
+                $data = json_decode($request->request->get("data", []), true);
 
-            foreach ($data as $field => $value) {
-                if ($field === "id") {
-                    continue;
-                }
-
-                if ($value === "") {
-                    $value = null;
-                } else {
-                    $mapping = $annotationReader->getPropertyAnnotation(
-                        $reflection->getProperty($field),
-                        Column::class
-                    );
-
-                    switch ($mapping->type) {
-                        case "date":
-                        case "datetime":
-                            $value = new \DateTime($value);
-                            break;
-                        case "integer":
-                        case "smallint":
-                            $value = (int)$value;
-                            break;
-                        case "float":
-                            $value = (float)$value;
-                            break;
-                        case "string":
-                        case "text":
-                        case "decimal":
-                        default:
-                            // do nothing
+                foreach ($data as $field => $value) {
+                    if ($field === "id") {
+                        continue;
                     }
+
+                    if ($value === "") {
+                        $value = null;
+                    } else {
+                        $mapping = $annotationReader->getPropertyAnnotation(
+                            $reflection->getProperty($field),
+                            Column::class
+                        );
+
+                        switch ($mapping->type) {
+                            case "date":
+                            case "datetime":
+                                $value = new \DateTime($value);
+                                break;
+                            case "integer":
+                            case "smallint":
+                                $value = (int)$value;
+                                break;
+                            case "float":
+                                $value = (float)$value;
+                                break;
+                            case "string":
+                            case "text":
+                            case "decimal":
+                            default:
+                                // do nothing
+                        }
+                    }
+
+                    $propertyAccessor->setValue($item, $field, $value);
                 }
 
-                $propertyAccessor->setValue($item, $field, $value);
+                $dataSource->save($item);
+
+                return new JsonResponse(["status" => "ok"]);
             }
 
-            $dataSource->save($item);
-
-            return new JsonResponse(["status" => "ok"]);
+            return new JsonResponse([
+                "status" => "ko",
+                "message" => $translator->trans("crudit.flash.error.eip.bad_request", [], "LleCruditBundle"),
+            ], Response::HTTP_BAD_REQUEST);
+        } catch (AccessDeniedException $e) {
+            return new JsonResponse([
+                "status" => "ko",
+                "message" => $translator->trans("crudit.flash.error.eip.access_denied", [], "LleCruditBundle"),
+            ], Response::HTTP_FORBIDDEN);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                "status" => "ko",
+                "message" => $translator->trans("crudit.flash.error.eip.generic", [], "LleCruditBundle"),
+            ], Response::HTTP_BAD_REQUEST);
         }
-
-        return new JsonResponse(["status" => "ko"], Response::HTTP_BAD_REQUEST);
     }
 
     /**

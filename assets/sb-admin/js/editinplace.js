@@ -82,7 +82,16 @@ window.addEventListener('load', function () {
                 body: formData,
                 method: "post"
             }
-        );
+        ).then((response) => {
+            if (response.status >= 400) {
+                // error, tell the user
+                response.json().then((json) => {
+                    addFlash(json.message || "Error while saving EIP.", "danger");
+                }).catch(() => {
+                    addFlash("Unknown error, please contact an administrator.", "danger");
+                })
+            }
+        });
 
         if (eip_val) {
 
@@ -99,5 +108,22 @@ window.addEventListener('load', function () {
         if (form) {
             form.classList.toggle('d-none');
         }
+    }
+
+    function addFlash(message, type = "success") {
+        let flash = document.createElement("div");
+        flash.classList.add("alert", "alert-dismissible");
+        flash.classList.add("alert-" + type);
+        flash.setAttribute("role", "alert");
+        flash.innerText = message;
+
+        let closeButton = document.createElement("button");
+        closeButton.type = "button";
+        closeButton.classList.add("btn-close");
+        closeButton.setAttribute("data-bs-dismiss", "alert");
+
+        flash.append(closeButton);
+
+        document.querySelector("#crudit-flash").append(flash);
     }
 });
