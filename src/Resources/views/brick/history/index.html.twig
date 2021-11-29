@@ -16,7 +16,7 @@
                                 <table>
                                     {% for property, value in entry.data %}
                                         <tr>
-                                            <td>{{ ('field.' ~ property) | trans() }}</td>
+                                            <td>{{ ('field.' ~ (property | replace({'.': '_'}) | lower)) | trans() }}</td>
                                             <td>&nbsp;<i class="fa fa-arrow-right"></i>&nbsp;</td>
                                             <td>
                                                 {% if value.type == 'boolean' %}
