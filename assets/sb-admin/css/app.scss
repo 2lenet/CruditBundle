@@ -5,6 +5,7 @@
 @import 'settings/sizing';
 @import 'settings/forms';
 
+@import 'tools/fonts';
 @import 'tools/responsive';
 
 @import '~bootstrap/scss/bootstrap';
@@ -28,6 +29,7 @@
 @import 'components/dropdown';
 @import 'components/forms/form';
 @import 'components/forms/input';
+@import 'components/forms/input-file';
 @import 'components/forms/edit-in-place';
 @import 'components/footer';
 @import 'components/show';
