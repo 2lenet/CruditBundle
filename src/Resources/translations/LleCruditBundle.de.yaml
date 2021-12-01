@@ -16,6 +16,7 @@ crudit:
         to: "bis"
         of: "von"
         noItem: "Kein Artikel gefunden"
+        limit: "Anzahl der Datensätze"
 
     action:
         save: "Speichern"

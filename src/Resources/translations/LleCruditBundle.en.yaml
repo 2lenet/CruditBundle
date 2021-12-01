@@ -16,6 +16,7 @@ crudit:
         to: "to"
         of: "of"
         noItem: "No items found"
+        limit: "Number of items"
 
     action:
         save: "Save"

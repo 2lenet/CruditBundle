@@ -16,6 +16,7 @@ crudit:
         to: "a"
         of: "da"
         noItem: "Nessun articolo trovato"
+        limit: "Numero di righe"
 
     action:
         save: "Salvare"

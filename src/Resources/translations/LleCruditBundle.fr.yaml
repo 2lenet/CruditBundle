@@ -16,6 +16,7 @@ crudit:
         to: "à"
         of: "sur"
         noItem: "Aucun élément trouvé"
+        limit: "Nombre d'éléments"
 
     action:
         save: "Sauvegarder"

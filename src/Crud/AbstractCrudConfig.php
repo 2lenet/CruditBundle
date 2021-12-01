@@ -158,12 +158,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $limit = $request->query->get(strtolower($this->getName()) . "_limit");
         if ($limit !== null) {
-            $params["limit"] = (int)$limit;
+            $params["limit"] = max((int)$limit, 1);
         }
 
         $offset = $request->query->get(strtolower($this->getName()) . "_offset") ;
         if ($offset !== null) {
-            $params["offset"] = (int)$offset;
+            $params["offset"] = max((int)$offset, 0);
         }
 
         $sortField = $request->query->get(strtolower($this->getName()) . "_sort", null);
