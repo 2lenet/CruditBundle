@@ -40,9 +40,9 @@ In the getFilters() method, you can declare the desired filters
 
 **3. (Optional) Changing the amount displayed**  
 
-By default, 4 filters are displayed. If you want to show more or less, override getAmountDisplayed in your FilterSet :
+By default, 4 filters are displayed. If you want to show more or less, override getNumberDisplayed in your FilterSet :
 ```php
-public function getAmountDisplayed(): int
+public function getNumberDisplayed(): int
 {
     return 8;
 }

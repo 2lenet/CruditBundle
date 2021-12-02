@@ -23,7 +23,7 @@
 
                     {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap' %}
                     {% set classes = filter.hidden ? classes ~ ' d-none' : classes %}
-                    {% set classes = loop.index > view.data.filterset.amountDisplayed ? classes ~ ' collapse-filter collapse' : classes %}
+                    {% set classes = loop.index > view.data.filterset.numberDisplayed ? classes ~ ' collapse-filter collapse' : classes %}
 
                     <div class="{{ classes }}">
                         {% include filter.template with {

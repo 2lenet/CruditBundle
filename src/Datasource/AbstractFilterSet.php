@@ -11,7 +11,7 @@ class AbstractFilterSet implements FilterSetInterface
         return [];
     }
 
-    public function getAmountDisplayed(): int
+    public function getNumberDisplayed(): int
     {
         return 4;
     }

@@ -10,9 +10,9 @@ interface FilterSetInterface
     public function getFilters(): array;
 
     /**
-     * Get the total amount of filters to display, the others will be collapsed
+     * Get the total number of filters to display, the others will be collapsed
      */
-    public function getAmountDisplayed(): int;
+    public function getNumberDisplayed(): int;
 
     /**
      * Internal ID
