@@ -2,7 +2,7 @@
 
 {% block input %}
     <div class="form-floating">
-        <input type="hidden" id="input_{{ id|replace({':': "_"}) }}_items" name="{{ id }}_items" />
+        <input type="hidden" id="input_{{ id|replace({':': "_"}) }}_items" name="{{ id }}_items" value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
         <input id="input_{{ id|replace({':': "_"}) }}"
                 class="form-control entity-select"
                 name="{{ id }}_value"

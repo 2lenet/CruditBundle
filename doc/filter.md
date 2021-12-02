@@ -3,14 +3,15 @@
 How to make filters on lists
 
 **1. In the DataSource.php file linked to your entity**
-
-    /**
-     * @required
-     */
-    public function setFilterset(CollecteFilterset $filterset)
-    {
-        $this->filterset = $filterset;
-    }
+```php
+/**
+ * @required
+ */
+public function setFilterset(CollecteFilterset $filterset)
+{
+    $this->filterset = $filterset;
+}
+```
 
 > :warning: **The PHPDoc `@required` is mandatory, otherwise the method will be ignored.**
 
@@ -37,6 +38,15 @@ In the getFilters() method, you can declare the desired filters
           }
       }
 
+**3. (Optional) Changing the amount displayed**  
+
+By default, 4 filters are displayed. If you want to show more or less, override getNumberDisplayed in your FilterSet :
+```php
+public function getNumberDisplayed(): int
+{
+    return 8;
+}
+```
 
 **Available filter types :** 
 - StringFilterType : simple string search
