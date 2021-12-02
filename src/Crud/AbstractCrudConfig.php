@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
-use App\Entity\Objet;
 use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
