@@ -169,29 +169,3 @@ $input-height: 42px;
         transform: scale(0.7) translateX(calc(50% + 0.8rem));
     }
 }
-
-// Used for file inputs
-.vich-image {
-    input[type="file"] {
-        height: $form-floating-height;
-        color: transparent !important;
-        &:valid {
-            color: $body-color !important;
-        }
-
-        &::file-selector-button,
-        &::-webkit-file-upload-button{
-            position: absolute;
-            top: 0.375rem;
-            right: -0.75rem;
-            height: $form-floating-height;
-            border: $input-border-width solid $input-border-color;
-            border-top-right-radius: $input-border-radius;
-            border-bottom-right-radius: $input-border-radius;
-        }
-    }
-
-    & + label {
-        transform: scale(0.7) translateY(-0.5rem) translateX(0.15rem);
-    }
-}

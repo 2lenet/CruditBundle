@@ -39,8 +39,7 @@ $icon-width: 32px;
                         border: 0;
                         text-align: center;
                         vertical-align: 0;
-                        font-weight: 900;
-                        font-family: 'Font Awesome 5 Free';
+                        @include iconsFont;
                     }
 
                     &.collapsed::after {
@@ -196,7 +195,7 @@ $icon-width: 32px;
     #sidebarToggle::after {
         content: '\f105';
         margin-left: 0.25rem;
-        font-family: 'Font Awesome 5 Free';
+        @include iconsFont;
         @include media('>mobile') {
             color: fade-out($white, 0.5);
         }
@@ -272,7 +271,6 @@ $icon-width: 32px;
         content: '\f104';
         margin-right: 0.1rem;
         color: fade-out($white, 0.5);
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
+        @include iconsFont;
     }
 }

@@ -12,7 +12,7 @@
             width: 16px;
             height: 16px;
             transform: translate(0, -50%);
-            font-family: 'Font Awesome 5 Free';
+            @include iconsFont;
             font-size: 0.8rem;
         }
     }

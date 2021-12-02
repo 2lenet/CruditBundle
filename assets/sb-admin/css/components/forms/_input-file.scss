@@ -1,0 +1,64 @@
+
+
+// Used for file inputs
+input[type="file"] {
+    height: $form-floating-height;
+    color: transparent !important;
+    &:valid {
+        color: $body-color !important;
+    }
+
+    &::file-selector-button,
+    &::-webkit-file-upload-button{
+        position: absolute;
+        top: 0.375rem;
+        right: -0.75rem;
+        height: 100%;
+        border: $input-border-width solid $input-border-color;
+        border-top-right-radius: $input-border-radius;
+        border-bottom-right-radius: $input-border-radius;
+    }
+}
+
+
+// Used for file (image only) inputs
+.vich-image {
+    input[type="file"] {
+        &::file-selector-button,
+        &::-webkit-file-upload-button{
+            height: calc(#{$form-floating-height} + 5px);
+        }
+    }
+
+    & + label {
+        transform: $form-floating-label-transform;
+    }
+
+    .form-check {
+        padding-left: 0;
+        input[type="checkbox"] {
+            margin-left: 0;
+        }
+        label {
+            margin-left: $input-file-checkbox-margin;
+        }
+    }
+
+    input[type="checkbox"] {
+        margin-left: $input-file-checkbox-margin;
+    }
+
+    img {
+        max-height: $input-file-image-preview-maxheight;
+    }
+
+    a {
+        text-decoration: none;
+        & + a {
+            &::before {
+                content: '\f019';
+                @include iconsFont;
+            }
+        }
+    }
+}
