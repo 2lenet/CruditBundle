@@ -9,7 +9,7 @@
         {% endif %}
     </div>
 
-    <nav class="col-sm-12 col-md-8" aria-label="navigation">
+    <nav class="col-sm-12 col-md-6" aria-label="navigation">
         <ul class="pagination justify-content-center justify-content-md-start mb-0">
             {% if view.config.datasource_params.previous %}
                 {% set merge_params = {(view.config.name|lower~'_offset'): 0} %}
@@ -66,7 +66,7 @@
     <div class="col-sm-12 col-md-2">
         <div class="form-floating">
             <select id="items-per-page" class="form-control form-select" style="height: 38px" onchange="window.location.replace(this.value)">
-                {% for limit in [10, 30, 50, 100] %}
+                {% for limit in view.config.choices_nb_items %}
                     {% set merge_params = {(view.config.name|lower~'_limit'): limit} %}
                     {% set parameters = app.request.query.all()|merge(merge_params) %}
                     {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
