@@ -3,32 +3,36 @@
         <div class="card-header py-1">
             <h6 class="m-2 font-weight-bold float-start text-primary">
                 <i class="icon fa fa-search"></i>&nbsp;
-                {{ 'crudit.title.filter'|trans({}, 'LleCruditBundle') }}
+                {{ 'crudit.title.filter' | trans(domain='LleCruditBundle') }}
             </h6>
-            <span id="card-toggle" class="btn float-end" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
+            <span id="card-toggle" class="btn float-end collapsed" data-bs-toggle="collapse" data-bs-target=".collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
                 <i class="fa fa-chevron-up"></i>
             </span>
             {% for id, filter in view.data.filters %}
-                {% set vars = {
+                {% include filter.stateTemplate with {
                     'data': filter.data,
                     'id': id,
-                    'filtertype':filter}
-                %}
-                {% include filter.stateTemplate with vars %}
+                    'filtertype': filter,
+                } %}
             {% endfor %}
         </div>
 
-        <div id="collapse-filter" class="collapse show card-body">
+        <div class="card-body">
             <div class="row">
                 {% for id, filter in view.data.filters %}
-                    <div class="{% if filter.hidden %}d-none{% endif %} col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap">
-                        {% set vars = {
+
+                    {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap' %}
+                    {% set classes = filter.hidden ? classes ~ ' d-none' : classes %}
+                    {% set classes = loop.index > view.data.filterset.numberDisplayed ? classes ~ ' collapse-filter collapse' : classes %}
+
+                    <div class="{{ classes }}">
+                        {% include filter.template with {
                             'data': filter.data,
-                            'id': 'filter_'~ id,
-                            'filtertype': filter}
-                        %}
-                        {% include filter.template with vars %}
+                            'id': 'filter_' ~ id,
+                            'filtertype': filter,
+                        } %}
                     </div>
+
                 {% endfor %}
             </div>
         </div>
@@ -36,11 +40,11 @@
         <div class="card-footer py-1">
             <button class="btn btn-sm btn-primary" name="{{ view.data.filterset.id}}_filter" value="filter" type="submit">
                 <i class="fa fa-filter"></i>&nbsp;
-                {{ 'crudit.filter.action'|trans({}, 'LleCruditBundle') }}
+                {{ 'crudit.filter.action' | trans(domain='LleCruditBundle') }}
             </button>
             <button class="btn btn-sm btn-default" name="{{ view.data.filterset.id}}_reset" value="reset" type="submit">
                 <i class="fa fa-window-close"></i>&nbsp;
-                {{ 'crudit.filter.reset'|trans({}, 'LleCruditBundle') }}
+                {{ 'crudit.filter.reset' | trans(domain='LleCruditBundle') }}
             </button>
         </div>
     </div>
