@@ -125,7 +125,7 @@ $input-height: 42px;
         min-height: 64px;
     }
 
-    .form-control {
+    .form-control:not(.form-check-input) {
         height: auto;
         min-height: $form-floating-height;
 
