@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -141,7 +142,7 @@ final class MakeCrudit extends AbstractMaker
         }
 
         try {
-            $this->createDatasource($input, $io, $generator);
+            $this->createDatasource($input, $io, $generator, $classname);
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }
@@ -287,8 +288,11 @@ final class MakeCrudit extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    private function createDatasource(InputInterface $input, ConsoleStyle $io, Generator $generator): void
+    private function createDatasource(InputInterface $input, ConsoleStyle $io, Generator $generator, string $entityClass): void
     {
+        if (count(AbstractDoctrineDatasource::getInitSearchFields($entityClass)) == 0) {
+            $io->warning("You must set the searchFields property for autocompletion.");
+        }
         $shortEntity = basename(str_replace('\\', '/', $this->getStringArgument('entity-class', $input)));
 
         $datasourceClassNameDetails = $generator->createClassNameDetails(
