@@ -112,9 +112,9 @@ trait TraitCrudController
             $offset,
             []
         );
-        $nb_items = $dataSource->count_query("libelle", $request->query->get("q", ""));
+        $nb_items = $dataSource->autocompleteCountQuery("libelle", $request->query->get("q", ""));
 
-        $items = $dataSource->query(
+        $items = $dataSource->autocompleteQuery(
             "libelle",
             $request->query->get("q", ""),
             $this->config->getDefaultSort(),
