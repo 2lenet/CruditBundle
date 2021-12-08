@@ -98,10 +98,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     }
 
     /**
-     * @param DataSourceParams|null $requestParams
+     * @param DatasourceParams|null $requestParams
      * @return QueryBuilder
      */
-    public function buildQueryBuilder(?DataSourceParams $requestParams): QueryBuilder
+    public function buildQueryBuilder(?DatasourceParams $requestParams): QueryBuilder
     {
         /** @var QueryBuilder $qb */
         $qb = $this->getRepository()->createQueryBuilder("root");
@@ -218,7 +218,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return intval($qb->getQuery()->getSingleScalarResult());
     }
 
-    public function count(?DataSourceParams $requestParams): int
+    public function count(?DatasourceParams $requestParams): int
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->select('count(root.id)');
