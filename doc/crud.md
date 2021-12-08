@@ -23,6 +23,15 @@ That's it! Several files have been created:
     }
 ```
 
+## How to configure the choices of the number of items to display:
+
+```php
+  public function getChoicesNbItems(): array
+  {
+      return [15, 30, 45, 60];
+  }
+```
+
 ## How to add actions:
 
 It is possible to add actions to lists, list items and shows.

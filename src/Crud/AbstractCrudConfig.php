@@ -293,4 +293,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return 30;
     }
+
+    public function getChoicesNbItems(): array
+    {
+        return [10, 30, 50, 100];
+    }
 }

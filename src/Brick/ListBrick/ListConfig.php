@@ -93,6 +93,7 @@ class ListConfig extends AbstractBrickConfig
             'hidden_action' => false,
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
+            'choices_nb_items' => $this->getCrudConfig()->getChoicesNbItems()
         ];
     }
 

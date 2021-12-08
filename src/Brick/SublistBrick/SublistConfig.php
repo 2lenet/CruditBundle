@@ -89,7 +89,8 @@ class SublistConfig extends AbstractBrickConfig
             'hidden_action' => false,
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
-            'canModifyNbEntityPerPage' => false
+            'canModifyNbEntityPerPage' => false,
+            'choices_nb_items' => $this->subCrudConfig->getChoicesNbItems()
         ];
     }
 

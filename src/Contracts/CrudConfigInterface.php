@@ -36,4 +36,6 @@ interface CrudConfigInterface
     public function getExportParams(string $format): ExportParams;
 
     public function getAfterEditPath(): Path;
+
+    public function getChoicesNbItems(): array;
 }
