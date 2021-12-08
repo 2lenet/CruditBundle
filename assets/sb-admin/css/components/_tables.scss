@@ -1,6 +1,10 @@
 .table-responsive {
     overflow-x: initial;
 
+    th {
+        vertical-align: middle;
+    }
+
     img {
         width: auto;
         height: auto;
