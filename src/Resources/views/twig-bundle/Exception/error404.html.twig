@@ -1,1 +1,11 @@
-this page does not exists
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="mt-5 pt-5 text-center">
+        <h1 class="text-uppercase">{{ 'crudit.error.not_found.title'|trans({}, 'LleCruditBundle') }}</h1>
+        <div class="mt-5">
+            <p>{{ 'crudit.error.not_found.text'|trans({}, 'LleCruditBundle') }}</p>
+            <a class="btn btn-primary" href="/">{{ 'crudit.error.not_found.link'|trans({}, 'LleCruditBundle') }}</a>
+        </div>
+    </div>
+{% endblock %}
