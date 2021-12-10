@@ -13,23 +13,26 @@
 @import '~@fortawesome/fontawesome-free/css/v4-shims.css';
 @import 'libraries/tom-select.bootstrap5';
 
+@import 'generics/body';
+@import 'generics/container';
+
 @import 'utilities/animation';
 @import 'utilities/background';
 @import 'utilities/display';
 @import 'utilities/text';
 @import 'utilities/border';
 @import 'utilities/progress';
-@import 'utilities/rotate';
 
-@import 'components/global';
 @import 'components/navs/navs';
 @import 'components/cards';
 @import 'components/tables';
 @import 'components/buttons';
 @import 'components/dropdown';
 @import 'components/forms/form';
+@import 'components/forms/filter';
 @import 'components/forms/input';
 @import 'components/forms/input-file';
+@import 'components/forms/entity-select';
 @import 'components/forms/edit-in-place';
 @import 'components/footer';
 @import 'components/show';
