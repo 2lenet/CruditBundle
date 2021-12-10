@@ -42,6 +42,7 @@ class FormFactory extends AbstractBasicBrickFactory
         PropertyAccessorInterface $propertyAccessor
     ) {
         parent::__construct($resourceResolver, $requestStack);
+
         $this->formFactory = $formFactory;
         $this->brickResponseCollector = $brickResponseCollector;
         $this->urlGenerator = $urlGenerator;
@@ -69,6 +70,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'form' => $form->createView(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 ]);
+
         return $view;
     }
 
@@ -94,9 +96,7 @@ class FormFactory extends AbstractBasicBrickFactory
                     )
                 ));
             } else {
-                $this->brickResponseCollector->add(
-                    new FlashBrickResponse(FlashBrickResponse::ERROR, $brickConfig->getMessageError())
-                );
+                $this->addFlash(FlashBrickResponse::ERROR, $brickConfig->getMessageError());
             }
         }
     }
@@ -152,5 +152,14 @@ class FormFactory extends AbstractBasicBrickFactory
         }
 
         return $resource;
+    }
+
+    private function addFlash(string $type, string $message)
+    {
+        $request = $this->getRequest();
+
+        if (method_exists($request->getSession(), "getFlashBag")) {
+            $request->getSession()->getFlashBag()->add($type, $message);
+        }
     }
 }
