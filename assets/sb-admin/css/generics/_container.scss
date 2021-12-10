@@ -1,0 +1,18 @@
+#wrapper {
+    display: flex;
+    max-height: 100vh;
+
+    #content-wrapper {
+        background-color: $gray-100;
+        overflow-x: hidden;
+        #content {
+            flex: 1 0 auto;
+        }
+    }
+}
+
+.container,
+.container-fluid {
+    padding-left: $grid-gutter-width;
+    padding-right: $grid-gutter-width;
+}

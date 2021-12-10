@@ -3,6 +3,10 @@
 }
 
 .card-body {
-    overflow-y: visible;
+    overflow-y: auto;
     overflow-x: initial;
+}
+
+form > .card-body {
+    overflow: initial;
 }

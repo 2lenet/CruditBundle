@@ -1,0 +1,67 @@
+$input-group-length: 220px;
+$input-group-prepend-length: 60px;
+
+.input-group-prepend {
+    .dropdown-toggle, .dropdown-toggle:hover {
+        width: $input-group-prepend-length;
+        height: 100%;
+        color: #000000;
+        border-color: $gray-400;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    &:empty + .form-floating {
+        width: $input-group-length+$input-group-prepend-length;
+    }
+
+    & + .form-floating {
+        display: flex;
+        width: calc(100% - #{$input-group-prepend-length});
+
+        .form-control, .entity-select {
+            background-color: transparent;
+            border: solid 1px $gray-400;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-control:not(:last-of-type) {
+            border-right: none;
+            border-radius: 0;
+        }
+
+        .entity-select {
+            & .ts-input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border: none;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+
+                .item {
+                    align-items: flex-start;
+                    max-width: 50%;
+                    max-height: 20px;
+                    margin-top: 10px;
+                    background: $gray-200;
+                    font-size: 13px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    &.active {
+                        background: $gray-200;
+                    }
+                }
+            }
+            &.ts-dropdown {
+                left: -#{$input-group-prepend-length};
+                min-width: min(400px, 75vw);
+                z-index: $zindex-dropdown;
+            }
+        }
+    }
+}

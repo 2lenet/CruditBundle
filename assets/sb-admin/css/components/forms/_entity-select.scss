@@ -1,0 +1,35 @@
+.entity-select {
+    & .ts-input {
+        flex-wrap: wrap;
+        height: 100%;
+        background-color: transparent !important;
+        &.focus, &:focus {
+            box-shadow: 0 0 0 0.2rem $input-btn-focus-color;
+        }
+
+        input {
+            margin-top: 10px !important;
+        }
+
+        .item {
+            max-width: 50%;
+            max-height: 20px;
+            margin-top: 10px !important;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            &.active {
+                background: $gray-200;
+            }
+        }
+    }
+
+    & .ts-dropdown {
+        max-height: 175px;
+        margin: 0;
+        background-color: #FFFFFF !important;
+        &-content {
+            max-height: 175px;
+        }
+    }
+}

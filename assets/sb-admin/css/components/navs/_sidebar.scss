@@ -5,6 +5,7 @@ $icon-width: 32px;
     min-height: 100vh;
     overflow: initial !important;
     @include media('>mobile') {
+        position: sticky;
         display: flex !important;
         width: $sidebar-base-width !important;
     }
