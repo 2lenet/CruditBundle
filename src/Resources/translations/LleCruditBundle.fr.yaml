@@ -85,6 +85,20 @@ crudit:
     flash:
         error:
             eip:
-                generic: "La valeur n'a pa pu être modifiée."
+                generic: "La valeur n'a pas pu être modifiée."
                 access_denied: "Vous n'avez pas le droit de modifier cette valeur."
                 bad_request: "Vous essayez de modifer une valeur inexistante."
+
+    error:
+        generic:
+            title: "Erreur"
+            text: "Une erreur est survenue, veuillez réessayer ou contacter votre administrateur si le problème persiste."
+            link: "Retour au tableau de bord"
+        not_found:
+            title: "Erreur 404"
+            text: "La page demandée est introuvable. Vous pouvez continuer votre navigation en utilisant le lien ci-dessous."
+            link: "Retour au tableau de bord"
+        forbidden:
+            title: "Erreur 403"
+            text: "Vous n'avez pas les droits pour accéder à cette page. Vous pouvez continuer votre navigation en utilisant le lien ci-dessous."
+            link: "Retour au tableau de bord"

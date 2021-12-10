@@ -72,3 +72,30 @@ crudit:
     yes: "Sì"
     no: "No"
     by: "da"
+
+    history:
+        action:
+            create: "Creazione"
+            update: "Aggiornamento"
+            remove: "Cancellazione"
+
+        flash:
+            error:
+                eip:
+                    generic: "Il valore non può essere cambiato."
+                    access_denied: "Non ti è permesso cambiare questo valore."
+                    bad_request: "Stai cercando di cambiare un valore inesistente."
+
+        error:
+            generic:
+                title: "Errore"
+                text: "Si è verificato un errore, riprova o contatta il tuo amministratore se il problema persiste."
+                link: "Torna al cruscotto"
+            not_found:
+                title: "Errore 404"
+                text: "La pagina richiesta non può essere trovata. Puoi continuare a navigare usando il link qui sotto."
+                link: "Torna al cruscotto"
+            forbidden:
+                title: "Errore 403"
+                text: "Non hai i diritti per accedere a questa pagina. Puoi continuare a navigare usando il link qui sotto."
+                link: "Torna al cruscotto"

@@ -73,9 +73,29 @@ crudit:
     no: "No"
     by: "by"
 
+    history:
+        action:
+            create: "Creating"
+            update: "Updating"
+            remove: "Deleting"
+
     flash:
         error:
             eip:
                 generic: "Value couldn't be edited."
                 access_denied: "You are not allowed to change this value."
                 bad_request: "You are trying to edit a non-existing value."
+
+    error:
+        generic:
+            title: "Error"
+            text: "An error has occured, please try again or contact your administrator if the problem persists."
+            link: "Go back to dashboard"
+        not_found:
+            title: "404 Error"
+            text: "The requested page cannot be found. You can continue browsing by using the link below."
+            link: "Go back to dashboard"
+        forbidden:
+            title: "403 Error"
+            text: "You don't have the rights to access this page. You can continue browsing by using the link below."
+            link: "Go back to dashboard"
