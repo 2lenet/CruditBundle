@@ -1,12 +1,13 @@
 {% block side_header %}{% endblock %}
+
 {% for element in crudit_menu_items('menu_side') %}
     {% if is_granted(element.role) %}
         {% include element.template with {'element': element, 'where': 'menu-nav'} %}
     {% endif %}
-
 {% endfor %}
 
-<div class="text-center d-none d-md-inline">
-    <button class="rounded-circle border-0" id="sidebarToggle"></button>
-</div>
+<li class="text-center d-none d-md-block">
+    <button id="sidebarToggle" class="rounded-circle border-0"></button>
+</li>
+
 {% block side_footer %}{% endblock %}
