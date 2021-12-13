@@ -1,0 +1,285 @@
+$icon-width: 32px;
+
+.sidebar {
+    width: $sidebar-collapsed-width !important;
+    overflow: initial !important;
+    z-index: 10000;
+    @include media('>mobile') {
+        position: sticky;
+        display: flex !important;
+        width: $sidebar-base-width !important;
+    }
+
+    > ul {
+        min-height: 100vh;
+        padding-left: 0;
+        list-style-type: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .nav-item {
+        position: relative;
+        &.active, &:hover {
+            background-color: lighten($primary, 10%);
+            .nav-link {
+                img {
+                    filter: grayscale(0);
+                }
+            }
+        }
+
+        .nav-link {
+            width: $sidebar-collapsed-width;
+            padding: 0.75rem 1rem;
+            color: fade-out($white, 0.2);
+            text-align: center;
+            @include media('>mobile') {
+                display: block;
+                text-align: left;
+                padding: 1rem;
+                width: $sidebar-base-width;
+                &[data-bs-toggle='collapse'] {
+                    &::after {
+                        content: '\f107';
+                        width: 1rem;
+                        float: right;
+                        color: fade-out($white, 0.5);
+                        border: 0;
+                        text-align: center;
+                        vertical-align: 0;
+                        @include iconsFont;
+                    }
+
+                    &.collapsed::after {
+                        content: '\f105';
+                    }
+                }
+            }
+
+            span {
+                font-size: 0.65rem;
+                display: block;
+                @include media('>mobile') {
+                    display: inline;
+                    font-size: 0.85rem;
+                }
+            }
+        }
+
+        .collapse, .collapsing {
+            position: absolute;
+            left: calc(#{$sidebar-collapsed-width} + #{$grid-gutter-width} / 2);
+            top: 2px;
+            background-color: $white;
+            z-index: 1;
+            @include media('>mobile') {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin: 0 1rem 10px 1rem;
+                background-color: transparent;
+                z-index: 1;
+            }
+
+            .collapse-inner {
+                min-width: 10rem;
+                padding: .5rem 0;
+                border-radius: $border-radius;
+                font-size: $dropdown-font-size;
+                box-shadow: $box-shadow;
+                @include media('>mobile') {
+                    box-shadow: none;
+                }
+            }
+
+            .collapse-item {
+                display: flex;
+                margin: 0 0.5rem;
+                padding: 0.5rem 1rem;
+                text-decoration: none;
+                border-radius: $border-radius;
+                @include media('>mobile') {
+                    color: $white;
+                }
+                &:hover, &:active {
+                    color: $white;
+                    background-color: lighten($primary, 20%);
+                    img {
+                        filter: grayscale(0);
+                    }
+                }
+
+                &.active {
+                    color: $white;
+                    background-color: lighten($primary, 20%);
+                }
+
+                span {
+                    display: block;
+                    font-size: 0.65rem;
+                    @include media('>mobile') {
+                        display: inline;
+                        font-size: 0.85rem;
+                    }
+                }
+            }
+        }
+
+        .nav-link, .collapse, .collapsing {
+            img {
+                height: $icon-width;
+                margin-right: 5px;
+                filter: grayscale(100%);
+            }
+
+            i {
+                margin-right: 0.25rem;
+                color: fade-out($white, 0.7);
+                font-size: 0.85rem;
+            }
+        }
+
+        .collapsing {
+            display: none;
+            transition: none;
+            @include media('>mobile') {
+                display: block;
+            }
+        }
+    }
+
+    &-brand {
+        height: $topbar-base-height;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 800;
+        padding: 1rem;
+        color: $white;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.05rem;
+        z-index: 1;
+        img {
+            height: 100%;
+        }
+        .sidebar-brand-icon i {
+            font-size: 2rem;
+        }
+
+        .sidebar-brand-text {
+            display: none;
+            @include media('>mobile') {
+                display: inline;
+            }
+        }
+    }
+
+    &-divider {
+        margin: 0 1rem 1rem;
+        border-top: 1px solid fade-out($white, 0.85);
+    }
+
+    &-heading {
+        padding: 0 1rem;
+        color: fade-out($white, 0.6);
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.65rem;
+        @extend .text-uppercase;
+        @include media('>mobile') {
+            text-align: left;
+        }
+    }
+}
+
+.sidebar.toggled {
+    width: 0;
+    overflow: hidden;
+    @include media('>mobile') {
+        width: $sidebar-collapsed-width !important;
+        overflow: visible;
+    }
+
+    #sidebarToggle::after {
+        content: '\f105';
+        margin-left: 0.25rem;
+        @include iconsFont;
+        @include media('>mobile') {
+            color: fade-out($white, 0.5);
+        }
+    }
+
+    .nav-item {
+        @include media('>mobile') {
+            .nav-link {
+                width: $sidebar-collapsed-width;
+                padding: 0.75rem 1rem;
+                text-align: center;
+                &[data-bs-toggle='collapse']::after {
+                    display: none;
+                }
+
+                span {
+                    font-size: 0.65rem;
+                    display: block;
+                }
+            }
+
+            .collapse {
+                position: absolute;
+                top: 2px;
+                left: calc(#{$sidebar-collapsed-width} + #{$grid-gutter-width} / 2);
+                margin: 0;
+                z-index: 3;
+                &-inner {
+                    background-color: $white;
+                    border: 1px solid rgba(0, 0, 0, 0.125);
+                }
+                &-item {
+                    color: $primary;
+                    &.active {
+                        color: $white;
+                    }
+                }
+            }
+
+            .collapsing {
+                display: none;
+                margin: 0;
+                transition: none;
+            }
+        }
+    }
+
+    .sidebar-brand {
+        .sidebar-brand-text {
+            display: none;
+        }
+    }
+
+    .sidebar-heading {
+        text-align: center;
+    }
+}
+
+
+#sidebarToggle {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 1rem;
+    background-color: fade-out($white, 0.8);
+    text-align: center;
+    outline: none;
+    cursor: pointer;
+    &:hover {
+        background-color: fade-out($white, 0.75);
+        text-decoration: none;
+    }
+    &::after {
+        content: '\f104';
+        margin-right: 0.1rem;
+        color: fade-out($white, 0.5);
+        @include iconsFont;
+    }
+}

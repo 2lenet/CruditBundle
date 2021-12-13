@@ -12,7 +12,7 @@ class FlashBrickResponse implements BrickResponseInterface
 {
 
     public const SUCCESS = 'success';
-    public const ERROR = 'error';
+    public const ERROR = 'danger';
 
     /** @var string  */
     private $type;

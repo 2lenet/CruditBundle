@@ -1,0 +1,44 @@
+<div class="card shadow mb-4">
+    <div class="card-body">
+        {% if view.data.history is not empty %}
+            <ul>
+                {% for entry in view.data.history %}
+                    {% set log = entry.log %}
+                    <li>
+                        <div>
+                            <span class="badge bg-secondary">{{ ('crudit.history.action.' ~ log.action) | trans(domain='LleCruditBundle') }}</span>
+                            <i class="fa fa-user "></i>
+                            <b>{{ log.username }}</b>
+                            <span class="time"><i class="fa fa-clock-o"></i>
+                                {{ log.loggedAt | date('d/m/Y H:i') }}
+                            </span>
+                            <div>
+                                <table>
+                                    {% for property, value in entry.data %}
+                                        <tr>
+                                            <td>{{ ('field.' ~ (property | replace({'.': '_'}) | lower)) | trans() }}</td>
+                                            <td>&nbsp;<i class="fa fa-arrow-right"></i>&nbsp;</td>
+                                            <td>
+                                                {% if value.type == 'boolean' %}
+                                                    <span class="badge {% if value.raw %}bg-success{% else %}bg-danger{% endif %}">
+                                                        {{ value.value | trans(domain='LleCruditBundle' ) }}
+                                                    </span>
+                                                {% elseif value.type == 'single_assoc' %}
+                                                    <span class="badge bg-primary">
+                                                    {{ value.value }}
+                                                </span>
+                                                {% else %}
+                                                    {{ value.value }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>

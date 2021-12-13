@@ -43,7 +43,7 @@ abstract class AbstractField implements FieldInterface
                 'resource' => $fieldView->getResource()
             ]);
         } else {
-            throw new CruditException('template field ' . static::class . ' is not define');
+            throw new CruditException('Template field ' . static::class . ' is not defined');
         }
     }
 

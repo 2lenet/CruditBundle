@@ -36,6 +36,8 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     protected array $default = [];
 
+    protected ?string $role = null;
+
     public function getOperators(): array
     {
         return [
@@ -181,4 +183,24 @@ abstract class AbstractFilterType implements FilterTypeInterface
             $paramname,
         ];
     }
+
+    /**
+     * @return string|null
+     */
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param string|null $role
+     * @return self
+     */
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
 }

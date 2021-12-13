@@ -11,7 +11,7 @@
         {% for tab in view.config.tabs %}
                 <div id="{{ tab.id }}" role="tabpanel" class="tab-pane fade {% if(loop.first) %}show active{%  endif %}">
                     {%  for view in tab.views %}
-                        {% include view.indexTemplate with { 'view': view } only %}
+                        {% include view.indexTemplate with { 'view': view, 'tab': tab } only %}
                     {%  endfor %}
                 </div>
         {%  endfor %}

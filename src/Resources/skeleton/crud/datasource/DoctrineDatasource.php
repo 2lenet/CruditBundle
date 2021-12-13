@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace <?= $namespace; ?>;
 
-use App\Crudit\Datasource\Filterset\<?= $entityClass ?>FilterSet;
+<?php if($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $entityClass ?>FilterSet;<?php echo "\n"; } ?>
 use App\Entity\<?= $entityClass ?>;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 
@@ -17,7 +17,8 @@ class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
     {
         return <?= $entityClass ?>::class;
     }
-    <?php if($hasFilterset) { ?>
+<?php if($hasFilterset) { ?>
+
     /**
     * @required
     * @param <?= $entityClass ?>FilterSet $filterSet
@@ -25,5 +26,6 @@ class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
     public function setFilterset(<?= $entityClass ?>FilterSet $filterSet): void
     {
          $this->filterset = $filterSet;
-    }<?php } ?>
+    }
+<?php } ?>
 }

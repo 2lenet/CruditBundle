@@ -23,9 +23,19 @@ That's it! Several files have been created:
     }
 ```
 
+## How to configure the choices of the number of items to display:
+
+```php
+  public function getChoicesNbItems(): array
+  {
+      return [15, 30, 45, 60];
+  }
+```
+
 ## How to add actions:
 
 It is possible to add actions to lists, list items and shows.
+It is already possible to add action in a dropdown, adding `->setDropdown(true)` to the action object.
 
 ```php
   public function getListActions(): array
@@ -46,7 +56,7 @@ It is possible to add actions to lists, list items and shows.
           'action.import.csv',
           Path::new('import_lot_melange'),
           Icon::new('download')
-      );
+      )->setDropdown(true);
 
       $res[] = ListAction::new(
           'action.batch.bons_livraisons',

@@ -1,10 +1,14 @@
-{% for flashMessage in app.session.flashbag.get('error') %}
-<div class="alert alert-danger alert-dismissible" role="alert">
-    {{ flashMessage|raw|trans }}
+<div id="crudit-flash">
+    {% for type, flashMessages in app.session.flashBag.all %}
+        {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+                {% if flashMessage starts with "crudit." %}
+                    {{ flashMessage | raw | trans(domain='LleCruditBundle') }}
+                {% else %}
+                    {{ flashMessage | raw | trans }}
+                {% endif %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 </div>
-{%  endfor %}
-{% for flashMessage in app.session.flashbag.get('success') %}
-<div class="alert alert-success alert-dismissible" role="alert">
-    {{ flashMessage|raw|trans }}
-</div>
-{%  endfor %}

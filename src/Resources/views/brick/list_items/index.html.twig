@@ -13,7 +13,7 @@
                                 <td></td>
                             {% endif %}
                             {% for field in view.config.fields %}
-                                {% if field.ruptGroup == 0 %}
+                                {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
                                     <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
                                         {{ field.label|trans }}
                                         {% if field.sortable %}
@@ -100,13 +100,13 @@
                                     {% endif %}
                                 {% endif %}
                                 <td>
-                                    {% if column.field.path %}
-                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                        {% endif %}
-                                        {{ column.value|raw }}
-                                        {% if column.field.path %}
+                                {% if column.field.path %}
+                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
+                                {% endif %}
+                                    {{ column.value|raw }}
+                                {% if column.field.path %}
                                     </a>
-                                    {% endif %}
+                                {% endif %}
                                 </td>
                             {% endif %}
                         {% endfor %}

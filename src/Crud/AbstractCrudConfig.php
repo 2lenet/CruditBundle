@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Crud;
 
-use App\Entity\Objet;
 use Lle\CruditBundle\Brick\FilterBrick\FilterConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
+use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
@@ -157,12 +157,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $limit = $request->query->get(strtolower($this->getName()) . "_limit");
         if ($limit !== null) {
-            $params["limit"] = (int)$limit;
+            $params["limit"] = max((int)$limit, 1);
         }
 
         $offset = $request->query->get(strtolower($this->getName()) . "_offset") ;
         if ($offset !== null) {
-            $params["offset"] = (int)$offset;
+            $params["offset"] = max((int)$offset, 0);
         }
 
         $sortField = $request->query->get(strtolower($this->getName()) . "_sort", null);
@@ -256,6 +256,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getTabs(): array
     {
+        if (is_subclass_of($this->datasource->getClassName(), "Gedmo\Loggable\Loggable")) {
+            return ["tab.history" => HistoryConfig::new()];
+        }
+
         return [];
     }
 
@@ -288,5 +292,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getNbItems(): int
     {
         return 30;
+    }
+
+    public function getChoicesNbItems(): array
+    {
+        return [10, 30, 50, 100];
     }
 }

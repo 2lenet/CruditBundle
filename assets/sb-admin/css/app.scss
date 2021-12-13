@@ -1,3 +1,39 @@
-@import "main.scss";
-@import "tom-select.bootstrap5.scss";
-@import "map.scss";
+@import 'settings/responsive';
+@import 'settings/colors';
+@import 'settings/fonts';
+@import 'settings/borders';
+@import 'settings/sizing';
+@import 'settings/forms';
+
+@import 'tools/fonts';
+@import 'tools/responsive';
+
+@import '~bootstrap/scss/bootstrap';
+@import '~@fortawesome/fontawesome-free/css/all.css';
+@import '~@fortawesome/fontawesome-free/css/v4-shims.css';
+@import 'libraries/tom-select.bootstrap5';
+
+@import 'generics/body';
+@import 'generics/container';
+
+@import 'utilities/animation';
+@import 'utilities/background';
+@import 'utilities/display';
+@import 'utilities/text';
+@import 'utilities/border';
+@import 'utilities/progress';
+
+@import 'components/navs/navs';
+@import 'components/cards';
+@import 'components/tables';
+@import 'components/buttons';
+@import 'components/dropdown';
+@import 'components/forms/form';
+@import 'components/forms/filter';
+@import 'components/forms/input';
+@import 'components/forms/input-file';
+@import 'components/forms/entity-select';
+@import 'components/forms/edit-in-place';
+@import 'components/footer';
+@import 'components/show';
+@import 'components/workflow';

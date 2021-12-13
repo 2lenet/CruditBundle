@@ -5,7 +5,7 @@ services:
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState']
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState', '@security.helper']
     tags: [ 'crudit.brick' ]
 
   Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
@@ -38,4 +38,8 @@ services:
 
   Lle\CruditBundle\Brick\LinksBrick\LinksFactory:
     arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+    tags: [ 'crudit.brick' ]
+
+  Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory:
+    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@doctrine.orm.default_entity_manager']
     tags: [ 'crudit.brick' ]

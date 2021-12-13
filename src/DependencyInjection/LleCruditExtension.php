@@ -13,12 +13,13 @@ use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
 
-class LleCruditExtension extends Extension implements ExtensionInterface
+class LleCruditExtension extends Extension implements ExtensionInterface, PrependExtensionInterface
 {
     /** @return void */
     public function load(array $configs, ContainerBuilder $container)
@@ -49,5 +50,14 @@ class LleCruditExtension extends Extension implements ExtensionInterface
                 $container->getParameter('twig.form.resources')
             ));
         }
+    }
+
+    public function prepend(ContainerBuilder $container)
+    {
+        $container->loadFromExtension("twig", [
+            "paths" => [
+                __DIR__ . "/../Resources/views/twig-bundle" => "Twig",
+            ]
+        ]);
     }
 }

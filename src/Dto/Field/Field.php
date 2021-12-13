@@ -27,6 +27,9 @@ class Field
     /** @var ?Path */
     private $path;
 
+    /** @var string */
+    private string $linkId = 'id';
+
     /** @var array */
     private $options;
 
@@ -37,7 +40,10 @@ class Field
     private $template;
 
     /** @var ?string */
-    private $ruptGroup=0;
+    private $ruptGroup = 0;
+
+    private ?string $role = null;
+
     private bool $editInPlace = false;
 
     public function __construct(string $name, ?string $type = null, array $options = [])
@@ -58,6 +64,20 @@ class Field
         return $this->options;
     }
 
+    public function setOptions(array $options): self
+    {
+        $this->label = $options['label'] ?? $this->label;
+        $this->sort = $options['sort'] ?? true;
+        $this->path = $options['path'] ?? $options['link_to'] ?? null;
+        $this->template = (isset($options['template'])) ? $options['template'] : null;
+        unset($options['label']);
+        unset($options['sort']);
+        unset($options['path']);
+        unset($options['template']);
+        $this->options = $options;
+        return $this;
+    }
+
     public function getType(): ?string
     {
         return $this->type;
@@ -74,41 +94,23 @@ class Field
         return $this->editInPlace;
     }
 
-    public function setEditable(string $edit_route): self
-    {
-        $this->options['edit_route']= $edit_route;
-        $this->editInPlace = true;
-        return $this;
-    }
-
     public function setEditInPlace(bool $editInPlace): self
     {
         $this->editInPlace = $editInPlace;
         return $this;
     }
 
-    public function setOptions(array $options): self
+    public function setEditable(string $edit_route): self
     {
-        $this->label = $options['label'] ?? $this->label;
-        $this->sort = $options['sort'] ?? true;
-        $this->path = $options['path'] ?? $options['link_to'] ?? null;
-        $this->template = (isset($options['template'])) ? $options['template'] : null;
-        unset($options['label']);
-        unset($options['sort']);
-        unset($options['path']);
-        unset($options['template']);
-        $this->options = $options;
+        $this->options['edit_route'] = $edit_route;
+        $this->editInPlace = true;
         return $this;
     }
 
-    public function setCssClass($cssClass): self {
+    public function setCssClass($cssClass): self
+    {
         $this->options["cssClass"] = $cssClass;
         return $this;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 
     public function hasCascade(): bool
@@ -116,9 +118,9 @@ class Field
         return \str_contains($this->getName(), '.');
     }
 
-    public function getId(): string
+    public function getName(): string
     {
-        return str_replace('.', '_', $this->getName());
+        return $this->name;
     }
 
     public function setName(string $name): self
@@ -126,6 +128,11 @@ class Field
         $this->name = $name;
         $this->label = ($this->label) ? $this->name : $this->label;
         return $this;
+    }
+
+    public function getId(): string
+    {
+        return str_replace('.', '_', $this->getName());
     }
 
     public function getLabel(): string
@@ -150,16 +157,16 @@ class Field
         return $this;
     }
 
-    public function linkTo(Path $path): self
+    public function linkTo(Path $path, string $linkId = "id"): self
     {
         $this->path = $path;
+        $this->linkId = $linkId;
         return $this;
     }
 
-    public function setTemplate(string $template): self
+    public function getLinkId(): string
     {
-        $this->template = $template;
-        return $this;
+        return $this->linkId;
     }
 
     public function getPath(): ?Path
@@ -167,9 +174,20 @@ class Field
         return $this->path;
     }
 
+    public function getEntityPath(): ?Path
+    {
+        return $this->entityPath;
+    }
+
     public function getTemplate(): ?string
     {
         return $this->template;
+    }
+
+    public function setTemplate(string $template): self
+    {
+        $this->template = $template;
+        return $this;
     }
 
     public function getRuptGroup(): ?int
@@ -180,6 +198,25 @@ class Field
     public function setRuptGroup(int $ruptGroup): self
     {
         $this->ruptGroup = $ruptGroup;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param string|null $role
+     * @return self
+     */
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+
         return $this;
     }
 }

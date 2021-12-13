@@ -1,5 +1,21 @@
-<select class="form-control" data-widget="select2" {% if filtertype.multiple %} multiple {% endif %}  name="{{nameprefix}}value{{namesuffix}}{% if filtertype.multiple %}[]{% endif %}">
-    {% for k,v in filtertype.choices %}
-        <option value="{{ v }}" {% if data['value'] is defined and filtertype.isSelected(data,v) %} selected {% endif %}>{{ ('wf.etat.' ~ v)|trans() }}</option>
-    {% endfor %}
-</select>
+{% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
+
+{% block input %}
+    <div class="form-floating crudit-filter-workflow">
+        <select
+                id="input_{{ id | replace({':': '_'}) }}"
+                class="form-select tom-select"
+                multiple
+                name="{{ id }}_value[]"
+                autocomplete="off">
+            {% for state in filtertype.choices %}
+                <option value="{{ state }}" {% if data.value is defined and filtertype.isSelected(data, state) %} selected {% endif %}>
+                    {{ ('wf.state.' ~ state) | trans }}
+                </option>
+            {% endfor %}
+        </select>
+        <label for="input_{{ id }}">
+            {{ filter.label | trans }}
+        </label>
+    </div>
+{% endblock %}

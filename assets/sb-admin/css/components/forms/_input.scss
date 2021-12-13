@@ -1,0 +1,71 @@
+$input-height: 42px;
+
+
+.form-floating {
+    & input.form-control:focus,
+    & input.form-control:not(:placeholder-shown),
+    & input[type="file"].form-control,
+    & select.form-control:focus,
+    & select.form-control:not(:placeholder-shown),
+    & textarea.form-control:focus,
+    & textarea.form-control:not(:placeholder-shown) {
+        padding-top: 0.9rem;
+    }
+
+    & input[type="checkbox"].form-control,
+    & input[type="radio"].form-control {
+        padding: 0;
+    }
+
+    & > input[type="number"].form-control {
+        appearance: textfield;
+    }
+
+    & > textarea.form-control {
+        min-height: 64px;
+    }
+
+    .form-control:not(.form-check-input) {
+        height: auto;
+        min-height: $form-floating-height;
+
+        &.entity-select {
+            min-height: $input-height;
+            padding-top: 0;
+
+            & .ts-input {
+                height: $input-height;
+
+                & > input {
+                    height: 21px !important;
+                    margin-bottom: -7px !important;
+                }
+            }
+
+            & + .form-label {
+                z-index: 1;
+            }
+        }
+
+        div[class^="col-"] {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+
+            .form-label {
+                width: 10rem;
+            }
+
+            & + div[class^="col-"] {
+                margin-top: 1rem;
+            }
+        }
+    }
+
+    & .col-form-label {
+        position: absolute;
+        top: -8px;
+        left: -50%;
+        transform: scale(0.7) translateX(calc(50% + 0.8rem));
+    }
+}

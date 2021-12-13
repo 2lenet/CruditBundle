@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -24,7 +25,6 @@ use Symfony\Component\Console\Question\Question;
 
 final class MakeCrudit extends AbstractMaker
 {
-
     /** @var FileManager */
     private $fileManager;
 
@@ -142,7 +142,7 @@ final class MakeCrudit extends AbstractMaker
         }
 
         try {
-            $this->createDatasource($input, $io, $generator);
+            $this->createDatasource($input, $io, $generator, $classname);
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }
@@ -154,8 +154,7 @@ final class MakeCrudit extends AbstractMaker
         }
     }
 
-    private
-    function getStringArgument(string $name, InputInterface $input): string
+    private function getStringArgument(string $name, InputInterface $input): string
     {
         if (is_string($input->getArgument($name)) || is_null($input->getArgument($name))) {
             return (string)$input->getArgument($name);
@@ -212,12 +211,11 @@ final class MakeCrudit extends AbstractMaker
                 $fields[] = $fieldassoc;
             }
         }
-        //dd($fields);
+
         return $fields;
     }
 
-    private
-    function getSkeletonTemplate(string $templateName): string
+    private function getSkeletonTemplate(string $templateName): string
     {
         return __DIR__ . '/../Resources/skeleton/crud/' . $templateName;
     }
@@ -252,8 +250,7 @@ final class MakeCrudit extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    private
-    function getBoolArgument(string $name, InputInterface $input): bool
+    private function getBoolArgument(string $name, InputInterface $input): bool
     {
         if (is_string($input->getArgument($name)) || is_bool($input->getArgument($name))) {
             return (bool)$input->getArgument($name);
@@ -291,8 +288,11 @@ final class MakeCrudit extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    private function createDatasource(InputInterface $input, ConsoleStyle $io, Generator $generator): void
+    private function createDatasource(InputInterface $input, ConsoleStyle $io, Generator $generator, string $entityClass): void
     {
+        if (count(AbstractDoctrineDatasource::getInitSearchFields($entityClass)) == 0) {
+            $io->warning("You must set the searchFields property for autocompletion.");
+        }
         $shortEntity = basename(str_replace('\\', '/', $this->getStringArgument('entity-class', $input)));
 
         $datasourceClassNameDetails = $generator->createClassNameDetails(
@@ -308,7 +308,7 @@ final class MakeCrudit extends AbstractMaker
                 'entityClass' => $shortEntity,
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
-                'strictType' => true
+                'strictType' => true,
             ]
         );
         $generator->writeChanges();
@@ -341,8 +341,7 @@ final class MakeCrudit extends AbstractMaker
         return $controllerClassNameDetails->getFullName();
     }
 
-    public
-    function configureDependencies(DependencyBuilder $dependencies): void
+    public function configureDependencies(DependencyBuilder $dependencies): void
     {
         $dependencies->addClassDependency(
             Annotation::class,
@@ -350,8 +349,7 @@ final class MakeCrudit extends AbstractMaker
         );
     }
 
-    private
-    function getPathOfClass(string $class): string
+    private function getPathOfClass(string $class): string
     {
         if (class_exists($class)) {
             return (string)(new \ReflectionClass($class))->getFileName();

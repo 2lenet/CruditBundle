@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
+use Lle\CruditBundle\Exception\BadConfigException;
 use Lle\CruditBundle\Field\DoctrineEntityField;
 use Lle\CruditBundle\Field\EmailField;
 use Lle\CruditBundle\Field\TelephoneField;
@@ -31,30 +33,47 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         $entityClass = $this->getClassName();
 
-        if (property_exists( $entityClass , 'libelle')) {
-            $this->searchFields[] = "libelle";
-        }
+        $this->searchFields = array_merge($this->searchFields, self::getInitSearchFields($entityClass));
 
-        if (property_exists( $entityClass , 'code')) {
-            $this->searchFields[] = "code";
-        }
-
-        if (property_exists( $entityClass , 'name')) {
-            $this->searchFields[] = "name";
-        }
-
-        if (property_exists( $entityClass , 'label')) {
-            $this->searchFields[] = "label";
-        }
-
-        if (property_exists( $entityClass , 'nom')) {
-            $this->searchFields[] = "nom";
-        }
     }
+
+    public static function getInitSearchFields(string $entityClass): array
+    {
+        $searchFields = [];
+
+        if (property_exists($entityClass, 'libelle')) {
+            $searchFields[] = "libelle";
+        }
+
+        if (property_exists($entityClass, 'code')) {
+            $searchFields[] = "code";
+        }
+
+        if (property_exists($entityClass, 'name')) {
+            $searchFields[] = "name";
+        }
+
+        if (property_exists($entityClass, 'label')) {
+            $searchFields[] = "label";
+        }
+
+        if (property_exists($entityClass, 'nom')) {
+            $searchFields[] = "nom";
+        }
+
+        return $searchFields;
+    }
+
+    abstract public function getClassName(): string;
 
     public function get($id): ?object
     {
         return $this->getRepository()->find($id);
+    }
+
+    private function getRepository(): ObjectRepository
+    {
+        return $this->entityManager->getRepository($this->getClassName());
     }
 
     public function list(?DatasourceParams $requestParams): iterable
@@ -78,13 +97,93 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    public function query(string $queryColumn, $queryTerm, array $sorts, $requestParams=null): iterable
+    /**
+     * @param DatasourceParams|null $requestParams
+     * @return QueryBuilder
+     */
+    public function buildQueryBuilder(?DatasourceParams $requestParams): QueryBuilder
+    {
+        /** @var QueryBuilder $qb */
+        $qb = $this->getRepository()->createQueryBuilder("root");
+
+        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+
+        if ($requestParams) {
+            foreach ($requestParams->getFilters() as $filter) {
+                $alias = $filter->getAlias() ?? "root";
+                $field = $alias . "." . $filter->getField();
+
+                if ($metadata->hasAssociation($filter->getField())
+                    && $metadata->getAssociationMapping($filter->getField())["type"] === ClassMetadataInfo::MANY_TO_MANY
+                ) {
+                    // it's a ManyToMany, we need to join.
+                    $joinAlias = $alias . "_" . $filter->getField();
+                    $qb->join($alias . "." . $filter->getField(), $joinAlias);
+                    $field = $joinAlias;
+                }
+
+                $qb->andWhere($field . $filter->getOperator() . $filter->getValue());
+            }
+        }
+
+        return $qb;
+    }
+
+    protected function applyFilters(QueryBuilder $qb)
+    {
+        foreach ($this->filterset->getFilters() as $filter) {
+            $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
+            $filter->apply($qb);
+        }
+    }
+
+    protected function addOrderBy(QueryBuilder $qb, $column, $order)
+    {
+        // parts (e.g. : user.post.title => [user, post, title]
+        $fields = explode(".", $column);
+
+        // join alias
+        $alias = null;
+
+        // column to join (i.e. root.user, user.post, etc.)
+        $join = $qb->getRootAliases()[0];
+
+        $field = array_shift($fields);
+
+        // while we aren't at the last part
+        while (!empty($fields)) {
+            $alias = $alias ? $alias . "_" . $field : $field;
+
+            if (!in_array($alias, $qb->getAllAliases())) {
+                $qb->join($join . "." . $field, $alias);
+            }
+
+            $join = $alias;
+            $field = array_shift($fields);
+        }
+
+        $qb->addOrderBy($join . "." . $field, $order);
+    }
+
+    /**
+     * @return string[]
+     * @throws BadConfigException
+     */
+    protected function getAutocompleteSearchFields(): array
+    {
+        if (count($this->searchFields) == 0) {
+            throw new BadConfigException('No searchFields found');
+        }
+        return $this->searchFields;
+    }
+
+    public function autocompleteQuery(string $queryColumn, string $queryTerm, array $sorts, $requestParams = null): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $orStatements = $qb->expr()->orX();
-        foreach ($this->searchFields as $field) {
+        foreach ($this->getAutoCompleteSearchFields() as $field) {
             $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm.'%'))
+                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm . '%'))
             );
         }
         $qb->andWhere($orStatements);
@@ -100,24 +199,26 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                 $qb->setFirstResult($requestParams->getOffset());
             }
         }
+
         return $qb->getQuery()->execute();
     }
 
-    public function count_query(string $queryColumn, $queryTerm): int
+    public function autocompleteCountQuery(string $queryColumn, $queryTerm): int
     {
         $qb = $this->buildQueryBuilder(null);
         $qb->select('count(root.id)');
         $orStatements = $qb->expr()->orX();
-        foreach ($this->searchFields as $field) {
+        foreach ($this->getAutoCompleteSearchFields() as $field) {
             $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm.'%'))
+                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm . '%'))
             );
         }
         $qb->andWhere($orStatements);
+
         return intval($qb->getQuery()->getSingleScalarResult());
     }
 
-    public function count(?DataSourceParams $requestParams): int
+    public function count(?DatasourceParams $requestParams): int
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->select('count(root.id)');
@@ -147,20 +248,21 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->newInstance();
     }
 
-    public function patch($id, array $data): ?object
-    {
-        return $this->newInstance();
-    }
-
-    public function setSearchFields(array $fields) {
-        $this->searchFields = $fields;
-    }
-
     public function newInstance(): object
     {
         $class = $this->getClassName();
 
         return new $class();
+    }
+
+    public function patch($id, array $data): ?object
+    {
+        return $this->newInstance();
+    }
+
+    public function setSearchFields(array $fields)
+    {
+        $this->searchFields = $fields;
     }
 
     public function save(object $resource): void
@@ -169,22 +271,15 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $this->entityManager->flush();
     }
 
-    abstract public function getClassName(): string;
-
-    private function getRepository(): ObjectRepository
-    {
-        return $this->entityManager->getRepository($this->getClassName());
-    }
-
     public function getType(string $property, object $resource): string
     {
         $metadata = $this->entityManager->getClassMetadata(get_class($resource));
 
-        if (in_array($property, ['email','mail'])) {
+        if (in_array($property, ['email', 'mail'])) {
             return EmailField::class;
         }
 
-        if (in_array($property, ['tel','telephone','mobile','portable','telephoneMobile'])) {
+        if (in_array($property, ['tel', 'telephone', 'mobile', 'portable', 'telephoneMobile'])) {
             return TelephoneField::class;
         }
 
@@ -227,64 +322,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     }
 
     /**
-     * @param DataSourceParams|null $requestParams
-     * @return QueryBuilder
-     */
-    public function buildQueryBuilder(?DataSourceParams $requestParams): QueryBuilder
-    {
-        $qb = $this->getRepository()->createQueryBuilder("root");
-
-        if ($requestParams) {
-            foreach ($requestParams->getFilters() as $filter) {
-                $alias = $filter->getAlias() ?? "root";
-                $qb->andWhere($alias . "." . $filter->getField() . $filter->getOperator() . $filter->getValue());
-            }
-        }
-
-        return $qb;
-    }
-
-    /**
      * @return FilterSetInterface|null
      */
     public function getFilterset(): ?FilterSetInterface
     {
         return $this->filterset;
-    }
-
-    protected function applyFilters(QueryBuilder $qb)
-    {
-        foreach ($this->filterset->getFilters() as $filter) {
-            $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
-            $filter->apply($qb);
-        }
-    }
-
-    protected function addOrderBy(QueryBuilder $qb, $column, $order)
-    {
-        // parts (e.g. : user.post.title => [user, post, title]
-        $fields = explode(".", $column);
-
-        // join alias
-        $alias = null;
-
-        // column to join (i.e. root.user, user.post, etc.)
-        $join = $qb->getRootAliases()[0];
-
-        $field = array_shift($fields);
-
-        // while we aren't at the last part
-        while (!empty($fields)) {
-            $alias = $alias ? $alias . "_" . $field : $field;
-
-            if (!in_array($alias, $qb->getAllAliases())) {
-                $qb->join($join . "." . $field, $alias);
-            }
-
-            $join = $alias;
-            $field = array_shift($fields);
-        }
-
-        $qb->addOrderBy($join . "." . $field, $order);
     }
 }

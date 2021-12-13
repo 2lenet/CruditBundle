@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Dto\Action;
 
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Exception\CruditException;
 
 class ItemAction
 {
@@ -34,6 +35,14 @@ class ItemAction
 
     /** @var bool */
     protected $dropdown = false;
+
+    /** @var string */
+    protected $title = null;
+
+    /** @var bool */
+    protected $disabled = false;
+
+    protected bool $hasVoter = false;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
@@ -105,7 +114,18 @@ class ItemAction
 
     public function getTitle(): string
     {
+        if ($this->title !== null) {
+            return $this->title;
+        }
+
         return $this->getLabel();
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     /** exists only when rendering */
@@ -123,7 +143,14 @@ class ItemAction
 
     public function isDisabled(): bool
     {
-        return false;
+        return $this->disabled;
+    }
+
+    public function setDisabled(bool $disabled): self
+    {
+        $this->disabled = $disabled;
+
+        return $this;
     }
 
     public function getModal(): ?string
@@ -158,5 +185,36 @@ class ItemAction
     public function isBatch()
     {
         return false;
+    }
+
+    public function getHasVoter(): bool
+    {
+        return $this->hasVoter;
+    }
+
+    public function setHasVoter(bool $hasVoter): self
+    {
+        $this->hasVoter = $hasVoter;
+
+        return $this;
+    }
+
+    public function enableVoter(bool $hasVoter = true): self
+    {
+        $this->hasVoter = $hasVoter;
+
+        return $this;
+    }
+
+    public function getRoleVoter(): string
+    {
+        if (!$this->path->getRole()) {
+            $what = sprintf("To use a voter on action '%s', please set the role in the action path.",
+                $this->getLabel()
+            );
+            throw new CruditException($what);
+        }
+
+        return $this->path->getRole() . "_VOTER";
     }
 }

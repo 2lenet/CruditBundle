@@ -1,0 +1,43 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+        {% set icon %}
+            {#  { include('@EasyAdmin/inspector/icon.svg.twig', { fill_color: '#AAA', height: '20' }) }#}
+        {% endset %}
+
+        {% set text %}
+            <div class="sf-toolbar-info-piece">
+                <b>Crudit</b>
+                <span class="sf-toolbar-status">DEV</span>
+            </div>
+        {% endset %}
+
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { 'link': true }) }}
+{% endblock %}
+
+{% block menu %}
+    <span class="label">
+        <span class="icon">{# { include('@EasyAdmin/inspector/icon.svg.twig') }#}</span>
+        <strong>Crudit</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Crudit <small>({# { constant('EasyCorp\\Bundle\\EasyAdminBundle\\EasyAdminBundle::VERSION') }#})</small></h2>
+    <h3>Check Entities</h3>
+
+    <table>
+        <tr>
+            <th>Entity</th>
+            <th>Has __toString method</th>
+            <th>Has candelete method</th>
+        </tr>
+    {% for entity in collector.data %}
+        <tr>
+            <th>{{ entity.name }}</th>
+            <td>{{ entity.has_tostring }}</td>
+            <td>{{ entity.has_candelete }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

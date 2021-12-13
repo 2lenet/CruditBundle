@@ -32,3 +32,6 @@ services:
   Lle\CruditBundle\Field\IntegerField:
     arguments: [ '@twig' ]
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\WorkflowField:
+    arguments: [ '@twig' ]
+    tags: [ 'crudit.field' ]
