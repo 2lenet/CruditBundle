@@ -2,12 +2,20 @@ $icon-width: 32px;
 
 .sidebar {
     width: $sidebar-collapsed-width !important;
-    min-height: 100vh;
     overflow: initial !important;
+    z-index: 10000;
     @include media('>mobile') {
         position: sticky;
         display: flex !important;
         width: $sidebar-base-width !important;
+    }
+
+    > ul {
+        min-height: 100vh;
+        padding-left: 0;
+        list-style-type: none;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     .nav-item {
@@ -259,7 +267,7 @@ $icon-width: 32px;
 #sidebarToggle {
     width: 2.5rem;
     height: 2.5rem;
-    margin-bottom: 1rem;
+    margin: 1rem;
     background-color: fade-out($white, 0.8);
     text-align: center;
     outline: none;
