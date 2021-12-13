@@ -10,14 +10,14 @@ class EntityFilterTypeTest extends TestCase
 
     public function testDataRoute(): void
     {
-        $filterType = new EntityFilterType('test', 'App\\Entity\\Test');
+        $filterType = EntityFilterType::new('test', 'App\\Entity\\Test');
         self::assertEquals('app_crudit_test_autocomplete', $filterType->getDataRoute());
     }
 
     public function testCustomRoute(): void
     {
         $customRoute = 'lle_hermes_test_autocomplete';
-        $filterType = new EntityFilterType('test', 'App\\Entity\\Test::class', $customRoute);
+        $filterType = EntityFilterType::new('test', 'App\\Entity\\Test', $customRoute);
         self::assertEquals($customRoute, $filterType->getDataRoute());
     }
 }
