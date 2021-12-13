@@ -3,3 +3,6 @@ npm-debug.log
 .idea
 vendor
 .phpcs-cache
+/docker-compose.yaml
+/Dockerfile
+/var/

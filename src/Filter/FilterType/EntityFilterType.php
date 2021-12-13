@@ -12,28 +12,26 @@ use Doctrine\ORM\QueryBuilder;
 class EntityFilterType extends AbstractFilterType
 {
     protected string $entityClass;
+    protected ?string $customRoute;
 
-    public static function new(string $fieldname, $entityClass): self
+    public function __construct($fieldname, string $entityClass, ?string $customRoute = null)
     {
-        $f = new self($fieldname);
-        $f->setEntityClass($entityClass);
-        $f->setAdditionnalKeys(['items']);
-
-        return $f;
+        parent::__construct($fieldname);
+        $this->entityClass = $entityClass;
+        $this->customRoute = $customRoute;
+        $this->setAdditionnalKeys(['items']);
     }
 
-    public function setEntityClass(string $classname)
+    public static function new(string $fieldname, $entityClass, ?string $customRoute = null): self
     {
-        $this->entityClass = $classname;
-
-        return $this;
+        return new self($fieldname, $entityClass, $customRoute);
     }
 
     public function getOperators(): array
     {
         return [
-            "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"],
+            'eq' => ['icon' => 'fas fa-equals'],
+            'neq' => ['icon' => 'fas fa-not-equal'],
         ];
     }
 
@@ -45,10 +43,10 @@ class EntityFilterType extends AbstractFilterType
             list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
             switch ($this->data['op']) {
-                case "neq":
-                    $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $id, ':'.$paramname));
+                case 'neq':
+                    $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $id, ':' . $paramname));
                     break;
-                case "eq":
+                case 'eq':
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $id, ':'.$paramname));
                     break;
@@ -60,8 +58,11 @@ class EntityFilterType extends AbstractFilterType
 
     public function getDataRoute(): string
     {
-        $route = str_replace("App\\Entity\\", "", $this->entityClass);
+        if (null !== $this->customRoute) {
+            return $this->customRoute;
+        }
+        $route = str_replace('App\\Entity\\', '', $this->entityClass);
 
-        return "app_crudit_" . strtolower($route) . "_autocomplete";
+        return sprintf('app_crudit_%s_autocomplete', strtolower($route));
     }
 }

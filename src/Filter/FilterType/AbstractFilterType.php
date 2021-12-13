@@ -3,8 +3,6 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
-use Lle\CruditBundle\Contracts\FilterSetInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
@@ -26,7 +24,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     protected bool $hidden = false;
 
-    protected array $additionnal_keys = [];
+    protected array $additionnalKeys = [];
 
     protected string $alias = 'root.';
 
@@ -49,16 +47,16 @@ abstract class AbstractFilterType implements FilterTypeInterface
      */
     public function getAdditionnalKeys(): array
     {
-        return $this->additionnal_keys;
+        return $this->additionnalKeys;
     }
 
     /**
-     * @param array $additionnal_keys
+     * @param array $additionnalKeys
      * @return AbstractFilterType
      */
-    public function setAdditionnalKeys(array $additionnal_keys): AbstractFilterType
+    public function setAdditionnalKeys(array $additionnalKeys): AbstractFilterType
     {
-        $this->additionnal_keys = $additionnal_keys;
+        $this->additionnalKeys = $additionnalKeys;
         return $this;
     }
 
