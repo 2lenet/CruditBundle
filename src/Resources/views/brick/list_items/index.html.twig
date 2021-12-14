@@ -3,6 +3,7 @@
     <div class="card-header py-1">
         {% include('@LleCrudit/brick/list_items/_pager.html.twig') %}
     </div>
+
     <div class="card-body">
         <div class="table-responsive">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
@@ -10,7 +11,11 @@
                     <thead class="thead-light">
                         <tr>
                             {% if has_batch %}
-                                <td></td>
+                                <th>
+                                    <span>
+                                        <input type="checkbox" id="crudit-batch-check-all">
+                                    </span>
+                                </th>
                             {% endif %}
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
