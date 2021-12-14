@@ -16,8 +16,8 @@ class EntityFilterTypeTest extends TestCase
 
     public function testCustomRoute(): void
     {
-        $customRoute = 'lle_hermes_test_autocomplete';
-        $filterType = EntityFilterType::new('test', 'App\\Entity\\Test', $customRoute);
-        self::assertEquals($customRoute, $filterType->getDataRoute());
+        $dataRoute = 'lle_hermes_test_autocomplete';
+        $filterType = EntityFilterType::new('test', 'App\\Entity\\Test', $dataRoute);
+        self::assertEquals($dataRoute, $filterType->getDataRoute());
     }
 }
