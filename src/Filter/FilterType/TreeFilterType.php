@@ -11,18 +11,6 @@ use Doctrine\ORM\QueryBuilder;
  */
 class TreeFilterType extends EntityFilterType
 {
-    public static function new(
-        $fieldname,
-        $entityClass
-    ): self
-    {
-        $f = new self($fieldname);
-        $f->setAdditionnalKeys(["items"]);
-        $f->setEntityClass($entityClass);
-
-        return $f;
-    }
-
     public function apply(QueryBuilder $queryBuilder): void
     {
         /**
