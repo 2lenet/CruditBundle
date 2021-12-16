@@ -61,6 +61,7 @@ class LinksConfig extends AbstractBrickConfig
     {
         return [
             'title' => $this->options['title']??"",
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
         ];
     }
 }

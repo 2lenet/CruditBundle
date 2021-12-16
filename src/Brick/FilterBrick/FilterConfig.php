@@ -37,7 +37,8 @@ class FilterConfig extends AbstractBrickConfig
         return [
             'filterset' => $this->getFilterset(),
             'name' => $this->getCrudConfig()->getName(),
-            'title' => $this->getCrudConfig()->getTitle('list')
+            'title' => $this->getCrudConfig()->getTitle('list'),
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
         ];
     }
 

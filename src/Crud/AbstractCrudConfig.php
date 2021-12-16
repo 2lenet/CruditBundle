@@ -298,4 +298,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return [10, 30, 50, 100];
     }
+
+    public function getTranslationDomain(): string
+    {
+        return 'messages';
+    }
 }

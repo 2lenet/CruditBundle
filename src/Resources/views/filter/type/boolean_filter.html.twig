@@ -8,7 +8,7 @@
             <option value="false" {% if filtertype.isSelected(data, 'false') %} selected="selected" {% endif %}>{{ 'crudit.boolean.no'|trans({}, 'LleCruditBundle') }}</option>
         </select>
         <label for="input_{{ id }}">
-            {{ filter.label|trans }}
+            {{ filter.label|trans(domain=view.config.translation_domain) }}
         </label>
     </div>
 {% endblock %}

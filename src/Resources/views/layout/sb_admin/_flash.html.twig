@@ -5,7 +5,7 @@
                 {% if flashMessage starts with "crudit." %}
                     {{ flashMessage | raw | trans(domain='LleCruditBundle') }}
                 {% else %}
-                    {{ flashMessage | raw | trans }}
+                    {{ flashMessage | raw | trans(domain=view.config.translation_domain) }}
                 {% endif %}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>

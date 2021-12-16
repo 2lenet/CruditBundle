@@ -2,6 +2,6 @@
 
 {% block value %}
     {% for state in data.value %}
-        <span class="badge bg-secondary">{{ ('wf.state.' ~ state) | trans }}</span>
+        <span class="badge bg-secondary">{{ ('wf.state.' ~ state) | trans(domain=view.config.translation_domain) }}</span>
     {% endfor %}
 {% endblock %}

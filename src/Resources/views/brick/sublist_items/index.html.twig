@@ -10,7 +10,7 @@
                         <tr>
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                                    <th class="text-nowrap">{{ field.label |trans }}
+                                    <th class="text-nowrap">{{ field.label |trans(domain=view.config.translation_domain) }}
                                         {% if field.sortable %}
                                             {% set merge_params = {
                                                 ((view.config.name|lower)~'_sort'): field.name,
@@ -38,7 +38,7 @@
                                 {% endif %}
                             {% endfor %}
                             {% if view.config.actions|length %}
-                                <th>{{ 'crudit.action'|trans }}</th>
+                                <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -95,7 +95,8 @@
                                             {% if action.modal %}
                                                 {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                                             {% endif %}
-                                            <span class="btn-wrapper" title="{{ action.title|trans }}">
+                                            <span class="btn-wrapper"
+                                                  title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                                                 <a
                                                         class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
@@ -104,8 +105,9 @@
                                                             href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                                                         {% endif %}
                                                 >
-                                                    {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                                    {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
+                                                    {% if action.icon %}<i
+                                                        class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                                    {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
                                                 </a>
                                             </span>
                                         {% endif %}

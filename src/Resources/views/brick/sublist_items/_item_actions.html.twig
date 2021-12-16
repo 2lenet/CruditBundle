@@ -23,18 +23,25 @@
                             </span>
                     {% elseif entityAction.isModal %}
                         {% include entityAction.modal %}
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-{{ item.id }}" class="btn btn-xs {{ entityAction.cssClass }}"><i class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{{ entityAction.getLabelFor(item) | trans }}</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-{{ item.id }}"
+                           class="btn btn-xs {{ entityAction.cssClass }}"><i
+                                    class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{{ entityAction.getLabelFor(item) | trans(domain=view.config.translation_domain) }}
+                        </a>
                     {% elseif entityAction.isPopup %}
                         <span
-                                data-url="{{ path(path.route,path.params)}}"
+                                data-url="{{ path(path.route,path.params) }}"
                                 class="jsa-popup btn btn-primary btn-xs">
-                                {% if entityAction.getIconFor(item) is not null %}<i class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}
+                                {% if entityAction.getIconFor(item) is not null %}<i
+                                    class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}
                             {{ entityAction.getLabelFor(item) }}
                             </span>
                     {% elseif path %}
                         <a {% if entityAction.target %} target="{{ entityAction.target }}" {% endif %}
-                                id="action-{{index}}-{{entityAction.getLabelFor(item) }}" href="{{ path(path.route, path.params) }}" class="btn {{ entityAction.cssClass }} btn-xs">
-                            {% if entityAction.getIconFor(item) is not null %}<i class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}{{ entityAction.getLabelFor(item)|trans }}
+                                id="action-{{ index }}-{{ entityAction.getLabelFor(item) }}"
+                                href="{{ path(path.route, path.params) }}"
+                                class="btn {{ entityAction.cssClass }} btn-xs">
+                            {% if entityAction.getIconFor(item) is not null %}<i
+                                class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}{{ entityAction.getLabelFor(item)|trans(domain=view.config.translation_domain) }}
                         </a>
 
                     {% endif %}

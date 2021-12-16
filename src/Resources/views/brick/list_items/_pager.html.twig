@@ -94,10 +94,10 @@
                         {% else %}
                             href="{{ action.url ?? path(action.path.route, params) }}"
                         {% endif %}
-                        title="{{ action.label|trans }}"
+                        title="{{ action.label|trans(domain=view.config.translation_domain) }}"
                 >
                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                    {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
+                    {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
                 </a>
             {% endif %}
         {% endfor %}

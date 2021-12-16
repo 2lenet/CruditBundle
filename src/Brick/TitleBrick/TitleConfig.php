@@ -7,7 +7,6 @@ namespace Lle\CruditBundle\Brick\TitleBrick;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
-use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Component\HttpFoundation\Request;
 
 class TitleConfig extends AbstractBrickConfig
@@ -45,11 +44,12 @@ class TitleConfig extends AbstractBrickConfig
     {
         return $this->dataSource;
     }
-    
+
     public function getConfig(Request $request): array
     {
         return [
             'title' => $this->getCrudConfig()->getTitle('show'),
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
         ];
     }
 }

@@ -90,7 +90,8 @@ class SublistConfig extends AbstractBrickConfig
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
             'canModifyNbEntityPerPage' => false,
-            'choices_nb_items' => $this->subCrudConfig->getChoicesNbItems()
+            'choices_nb_items' => $this->subCrudConfig->getChoicesNbItems(),
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
         ];
     }
 

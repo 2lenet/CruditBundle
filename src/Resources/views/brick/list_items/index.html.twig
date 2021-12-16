@@ -15,7 +15,7 @@
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
                                     <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
-                                        {{ field.label|trans }}
+                                        {{ field.label|trans(domain=view.config.translation_domain) }}
                                         {% if field.sortable %}
                                             {% set name = view.config.name|lower %}
                                             {% set merge_params = {
@@ -57,7 +57,7 @@
                                     {% endif %}
                                 {% endfor %}
                                 {% if hasActions %}
-                                    <th>{{ 'crudit.action'|trans }}</th>
+                                    <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
                                 {% endif %}
                             {% endif %}
                         </tr>

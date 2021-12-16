@@ -6,22 +6,23 @@
             {% set path = '#' %}
         {% endif %}
         <a href="{{ path }}" class="nav-link py-2">
-            {{ element.libelle|trans }}
+            {{ element.libelle|trans(domain=views[0].config.translation_domain) }}
         </a>
     </li>
 {% elseif submenu|default(false) %}
     {% set active = crudit_menu_active(element, app.request) %}
     <a class="collapse-item {% if active %}active{% endif %} m-0" href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{% endif %}">
         {% if element.icon and element.icon.img %}
-            <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans }}" />
+            <img class="img-thumbnail" src="{{ element.icon.icon }}"
+                 alt="{{ element.libelle|trans(domain=views[0].config.translation_domain) }}"/>
         {% elseif element.icon %}
             <i class="nav-icon {{ element.icon.cssClass }}"></i>
         {% endif %}
         <span>
-            {{ element.libelle|trans }}
+            {{ element.libelle|trans(domain=views[0].config.translation_domain) }}
             {% if element.badges|length %}
                 {% for badge in element.badges %}
-                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
+                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans(domain=views[0].config.translation_domain) }}</span>
                 {% endfor %}
             {% endif %}
          </span>
@@ -36,15 +37,16 @@
         {% endif %}
         <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path }}">
             {% if element.icon and element.icon.img %}
-                <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans }}" />
+                <img class="img-thumbnail" src="{{ element.icon.icon }}"
+                     alt="{{ element.libelle|trans(domain=views[0].config.translation_domain) }}"/>
             {% elseif element.icon %}
                 <i class="nav-icon {{ element.icon.cssClass }}"></i>
             {% endif %}
             <span>
-                {{ element.libelle|trans }}
+                {{ element.libelle|trans(domain=views[0].config.translation_domain) }}
                 {% if element.badges|length %}
                     {% for badge in element.badges %}
-                        <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
+                        <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans(domain=views[0].config.translation_domain) }}</span>
                     {% endfor %}
                 {% endif %}
             </span>
