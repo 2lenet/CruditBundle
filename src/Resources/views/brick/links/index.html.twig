@@ -1,5 +1,5 @@
 <nav class="navbar navbar-light bg-light mb-2 px-2 shadow">
-    <h4 class="navbar-brand text-primary mb-0">{{ view.config.title|trans({'%entity%': view.data.entity}) }}</h4>
+    <h4 class="navbar-brand text-primary mb-0">{{ view.config.title|trans({'%entity%': view.data.entity}, view.config.translation_domain) }}</h4>
     <div>
         {% for action in view.data.actions %}
             {% set params = action.path.params %}
@@ -16,7 +16,7 @@
             {% endif %}
             {% set disabled = action.disabled or
                 (action.path.role is not null and not is_granted(action.path.role, view.data.resource)) %}
-            <span class="btn-wrapper" title="{{ action.title|trans }}">
+            <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                 <a
                         class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }} {% if disabled %}disabled{% endif %}"
                         {% if action.modal %}
@@ -26,7 +26,7 @@
                         {% endif %}
                 >
                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                    {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
+                    {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
                 </a>
             </span>
         {% endfor %}

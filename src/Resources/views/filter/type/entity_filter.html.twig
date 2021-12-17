@@ -2,16 +2,17 @@
 
 {% block input %}
     <div class="form-floating">
-        <input type="hidden" id="input_{{ id|replace({':': "_"}) }}_items" name="{{ id }}_items" value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
+        <input type="hidden" id="input_{{ id|replace({':': "_"}) }}_items" name="{{ id }}_items"
+               value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
         <input id="input_{{ id|replace({':': "_"}) }}"
-                class="form-control entity-select"
-                name="{{ id }}_value"
-                value="{{ data['value']|default('') }}"
-                placeholder=""
-                autocomplete="new-password"
-                data-url="{{ path(filter.dataRoute) }}?q="
-                data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
+               class="form-control entity-select"
+               name="{{ id }}_value"
+               value="{{ data['value']|default('') }}"
+               placeholder=""
+               autocomplete="new-password"
+               data-url="{{ path(filter.dataRoute) }}?q="
+               data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
         />
-        <label>{{ filter.label|trans }}</label>
+        <label>{{ filter.label|trans(domain=view.config.translation_domain) }}</label>
     </div>
 {% endblock %}

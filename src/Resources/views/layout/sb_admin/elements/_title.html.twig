@@ -1,5 +1,5 @@
 <li class="sidebar-heading">
-    <span class="show-toggle">{{ element.libelle|trans }}</span>
+    <span class="show-toggle">{{ element.libelle|trans(domain=view.config.translation_domain) }}</span>
 </li>
 {% if element.children %}
     {% for child in element.children %}

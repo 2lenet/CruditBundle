@@ -38,4 +38,6 @@ interface CrudConfigInterface
     public function getAfterEditPath(): Path;
 
     public function getChoicesNbItems(): array;
+
+    public function getTranslationDomain(): string;
 }

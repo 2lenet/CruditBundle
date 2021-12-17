@@ -13,7 +13,7 @@
             {% endfor %}
         </select>
         <label for="input_{{ id }}">
-            {{ filter.label|trans() }}
+            {{ filter.label|trans(domain=view.config.translation_domain) }}
         </label>
     </div>
 {% endblock %}

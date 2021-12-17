@@ -20,7 +20,7 @@ class ShowConfig extends AbstractBrickConfig
     private $dataSource;
     private $actions;
     private $role = null;
-    
+
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
@@ -75,6 +75,7 @@ class ShowConfig extends AbstractBrickConfig
             'name' => $this->getCrudConfig()->getName(),
             'title' => $this->getCrudConfig()->getTitle('show'),
             'hidden_action' => false,
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
         ];
     }
 

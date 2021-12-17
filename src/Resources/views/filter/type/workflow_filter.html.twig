@@ -10,12 +10,12 @@
                 autocomplete="off">
             {% for state in filtertype.choices %}
                 <option value="{{ state }}" {% if data.value is defined and filtertype.isSelected(data, state) %} selected {% endif %}>
-                    {{ ('wf.state.' ~ state) | trans }}
+                    {{ ('wf.state.' ~ state) | trans(domain=view.config.translation_domain) }}
                 </option>
             {% endfor %}
         </select>
         <label for="input_{{ id }}">
-            {{ filter.label | trans }}
+            {{ filter.label | trans(domain=view.config.translation_domain) }}
         </label>
     </div>
 {% endblock %}

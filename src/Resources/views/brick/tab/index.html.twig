@@ -2,9 +2,10 @@
     <ul class="nav nav-tabs" role="tablist">
         {% for tab in view.config.tabs %}
             <li class="nav-item " role="presentation">
-                <a class="nav-link {% if(loop.first) %}active{%  endif %}" data-bs-toggle="tab" href="#{{ tab.id }}" role="tab" type="button">{{ tab.label|trans }}</a>
+                <a class="nav-link {% if(loop.first) %}active{% endif %}" data-bs-toggle="tab" href="#{{ tab.id }}"
+                   role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}</a>
             </li>
-        {%  endfor %}
+        {% endfor %}
     </ul>
 
     <div class="tab-content">

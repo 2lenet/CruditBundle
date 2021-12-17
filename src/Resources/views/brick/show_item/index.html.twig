@@ -4,9 +4,10 @@
             {% for field in view.data.resource.fields %}
                 <div class="crudit-field {{ field.options.cssClass }}">
                     <dl class="row">
-                        <dt class="col-sm-3">{{ field.field.label |trans }}</dt>
+                        <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
                         <dd class="col-sm-9">
-                            {% if field.field.path %}<a href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                            {% if field.field.path %}<a
+                                    href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
                                 {{ field.value |raw }}
                                 {% if field.field.path %}</a>{% endif %}
                         </dd>
