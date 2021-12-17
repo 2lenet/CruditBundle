@@ -12,7 +12,7 @@
             <div
                     class="dropdown-toggle text-decoration-none align-middle"
                     role="button">
-                {{ ('wf.state.' ~ value) | trans(domain=view.config.translation_domain) }}
+                {{ ('wf.state.' ~ value) | trans }}
             </div>
         </span>
         <ul class="dropdown-menu">
@@ -22,7 +22,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#validate-action-{{ transition.name }}-{{ view.resource.id }}"
                 >
-                    {{ ('wf.transition.' ~ transition.name) | trans(domain=view.config.translation_domain) }}
+                    {{ ('wf.transition.' ~ transition.name) | trans }}
                 </button>
             {% endfor %}
         </ul>
@@ -57,6 +57,6 @@
 {% else %}
     {# There are no allowed transitions #}
     <span class="badge rounded-pill bg-primary text-start crudit-wf-badge crudit-wf-state-{{ value }}">
-        {{ ('wf.state.' ~ value) | trans(domain=view.config.translation_domain) }}
+        {{ ('wf.state.' ~ value) | trans }}
     </span>
 {% endif %}
