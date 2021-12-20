@@ -23,17 +23,6 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /** @var array */
     protected $options = [];
 
-    public function setCrudConfig(CrudConfigInterface $crudConfig): self
-    {
-        $this->crudConfig = $crudConfig;
-        return $this;
-    }
-
-    public function getCrudConfig(): CrudConfigInterface
-    {
-        return $this->crudConfig;
-    }
-
     public function getPageKey(): string
     {
         return $this->pageKey;
@@ -52,7 +41,20 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
 
     public function getConfig(Request $request): array
     {
-        return [];
+        return [
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+        ];
+    }
+
+    public function getCrudConfig(): CrudConfigInterface
+    {
+        return $this->crudConfig;
+    }
+
+    public function setCrudConfig(CrudConfigInterface $crudConfig): self
+    {
+        $this->crudConfig = $crudConfig;
+        return $this;
     }
 
     public function getId(): string
