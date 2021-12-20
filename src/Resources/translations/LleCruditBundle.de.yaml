@@ -63,6 +63,8 @@ crudit:
             after: "Bevor"
             before: "Nach"
             interval: "Zwischen"
+        showMore: "Weitere Filter ansehen"
+        showLess: "Weniger Filter anzeigen"
 
     boolean:
         yes: "Ja"

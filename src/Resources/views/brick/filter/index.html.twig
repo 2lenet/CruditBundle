@@ -3,9 +3,9 @@
         <div class="card-header py-1">
             <h6 class="m-2 font-weight-bold float-start text-primary">
                 <i class="icon fa fa-search"></i>&nbsp;
-                {{ 'crudit.title.filter' | trans(domain='LleCruditBundle') }}
+                {{ 'crudit.title.filter'|trans(domain='LleCruditBundle') }}
             </h6>
-            <span id="card-toggle" class="btn float-end collapsed" data-bs-toggle="collapse" data-bs-target=".collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
+            <span id="card-toggle" class="btn float-end" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
                 <i class="fa fa-chevron-up"></i>
             </span>
             {% for id, filter in view.data.filters %}
@@ -17,34 +17,50 @@
             {% endfor %}
         </div>
 
-        <div class="card-body">
-            <div class="row">
-                {% for id, filter in view.data.filters %}
+        <div id="collapse-filter" class="collapse show">
+            <div class="card-body">
+                <div class="row">
+                    {% set isCollapsedFilters = false %}
+                    {% for id, filter in view.data.filters %}
+                        {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap' %}
+                        {% set classes = filter.hidden ? classes ~ ' d-none' : classes %}
+                        {% if loop.index > view.data.filterset.numberDisplayed %}
+                            {% set classes = classes ~ ' collapse-filter collapse' %}
+                            {% set isCollapsedFilters = true %}
+                        {% endif %}
 
-                    {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap' %}
-                    {% set classes = filter.hidden ? classes ~ ' d-none' : classes %}
-                    {% set classes = loop.index > view.data.filterset.numberDisplayed ? classes ~ ' collapse-filter collapse' : classes %}
+                        <div class="{{ classes }}">
+                            {% include filter.template with {
+                                'data': filter.data,
+                                'id': 'filter_' ~ id,
+                                'filtertype': filter,
+                            } %}
+                        </div>
+                    {% endfor %}
 
-                    <div class="{{ classes }}">
-                        {% include filter.template with {
-                            'data': filter.data,
-                            'id': 'filter_' ~ id,
-                            'filtertype': filter,
-                        } %}
-                    </div>
-
-                {% endfor %}
+                    {% if isCollapsedFilters %}
+                        <div>
+                            <button class="btn btn-sm btn-default" data-bs-toggle="collapse" data-bs-target=".collapse-filter" type="button" aria-expanded="false">
+                                <i class="fas fa-plus more-filter"></i>
+                                <i class="fas fa-minus less-filter"></i>
+                                &nbsp;
+                                <span class="more-filter">{{ 'crudit.filter.showMore'|trans(domain='LleCruditBundle') }}</span>
+                                <span class="less-filter">{{ 'crudit.filter.showLess'|trans(domain='LleCruditBundle') }}</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
         <div class="card-footer py-1">
             <button class="btn btn-sm btn-primary" name="{{ view.data.filterset.id}}_filter" value="filter" type="submit">
                 <i class="fa fa-filter"></i>&nbsp;
-                {{ 'crudit.filter.action' | trans(domain='LleCruditBundle') }}
+                {{ 'crudit.filter.action'|trans(domain='LleCruditBundle') }}
             </button>
             <button class="btn btn-sm btn-default" name="{{ view.data.filterset.id}}_reset" value="reset" type="submit">
                 <i class="fa fa-window-close"></i>&nbsp;
-                {{ 'crudit.filter.reset' | trans(domain='LleCruditBundle') }}
+                {{ 'crudit.filter.reset'|trans(domain='LleCruditBundle') }}
             </button>
         </div>
     </div>
