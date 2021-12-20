@@ -13,6 +13,8 @@ class DatasourceParams
     protected array $sorts;
 
     protected array $filters;
+    
+    protected bool $enableFilters = true;
 
     public function __construct(int $limit, int $offset, array $sorts, array $filters = [])
     {
@@ -164,5 +166,15 @@ class DatasourceParams
         $this->filters = $filters;
 
         return $this;
+    }
+
+    public function isEnableFilters(): bool
+    {
+        return $this->enableFilters;
+    }
+
+    public function setEnableFilters(bool $enableFilters): void
+    {
+        $this->enableFilters = $enableFilters;
     }
 }
