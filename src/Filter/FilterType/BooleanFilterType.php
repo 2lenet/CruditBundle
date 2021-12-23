@@ -2,8 +2,6 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
-use Doctrine\ORM\QueryBuilder;
-
 /**
  * BooleanFilterType
  *
@@ -26,30 +24,30 @@ class BooleanFilterType extends AbstractFilterType
 
     public function apply($queryBuilder): void
     {
-        list($id, $alias, $params) = $this->getQueryParams($queryBuilder);
+        list($column, $alias, $params) = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             if ($this->data['op'] == 'eq' && $this->data['value'] !== 'all') {
                 switch ($this->data['value']) {
                     case 'true':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'true'));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, 'true'));
                         break;
                     case 'false':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'false'))
-                            ->andWhere($queryBuilder->expr()->isNotNull($alias.$id));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, 'false'))
+                            ->andWhere($queryBuilder->expr()->isNotNull($alias . $column));
                         break;
                 }
             } elseif ($this->data['op'] == 'neq') {
                 switch ($this->data['value']) {
                     case 'true':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'false'))
-                            ->andWhere($queryBuilder->expr()->isNotNull($alias.$id));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, 'false'))
+                            ->andWhere($queryBuilder->expr()->isNotNull($alias . $column));
                         break;
                     case 'false':
-                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias.$id, 'true'));
+                        $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, 'true'));
                         break;
                     case 'all':
-                        $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias.$id));
+                        $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                         break;
                 }
             }
@@ -63,6 +61,7 @@ class BooleanFilterType extends AbstractFilterType
                 return true;
             }
         }
+
         return false;
     }
 }

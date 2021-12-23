@@ -38,9 +38,9 @@ class StringFilterType extends AbstractFilterType
         $op = $this->data["op"];
 
         // ADD JOIN IF NEEDED
-        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
-        $query = $this->getPattern($op, $id, $alias, $id, $paramname);
+        $query = $this->getPattern($op, $column, $alias, $column, $paramname);
 
         if (in_array($op, ["isnull", "isnotnull"])) {
             $queryBuilder->andWhere($query);

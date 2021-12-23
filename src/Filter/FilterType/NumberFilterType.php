@@ -32,37 +32,37 @@ class NumberFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data["op"]) && in_array($this->data["op"], ["isnull", "isnotnull"])) {
             switch ($this->data['op']) {
                 case 'isnotnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($alias . $column));
                     break;
                 case 'isnull':
                 default:
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
             }
         } else if (isset($this->data['value']) && $this->data['value']) {
             switch ($this->data['op']) {
                 case 'neq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->neq($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->neq($alias . $column, ':' . $paramname));
                     break;
                 case 'lt':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $column, ':' . $paramname));
                     break;
                 case 'lte':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lte($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lte($alias . $column, ':' . $paramname));
                     break;
                 case 'gt':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $column, ':' . $paramname));
                     break;
                 case 'gte':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gte($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gte($alias . $column, ':' . $paramname));
                     break;
                 case 'eq':
                 default:
-                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, ':' . $paramname));
             }
 
             $queryBuilder->setParameter($paramname, $this->data['value']);

@@ -29,13 +29,15 @@ class NumberRangeFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
+        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {
                 case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
                 case 'interval':
-                    $queryBuilder->andWhere($this->alias . $this->columnName . ' >= :min_' . $this->id);
+                    $queryBuilder->andWhere($alias . $column . ' >= :min_' . $this->id);
                     $queryBuilder->setParameter('min_' . $this->id, $this->data['value']);
                     break;
             }
@@ -44,10 +46,10 @@ class NumberRangeFilterType extends AbstractFilterType
         if (isset($this->data['to']) && $this->data['to'] && isset($this->data['op'])) {
             switch ($this->data['op']) {
                 case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($this->alias . $this->columnName));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
                 case 'interval':
-                    $queryBuilder->andWhere($this->alias . $this->columnName . ' <= :max_' . $this->id);
+                    $queryBuilder->andWhere($alias . $column . ' <= :max_' . $this->id);
                     $queryBuilder->setParameter('max_' . $this->id, $this->data['to']);
                     break;
             }
