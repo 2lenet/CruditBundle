@@ -20,9 +20,8 @@
         <div class="card-body">
             <div class="row">
                 {% for id, filter in view.data.filters %}
-
                     {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap' %}
-                    {% set classes = filter.hidden ? classes ~ ' d-none' : classes %}
+                    {% set classes = filter.hidden ? 'd-none' : classes %}
                     {% set classes = loop.index > view.data.filterset.numberDisplayed ? classes ~ ' collapse-filter collapse' : classes %}
 
                     <div class="{{ classes }}">
@@ -32,7 +31,6 @@
                             'filtertype': filter,
                         } %}
                     </div>
-
                 {% endfor %}
             </div>
         </div>

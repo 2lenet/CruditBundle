@@ -1,47 +1,72 @@
 'use strict';
 
 window.addEventListener('load', function () {
-    let ids = [];
-
+    const dropdownItems = document.querySelectorAll('.crudit-batch-dropdown-item');
     const batchCheckAll = document.getElementById('crudit-batch-check-all');
     const checkboxes = document.querySelectorAll('.crudit-batch-check');
 
-    // TODO: When we refresh the page with checked checkboxes, the button to validate the batch action isn't show
+    let ids = [];
 
     // Check or uncheck all checkboxes
     batchCheckAll.addEventListener('change', (event) => {
-        for (let checkbox of checkboxes) {
+        checkboxes.forEach(checkbox => {
             checkbox.checked = batchCheckAll.checked;
-
             ids = saveCheckedId(event.currentTarget, ids, checkbox);
-        }
+        });
 
-        manageClassButton(ids);
+        showBatchList(ids);
     });
 
-    // On change event on each checkboxes
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', (event) => {
             ids = saveCheckedId(event.currentTarget, ids, checkbox);
-            manageClassButton(ids);
 
             batchCheckAll.checked = true;
-            for (let checkbox of checkboxes) {
+            checkboxes.forEach(checkbox => {
                 if (!checkbox.checked) {
                     batchCheckAll.checked = false;
-                    break;
                 }
-            }
+            });
+
+            showBatchList(ids);
         })
     });
 
-    // Rewrite url
-    document.querySelectorAll(".crudit-batch-button").forEach(button_elem => {
-        button_elem.addEventListener('click', (event) => {
-            event.currentTarget.href = event.currentTarget.href+'?ids='+ids.join(',');
+
+    // Hide all forms
+    hideBatchForms();
+
+    // Display the form if batch action contains one
+    dropdownItems.forEach(dropdownItem => {
+        dropdownItem.addEventListener('click', () => {
+            if (dropdownItem.dataset.form) {
+                document.querySelectorAll('.batch_action_form').forEach(form => {
+                    hideBatchForms();
+
+                    document.getElementById(dropdownItem.dataset.form).classList.remove('d-none');
+                });
+            } else {
+                event.currentTarget.href = event.currentTarget.href + '?ids' + ids.join(',');
+            }
         });
     });
 });
+
+function showBatchList(ids) {
+    const batchList = document.querySelector('.crudit-batch-list');
+
+    if (ids.length > 0) {
+        batchList.classList.remove('d-none');
+    } else {
+        batchList.classList.add('d-none');
+    }
+}
+
+function hideBatchForms() {
+    document.querySelectorAll('.batch_action_form').forEach(form => {
+        form.classList.add('d-none');
+    });
+}
 
 // Save ids into array
 function saveCheckedId(target, ids, checkbox) {
@@ -55,15 +80,4 @@ function saveCheckedId(target, ids, checkbox) {
     }
 
     return ids;
-}
-
-// Modify class of button
-function manageClassButton(ids) {
-    const batchlist = document.querySelector(".crudit-batch-list");
-
-    if (ids.length > 0) {
-        batchlist.classList.remove('d-none');
-    } else {
-        batchlist.classList.add('d-none');
-    }
 }

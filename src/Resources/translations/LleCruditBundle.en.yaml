@@ -23,6 +23,7 @@ crudit:
         cancel: "Cancel"
         back: "Go back"
         logout: "Logout"
+        batch: "Choose a batch action"
 
     message:
         success: "Success"

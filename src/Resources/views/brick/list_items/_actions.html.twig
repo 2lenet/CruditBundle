@@ -14,9 +14,9 @@
                 {# if action uses a voter, check it #}
                 {% set disabled = disabled or (
                     action.hasVoter and not is_granted(action.roleVoter, line.resource)
-                ) %}
+                    ) %}
 
-                <span class="btn-wrapper" title="{{ action.title|trans }}">
+                <span class="btn-wrapper" title="{{ action.title }}">
                     <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
                             {% if action.modal %}
                                 data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
@@ -25,7 +25,7 @@
                             {% endif %}
                     >
                         {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                        {% if not action.hideLabel and not action.icon %}{{ action.label|trans }}{% endif %}
+                        {% if not action.hideLabel and not action.icon %}{{ action.label }}{% endif %}
                     </a>
                 </span>
             {% endif %}
@@ -53,7 +53,7 @@
                                         {% endif %}
                                 >
                                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                    {{ action.label|trans }}
+                                    {{ action.label|trans(domain=view.config.translation_domain) }}
                                 </a>
                             </li>
                         {% endif %}

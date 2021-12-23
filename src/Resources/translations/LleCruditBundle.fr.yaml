@@ -23,6 +23,7 @@ crudit:
         cancel: "Annuler"
         back: "Retour"
         logout: "Déconnexion"
+        batch: "Choisir une action de masse"
 
     message:
         success: "Succès"

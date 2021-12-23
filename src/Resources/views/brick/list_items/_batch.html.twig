@@ -1,0 +1,83 @@
+<div class="col-sm-12 col-md-12 crudit-batch-list d-none">
+
+    <div class="dropdown">
+        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownBatchActions" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ 'crudit.action.batch'|trans({}, 'LleCruditBundle') }}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownBatchActions">
+            {% for key, batch_action in view.data.batch_actions %}
+                {% set action = batch_action.action %}
+                {% set params = action.path.params %}
+
+                {% if batch_action.form is not null %}
+                    {% set form = batch_action.form %}
+                {% endif %}
+
+                <a
+                        class="{{ action.cssClass ?? 'btn btn-sm crudit-batch-dropdown-item dropdown-item' }}"
+                        {% if action.modal %}
+                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                        {% elseif form %}
+                            data-form="batch_form_{{ key ~ '_' ~ view.id }}"
+                        {% else %}
+                            href="{{ action.url ?? path(action.path.route, params) }}"
+                        {% endif %}
+                        title="{{ action.label }}"
+                >
+                    {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                    {% if not action.hideLabel %}{{ action.label }}{% endif %}
+                </a>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% for key, batch_action in view.data.batch_actions %}
+        {% set action = batch_action.action %}
+        {% set params = action.path.params %}
+
+        {% if batch_action.form is not null %}
+            {% set form = batch_action.form %}
+        {% endif %}
+
+        {% if action.path.role is null or is_granted(action.path.role) %}
+            {% if action.modal %}
+                {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
+            {% endif %}
+        {% endif %}
+
+        {% if form %}
+            {{ form_start(form, {
+                'attr': {
+                    'class': 'form-horizontal needs-validation batch_action_form',
+                    'novalidate': 'novalidate',
+                    'autocomplete': 'off',
+                    'action': '',
+                    'id': 'batch_form_' ~ key ~ '_' ~ view.id
+                }
+            }) }}
+                <div class="row mt-2">
+                    {% for field in form.children %}
+                        {% if field.vars.name != '_token' %}
+                            {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 flex-nowrap' %}
+                            {% set classes = (field.vars.block_prefixes[1] == 'hidden') ? 'd-none' : classes %}
+                            <div class="{{ classes }}">
+                                <div class="form-floating">
+                                    {{ form_widget(field) }}
+                                    {{ form_label((field)) }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="row mt-2">
+                    <div class="col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fas fa-check"></i>&nbsp;
+                            {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
+                        </button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        {% endif %}
+    {% endfor %}
+</div>
