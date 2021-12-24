@@ -2,7 +2,9 @@
 <div class="card shadow mb-4">
     <div class="card-header py-1">
         {% include('@LleCrudit/brick/list_items/_pager.html.twig') %}
+        {% include('@LleCrudit/brick/list_items/_batch.html.twig') %}
     </div>
+
     <div class="card-body">
         <div class="table-responsive">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
@@ -10,7 +12,11 @@
                     <thead class="thead-light">
                         <tr>
                             {% if has_batch %}
-                                <td></td>
+                                <th>
+                                    <span>
+                                        <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
+                                    </span>
+                                </th>
                             {% endif %}
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
@@ -96,7 +102,7 @@
                                     <tr>
                                     {% set line_opened = 1 %}
                                     {% if has_batch %}
-                                        <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" /></td>
+                                        <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" autocomplete="off" /></td>
                                     {% endif %}
                                 {% endif %}
                                 <td>

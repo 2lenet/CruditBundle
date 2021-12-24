@@ -33,6 +33,8 @@ class ListAction
     protected array $config = [];
     protected bool $batch = false;
 
+    protected ?string $form = "";
+
     public static function new(string $label, Path $path, ?Icon $icon = null): self
     {
         return (new ListAction($label, $path))
@@ -154,6 +156,18 @@ class ListAction
     public function setResource(?object $resource): self
     {
         /** do nothing */
+        return $this;
+    }
+
+    public function getForm(): ?string
+    {
+        return $this->form;
+    }
+
+    public function setForm(?string $form): self
+    {
+        $this->form = $form;
+
         return $this;
     }
 }

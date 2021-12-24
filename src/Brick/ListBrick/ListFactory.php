@@ -11,16 +11,19 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ListFactory extends AbstractBasicBrickFactory
 {
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        FormFactoryInterface $formFactory
     )
     {
         parent::__construct($resourceResolver, $requestStack);
+        $this->formFactory = $formFactory;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -31,14 +34,26 @@ class ListFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         $view = new BrickView($brickConfigurator);
+
         if ($brickConfigurator instanceof ListConfig) {
+            $batchActions = [];
+
+            foreach ($brickConfigurator->getBatchActions() as $batchAction) {
+                if ($batchAction->getForm()) {
+                    $form = $this->formFactory->create($batchAction->getForm());
+                    $batchActions[] = ['action' => $batchAction, 'form' => $form->createView()];
+                } else {
+                    $batchActions[] = ['action' => $batchAction, 'form' => ''];
+                }
+            }
+
             $view
                 ->setTemplate('@LleCrudit/brick/list_items')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
                     'lines' => $this->getLines($brickConfigurator),
-                    'batch_actions' => $brickConfigurator->getBatchActions()
+                    'batch_actions' => $batchActions,
                 ]);
         }
 
