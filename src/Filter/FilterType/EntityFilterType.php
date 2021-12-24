@@ -49,15 +49,15 @@ class EntityFilterType extends AbstractFilterType
         if (isset($this->data['value']) and $this->data['value'] != '') {
             $ids = explode(',', $this->data['value']);
 
-            list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+            list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
             switch ($this->data['op']) {
                 case 'neq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $id, ':' . $paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $column, ':' . $paramname));
                     break;
                 case 'eq':
                 default:
-                $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $id, ':' . $paramname));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));
                     break;
             }
 

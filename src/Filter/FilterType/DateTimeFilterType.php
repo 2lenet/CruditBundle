@@ -30,7 +30,7 @@ class DateTimeFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
 
@@ -43,13 +43,13 @@ class DateTimeFilterType extends AbstractFilterType
 
             switch ($this->data['op']) {
                 case 'eq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, ':' . $paramname));
                     break;
                 case 'before':
-                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $column, ':' . $paramname));
                     break;
                 case 'after':
-                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $this->columnName, ':'.$paramname));
+                    $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $column, ':' . $paramname));
                     break;
             }
 

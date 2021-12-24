@@ -3,7 +3,6 @@
 {% block value %}
     {% if data['value'] %}
         <span class="filter-state">
-            <small>{{ filtertype.label|trans(domain=view.config.translation_domain) }}</small>
             <span class="badge">{{ data['value']|date("d/m/Y") }}</span>
         </span>
     {% endif %}

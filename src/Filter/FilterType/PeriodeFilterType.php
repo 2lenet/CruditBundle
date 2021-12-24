@@ -29,15 +29,15 @@ class PeriodeFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        list($id, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {
                 case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias .$id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
                 case 'interval':
-                    $queryBuilder->andWhere($alias .$id . ' >= :min_' . $paramname);
+                    $queryBuilder->andWhere($alias . $column . ' >= :min_' . $paramname);
                     $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
                     break;
             }
@@ -46,10 +46,10 @@ class PeriodeFilterType extends AbstractFilterType
         if (isset($this->data['to']) && $this->data['to']) {
             switch ($this->data['op']) {
                 case 'isnull':
-                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias .$id));
+                    $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
                 case 'interval':
-                    $queryBuilder->andWhere($alias .$id . ' <= :max_' . $paramname);
+                    $queryBuilder->andWhere($alias . $column . ' <= :max_' . $paramname);
                     $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
                     break;
             }

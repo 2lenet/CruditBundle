@@ -16,7 +16,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
     {
         $this->columnName = $fieldname;
         $this->id = $fieldname;
-        $this->label = "field.".$fieldname;
+        $this->label = "field." . $fieldname;
         $this->alias = "root.";
     }
 
@@ -59,6 +59,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function setAdditionnalKeys(array $additionnalKeys): AbstractFilterType
     {
         $this->additionnalKeys = $additionnalKeys;
+
         return $this;
     }
 
@@ -71,11 +72,14 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
         return $this;
     }
 
-    public function setDefault($default_data): self {
+    public function setDefault($default_data): self
+    {
         $this->default = $default_data;
+
         return $this;
     }
 
@@ -175,7 +179,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
             $field = array_shift($fields);
         }
 
-        $paramname = str_replace('.','_', $alias . "_" . $field);
+        $paramname = str_replace('.', '_', $alias . "_" . $field);
 
         return [
             "." . $field,
