@@ -31,7 +31,8 @@ $input-height: 42px;
 
         &.entity-select {
             min-height: $input-height;
-            padding-top: 0;
+            padding: 0;
+            background-color: $white;
 
             & .ts-input {
                 height: $input-height;

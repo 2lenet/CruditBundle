@@ -23,7 +23,7 @@
                     {% set isCollapsedFilters = false %}
                     {% for id, filter in view.data.filters %}
                         {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap' %}
-                        {% set classes = filter.hidden ? classes ~ ' d-none' : classes %}
+                        {% set classes = filter.hidden ? ' d-none' : classes %}
                         {% if loop.index > view.data.filterset.numberDisplayed %}
                             {% set classes = classes ~ ' collapse-filter collapse' %}
                             {% set isCollapsedFilters = true %}
