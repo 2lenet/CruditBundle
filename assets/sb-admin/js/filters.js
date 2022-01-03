@@ -15,6 +15,18 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
 
+    // Submit form on press on Enter and prevent operators dropdown opening
+    const filtersContainer = document.getElementById('collapse-filter');
+    if (filtersContainer) {
+        filtersContainer.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                filtersContainer.closest('form').submit();
+            }
+        });
+    }
+
+
     // Entity filter
     document.querySelectorAll('.entity-select').forEach(select => {
         const dataurl = select.dataset.url;
