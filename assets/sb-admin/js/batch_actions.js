@@ -9,14 +9,16 @@ window.addEventListener('load', function () {
 
     // Check/uncheck all checkboxes
     // Show batch list if all checkboxes are checked
-    batchCheckAll.addEventListener('change', () => {
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = batchCheckAll.checked;
-        });
+    if (batchCheckAll) {
+        batchCheckAll.addEventListener('change', () => {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = batchCheckAll.checked;
+            });
 
-        ids = saveIds();
-        showBatchList(batchCheckAll.checked);
-    });
+            ids = saveIds();
+            showBatchList(batchCheckAll.checked);
+        });
+    }
 
     // Show batch list if at least 1 checkbox is checked
     checkboxes.forEach(checkbox => {
