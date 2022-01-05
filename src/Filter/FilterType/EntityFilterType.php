@@ -41,27 +41,41 @@ class EntityFilterType extends AbstractFilterType
         return [
             'eq' => ['icon' => 'fas fa-equals'],
             'neq' => ['icon' => 'fas fa-not-equal'],
+            "isnull" => ["icon" => "far fa-square"],
+            "isnotnull" => ["icon" => "fas fa-square"],
         ];
     }
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (isset($this->data['value']) and $this->data['value'] != '') {
+        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+
+        $ids = [];
+        if (isset($this->data['value']) && $this->data['value'] != '') {
             $ids = explode(',', $this->data['value']);
+        }
 
-            list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
-
+        if (isset($this->data["op"])) {
             switch ($this->data['op']) {
+                case 'isnull':
+                    $queryBuilder->andWhere($alias . $column . ' IS NULL OR ' . $alias . $column . " = '' ");
+                    break;
+                case 'isnotnull':
+                    $queryBuilder->andWhere($alias . $column . ' IS NOT NULL OR ' . $alias . $column . " = '' ");
+                    break;
                 case 'neq':
-                    $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $column, ':' . $paramname));
+                    if (!empty($ids)) {
+                        $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $column, ':' . $paramname));
+                        $queryBuilder->setParameter($paramname, $ids);
+                    }
                     break;
                 case 'eq':
                 default:
-                $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));
-                    break;
+                    if (!empty($ids)) {
+                        $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));
+                        $queryBuilder->setParameter($paramname, $ids);
+                    }
             }
-
-            $queryBuilder->setParameter($paramname, $ids);
         }
     }
 
