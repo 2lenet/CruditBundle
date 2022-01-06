@@ -7,7 +7,8 @@
             {% for field in form.getIterator() %}
                 {% if field.vars.name != '_token' %}
                     <div class="form-floating mb-4">
-                        {{ form_widget(field, {'attr': {'class': 'form-control', 'placeholder': '', 'autocomplete': 'new-password'}}) }}
+                        {% set attr = {'placeholder': '', 'autocomplete': 'new-password'} | merge(field.vars.attr) %}
+                        {{ form_widget(field, {attr}) }}
                         {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
                             {{ form_label(field) }}
                         {% endif %}
