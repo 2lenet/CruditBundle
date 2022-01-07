@@ -1,6 +1,5 @@
-<div class="col-sm-12 col-md-12 crudit-batch-list d-none">
-
-    <div class="dropdown">
+<div class="row mt-2 crudit-batch-list d-none">
+    <div class="col-md-2 dropdown">
         <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownBatchActions" data-bs-toggle="dropdown" aria-expanded="false">
             {{ 'crudit.action.batch'|trans({}, 'LleCruditBundle') }}
         </button>
@@ -48,17 +47,17 @@
         {% if form %}
             {{ form_start(form, {
                 'attr': {
-                    'class': 'form-horizontal needs-validation batch-action-form',
+                    'class': 'col-md-10 form-horizontal needs-validation batch-action-form',
                     'novalidate': 'novalidate',
                     'autocomplete': 'off',
                     'action': path(action.path.route),
                     'id': 'batch-form-' ~ key ~ '-' ~ view.id
                 }
             }) }}
-            <div class="row mt-2">
+            <div class="row">
                 {% for field in form.children %}
                     {% if field.vars.name != '_token' %}
-                        {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 flex-nowrap' %}
+                        {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap' %}
                         {% set classes = (field.vars.block_prefixes[1] == 'hidden') ? 'd-none' : classes %}
                         <div class="{{ classes }}">
                             <div class="form-floating">
@@ -69,8 +68,8 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            <div class="row mt-2">
-                <div class="col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-3 flex-nowrap">
+            <div class="row">
+                <div class="col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap">
                     <button type="submit" class="btn btn-sm btn-primary">
                         <i class="fas fa-check"></i>&nbsp;
                         {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
