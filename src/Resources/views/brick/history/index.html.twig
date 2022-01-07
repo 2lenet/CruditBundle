@@ -1,32 +1,45 @@
 <div class="card shadow mb-4">
     <div class="card-body">
         {% if view.data.history is not empty %}
-            <ul>
-                {% for entry in view.data.history %}
-                    {% set log = entry.log %}
-                    <li>
-                        <div>
-                            <span class="badge bg-secondary">{{ ('crudit.history.action.' ~ log.action) | trans(domain='LleCruditBundle') }}</span>
-                            <i class="fa fa-user "></i>
-                            <b>{{ log.username }}</b>
-                            <span class="time"><i class="fa fa-clock-o"></i>
-                                {{ log.loggedAt | date('d/m/Y H:i') }}
-                            </span>
-                            <div>
+            {% for entry in view.data.history %}
+                <div class="card-timeline">
+                    <div class="card-timeline-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-history-{{ loop.index }}" aria-expanded="false" aria-controls="collapse-history-{{ loop.index }}">
+                        <span class="badge me-4 bg-secondary">
+                            {{ ('crudit.history.action.' ~ entry.log.action)|trans(domain='LleCruditBundle') }}
+                        </span>
+                            <span class="me-4 fw-bold">{{ entry.log.username }}</span>
+                            <span>
+                            <i class="far fa-clock"></i>&nbsp;
+                            {{ entry.log.loggedAt|date('d/m/Y H:i') }}
+                        </span>
+
+                            <span class="btn float-end card-toggle">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                        </div>
+                        <div id="collapse-history-{{ loop.index }}" class="collapse">
+                            <div class="card-body">
                                 <table>
                                     {% for property, value in entry.data %}
                                         <tr>
-                                            <td>{{ ('field.' ~ (property | replace({'.': '_'}) | lower)) | trans(domain=view.config.translation_domain) }}</td>
-                                            <td>&nbsp;<i class="fa fa-arrow-right"></i>&nbsp;</td>
+                                            <td>{{ ('field.' ~ (property|replace({'.': '_'})|lower))|trans(domain=view.config.translation_domain) }}</td>
+                                            <td>
+                                                <i class="fas fa-arrow-right mx-2"></i>
+                                            </td>
                                             <td>
                                                 {% if value.type == 'boolean' %}
                                                     <span class="badge {% if value.raw %}bg-success{% else %}bg-danger{% endif %}">
-                                                        {{ value.value | trans(domain='LleCruditBundle' ) }}
+                                                        {{ value.value|trans(domain='LleCruditBundle') }}
                                                     </span>
                                                 {% elseif value.type == 'single_assoc' %}
                                                     <span class="badge bg-primary">
-                                                    {{ value.value }}
-                                                </span>
+                                                        {{ value.value }}
+                                                    </span>
                                                 {% else %}
                                                     {{ value.value }}
                                                 {% endif %}
@@ -36,9 +49,17 @@
                                 </table>
                             </div>
                         </div>
-                    </li>
-                {% endfor %}
-            </ul>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="card-timeline">
+                <div class="card-timeline-icon">
+                    <i class="fas fa-folder-plus"></i>
+                </div>
+            </div>
+        {% else %}
+            <p>{{ 'crudit.history.no_history'|trans(domain='LleCruditBundle') }}</p>
         {% endif %}
     </div>
 </div>

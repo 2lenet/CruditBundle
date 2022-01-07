@@ -76,6 +76,7 @@ crudit:
     by: "da"
 
     history:
+        no_history: "Nessuna storia di modifica."
         action:
             create: "Creazione"
             update: "Aggiornamento"
