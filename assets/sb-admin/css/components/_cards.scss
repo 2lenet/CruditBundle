@@ -1,5 +1,10 @@
-#card-toggle.collapsed {
+.card-header.collapsed .card-toggle,
+.card-toggle.collapsed {
     transform: rotate(180deg);
+}
+
+.card-header[data-bs-toggle="collapse"] {
+    cursor: pointer;
 }
 
 .card-body {
@@ -9,4 +14,42 @@
 
 form > .card-body {
     overflow: initial;
+}
+
+$timeline-size: 50px;
+$timeline-icon-size: 30px;
+.card-timeline {
+    display: flex;
+
+    &-icon {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        width: $timeline-size;
+        &::after {
+            content: '';
+            position: absolute;
+            top: calc(#{$timeline-icon-size} + 10px);
+            width: 4px;
+            height: calc(100% - #{$timeline-icon-size});
+            background-color: $card-border-color;
+        }
+
+        i {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: $timeline-icon-size;
+            height: $timeline-icon-size;
+            margin-top: 10px;
+            background-color: $card-cap-bg;
+            border: $card-border-width solid $card-border-color;
+            border-radius: 50%;
+        }
+    }
+
+    .card {
+        width: calc(100% - #{$timeline-size});
+    }
 }

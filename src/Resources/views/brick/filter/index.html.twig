@@ -5,7 +5,7 @@
                 <i class="icon fa fa-search"></i>&nbsp;
                 {{ 'crudit.title.filter'|trans(domain='LleCruditBundle') }}
             </h6>
-            <span id="card-toggle" class="btn float-end" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
+            <span class="btn float-end card-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
                 <i class="fa fa-chevron-up"></i>
             </span>
             {% for id, filter in view.data.filters %}

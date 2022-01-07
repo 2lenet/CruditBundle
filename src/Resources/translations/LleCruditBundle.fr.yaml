@@ -80,6 +80,7 @@ crudit:
     by: "par"
 
     history:
+        no_history: "Aucun historique de modification."
         action:
             create: "Création"
             update: "Mise à jour"
