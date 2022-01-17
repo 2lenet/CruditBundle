@@ -10,6 +10,84 @@ use Twig\TwigFilter;
  */
 class CruditTelephoneFilterExtension extends AbstractExtension
 {
+    private const INDICATOR_MAX_LENGTH = 3;
+
+    // [indicator => [ length => format]]
+    // source: https://fr.wikipedia.org/wiki/Num%C3%A9ro_de_t%C3%A9l%C3%A9phone
+    private const FORMATS = [
+        "+1" => [
+            "10" => "## (###) ###-####",
+        ],
+        "+212" => [
+            "9" => "#### # ## ## ## ##"
+        ],
+        "+213" => [
+            "8" => "#### (##) ### ###",
+            "9" => "#### (##) ### ####",
+            "10" => "#### (##) ### #####",
+        ],
+        "+216" => [
+            "9" => "#### ## ### ###"
+        ],
+        "+225" => [
+            "10" => "(####) ##.##.##.##.##"
+        ],
+        "+228" => [
+            "9" => "#### ## ## ## ##"
+        ],
+        "+237" => [
+            "9" => "#### ### ## ## ##"
+        ],
+        "+242" => [
+            "9" => "#### ## ### ####"
+        ],
+        "+262" => [
+            "9" => "#### ### ## ## ##"
+        ],
+        "+32" => [
+            "8" => "### ## ## ## ##"
+        ],
+        "+33" => [
+            "9" => "### # ## ## ## ##"
+        ],
+        "+34" => [
+            "9" => "### ###.##.##.##"
+        ],
+        "+352" => [
+            "5" => "#### # ####",
+            "6" => "#### ## ####",
+            "8" => "#### #### ####",
+            "9" => "#### ### ### ###"
+        ],
+        "+353" => [
+            "8" => "#### # ### ####"
+        ],
+        "+41" => [
+            "9" => "### ## ### ## ##"
+        ],
+        "+49" => [
+            "9" => "### # ## ## ## ##",
+            "10" => "### ## #### ####",
+            "11" => "### ## #### #####",
+            "12" => "### ## #### ######",
+        ],
+        "+509" => [
+            "8" => "#### #### ####"
+        ],
+        "+590" => [
+            "9" => "#### ### ## ## ##"
+        ],
+        "+596" => [
+            "9" => "#### ### ## ## ##"
+        ],
+        "+687" => [
+            "9" => "#### ### ## ## ##"
+        ],
+        "+689" => [
+            "8" => "#### ## ### ###"
+        ],
+    ];
+
     public function getFilters()
     {
         return [
@@ -17,29 +95,26 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * Format phone number :
-     *  0102030405 => 01 02 03 04 05
-     *  +X102030405 => +X 1 02 03 04 05
-     *  +XX102030405 => +XX 1 02 03 04 05
-     *  +XXX102030405 => +XXX 1 02 03 04 05
-     *
-     * @param $telephone
-     * @return string
-     */
     public function formatTelephone($telephone)
     {
         $telephone = str_replace(' ', '', $telephone);
 
+        $mask = null;
         if (strpos($telephone, '+') === 0) {
-            $telephone = substr($telephone, 1);
-            $indicatorMask = str_repeat("#", strlen($telephone) - 9);
-            $telephone = "+" . $this->applyMask($indicatorMask . " # ## ## ## ##", $telephone);
-        } else {
-            $telephone = $this->applyMask("## ## ## ## ##", $telephone);
+            $lenTel = strlen($telephone);
+            $i = self::INDICATOR_MAX_LENGTH + 1;
+            while ($mask == null && $i > 0) {
+                $indicator = substr($telephone, 0, $i);
+                $currentLen = (string)($lenTel - $i);
+                if (key_exists($indicator, self::FORMATS) && key_exists($currentLen, self::FORMATS[$indicator])) {
+                    $mask = self::FORMATS[$indicator][$currentLen];
+                }
+                $i--;
+            }
+        } elseif (strlen($telephone) == 10) {
+            $mask = "## ## ## ## ##";
         }
-
-        return $telephone;
+        return ($mask != null ? $this->applyMask($mask, $telephone) : $telephone);
     }
 
     private function applyMask(string $mask, string $value)
