@@ -76,7 +76,8 @@ class SublistConfig extends AbstractBrickConfig
 
     public function getConfig(Request $request): array
     {
-        $this->setDatasourceParams($this->subCrudConfig->getDatasourceParams($request));
+        $sessionKey = $this->crudConfig->getDatasourceParamsKey() . "_sublist_" . $this->subCrudConfig->getName();
+        $this->setDatasourceParams($this->subCrudConfig->getDatasourceParams($request, $sessionKey));
 
         return [
             'fields' => $this->getFields(),
