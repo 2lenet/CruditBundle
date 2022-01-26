@@ -29,11 +29,14 @@ class BrickView
     /** @var ?Path */
     private $path;
 
+    private $role = null;
+
     public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])
     {
         $this->template = $template;
         $this->data = $data;
         $this->movable = false;
+        $this->role = $brickConfig->getRole();
         $this->id = $brickConfig->getId();
         $this->options = $brickConfig->getOptions();
         $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
@@ -139,6 +142,16 @@ class BrickView
     public function setOptions(array $options): BrickView
     {
         $this->options = $options;
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
         return $this;
     }
 }

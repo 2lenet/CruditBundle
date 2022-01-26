@@ -44,6 +44,17 @@ public function getTabs(): array
 
 
 If you need to add custom history (such as additions/deletions in collections), you have to log it yourself by creating `LogEntry` entities from Gedmo, for example by implementing your own listener.
+## Roles
+
+If you want to limit your tab to a role you can pass a third parameter to the addTabs function like this
+
+```php 
+$tabConf = TabConfig::new();
+$tabConf->adds('tab.commandes', [
+SublistConfig::new('client', $this->commandeCrudConfig)
+->setFields($this->commandeCrudConfig->getFields(self::INDEX))], "ROLE_TEST")
+;
+```
 
 ## Sublists
 

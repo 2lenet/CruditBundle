@@ -23,6 +23,8 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /** @var array */
     protected $options = [];
 
+    private $role = null;
+
     public function getPageKey(): string
     {
         return $this->pageKey;
@@ -92,4 +94,20 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
         return $this;
     }
 
+    /**
+     * @return null
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param null $role
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+        return $this;
+    }
 }
