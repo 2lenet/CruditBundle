@@ -35,3 +35,6 @@ services:
   Lle\CruditBundle\Field\WorkflowField:
     arguments: [ '@twig' ]
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\MarkdownField:
+    arguments: [ '@twig' ]
+    tags: [ 'crudit.field' ]
