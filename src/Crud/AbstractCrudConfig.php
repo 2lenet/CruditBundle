@@ -145,10 +145,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return $this->datasource;
     }
 
-    public function getDatasourceParams(Request $request): DatasourceParams
+    public function getDatasourceParams(Request $request, ?string $sessionKey = null): DatasourceParams
     {
         // this session will be reset when the filters are reset (see Lle\CruditBundle\Filter\FilterState)
-        $sessionKey = strtolower("crudit_datasourceparams_" . $this->getName());
+        $sessionKey = $sessionKey ?? $this->getDatasourceParamsKey();
         $params = $request->getSession()->get($sessionKey, [
             "limit" => $this->getNbItems(),
             "offset" => 0,
@@ -174,6 +174,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $request->getSession()->set($sessionKey, $params);
 
         return new DatasourceParams(...array_values($params));
+    }
+
+    public function getDatasourceParamsKey(): string
+    {
+        return strtolower("crudit_datasourceparams_" . $this->getName());
     }
 
     public function getController(): ?string
