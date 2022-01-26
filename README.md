@@ -12,7 +12,7 @@ Webpack Encore is required and you need to have a security on your application.
 
 ```bash
 require 2lenet/crudit-bundle
-npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free --save
+npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free easymde --save
 ```
 
 Just add the following lines in your template/base.html.twig
@@ -50,6 +50,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 - [Submenu](doc/submenu.md)
 - [Filters](doc/filter.md)
 - [Sublist](doc/sublist.md)
+- [Field](doc/field.md)
 - [Use a FilterSet in your own Controller](doc/filterset_controller.md)
 - [Form types](doc/form_types.md)
 - [Add a map to a list or to a show](doc/map_config.md)
@@ -98,6 +99,7 @@ Crudit provides some help to be nicely integrated :
 - Many FormType ( Datetime, Entity, etc ...)
 - Entity Dropdown based on TomSelect with autocomplete
 - DoctrineFormGuesser to automatically use Crudit FormType.
+- Markdown editor based on EasyMDE
 - Layout customisation is possible ( doc TODO / Block principle )
 
 ## JS Format input helper
