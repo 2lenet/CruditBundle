@@ -206,7 +206,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function autocompleteCountQuery(string $queryColumn, $queryTerm): int
     {
         $qb = $this->buildQueryBuilder(null);
-        $qb->select('count(root.id)');
+        $qb->select('count(DISTINCT(root.id))');
         $orStatements = $qb->expr()->orX();
         foreach ($this->getAutoCompleteSearchFields() as $field) {
             $orStatements->add(
@@ -221,7 +221,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function count(?DatasourceParams $requestParams): int
     {
         $qb = $this->buildQueryBuilder($requestParams);
-        $qb->select('count(root.id)');
+        $qb->select('count(DISTINCT(root.id))');
 
         if ($this->filterset) {
             $this->applyFilters($qb);
