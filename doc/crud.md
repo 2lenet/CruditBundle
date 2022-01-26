@@ -68,6 +68,21 @@ It is already possible to add action in a dropdown, adding `->setDropdown(true)`
   }
 ```
 
+If you want to add a role for your action:
+
+```php
+  public function getListActions(): array
+  {          
+      $res[] = ListAction::new(
+          'action.import.csv',
+          (Path::new('import_lot_melange'))->setRole('ROLE_IMPORT'),
+          Icon::new('download')
+      )->setDropdown(true);
+
+      return $res;
+  }
+```
+
 ## Write actions that will be executed in your crud
 
 When we declare a new action in our page, we indicate the path of our method. This method must be in
