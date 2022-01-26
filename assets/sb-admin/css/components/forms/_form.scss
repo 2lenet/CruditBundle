@@ -28,3 +28,10 @@ label.required:not(.form-check-label), legend.required {
         color: red;
     }
 }
+
+fieldset.crudit-group {
+    legend.crudit-group {
+        float: none;
+    }
+    background-color: white;
+}
