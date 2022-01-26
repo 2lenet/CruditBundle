@@ -221,7 +221,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function count(?DatasourceParams $requestParams): int
     {
         $qb = $this->buildQueryBuilder($requestParams);
-        $qb->select('count(root.id)');
+        $qb->select('count(DISTINCT(root.id))');
 
         if ($this->filterset) {
             $this->applyFilters($qb);
