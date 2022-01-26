@@ -50,12 +50,12 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 - [Submenu](doc/submenu.md)
 - [Filters](doc/filter.md)
 - [Sublist](doc/sublist.md)
-- [Field](doc/field.md)
 - [Use a FilterSet in your own Controller](doc/filterset_controller.md)
 - [Form types](doc/form_types.md)
 - [Add a map to a list or to a show](doc/map_config.md)
 - [How to export data](doc/export.md)
 - [Workflows](doc/workflow.md)
+- [Markdown](doc/markdown.md)
 
 ## Principle
 
