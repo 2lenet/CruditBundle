@@ -61,6 +61,10 @@ services:
     Lle\CruditBundle\Twig\CruditTelephoneFilterExtension:
         tags: [ twig.extension ]
 
+    Lle\CruditBundle\Twig\SanitizerExtension:
+        autowire: true
+        tags: [ twig.extension ]
+
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
     # And guess the good type
 
@@ -87,3 +91,6 @@ services:
     Lle\CruditBundle\Exporter\ExcelExporter:
         arguments:
             $translator: "@translator"
+
+    Lle\CruditBundle\Service\SanitizerService: ~
+    Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
