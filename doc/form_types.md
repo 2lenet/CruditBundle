@@ -15,3 +15,6 @@ Options :
 | multiple  | false      | set this to true if the field is a collection |
 | route     | null       | if you want to customize the autocomplete route |
 | url       | null       | if you want to customize the autocomplete url |
+
+### Markdown
+The [Lle\CruditBundle\Form\Type\MarkdownType](markdown.md#markdowntype) allows you to create a Markdown editor textarea.

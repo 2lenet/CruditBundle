@@ -15,27 +15,28 @@ class Tab
     /** @var string */
     private $label;
 
-    public static function new(string $label, array $bricks = []): self
-    {
-        return (new self($bricks))
-            ->setLabel($label)
-            ;
-    }
+    private $role = null;
 
     private function __construct(array $bricks)
     {
         $this->bricks = $bricks;
     }
 
-    public function setLabel(string $label): self
+    public static function new(string $label, array $bricks = []): self
     {
-        $this->label = $label;
-        return $this;
+        return (new self($bricks))
+            ->setLabel($label);
     }
 
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    public function setLabel(string $label): self
+    {
+        $this->label = $label;
+        return $this;
     }
 
     public function add(BrickConfigInterface $brick): self
@@ -49,4 +50,16 @@ class Tab
     {
         return $this->bricks;
     }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+        return $this;
+    }
+
 }

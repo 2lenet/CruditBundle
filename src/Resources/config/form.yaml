@@ -23,3 +23,7 @@ services:
         autowire: true
         tags:
             - { name: form.type, alias: crudit_markdown }
+    Lle\CruditBundle\Form\Type\GroupType:
+        autowire: true
+        tags:
+            - { name: form.type, alias: crudit_group }

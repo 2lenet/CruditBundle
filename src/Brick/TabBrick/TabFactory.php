@@ -35,6 +35,7 @@ class TabFactory extends AbstractBasicBrickFactory
         if ($brickConfigurator instanceof TabConfig) {
             foreach ($brickConfigurator->getTabs() as $k => $tab) {
                 $tabs[$k] = new TabView($tab->getLabel());
+                $tabs[$k]->setRole($tab->getRole());
                 foreach ($tab->getBricks() as $brickConfig) {
                     $tabs[$k]->add(
                         $this->brickBuilder->buildBrick(
