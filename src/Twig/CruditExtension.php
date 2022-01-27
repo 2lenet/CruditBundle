@@ -30,6 +30,7 @@ class CruditExtension extends AbstractExtension
     {
         return [
             new TwigFilter('json_decode', [$this, 'jsonDecode']),
+            new TwigFilter("get_crudit_routename", [$this, "getCruditRoutename"]),
         ];
     }
 
@@ -71,5 +72,12 @@ class CruditExtension extends AbstractExtension
     public function jsonDecode($value)
     {
         return json_decode($value, true);
+    }
+
+    public function getCruditRoutename(object $value): string
+    {
+        $class = (new \ReflectionClass($value))->getShortName();
+
+        return 'app_crudit_' . strtolower($class) . '_show';
     }
 }
