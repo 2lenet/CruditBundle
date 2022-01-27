@@ -95,7 +95,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     }
 
     /**
-     * @return null
+     * @return ?string
      */
     public function getRole()
     {
@@ -103,7 +103,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     }
 
     /**
-     * @param null $role
+     * @param ?string $role
      */
     public function setRole($role)
     {
