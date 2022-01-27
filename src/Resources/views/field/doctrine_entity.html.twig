@@ -1,9 +1,11 @@
-{% if value is iterable %}
-    <span class="badge bg-primary rounded-pill">{{ value|length }}</span>
-{% elseif not view.options.link %}
-    {{ value }}
-{% elseif view.options.route %}
-    <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
-{% else %}
-    <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
+{% if value %}
+    {% if value is iterable %}
+        <span class="badge bg-primary rounded-pill">{{ value|length }}</span>
+    {% elseif not view.options.link %}
+        {{ value }}
+    {% elseif view.options.route %}
+        <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
+    {% else %}
+        <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
+    {% endif %}
 {% endif %}
