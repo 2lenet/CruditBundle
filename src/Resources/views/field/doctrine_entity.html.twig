@@ -5,5 +5,5 @@
 {% elseif view.options.route %}
     <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
 {% else %}
-    <a href="{{ path(value|get_class, {'id': value.id}) }}">{{ value }}</a>
+    <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
 {% endif %}
