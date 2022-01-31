@@ -53,6 +53,7 @@ services:
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
+            - '@router'
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:

@@ -5,6 +5,8 @@
         {{ value }}
     {% elseif view.options.route %}
         <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
+    {% elseif value|get_crudit_routename is null %}
+        {{ value }}
     {% else %}
         <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
     {% endif %}
