@@ -74,10 +74,18 @@ class CruditExtension extends AbstractExtension
         return json_decode($value, true);
     }
 
-    public function getCruditRoutename(object $value): string
+    public function getCruditRoutename(object $value): ?string
     {
         $class = (new \ReflectionClass($value))->getShortName();
 
-        return 'app_crudit_' . strtolower($class) . '_show';
+        $route = 'app_crudit_' . strtolower($class);
+
+        try {
+            $this->router->generate($route . '_index');
+        } catch (RouteNotFoundException $e) {
+            return null;
+        }
+
+        return $route . '_show';
     }
 }
