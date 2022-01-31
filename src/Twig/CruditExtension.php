@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Twig;
 
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -11,10 +12,12 @@ use Twig\TwigFunction;
 class CruditExtension extends AbstractExtension
 {
     private MenuRegistry $menuRegistry;
+    private RouterInterface $router;
 
-    public function __construct(MenuRegistry $menuRegistry)
+    public function __construct(MenuRegistry $menuRegistry, RouterInterface $router)
     {
         $this->menuRegistry = $menuRegistry;
+        $this->router = $router;
     }
 
     public function getFunctions()
