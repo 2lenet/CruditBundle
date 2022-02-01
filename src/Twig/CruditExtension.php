@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Twig;
 
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;

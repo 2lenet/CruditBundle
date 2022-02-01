@@ -35,15 +35,17 @@ class FieldView
         $this->value = $value;
     }
 
-    public function setResource(object $resource): self
+    public function setResource(?object $resource): self
     {
         $this->resource = $resource;
+
         return $this;
     }
 
-    public function setParentResource(object $resource): self
+    public function setParentResource(?object $resource): self
     {
         $this->resource = $resource;
+
         return $this;
     }
 
