@@ -39,9 +39,9 @@ $icon-width: 32px;
                 text-align: left;
                 padding: 1rem;
                 width: $sidebar-base-width;
-                &[data-bs-toggle='collapse'] {
+                &[data-bs-toggle="collapse"] {
                     &::after {
-                        content: '\f107';
+                        content: '\f105';
                         width: 1rem;
                         float: right;
                         color: fade-out($white, 0.5);
@@ -52,7 +52,7 @@ $icon-width: 32px;
                     }
 
                     &.collapsed::after {
-                        content: '\f105';
+                        content: '\f107';
                     }
                 }
             }
