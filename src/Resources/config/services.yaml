@@ -26,7 +26,7 @@ services:
             - '@security.helper'
 
     Lle\CruditBundle\Resolver\FieldResolver:
-        arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']
+        arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor', '@property_info']
 
     Lle\CruditBundle\Resolver\ResourceResolver:
         arguments: ['@Lle\CruditBundle\Resolver\FieldResolver', '@security.helper']

@@ -79,6 +79,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function list(?DatasourceParams $requestParams): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
+        $qb->distinct();
 
         if ($this->filterset && $requestParams->isEnableFilters()) {
             $this->applyFilters($qb);

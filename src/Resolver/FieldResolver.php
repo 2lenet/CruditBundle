@@ -10,20 +10,21 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Registry\FieldRegistry;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
 class FieldResolver
 {
+    private FieldRegistry $fieldRegistry;
 
-    /** @var FieldRegistry */
-    private $fieldRegistry;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    /** @var PropertyAccessorInterface  */
-    private $propertyAccessor;
+    private PropertyInfoExtractorInterface $propertyInfoExtractor;
 
-    public function __construct(FieldRegistry $fieldRegistry, PropertyAccessorInterface $propertyAccessor)
+    public function __construct(FieldRegistry $fieldRegistry, PropertyAccessorInterface $propertyAccessor, PropertyInfoExtractorInterface $propertyInfoExtractor)
     {
         $this->propertyAccessor = $propertyAccessor;
         $this->fieldRegistry = $fieldRegistry;
+        $this->propertyInfoExtractor = $propertyInfoExtractor;
     }
 
     public function resolveView(
@@ -35,13 +36,33 @@ class FieldResolver
     {
         $subResource = $resource;
         $name = $field->getName();
+
         if ($field->hasCascade()) {
             $value = null;
             $cascade = explode('.', $field->getName());
+            $subClass = get_class($subResource);
+
             foreach ($cascade as $k => $name) {
-                $value = $this->propertyAccessor->getValue($subResource, $name);
-                if ($value === null) break;
-                if (\count($cascade) - 1 !== $k) {
+                $types = $this->propertyInfoExtractor->getTypes($subClass, $name);
+
+                if (!$types) {
+                    break;
+                }
+
+                $propertyType = $types[0];
+
+                if ($subResource) {
+                    $value = $this->propertyAccessor->getValue($subResource, $name);
+                }
+
+                // if we are not at the last iteration
+                if (array_key_last($cascade) !== $k) {
+
+                    // it should always be a class
+                    $subClass = $propertyType->isCollection()
+                        ? $propertyType->getCollectionValueTypes()[0]
+                        : $propertyType->getClassName();
+
                     $subResource = $value;
                 }
             }
@@ -51,9 +72,10 @@ class FieldResolver
 
         $type = $field->getType();
         if ($type === null) {
-            $type = $datasource->getType($name, $subResource);
+            $type = $datasource->getType($name, isset($subClass) ? new $subClass() : $subResource);
             $field->setType($type);
         }
+
         $fieldView = (new FieldView($field, $value))
             ->setResource($resource)
             ->setParentResource($subResource)
