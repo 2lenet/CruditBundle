@@ -34,7 +34,7 @@ class LinkElement extends AbstractLayoutElement
     /** @var LinkElement[] */
     protected $children;
 
-    public static function new(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null): self
+    public static function new(string $libelle, ?Path $path, ?Icon $icon = null, ?string $role = null): self
     {
         $item = new self($libelle, $path, $icon, $role);
         $item->setId(str_replace('menu.', '', $libelle));
@@ -47,7 +47,7 @@ class LinkElement extends AbstractLayoutElement
         return '@LleCrudit/layout/sb_admin/elements/_link.html.twig';
     }
 
-    public function __construct(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null)
+    public function __construct(string $libelle, ?Path $path, ?Icon $icon = null, ?string $role = null)
     {
         $this->libelle = $libelle;
         $this->icon = $icon;
@@ -62,9 +62,10 @@ class LinkElement extends AbstractLayoutElement
         return $this->type;
     }
 
-    public function setType(string $type): void
+    public function setType(string $type): self
     {
         $this->type = $type;
+        return $this;
     }
 
     public function getLibelle(): ?string
@@ -72,9 +73,10 @@ class LinkElement extends AbstractLayoutElement
         return $this->libelle;
     }
 
-    public function setLibelle(string $libelle): void
+    public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
+        return $this;
     }
 
     public function getIcon(): ?Icon
@@ -82,9 +84,10 @@ class LinkElement extends AbstractLayoutElement
         return $this->icon;
     }
 
-    public function setIcon(Icon $icon): void
+    public function setIcon(Icon $icon): self
     {
         $this->icon = $icon;
+        return $this;
     }
 
     public function getPath(): ?Path
@@ -92,9 +95,10 @@ class LinkElement extends AbstractLayoutElement
         return $this->path;
     }
 
-    public function setPath(Path $path): void
+    public function setPath(Path $path): self
     {
         $this->path = $path;
+        return $this;
     }
 
     /**
