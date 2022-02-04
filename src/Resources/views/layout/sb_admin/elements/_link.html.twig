@@ -5,21 +5,26 @@
         {% else %}
             {% set path = '#' %}
         {% endif %}
-        <a href="{{ path }}" class="nav-link py-2">
+        <a class="nav-link py-2" href="{{ path }}" {% if element.isExternal %}target="_blank"{% endif %}>
             {{ element.libelle|trans() }}
+            {% if element.isExternal %}
+                &nbsp;<i class="fas fa-external-link-alt"></i>
+            {% endif %}
         </a>
     </li>
 {% elseif submenu|default(false) %}
     {% set active = crudit_menu_active(element, app.request) %}
-    <a class="collapse-item {% if active %}active{% endif %} m-0" href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{% endif %}">
+    <a class="collapse-item {% if active %}active{% endif %} m-0" href="{% if element.path %}{{ path(element.path.route, element.path.params) }}{% else %}#{% endif %}" {% if element.isExternal %}target="_blank"{% endif %}>
         {% if element.icon and element.icon.img %}
-            <img class="img-thumbnail" src="{{ element.icon.icon }}"
-                 alt="{{ element.libelle|trans() }}"/>
+            <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
         {% elseif element.icon %}
             <i class="nav-icon {{ element.icon.cssClass }}"></i>
         {% endif %}
         <span>
             {{ element.libelle|trans() }}
+            {% if element.isExternal %}
+                &nbsp;<i class="fas fa-external-link-alt"></i>
+            {% endif %}
             {% if element.badges|length %}
                 {% for badge in element.badges %}
                     <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
@@ -35,15 +40,17 @@
         {% else %}
             {% set path = '#' %}
         {% endif %}
-        <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path }}">
+        <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path }}" {% if element.isExternal %} target="_blank"{% endif %}>
             {% if element.icon and element.icon.img %}
-                <img class="img-thumbnail" src="{{ element.icon.icon }}"
-                     alt="{{ element.libelle|trans() }}"/>
+                <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
             {% elseif element.icon %}
                 <i class="nav-icon {{ element.icon.cssClass }}"></i>
             {% endif %}
             <span>
                 {{ element.libelle|trans() }}
+                {% if element.isExternal %}
+                    &nbsp;<i class="fas fa-external-link-alt"></i>
+                {% endif %}
                 {% if element.badges|length %}
                     {% for badge in element.badges %}
                         <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>

@@ -34,6 +34,9 @@ class LinkElement extends AbstractLayoutElement
     /** @var LinkElement[] */
     protected $children;
 
+    /** @var bool */
+    protected $external = false;
+
     public static function new(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null): self
     {
         $item = new self($libelle, $path, $icon, $role);
@@ -114,5 +117,16 @@ class LinkElement extends AbstractLayoutElement
     public function add(self $element): void
     {
         $this->children[] = $element;
+    }
+
+    public function isExternal(): bool
+    {
+        return $this->external;
+    }
+
+    public function setExternal(bool $external): self
+    {
+        $this->external = $external;
+        return $this;
     }
 }
