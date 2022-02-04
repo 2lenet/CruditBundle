@@ -8,7 +8,7 @@ use Lle\CruditBundle\Dto\Badge;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 
-class LinkElement extends AbstractLayoutElement
+class ExternalLinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
     public const TYPE_BODY = 'body';
@@ -31,9 +31,6 @@ class LinkElement extends AbstractLayoutElement
     /** @var string */
     protected $cssClass;
 
-    /** @var LinkElement[] */
-    protected $children;
-
     public static function new(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null): self
     {
         $item = new self($libelle, $path, $icon, $role);
@@ -44,7 +41,7 @@ class LinkElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return '@LleCrudit/layout/sb_admin/elements/_link.html.twig';
+        return '@LleCrudit/layout/sb_admin/elements/_external-link.html.twig';
     }
 
     public function __construct(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null)
@@ -54,7 +51,6 @@ class LinkElement extends AbstractLayoutElement
         $this->path = $path;
         $this->role = $role;
         $this->badges = [];
-        $this->children = [];
     }
 
     public function getType(): ?string
@@ -109,10 +105,5 @@ class LinkElement extends AbstractLayoutElement
     {
         $this->badges[] = $badge;
         return $this;
-    }
-
-    public function add(self $element): void
-    {
-        $this->children[] = $element;
     }
 }

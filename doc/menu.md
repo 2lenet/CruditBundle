@@ -1,4 +1,4 @@
-# Submenu
+# Menu
 
 How to do a menu hierarchy
 
@@ -21,7 +21,7 @@ How to do a menu hierarchy
     )->setParent('parametrage'),
 ```
 
-All Menu element has a setParent() method which take the id of the parent.
+All menu element has a setParent() method which take the id of the parent.
 
 The menu registry will consolidate the menu.
 
@@ -30,11 +30,21 @@ The id is automaticaly build with the label without the "menu.". You can force t
 
 **2. External links**
 
-An external link can be created by adding setExternal() method.
+An external link can be created by adding ExternalLinkElement object to the menu.
 ```php
-    LinkElement::new(
-        'menu.especes',
-        Path::new('app_crudit_espece_index'),
-        Icon::new('/img/icons/growing-seed.svg', Icon::TYPE_IMG)
-    )->setExternal(true),
+    ExternalLinkElement::new(
+        'menu.google',
+        Path::new('google'),
+        Icon::new('/img/icons/google.svg', Icon::TYPE_IMG)
+    ),
+```
+
+In routes.yaml file, just add this :
+```yaml
+google:
+    path: "google"
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        path: "https://www.google.com"
+        permanent: true
 ```

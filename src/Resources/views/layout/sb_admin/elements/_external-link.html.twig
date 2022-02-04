@@ -1,18 +1,18 @@
 {% if where == 'header-nav' %}
-    <li class="nav-item {% if crudit.isActive(element, app.request) %}active{% endif %}">
+    <li class="nav-item">
         {% if element.path %}
             {% set path = path(element.path.route, element.path.params) %}
         {% endif %}
-        <a class="nav-link py-2" href="{{ path|default('#') }}">
+        <a class="nav-link py-2" href="{{ path|default('#') }}" target="_blank">
             {{ element.libelle|trans() }}
+            &nbsp;<i class="fas fa-external-link-alt"></i>
         </a>
     </li>
 {% elseif submenu|default(false) %}
-    {% set active = crudit_menu_active(element, app.request) %}
     {% if element.path %}
         {% set path = path(element.path.route, element.path.params) %}
     {% endif %}
-    <a class="collapse-item {% if active %}active{% endif %} m-0" href="{{ path|default('#') }}">
+    <a class="collapse-item m-0" href="{{ path|default('#') }}" target="_blank">
         {% if element.icon and element.icon.img %}
             <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
         {% elseif element.icon %}
@@ -20,18 +20,18 @@
         {% endif %}
         <span>
             {{ element.libelle|trans() }}
+            &nbsp;<i class="fas fa-external-link-alt"></i>
             {% for badge in element.badges %}
                 <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
             {% endfor %}
         </span>
     </a>
 {% else %}
-    {% set active = crudit_menu_active(element, app.request) %}
-    <li class="nav-item {% if active %}active{% endif %} {{ element.cssClass }}">
+    <li class="nav-item {{ element.cssClass }}">
         {% if element.path %}
             {% set path = path(element.path.route, element.path.params) %}
         {% endif %}
-        <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path|default('#') }}">
+        <a id="heading-{{ element.id }}" class="nav-link py-2" href="{{ path|default('#') }}" target="_blank">
             {% if element.icon and element.icon.img %}
                 <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
             {% elseif element.icon %}
@@ -39,21 +39,11 @@
             {% endif %}
             <span>
                 {{ element.libelle|trans() }}
+                &nbsp;<i class="fas fa-external-link-alt"></i>
                 {% for badge in element.badges %}
                     <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
                 {% endfor %}
             </span>
         </a>
-        {% if element.children|length %}
-            <div id="collapse-{{ element.id|lower }}" class="collapse {% if active %}show{% endif %}">
-                <div class="py-0 collapse-inner">
-                    {% for child in element.children %}
-                        {% if is_granted(child.role) %}
-                            {% include child.template with {'element': child, 'submenu': true} %}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
     </li>
 {% endif %}
