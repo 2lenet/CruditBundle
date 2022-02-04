@@ -1,18 +1,14 @@
 {% if where == 'header-nav' %}
     <li class="nav-item">
-        {% if element.path %}
-            {% set path = path(element.path.route, element.path.params) %}
-        {% endif %}
-        <a class="nav-link py-2" href="{{ path|default('#') }}" target="_blank">
+        <a class="nav-link py-2" href="{{ element.url|default('#') }}" target="{{ element.target }}">
             {{ element.libelle|trans() }}
-            &nbsp;<i class="fas fa-external-link-alt"></i>
+            {% if element.target == '_blank' %}
+                &nbsp;<i class="fas fa-external-link-alt"></i>
+            {% endif %}
         </a>
     </li>
 {% elseif submenu|default(false) %}
-    {% if element.path %}
-        {% set path = path(element.path.route, element.path.params) %}
-    {% endif %}
-    <a class="collapse-item m-0" href="{{ path|default('#') }}" target="_blank">
+    <a class="collapse-item m-0" href="{{ element.url|default('#') }}" target="{{ element.target }}">
         {% if element.icon and element.icon.img %}
             <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
         {% elseif element.icon %}
@@ -20,18 +16,14 @@
         {% endif %}
         <span>
             {{ element.libelle|trans() }}
-            &nbsp;<i class="fas fa-external-link-alt"></i>
-            {% for badge in element.badges %}
-                <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
-            {% endfor %}
+            {% if element.target == '_blank' %}
+                &nbsp;<i class="fas fa-external-link-alt"></i>
+            {% endif %}
         </span>
     </a>
 {% else %}
     <li class="nav-item {{ element.cssClass }}">
-        {% if element.path %}
-            {% set path = path(element.path.route, element.path.params) %}
-        {% endif %}
-        <a id="heading-{{ element.id }}" class="nav-link py-2" href="{{ path|default('#') }}" target="_blank">
+        <a id="heading-{{ element.id }}" class="nav-link py-2" href="{{ element.url|default('#') }}" target="{{ element.target }}">
             {% if element.icon and element.icon.img %}
                 <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
             {% elseif element.icon %}
@@ -39,10 +31,9 @@
             {% endif %}
             <span>
                 {{ element.libelle|trans() }}
-                &nbsp;<i class="fas fa-external-link-alt"></i>
-                {% for badge in element.badges %}
-                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
-                {% endfor %}
+                {% if element.target == '_blank' %}
+                    &nbsp;<i class="fas fa-external-link-alt"></i>
+                {% endif %}
             </span>
         </a>
     </li>

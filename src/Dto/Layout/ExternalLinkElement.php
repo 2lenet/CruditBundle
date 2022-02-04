@@ -4,36 +4,23 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Layout;
 
-use Lle\CruditBundle\Dto\Badge;
 use Lle\CruditBundle\Dto\Icon;
-use Lle\CruditBundle\Dto\Path;
 
 class ExternalLinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
     public const TYPE_BODY = 'body';
 
-    /** @var string */
-    protected $type;
-
-    /** @var string */
-    protected $libelle;
-
-    /** @var ?Icon */
-    protected $icon;
-
-    /** @var Path  */
-    protected $path;
-
-    /** @var Badge[]  */
-    protected $badges;
-
-    /** @var string */
+    protected string $type;
+    protected string $libelle;
+    protected ?Icon $icon = null;
+    protected string $url;
+    protected string $target;
     protected $cssClass;
 
-    public static function new(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null): self
+    public static function new(string $libelle, ?string $url, ?Icon $icon = null, ?string $target = '_blank', ?string $role = null): self
     {
-        $item = new self($libelle, $path, $icon, $role);
+        $item = new self($libelle, $url, $target, $icon, $role);
         $item->setId(str_replace('menu.', '', $libelle));
 
         return $item;
@@ -44,13 +31,13 @@ class ExternalLinkElement extends AbstractLayoutElement
         return '@LleCrudit/layout/sb_admin/elements/_external-link.html.twig';
     }
 
-    public function __construct(string $libelle, ?Path $path, Icon $icon = null, ?string $role = null)
+    public function __construct(string $libelle, ?string $url, ?string $target, ?Icon $icon = null, ?string $role = null)
     {
         $this->libelle = $libelle;
         $this->icon = $icon;
-        $this->path = $path;
+        $this->url = $url;
+        $this->target = $target;
         $this->role = $role;
-        $this->badges = [];
     }
 
     public function getType(): ?string
@@ -58,9 +45,10 @@ class ExternalLinkElement extends AbstractLayoutElement
         return $this->type;
     }
 
-    public function setType(string $type): void
+    public function setType(string $type): self
     {
         $this->type = $type;
+        return $this;
     }
 
     public function getLibelle(): ?string
@@ -68,9 +56,10 @@ class ExternalLinkElement extends AbstractLayoutElement
         return $this->libelle;
     }
 
-    public function setLibelle(string $libelle): void
+    public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
+        return $this;
     }
 
     public function getIcon(): ?Icon
@@ -78,32 +67,31 @@ class ExternalLinkElement extends AbstractLayoutElement
         return $this->icon;
     }
 
-    public function setIcon(Icon $icon): void
+    public function setIcon(Icon $icon): self
     {
         $this->icon = $icon;
+        return $this;
     }
 
-    public function getPath(): ?Path
+    public function getUrl(): ?string
     {
-        return $this->path;
+        return $this->url;
     }
 
-    public function setPath(Path $path): void
+    public function setUrl(string $url): self
     {
-        $this->path = $path;
+        $this->url = $url;
+        return $this;
     }
 
-    /**
-     * @return Badge[]
-     */
-    public function getBadges(): ?array
+    public function getTarget(): ?string
     {
-        return $this->badges;
+        return $this->target;
     }
 
-    public function addBadge(Badge $badge): self
+    public function setTarget(string $target): self
     {
-        $this->badges[] = $badge;
+        $this->target = $target;
         return $this;
     }
 }

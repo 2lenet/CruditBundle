@@ -34,17 +34,17 @@ An external link can be created by adding ExternalLinkElement object to the menu
 ```php
     ExternalLinkElement::new(
         'menu.google',
-        Path::new('google'),
+        'https://www.google.com',
         Icon::new('/img/icons/google.svg', Icon::TYPE_IMG)
     ),
 ```
 
-In routes.yaml file, just add this :
-```yaml
-google:
-    path: "google"
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        path: "https://www.google.com"
-        permanent: true
+By default, the target of this external link is "_blank", but it can be changed :
+```php
+    ExternalLinkElement::new(
+        'menu.google',
+        'https://www.google.com',
+        Icon::new('/img/icons/google.svg', Icon::TYPE_IMG),
+        '_self'
+    ),
 ```
