@@ -78,6 +78,7 @@ The list view has the following features :
 - List Actions ( Add and Export csv and excel as standard )
 - List grouping ( to save place in repeating values )
 - Batch Action ( see [Batch actions](doc/batch_action.md) )
+- Possibility to color the lines according to a class passed to the entity ( see [Coloring the rows in a list](doc/color_list.md) )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 The list view need a Datasource but is not bounded to Doctrine or any ORM.
