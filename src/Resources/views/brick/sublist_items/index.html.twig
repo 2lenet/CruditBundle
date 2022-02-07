@@ -72,7 +72,7 @@
 
                             {% if column.field.ruptGroup==0 %}
                                 {% if loop.first %}
-                                    <tr>
+                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% endif %}
                                 <td>
                                     {% if column.field.path %}
