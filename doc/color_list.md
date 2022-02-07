@@ -8,7 +8,7 @@ To do so, go to the entity corresponding to your list and add a new getter:
 ```php
     public function getCssClass(): string
     {
-        return $this->status;      
+        return 'status-' . $this->status;      
     }
 ```
 
@@ -19,11 +19,11 @@ If you refresh your list and got to your code inspector, you will see that a cla
 All you have to do next is go to the CSS of your project and apply a background color to this new class:
 
 ```css
-.tr-invoiced {
+.status-invoiced {
   background-color: darkseagreen;
 }
 
-.tr-cancel {
+.status-cancel {
   background-color: indianred;
 }
 ```

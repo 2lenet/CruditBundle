@@ -99,7 +99,7 @@
 
                             {% if column.field.ruptGroup == 0 %}
                                 {% if line_opened == 0 %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="tr-{{ line.resource.getCssClass }}"{% endif %}>
+                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                     {% set line_opened = 1 %}
                                     {% if has_batch %}
                                         <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" autocomplete="off" /></td>
