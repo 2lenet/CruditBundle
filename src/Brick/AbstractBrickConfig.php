@@ -91,6 +91,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setOptions(array $options): AbstractBrickConfig
     {
         $this->options = $options;
+
         return $this;
     }
 
@@ -108,6 +109,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setRole($role)
     {
         $this->role = $role;
+
         return $this;
     }
 }

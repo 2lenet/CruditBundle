@@ -26,6 +26,96 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Global search
+    const select = document.querySelector('#input_global_search');
+    const dataurl = JSON.parse(select.dataset.url);
+    const inioptions = JSON.parse(select.dataset.options);
+
+    new TomSelect('#' + select.id,
+        {
+            valueField: 'id',
+            labelField: 'text',
+            searchField: 'text',
+            maxOptions: 2000,
+            maxItems: select.dataset.maxitems,
+            preload: true,
+            options: inioptions,
+            plugins: [
+                'virtual_scroll',
+                'remove_button'
+            ],
+            optgroups: dataurl.map((url) => {
+                return {
+                    value: url['title'],
+                    label: url['title'],
+                };
+            }),
+            onChange(value) {
+                let items = [];
+                if (value != '') {
+                    value.split(',').forEach(v => {
+                        items.push({id: v, text: this.options[v].text});
+                    });
+                }
+                document.getElementById(select.id + '_items').value = JSON.stringify(items);
+            },
+            onItemAdd() {
+                select.parentElement.querySelector('.ts-input > input').value = '';
+                select.parentElement.querySelector('.ts-dropdown .dropdown-divider').style.display = 'none';
+            },
+            firstUrl(query) {
+                return dataurl + encodeURIComponent(query) + '&limit=20';
+            },
+            load(query, callback) {
+                if (!query) {
+                    return;
+                }
+
+                let datas = [];
+
+                dataurl.forEach(url => {
+                    if (Object.keys(url[0]) == "entity") {
+                        fetch('/' + url['entity'] + '/autocomplete?limit=10&q=')
+                            .then(response => response.json())
+                            .then(json => {
+                                // add data to the results
+                                for (let item of json.items) {
+                                    item.optgroup = url['title'];
+                                }
+                                datas.push(...json.items);
+                                callback(datas);
+                            }).catch((e) => {
+                            console.log('error', e);
+                            callback();
+                        });
+                    } else {
+                        fetch(url['url'] + '?limit=10&q=')
+                            .then(response => response.json())
+                            .then(json => {
+                                // add data to the results
+                                for (let item of json.items) {
+                                    item.optgroup = url['title'];
+                                }
+                                console.log(json.items);
+                                datas.push(...json.items);
+                                callback(datas);
+                            }).catch((e) => {
+                            console.log('error', e);
+                            callback();
+                        });
+                    }
+                });
+            },
+            render: {
+                loading_more() {
+                    return `<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>`;
+                },
+                no_more_results() {
+                    return '';
+                }
+            }
+        }
+    );
 
     // Entity filter
     document.querySelectorAll('.entity-select').forEach(select => {

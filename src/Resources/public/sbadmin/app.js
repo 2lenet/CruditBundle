@@ -3355,6 +3355,20 @@ window.addEventListener('load', function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tom-select */ "./node_modules/tom-select/dist/js/tom-select.complete.js");
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tom_select__WEBPACK_IMPORTED_MODULE_0__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 window.addEventListener('DOMContentLoaded', function () {
   // Change the operator of the filter
@@ -3377,8 +3391,120 @@ window.addEventListener('DOMContentLoaded', function () {
         filtersContainer.closest('form').submit();
       }
     });
-  } // Entity filter
+  } // Global search
 
+
+  var select = document.querySelector('#input_global_search');
+  var dataurl = JSON.parse(select.dataset.url);
+  var inioptions = JSON.parse(select.dataset.options);
+  new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + select.id, {
+    valueField: 'id',
+    labelField: 'text',
+    searchField: 'text',
+    maxOptions: 2000,
+    maxItems: select.dataset.maxitems,
+    preload: true,
+    options: inioptions,
+    plugins: ['virtual_scroll', 'remove_button'],
+    optgroups: dataurl.map(function (url) {
+      return {
+        value: url['title'],
+        label: url['title']
+      };
+    }),
+    onChange: function onChange(value) {
+      var _this = this;
+
+      var items = [];
+
+      if (value != '') {
+        value.split(',').forEach(function (v) {
+          items.push({
+            id: v,
+            text: _this.options[v].text
+          });
+        });
+      }
+
+      document.getElementById(select.id + '_items').value = JSON.stringify(items);
+    },
+    onItemAdd: function onItemAdd() {
+      select.parentElement.querySelector('.ts-input > input').value = '';
+      select.parentElement.querySelector('.ts-dropdown .dropdown-divider').style.display = 'none';
+    },
+    firstUrl: function firstUrl(query) {
+      return dataurl + encodeURIComponent(query) + '&limit=20';
+    },
+    load: function load(query, callback) {
+      if (!query) {
+        return;
+      }
+
+      var datas = [];
+      dataurl.forEach(function (url) {
+        if (Object.keys(url[0]) == "entity") {
+          fetch('/' + url['entity'] + '/autocomplete?limit=10&q=').then(function (response) {
+            return response.json();
+          }).then(function (json) {
+            // add data to the results
+            var _iterator = _createForOfIteratorHelper(json.items),
+                _step;
+
+            try {
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                var item = _step.value;
+                item.optgroup = url['title'];
+              }
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
+            }
+
+            datas.push.apply(datas, _toConsumableArray(json.items));
+            callback(datas);
+          })["catch"](function (e) {
+            console.log('error', e);
+            callback();
+          });
+        } else {
+          fetch(url['url'] + '?limit=10&q=').then(function (response) {
+            return response.json();
+          }).then(function (json) {
+            // add data to the results
+            var _iterator2 = _createForOfIteratorHelper(json.items),
+                _step2;
+
+            try {
+              for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                var item = _step2.value;
+                item.optgroup = url['title'];
+              }
+            } catch (err) {
+              _iterator2.e(err);
+            } finally {
+              _iterator2.f();
+            }
+
+            console.log(json.items);
+            datas.push.apply(datas, _toConsumableArray(json.items));
+            callback(datas);
+          })["catch"](function (e) {
+            console.log('error', e);
+            callback();
+          });
+        }
+      });
+    },
+    render: {
+      loading_more: function loading_more() {
+        return "<div class=\"loading-more-results py-2 d-flex align-items-center\"><div class=\"spinner\"></div> Chargement en cours</div>";
+      },
+      no_more_results: function no_more_results() {
+        return '';
+      }
+    }
+  }); // Entity filter
 
   document.querySelectorAll('.entity-select').forEach(function (select) {
     var dataurl = select.dataset.url;
@@ -3393,7 +3519,7 @@ window.addEventListener('DOMContentLoaded', function () {
       options: inioptions,
       plugins: ['virtual_scroll', 'remove_button'],
       onChange: function onChange(value) {
-        var _this = this;
+        var _this2 = this;
 
         var items = [];
 
@@ -3401,7 +3527,7 @@ window.addEventListener('DOMContentLoaded', function () {
           value.split(',').forEach(function (v) {
             items.push({
               id: v,
-              text: _this.options[v].text
+              text: _this2.options[v].text
             });
           });
         }
@@ -3416,7 +3542,7 @@ window.addEventListener('DOMContentLoaded', function () {
         return dataurl + encodeURIComponent(query) + '&limit=20';
       },
       load: function load(query, callback) {
-        var _this2 = this;
+        var _this3 = this;
 
         var url = this.getUrl(query);
         fetch(url).then(function (response) {
@@ -3425,7 +3551,7 @@ window.addEventListener('DOMContentLoaded', function () {
           if (json.next_offset < json.total_count) {
             var next_url = dataurl + encodeURIComponent(query) + '&limit=20&offset=' + json.next_offset;
 
-            _this2.setNextUrl(query, next_url);
+            _this3.setNextUrl(query, next_url);
           } // add data to the results
 
 
@@ -3451,7 +3577,7 @@ window.addEventListener('DOMContentLoaded', function () {
       maxItems: select.dataset.maxitems,
       plugins: ["remove_button"],
       onChange: function onChange(value) {
-        var _this3 = this;
+        var _this4 = this;
 
         var items = [];
 
@@ -3459,7 +3585,7 @@ window.addEventListener('DOMContentLoaded', function () {
           value.split(',').forEach(function (v) {
             items.push({
               id: v,
-              text: _this3.options[v].text
+              text: _this4.options[v].text
             });
           });
         }
