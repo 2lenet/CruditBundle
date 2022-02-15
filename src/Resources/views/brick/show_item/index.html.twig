@@ -1,5 +1,5 @@
-<div class="card shadow mb-4">
-    <div class="card-body">
+<div class="card shadow mb-4 {% if view.data.resource.resource and view.data.resource.resource.getCssClass is defined %}{{ view.data.resource.resource.getCssClass }}{% endif %}">
+<div class="card-body">
         <div class="row" id="{{ view.data.resource.id }}">
             {% for field in view.data.resource.fields %}
                 <div class="crudit-field {{ field.options.cssClass }}">
