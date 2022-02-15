@@ -3355,20 +3355,6 @@ window.addEventListener('load', function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tom-select */ "./node_modules/tom-select/dist/js/tom-select.complete.js");
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tom_select__WEBPACK_IMPORTED_MODULE_0__);
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 
 window.addEventListener('DOMContentLoaded', function () {
   // Change the operator of the filter
@@ -3391,94 +3377,8 @@ window.addEventListener('DOMContentLoaded', function () {
         filtersContainer.closest('form').submit();
       }
     });
-  } // Global search
+  } // Entity filter
 
-
-  var globalSearch = document.getElementById('input_global_search');
-  var dataUrl = JSON.parse(globalSearch.dataset.url);
-  var dataOptions = JSON.parse(globalSearch.dataset.options);
-  new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + globalSearch.id, {
-    valueField: 'id',
-    labelField: 'text',
-    searchField: 'text',
-    maxOptions: 2000,
-    maxItems: globalSearch.dataset.maxitems,
-    preload: true,
-    options: dataOptions,
-    plugins: ['virtual_scroll', 'remove_button', 'optgroup_columns'],
-    optgroups: dataUrl.map(function (url) {
-      return {
-        value: url['entity'],
-        label: url['title']
-      };
-    }),
-    lockOptgroupOrder: true,
-    onChange: function onChange(value) {
-      if (value != '') {
-        var shortClass = value.split('#')[0];
-        var id = value.split('#')[1];
-        dataUrl.forEach(function (url) {
-          if (url['entity'] == shortClass) {
-            window.location.replace(url['destUrl'] + id);
-          }
-        }); // window.location.replace(this.dataOptions[value] + dataUrl[value]['destUrl'] + value);
-      }
-    },
-    onItemAdd: function onItemAdd() {
-      globalSearch.parentElement.querySelector('.ts-input > input').value = '';
-      globalSearch.parentElement.querySelector('.ts-dropdown').style.display = 'none';
-    },
-    firstUrl: function firstUrl(query) {
-      return dataUrl + encodeURIComponent(query) + '&limit=20';
-    },
-    load: function load(query, callback) {
-      var datas = [];
-      dataUrl.forEach(function (url) {
-        var fetchUrl = '';
-
-        if (Object.keys(url)[0] == 'url') {
-          fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
-        } else {
-          fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
-        }
-
-        fetch(fetchUrl).then(function (response) {
-          return response.json();
-        }).then(function (json) {
-          var _iterator = _createForOfIteratorHelper(json.items),
-              _step;
-
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done;) {
-              var item = _step.value;
-              item.optgroup = url['entity'];
-            }
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
-          }
-
-          datas.push.apply(datas, _toConsumableArray(json.items));
-          callback(datas);
-        })["catch"](function (e) {
-          console.log('error', e);
-          callback();
-        });
-      });
-    },
-    render: {
-      option: function option(data, escape) {
-        return '<div> ' + escape(data.text) + '</div>';
-      },
-      loading_more: function loading_more() {
-        return '<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>';
-      },
-      no_more_results: function no_more_results() {
-        return '';
-      }
-    }
-  }); // Entity filter
 
   document.querySelectorAll('.entity-select').forEach(function (select) {
     var dataurl = select.dataset.url;
@@ -3680,6 +3580,120 @@ window.addEventListener('load', function () {
       element: textarea,
       toolbar: ["bold", "italic", "|", "heading-smaller", "heading-bigger", "|", "unordered-list", "ordered-list", "|", "link", "quote", "code", "|", "preview"]
     });
+  });
+});
+
+/***/ }),
+
+/***/ "./assets/sb-admin/js/multisearch.js":
+/*!*******************************************!*\
+  !*** ./assets/sb-admin/js/multisearch.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tom-select */ "./node_modules/tom-select/dist/js/tom-select.complete.js");
+/* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tom_select__WEBPACK_IMPORTED_MODULE_0__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+window.addEventListener('DOMContentLoaded', function () {
+  // Global search
+  var globalSearch = document.getElementById('input_global_search');
+  var dataUrl = JSON.parse(globalSearch.dataset.url);
+  var dataOptions = JSON.parse(globalSearch.dataset.options);
+  new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + globalSearch.id, {
+    valueField: 'id',
+    labelField: 'text',
+    searchField: 'text',
+    maxOptions: 2000,
+    maxItems: globalSearch.dataset.maxitems,
+    preload: false,
+    options: dataOptions,
+    plugins: ['virtual_scroll', 'remove_button', 'optgroup_columns'],
+    optgroups: dataUrl.map(function (url) {
+      return {
+        value: url['entity'],
+        label: url['title']
+      };
+    }),
+    lockOptgroupOrder: true,
+    onChange: function onChange(value) {
+      if (value != '') {
+        var shortClass = value.split('#')[0];
+        var id = value.split('#')[1];
+        dataUrl.forEach(function (url) {
+          if (url['entity'] == shortClass) {
+            window.location.replace(url['destUrl'] + id);
+          }
+        });
+      }
+    },
+    onItemAdd: function onItemAdd() {
+      globalSearch.parentElement.querySelector('.ts-input > input').value = '';
+      globalSearch.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+    },
+    firstUrl: function firstUrl(query) {
+      return dataUrl + encodeURIComponent(query) + '&limit=20';
+    },
+    load: function load(query, callback) {
+      var datas = [];
+      dataUrl.forEach(function (url) {
+        var fetchUrl = '';
+
+        if (Object.keys(url)[0] == 'url') {
+          fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+        } else {
+          fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+        }
+
+        fetch(fetchUrl).then(function (response) {
+          return response.json();
+        }).then(function (json) {
+          var _iterator = _createForOfIteratorHelper(json.items),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var item = _step.value;
+              item.id = url['entity'] + '#' + item.id;
+              item.optgroup = url['entity'];
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+
+          datas.push.apply(datas, _toConsumableArray(json.items));
+          callback(datas);
+        })["catch"](function (e) {
+          console.log('error', e);
+          callback();
+        });
+      });
+    },
+    render: {
+      loading_more: function loading_more() {
+        return '<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>';
+      },
+      no_more_results: function no_more_results() {
+        return '';
+      }
+    }
   });
 });
 
@@ -43834,6 +43848,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./filters */ "./assets/sb-admin/js/filters.js");
 /* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./form */ "./assets/sb-admin/js/form.js");
 /* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_form__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _multisearch__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./multisearch */ "./assets/sb-admin/js/multisearch.js");
+
 
 
 

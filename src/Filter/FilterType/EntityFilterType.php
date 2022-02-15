@@ -52,11 +52,7 @@ class EntityFilterType extends AbstractFilterType
 
         $ids = [];
         if (isset($this->data['value']) && $this->data['value'] != '') {
-            $datas = explode(',', $this->data['value']);
-
-            foreach ($datas as $data) {
-                $ids[] = explode('#', $data)[1];
-            }
+            $ids = explode(',', $this->data['value']);
         }
 
         if (isset($this->data["op"])) {

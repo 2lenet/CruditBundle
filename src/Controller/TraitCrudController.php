@@ -126,7 +126,7 @@ trait TraitCrudController
             $shortClass = explode("\\", $class)[2];
 
             $res[] = [
-                "id" => strtolower($shortClass) . '#' . strval($item->getId()),
+                "id" => $item->getId(),
                 "text" => (string)$item,
             ];
         }
