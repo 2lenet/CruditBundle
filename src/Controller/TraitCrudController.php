@@ -122,9 +122,6 @@ trait TraitCrudController
         );
 
         foreach ($items as $item) {
-            $class = get_class($item);
-            $shortClass = explode("\\", $class)[2];
-
             $res[] = [
                 "id" => $item->getId(),
                 "text" => (string)$item,
