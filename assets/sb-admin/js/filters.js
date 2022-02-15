@@ -26,6 +26,79 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Global search
+    const globalSearch = document.getElementById('input_global_search');
+    const dataUrl = JSON.parse(globalSearch.dataset.url);
+    const dataOptions = JSON.parse(globalSearch.dataset.options);
+
+    new TomSelect('#' + globalSearch.id, {
+        valueField: 'id',
+        labelField: 'text',
+        searchField: 'text',
+        maxOptions: 2000,
+        maxItems: globalSearch.dataset.maxitems,
+        preload: false,
+        options: dataOptions,
+        plugins: [
+            'virtual_scroll',
+            'remove_button',
+            'optgroup_columns',
+        ],
+        optgroups: dataUrl.map((url) => {
+            return {
+                value: url['entity'],
+                label: url['title'],
+            };
+        }),
+        lockOptgroupOrder: true,
+        onChange(value) {
+            if (value != '') {
+                window.location.replace(Routing.generate('app_crudit_' + this.options[value].optgroup + '_show', {'id': value}));
+            }
+        },
+        onItemAdd() {
+            globalSearch.parentElement.querySelector('.ts-input > input').value = '';
+            globalSearch.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+        },
+        firstUrl(query) {
+            return dataUrl + encodeURIComponent(query) + '&limit=20';
+        },
+        load(query, callback) {
+            let datas = [];
+
+            dataUrl.forEach(url => {
+                let fetchUrl = '';
+
+                if (Object.keys(url)[0] == 'url') {
+                    fetchUrl = url['url'] + '?limit=' + (url['limit'] || '10') + '&q=';
+                } else {
+                    fetchUrl = '/' + url['entity'] + '/autocomplete?limit=' + (url['limit'] || '10') + '&q=';
+                }
+
+                fetch(fetchUrl)
+                    .then(response => response.json())
+                    .then(json => {
+                        for (let item of json.items) {
+                            item.optgroup = url['entity'];
+                        }
+
+                        datas.push(...json.items);
+                        callback(datas);
+                    }).catch((e) => {
+                        console.log('error', e);
+                        callback();
+                    });
+            });
+        },
+        render: {
+            loading_more() {
+                return '<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>';
+            },
+            no_more_results() {
+                return '';
+            }
+        }
+    });
 
     // Entity filter
     document.querySelectorAll('.entity-select').forEach(select => {
