@@ -3403,7 +3403,7 @@ window.addEventListener('DOMContentLoaded', function () {
     searchField: 'text',
     maxOptions: 2000,
     maxItems: globalSearch.dataset.maxitems,
-    preload: false,
+    preload: true,
     options: dataOptions,
     plugins: ['virtual_scroll', 'remove_button', 'optgroup_columns'],
     optgroups: dataUrl.map(function (url) {
@@ -3415,9 +3415,13 @@ window.addEventListener('DOMContentLoaded', function () {
     lockOptgroupOrder: true,
     onChange: function onChange(value) {
       if (value != '') {
-        window.location.replace(Routing.generate('app_crudit_' + this.options[value].optgroup + '_show', {
-          'id': value
-        }));
+        var shortClass = value.split('#')[0];
+        var id = value.split('#')[1];
+        dataUrl.forEach(function (url) {
+          if (url['entity'] == shortClass) {
+            window.location.replace(url['destUrl'] + id);
+          }
+        }); // window.location.replace(this.dataOptions[value] + dataUrl[value]['destUrl'] + value);
       }
     },
     onItemAdd: function onItemAdd() {
@@ -3433,9 +3437,9 @@ window.addEventListener('DOMContentLoaded', function () {
         var fetchUrl = '';
 
         if (Object.keys(url)[0] == 'url') {
-          fetchUrl = url['url'] + '?limit=' + (url['limit'] || '10') + '&q=';
+          fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
         } else {
-          fetchUrl = '/' + url['entity'] + '/autocomplete?limit=' + (url['limit'] || '10') + '&q=';
+          fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
         }
 
         fetch(fetchUrl).then(function (response) {
@@ -3464,6 +3468,9 @@ window.addEventListener('DOMContentLoaded', function () {
       });
     },
     render: {
+      option: function option(data, escape) {
+        return '<div> ' + escape(data.text) + '</div>';
+      },
       loading_more: function loading_more() {
         return '<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>';
       },

@@ -53,7 +53,14 @@ window.addEventListener('DOMContentLoaded', function () {
         lockOptgroupOrder: true,
         onChange(value) {
             if (value != '') {
-                window.location.replace(Routing.generate('app_crudit_' + this.options[value].optgroup + '_show', {'id': value}));
+                let shortClass = value.split('#')[0];
+                let id = value.split('#')[1];
+
+                dataUrl.forEach(url => {
+                    if (url['entity'] == shortClass) {
+                        window.location.replace(url['destUrl'] + id);
+                    }
+                });
             }
         },
         onItemAdd() {
@@ -70,9 +77,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 let fetchUrl = '';
 
                 if (Object.keys(url)[0] == 'url') {
-                    fetchUrl = url['url'] + '?limit=' + (url['limit'] || '10') + '&q=';
+                    fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
                 } else {
-                    fetchUrl = '/' + url['entity'] + '/autocomplete?limit=' + (url['limit'] || '10') + '&q=';
+                    fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
                 }
 
                 fetch(fetchUrl)
@@ -96,7 +103,7 @@ window.addEventListener('DOMContentLoaded', function () {
             },
             no_more_results() {
                 return '';
-            }
+            },
         }
     });
 
