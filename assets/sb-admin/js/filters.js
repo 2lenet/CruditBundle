@@ -26,7 +26,6 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
     // Entity filter
     document.querySelectorAll('.entity-select').forEach(select => {
         const dataurl = select.dataset.url;
