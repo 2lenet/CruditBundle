@@ -90,6 +90,7 @@ The show view has the following feature :
 - Title can use the entity to title the object by its name
 - Tabs
 - Sublists to show related data ( see [Sublist](doc/sublist.md) )
+- Possibility to color the main card and the title of the show view ( the principle is the same as for the list view: [Coloring the rows in a list](doc/color_list.md)  )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 ### Form view
