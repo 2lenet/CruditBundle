@@ -2,6 +2,9 @@ crudit:
     title:
         filter: "Artikel Auswählen"
 
+    multisearch:
+        placeholder: "Suche ..."
+
     pagination:
         first: "Erste"
         previous: "Vorherige"

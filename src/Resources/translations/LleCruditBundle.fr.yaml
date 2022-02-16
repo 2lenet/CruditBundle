@@ -2,6 +2,9 @@ crudit:
     title:
         filter: "Filtrer les éléments"
 
+    multisearch:
+        placeholder: "Rechercher ..."
+
     pagination:
         first: "Première"
         previous: "Précédente"
