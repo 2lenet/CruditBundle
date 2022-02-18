@@ -5,6 +5,10 @@ crudit:
     multisearch:
         placeholder: "Search ..."
 
+    footer:
+        copyrights: "Copyrights."
+        release: "Release"
+
     pagination:
         first: "First"
         previous: "Previous"
