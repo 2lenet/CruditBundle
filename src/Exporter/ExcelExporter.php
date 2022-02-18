@@ -97,7 +97,7 @@ class ExcelExporter extends AbstractExporter
 
     protected function getType(FieldView $field)
     {
-        if ($field->getRawValue() === null) {
+        if ($field->getRawValue() === null || $field->getRawValue() === "") {
             return DataType::TYPE_NULL;
         }
 
