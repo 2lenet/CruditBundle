@@ -10,6 +10,10 @@ abstract class AbstractExporter implements ExporterInterface
 {
     protected function getValue(FieldView $field)
     {
+        if ($field->getField()->getType() == DoctrineEntityField::class) {
+            $field->getField()->setType("string");
+        }
+
         if ($field->getField()->getTemplate()) {
             $result = $field->getValue();
         } else {
