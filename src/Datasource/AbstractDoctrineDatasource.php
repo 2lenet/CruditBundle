@@ -178,16 +178,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->searchFields;
     }
 
-    public function autocompleteQuery(string $queryColumn, string $queryTerm, array $sorts, $requestParams = null): iterable
+    public function autocompleteQuery(string $queryTerm, array $sorts, $requestParams = null): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
-        $orStatements = $qb->expr()->orX();
-        foreach ($this->getAutoCompleteSearchFields() as $field) {
-            $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm . '%'))
-            );
-        }
-        $qb->andWhere($orStatements);
+        $qb = $this->initializeAutocompleteQueryBuilder($qb, $queryTerm);
 
         foreach ($sorts as $sort) {
             $this->addOrderBy($qb, $sort[0], $sort[1]);
@@ -204,19 +198,29 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    public function autocompleteCountQuery(string $queryColumn, $queryTerm): int
+    public function autocompleteCountQuery($queryTerm): int
     {
         $qb = $this->buildQueryBuilder(null);
         $qb->select('count(DISTINCT(root.id))');
+
+        $qb = $this->initializeAutocompleteQueryBuilder($qb, $queryTerm);
+
+        return intval($qb->getQuery()->getSingleScalarResult());
+    }
+
+    public function initializeAutocompleteQueryBuilder(QueryBuilder $qb, string $queryTerm): QueryBuilder
+    {
         $orStatements = $qb->expr()->orX();
+
         foreach ($this->getAutoCompleteSearchFields() as $field) {
             $orStatements->add(
                 $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm . '%'))
             );
         }
+
         $qb->andWhere($orStatements);
 
-        return intval($qb->getQuery()->getSingleScalarResult());
+        return $qb;
     }
 
     public function count(?DatasourceParams $requestParams): int
