@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block page_title %}CrudIt{% endblock %}</title>
+    <title>{% block page_title %}{% if app_name is defined %}{{ app_name }}{% else %}CRUD-IT{% endif %}{% endblock %}</title>
     {% block favicon %}
         <link rel="shortcut icon" href="/img/logo.png" />
         <link rel="apple-touch-icon" href="/img/logo.png" />

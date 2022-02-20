@@ -1,9 +1,14 @@
 <footer class="sticky-footer bg-white">
-    <div class="container my-auto">
+    <div class="container my-auto text-center">
         {% block footer_text %}
-            <div class="copyright text-center my-auto">
-                <span>Copyright &copy; Your Website 2021</span>
-            </div>
+            <span class="copyright">
+                {% if app_name is defined %}{{ app_name }}{% endif%} &copy; {{ 'now'|date('Y') }}.
+                {{ 'crudit.footer.copyrights'|trans(domain='LleCruditBundle') }}
+            </span>
         {% endblock %}
     </div>
+
+    {% if app_version is defined %}
+        <span class="position-absolute bottom-0 end-0 small">{{ 'crudit.footer.release'|trans(domain='LleCruditBundle') }} {{ app_version }}</span>
+    {% endif %}
 </footer>
