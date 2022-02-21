@@ -6,7 +6,7 @@ In your `.env`, you have to add :
 
 ```dotenv
 APP_NAME=Crudit
-APP_VERSION=1.0.0
+APP_VERSION=dev
 ```
 
 Edit `config/packages/twig.yaml` as following :
@@ -22,5 +22,15 @@ To save your variables in differents environment, you sould add in your `Dockerf
 
 ```dockerfile
 ENV APP_NAME="My app name"
-ENV APP_VERSION="1.2.3"
+ARG app_version="dev"
+ENV APP_VERSION=$app_version
+```
+
+To set automatically the tag version, you must add the following lines in your `.gitlab-ci.yml` :
+
+```yaml
+script:
+    - docker build -t my-image-tag --build-arg app_version=$CI_COMMIT_TAG
+only:
+    - tags
 ```
