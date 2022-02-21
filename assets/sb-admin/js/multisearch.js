@@ -48,6 +48,8 @@ window.addEventListener('DOMContentLoaded', function () {
         load(query, callback) {
             let datas = [];
 
+            let fetchsFinished = 0;
+
             dataUrl.forEach(url => {
                 let fetchUrl = '';
 
@@ -60,17 +62,24 @@ window.addEventListener('DOMContentLoaded', function () {
                 fetch(fetchUrl)
                     .then(response => response.json())
                     .then(json => {
+                        fetchsFinished++;
+
                         for (let item of json.items) {
                             item.id = url['entity'] + '#' + item.id;
                             item.optgroup = url['entity'];
                         }
 
                         datas.push(...json.items);
-                        callback(datas);
-                    }).catch((e) => {
-                    console.log('error', e);
-                    callback();
-                });
+
+                        // show 'no results' ONLY if last ajax call returns no results
+                        if (datas.length > 0 || fetchsFinished === dataUrl.length) {
+                            callback(datas);
+                        }
+                    })
+                    .catch((e) => {
+                        console.log('error', e);
+                        callback();
+                    });
             });
         },
         render: {
