@@ -14,7 +14,7 @@ services:
     Lle\CruditBundle\Form\Type\GedmoTranslatableType:
         arguments:
             - '%kernel.default_locale%'
-            - '%locales%'
+            - '%kernel.enabled_locales%'
             - '@Lle\CruditBundle\Service\GedmoTranslatableFieldManager'
             - '@Symfony\Contracts\Translation\TranslatorInterface'
         tags:
