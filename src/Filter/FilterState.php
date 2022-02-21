@@ -12,7 +12,7 @@ class FilterState
     private iterable $filtersets;
     private ?array $filterdata;
     private Security $security;
-    private Request $request;
+    private ?Request $request;
 
     public function __construct(iterable $filtersets, Security $security, RequestStack $requestStack)
     {
@@ -90,7 +90,7 @@ class FilterState
 
     protected function loadData(): void
     {
-        if (!$this->filterdata) {
+        if (!$this->filterdata && $this->request) {
             $this->filterdata = $this->request->getSession()->get('crudit_filters');
         }
     }
