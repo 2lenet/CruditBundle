@@ -18,7 +18,7 @@
         "symfony/property-info": "~3.0|^4.0|^5.0|^6.0",
         "symfony/property-access": "~3.0|^4.0|^5.0|^6.0",
         "phpdocumentor/reflection-docblock": "~3.0|^4.0|^5.0",
-        "friendsofsymfony/jsrouting-bundle": "^2.7",
+        "friendsofsymfony/jsrouting-bundle": "^2.7 || ^3.0",
         "symfony/security-core": "~3.0|^4.0|^5.0|^6.0",
         "symfony/serializer": "~3.0|^4.0|^5.0|^6.0",
         "symfony/form": "~3.0|^4.0|^5.0|^6.0",
