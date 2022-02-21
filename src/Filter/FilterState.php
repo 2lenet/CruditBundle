@@ -4,27 +4,28 @@ namespace Lle\CruditBundle\Filter;
 
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
 
 class FilterState
 {
     private iterable $filtersets;
-    private SessionInterface $session;
     private ?array $filterdata;
     private Security $security;
+    private Request $request;
 
-    public function __construct(iterable $filtersets, SessionInterface $session, Security $security)
+    public function __construct(iterable $filtersets, Security $security, RequestStack $requestStack)
     {
         $this->filtersets = $filtersets;
-        $this->session = $session;
         $this->security = $security;
         $this->filterdata = null;
+        $this->request = $requestStack->getMainRequest();
     }
 
     public function handleRequest(Request $request):void
     {
-        $filterdata = $this->session->get('crudit_filters');
+        $session = $request->getSession();
+        $filterdata = $session->get('crudit_filters');
 
         foreach ($this->filtersets as $filterset) {
             $filterId = $filterset->getId();
@@ -38,15 +39,15 @@ class FilterState
             if ($request->query->get($filterId.'_reset')) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
                 // we remove cached sort & page
-                $this->session->remove($sessionKey);
+                $session->remove($sessionKey);
             } else {
 
                 if ($request->query->get($filterId.'_filter')) {
                     //go back to the first page
-                    $params = $this->session->get($sessionKey);
+                    $params = $session->get($sessionKey);
                     if (isset($params) && isset($params["offset"])) {
                         $params["offset"] = 0;
-                        $this->session->set($sessionKey, $params);
+                        $session->set($sessionKey, $params);
                     }
                 }
 
@@ -77,17 +78,20 @@ class FilterState
             }
         }
         $this->filterdata = $filterdata;
-        $this->session->set('crudit_filters', $filterdata);
+        $session->set('crudit_filters', $filterdata);
     }
 
-    public function getData($set_id, $filter_id): ?array {
+    public function getData($filterSetId, $filterId): ?array
+    {
         $this->loadData();
-        return $this->filterdata[$set_id][$filter_id] ?? null;
+
+        return $this->filterdata[$filterSetId][$filterId] ?? null;
     }
 
-    protected function loadData(): void {
+    protected function loadData(): void
+    {
         if (!$this->filterdata) {
-            $this->filterdata = $this->session->get('crudit_filters');
+            $this->filterdata = $this->request->getSession()->get('crudit_filters');
         }
     }
 
