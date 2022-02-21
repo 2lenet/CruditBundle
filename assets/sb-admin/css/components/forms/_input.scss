@@ -25,6 +25,11 @@ $input-height: 42px;
         min-height: 64px;
     }
 
+    & > .form-select {
+        padding-top: 1rem;
+        padding-bottom: 0;
+    }
+
     .form-control:not(.form-check-input) {
         height: auto;
         min-height: $form-floating-height;
