@@ -11,12 +11,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 abstract class AbstractCrudController extends AbstractController
 {
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         $subscribeds = parent::getSubscribedServices();
         $subscribeds[BrickBuilder::class] = '?' . BrickBuilder::class;
         $subscribeds[SerializerInterface::class] = '?' . SerializerInterface::class;
         $subscribeds[BrickResponseCollector::class] = '?' . BrickResponseCollector::class;
+        
         return $subscribeds;
     }
 
