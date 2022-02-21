@@ -16,7 +16,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     // Submit form on press on Enter and prevent operators dropdown opening
-    const filtersContainer = document.getElementById('collapse-filter');
+    const filtersContainer = document.getElementById('collapse-filters');
     if (filtersContainer) {
         filtersContainer.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
