@@ -1,49 +1,53 @@
 {% set form = view.data.form %}
-{% set currentGroup = "FIRST" %}
+{% set currentGroup = 'FIRST' %}
 
 <div class="mb-4">
     {{ form_start(form, {'attr': {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
     {{ form_errors(form) }}
     {% for field in form.getIterator() %}
         {% if field.vars.isGroup is defined and field.vars.isGroup %}
-            {%  if currentGroup !=  "FIRST" %}
+            {% do field.setRendered %} {# To avoid rendering at the end of the form, fields that have already been rendered in groups #}
+            {% if currentGroup != 'FIRST' %}
+                            </div>
+                        </fieldset>
                     </div>
-                 </fieldset>
-              </div>
             {% else %}
                 <div class="row">
             {% endif %}
-            <div class="p-1 {{ field.vars.fieldset_class }}">
-            <fieldset class="border p-2 crudit-group ">
-                <legend class="w-auto crudit-group">{{ field.vars.label |trans }}</legend>
-                <div class="row">
-                {% set currentGroup =  field.vars.id %}
+                    {% set currentGroup = field.vars.id %}
+                    <div class="p-1 {{ field.vars.fieldset_class }}">
+                        <fieldset class="border p-2 crudit-group">
+                            <legend class="w-auto crudit-group">{{ field.vars.label|trans }}</legend>
+                            <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                <div class="form-floating mb-4 {{ field.vars.attr.class|default('') }}">
-                    {% set attr = {'placeholder': '', 'autocomplete': 'new-password'} | merge(field.vars.attr) %}
-                    {{ form_widget(field, {attr}) }}
-                    {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
-                        {{ form_label(field) }}
-                    {% endif %}
-                    <div class="px-2">
-                        {{ form_help(field) }}
-                        {{ form_errors(field) }}
+                <div class="{{ field.vars.attr.class|default('') }}">
+                    <div class="form-floating mb-4">
+                        {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
+                        {{ form_widget(field, {attr}) }}
+                        {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
+                            {{ form_label(field) }}
+                        {% endif %}
+                        <div class="px-2">
+                            {{ form_help(field) }}
+                            {{ form_errors(field) }}
+                        </div>
                     </div>
                 </div>
             {% endif %}
         {% endif %}
     {% endfor %}
-    {%  if currentGroup !=  "FIRST" %}
+    {% if currentGroup != 'FIRST' %}
+                            </div>
+                        </fieldset>
+                    </div>
                 </div>
-         </fieldset>
-            </div>
-       </div>
     {% endif %}
+
     <div class="btn-group" role="group">
-        <button type="submit" class="btn btn-primary">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
+        <button class="btn btn-primary" type="submit">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
         {% if view.data.cancel_path %}
-            <a href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}" class="btn btn-danger">
+            <a class="btn btn-danger" href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}">
                 {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
             </a>
         {% endif %}
