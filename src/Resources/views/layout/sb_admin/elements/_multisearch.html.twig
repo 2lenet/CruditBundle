@@ -1,0 +1,13 @@
+<li class="nav-item dropdown no-arrow topbar-multiseach">
+    <div class="form-floating">
+        <input
+                id="input_global_search"
+                class="ms-4 form-control"
+                name="global_search_value"
+                placeholder="{{ 'crudit.multisearch.placeholder'|trans(domain='LleCruditBundle') }}"
+                value=""
+                data-url="{{ urls|json_encode|e('html_attr') }}"
+                data-options="[]"
+        />
+    </div>
+</li>

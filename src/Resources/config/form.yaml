@@ -19,3 +19,11 @@ services:
             - '@Symfony\Contracts\Translation\TranslatorInterface'
         tags:
            - { name: form.type, alias: lego_gedmo_translatable }
+    Lle\CruditBundle\Form\Type\MarkdownType:
+        autowire: true
+        tags:
+            - { name: form.type, alias: crudit_markdown }
+    Lle\CruditBundle\Form\Type\GroupType:
+        autowire: true
+        tags:
+            - { name: form.type, alias: crudit_group }

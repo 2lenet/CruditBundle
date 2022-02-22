@@ -3,8 +3,10 @@ import "bootstrap";
 import "./editinplace";
 import "./batch_actions";
 import "./input_format";
+import "./markdown_textarea";
 import './filters';
 import './form';
+import './multisearch';
 
 window.addEventListener('load', function () {
 

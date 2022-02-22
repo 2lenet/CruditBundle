@@ -4,6 +4,8 @@ namespace Lle\CruditBundle\Twig;
 
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -11,10 +13,12 @@ use Twig\TwigFunction;
 class CruditExtension extends AbstractExtension
 {
     private MenuRegistry $menuRegistry;
+    private RouterInterface $router;
 
-    public function __construct(MenuRegistry $menuRegistry)
+    public function __construct(MenuRegistry $menuRegistry, RouterInterface $router)
     {
         $this->menuRegistry = $menuRegistry;
+        $this->router = $router;
     }
 
     public function getFunctions()
@@ -30,6 +34,7 @@ class CruditExtension extends AbstractExtension
     {
         return [
             new TwigFilter('json_decode', [$this, 'jsonDecode']),
+            new TwigFilter("get_crudit_routename", [$this, "getCruditRoutename"]),
         ];
     }
 
@@ -71,5 +76,20 @@ class CruditExtension extends AbstractExtension
     public function jsonDecode($value)
     {
         return json_decode($value, true);
+    }
+
+    public function getCruditRoutename(object $value): ?string
+    {
+        $class = (new \ReflectionClass($value))->getShortName();
+
+        $route = 'app_crudit_' . strtolower($class);
+
+        try {
+            $this->router->generate($route . '_index');
+        } catch (RouteNotFoundException $e) {
+            return null;
+        }
+
+        return $route . '_show';
     }
 }

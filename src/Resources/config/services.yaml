@@ -22,11 +22,11 @@ services:
     Lle\CruditBundle\Filter\FilterState:
         arguments:
             - !tagged_iterator crudit.filterset
-            - '@session'
             - '@security.helper'
+            - '@request_stack'
 
     Lle\CruditBundle\Resolver\FieldResolver:
-        arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor']
+        arguments: ['@Lle\CruditBundle\Registry\FieldRegistry',  '@property_accessor', '@property_info']
 
     Lle\CruditBundle\Resolver\ResourceResolver:
         arguments: ['@Lle\CruditBundle\Resolver\FieldResolver', '@security.helper']
@@ -53,12 +53,17 @@ services:
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
+            - '@router'
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
         tags: [ twig.extension ]
 
     Lle\CruditBundle\Twig\CruditTelephoneFilterExtension:
+        tags: [ twig.extension ]
+
+    Lle\CruditBundle\Twig\SanitizerExtension:
+        autowire: true
         tags: [ twig.extension ]
 
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
@@ -87,3 +92,6 @@ services:
     Lle\CruditBundle\Exporter\ExcelExporter:
         arguments:
             $translator: "@translator"
+
+    Lle\CruditBundle\Service\SanitizerService: ~
+    Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'

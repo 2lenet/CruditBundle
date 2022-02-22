@@ -15,6 +15,9 @@ class TabView
     /** @var string */
     private $label;
 
+    /** @var string */
+    private $role;
+
     public function __construct(string $label)
     {
         $this->label = $label;
@@ -47,5 +50,16 @@ class TabView
     public function getId(): string
     {
         return str_replace('tab.','',$this->getLabel());
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+        return $this;
     }
 }

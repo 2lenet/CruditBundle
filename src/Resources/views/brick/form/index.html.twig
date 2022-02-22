@@ -1,13 +1,29 @@
 {% set form = view.data.form %}
-<div class="card shadow mb-4">
+{% set currentGroup = 'FIRST' %}
+
+<div class="mb-4">
     {{ form_start(form, {'attr': {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
-    <div class="card-body">
-        <div class="table-responsive">
-            {{ form_errors(form) }}
-            {% for field in form.getIterator() %}
-                {% if field.vars.name != '_token' %}
+    {{ form_errors(form) }}
+    {% for field in form.getIterator() %}
+        {% if field.vars.isGroup is defined and field.vars.isGroup %}
+            {% do field.setRendered %} {# To avoid rendering at the end of the form, fields that have already been rendered in groups #}
+            {% if currentGroup != 'FIRST' %}
+                            </div>
+                        </fieldset>
+                    </div>
+            {% else %}
+                <div class="row">
+            {% endif %}
+                    {% set currentGroup = field.vars.id %}
+                    <div class="p-1 {{ field.vars.fieldset_class }}">
+                        <fieldset class="border p-2 crudit-group">
+                            <legend class="w-auto crudit-group">{{ field.vars.label|trans }}</legend>
+                            <div class="row">
+        {% else %}
+            {% if field.vars.name != '_token' %}
+                <div class="{{ field.vars.attr.class|default('') }}">
                     <div class="form-floating mb-4">
-                        {% set attr = {'placeholder': '', 'autocomplete': 'new-password'} | merge(field.vars.attr) %}
+                        {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
                         {{ form_widget(field, {attr}) }}
                         {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
                             {{ form_label(field) }}
@@ -17,14 +33,21 @@
                             {{ form_errors(field) }}
                         </div>
                     </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-    <div class="card-footer">
-        <button type="submit" class="btn btn-primary">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if currentGroup != 'FIRST' %}
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+    {% endif %}
+
+    <div class="btn-group" role="group">
+        <button class="btn btn-primary" type="submit">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
         {% if view.data.cancel_path %}
-            <a href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}" class="btn btn-danger">
+            <a class="btn btn-danger" href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}">
                 {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
             </a>
         {% endif %}

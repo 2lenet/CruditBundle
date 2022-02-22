@@ -2,6 +2,13 @@ crudit:
     title:
         filter: "Artikel Auswählen"
 
+    multisearch:
+        placeholder: "Suche ..."
+
+    footer:
+        copyrights: "Copyrights."
+        release: "Version"
+
     pagination:
         first: "Erste"
         previous: "Vorherige"
@@ -82,23 +89,23 @@ crudit:
             update: "Aktualisierung"
             remove: "Löschung"
 
-        flash:
-            error:
-                eip:
-                    generic: "Der Wert konnte nicht geändert werden."
-                    access_denied: "Sie dürfen diesen Wert nicht ändern."
-                    bad_request: "Sie versuchen, einen nicht existierenden Wert zu ändern."
-
+    flash:
         error:
-            generic:
-                title: "Fehler"
-                text: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es noch einmal oder wenden Sie sich an Ihren Administrator, wenn das Problem weiterhin besteht."
-                link: "Zurück zur Übersicht"
-            not_found:
-                title: "Fehler 404"
-                text: "Die angeforderte Seite konnte nicht gefunden werden. Sie können Ihre Navigation über den unten stehenden Link fortsetzen."
-                link: "Zurück zur Übersicht"
-            forbidden:
-                title: "Fehler 403"
-                text: "Sie haben nicht die Rechte, auf diese Seite zuzugreifen. Sie können Ihre Navigation über den unten stehenden Link fortsetzen."
-                link: "Zurück zur Übersicht"
+            eip:
+                generic: "Der Wert konnte nicht geändert werden."
+                access_denied: "Sie dürfen diesen Wert nicht ändern."
+                bad_request: "Sie versuchen, einen nicht existierenden Wert zu ändern."
+
+    error:
+        generic:
+            title: "Fehler"
+            text: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es noch einmal oder wenden Sie sich an Ihren Administrator, wenn das Problem weiterhin besteht."
+            link: "Zurück zur Übersicht"
+        not_found:
+            title: "Fehler 404"
+            text: "Die angeforderte Seite konnte nicht gefunden werden. Sie können Ihre Navigation über den unten stehenden Link fortsetzen."
+            link: "Zurück zur Übersicht"
+        forbidden:
+            title: "Fehler 403"
+            text: "Sie haben nicht die Rechte, auf diese Seite zuzugreifen. Sie können Ihre Navigation über den unten stehenden Link fortsetzen."
+            link: "Zurück zur Übersicht"

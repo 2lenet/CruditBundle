@@ -12,7 +12,7 @@ Webpack Encore is required and you need to have a security on your application.
 
 ```bash
 require 2lenet/crudit-bundle
-npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free --save
+npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free easymde --save
 ```
 
 Just add the following lines in your template/base.html.twig
@@ -47,7 +47,8 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 
 - [Setup Webpack Encore](doc/webpack_encore.md)
 - [Create a CRUD](doc/crud.md)
-- [Submenu](doc/submenu.md)
+- [Menu](doc/menu.md)
+- [Setup brand](doc/brand.md)
 - [Filters](doc/filter.md)
 - [Sublist](doc/sublist.md)
 - [Use a FilterSet in your own Controller](doc/filterset_controller.md)
@@ -55,6 +56,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 - [Add a map to a list or to a show](doc/map_config.md)
 - [How to export data](doc/export.md)
 - [Workflows](doc/workflow.md)
+- [Markdown](doc/markdown.md)
 
 ## Principle
 
@@ -77,6 +79,7 @@ The list view has the following features :
 - List Actions ( Add and Export csv and excel as standard )
 - List grouping ( to save place in repeating values )
 - Batch Action ( see [Batch actions](doc/batch_action.md) )
+- Possibility to color the lines according to a class passed to the entity ( see [Coloring the rows in a list](doc/color_list.md) )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 The list view need a Datasource but is not bounded to Doctrine or any ORM.
@@ -88,6 +91,7 @@ The show view has the following feature :
 - Title can use the entity to title the object by its name
 - Tabs
 - Sublists to show related data ( see [Sublist](doc/sublist.md) )
+- Possibility to color the main card and the title of the show view ( the principle is the same as for the list view: [Coloring the rows in a list](doc/color_list.md)  )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 ### Form view
@@ -98,6 +102,7 @@ Crudit provides some help to be nicely integrated :
 - Many FormType ( Datetime, Entity, etc ...)
 - Entity Dropdown based on TomSelect with autocomplete
 - DoctrineFormGuesser to automatically use Crudit FormType.
+- Markdown editor based on EasyMDE
 - Layout customisation is possible ( doc TODO / Block principle )
 
 ## JS Format input helper

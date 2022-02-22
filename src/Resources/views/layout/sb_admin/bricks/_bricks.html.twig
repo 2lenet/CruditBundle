@@ -2,8 +2,10 @@
 
 <div class="row">
     {% for view in views %}
-        <div id="{{ view.id }}" class="{{ view.cssClass }}">
-            {% include view.indexTemplate with { 'view': view } only %}
-        </div>
+        {%  if view.role == null or is_granted(view.role) %}
+            <div id="{{ view.id }}" class="{{ view.cssClass }}">
+                {% include view.indexTemplate with { 'view': view } only %}
+            </div>
+        {% endif %}
     {%  endfor %}
 </div>

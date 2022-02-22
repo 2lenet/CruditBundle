@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
 
-class LleCruditExtension extends Extension implements ExtensionInterface, PrependExtensionInterface
+class LleCruditExtension extends Extension implements ExtensionInterface
 {
     /** @return void */
     public function load(array $configs, ContainerBuilder $container)
@@ -52,12 +52,4 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         }
     }
 
-    public function prepend(ContainerBuilder $container)
-    {
-        $container->loadFromExtension("twig", [
-            "paths" => [
-                __DIR__ . "/../Resources/views/twig-bundle" => "Twig",
-            ]
-        ]);
-    }
 }

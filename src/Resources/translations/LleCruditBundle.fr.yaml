@@ -2,6 +2,13 @@ crudit:
     title:
         filter: "Filtrer les éléments"
 
+    multisearch:
+        placeholder: "Rechercher ..."
+
+    footer:
+        copyrights: "Tous droits réservés."
+        release: "Version"
+
     pagination:
         first: "Première"
         previous: "Précédente"

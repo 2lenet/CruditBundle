@@ -5,7 +5,7 @@
                 <i class="icon fa fa-search"></i>&nbsp;
                 {{ 'crudit.title.filter'|trans(domain='LleCruditBundle') }}
             </h6>
-            <span class="btn float-end card-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-filter" aria-expanded="true" aria-controls="collapse-filter">
+            <span class="btn float-end card-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-filters" aria-expanded="true" aria-controls="collapse-filters">
                 <i class="fa fa-chevron-up"></i>
             </span>
             {% for id, filter in view.data.filters %}
@@ -17,7 +17,7 @@
             {% endfor %}
         </div>
 
-        <div id="collapse-filter" class="collapse show">
+        <div id="collapse-filters" class="collapse show">
             <div class="card-body">
                 <div class="row">
                     {% set isCollapsedFilters = false %}
@@ -29,7 +29,7 @@
                             {% set isCollapsedFilters = true %}
                         {% endif %}
 
-                        <div class="{{ classes }}">
+                        <div id="filter-{{ loop.index }}" class="{{ classes }}">
                             {% include filter.template with {
                                 'data': filter.data,
                                 'id': 'filter_' ~ id,

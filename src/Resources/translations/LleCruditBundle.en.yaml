@@ -2,6 +2,13 @@ crudit:
     title:
         filter: "Filter items"
 
+    multisearch:
+        placeholder: "Search ..."
+
+    footer:
+        copyrights: "Copyrights."
+        release: "Release"
+
     pagination:
         first: "First"
         previous: "Previous"
