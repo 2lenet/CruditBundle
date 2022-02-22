@@ -23,16 +23,16 @@ abstract class AbstractCrudController extends AbstractController
 
     public function getBrickBuilder(): object
     {
-        return $this->get(BrickBuilder::class);
+        return $this->container->get(BrickBuilder::class);
     }
 
     public function getSerializer(): object
     {
-        return $this->get(SerializerInterface::class);
+        return $this->container->get(SerializerInterface::class);
     }
 
     public function getBrickResponseCollector(): object
     {
-        return $this->get(BrickResponseCollector::class);
+        return $this->container->get(BrickResponseCollector::class);
     }
 }
