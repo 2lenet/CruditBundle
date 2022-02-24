@@ -9,6 +9,7 @@ class DatasourceFilter
     private $fieldname;
     private $fieldvalue;
     private $alias;
+    private $operator;
 
     /**
      * @return mixed
@@ -36,15 +37,23 @@ class DatasourceFilter
 
     public function getOperator()
     {
-        return "=";
+        return $this->operator;
+    }
+
+    public function setOperator(string $operator)
+    {
+        $this->operator = $operator;
+
+        return $operator;
     }
 
 
-    public function __construct($fieldname, $fieldvalue, $alias="root")
+    public function __construct($fieldname, $fieldvalue, $alias="root", $operator = "=")
     {
         $this->fieldname = $fieldname;
         $this->fieldvalue = $fieldvalue;
         $this->alias = $alias;
+        $this->operator = $operator;
     }
 
 }
