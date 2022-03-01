@@ -165,28 +165,35 @@ trait TraitCrudController
                     if ($value === "") {
                         $value = null;
                     } else {
-                        $mapping = $annotationReader->getPropertyAnnotation(
-                            $reflection->getProperty($field),
-                            Column::class
-                        );
+                        $associations = $this->entityManager->getClassMetadata($dataSource->getClassName())->associationMappings;
 
-                        switch ($mapping->type) {
-                            case "date":
-                            case "datetime":
-                                $value = new \DateTime($value);
-                                break;
-                            case "integer":
-                            case "smallint":
-                                $value = (int)$value;
-                                break;
-                            case "float":
-                                $value = (float)$value;
-                                break;
-                            case "string":
-                            case "text":
-                            case "decimal":
-                            default:
-                                // do nothing
+                        if (array_key_exists($field, $associations)) {
+                            $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
+                        } else {
+                            $mapping = $annotationReader->getPropertyAnnotation(
+                                $reflection->getProperty($field),
+                                Column::class
+                            );
+
+                            switch ($mapping->type) {
+                                case "date":
+                                case "datetime":
+                                    dd($value);
+                                    $value = new \DateTime($value);
+                                    break;
+                                case "integer":
+                                case "smallint":
+                                    $value = (int)$value;
+                                    break;
+                                case "float":
+                                    $value = (float)$value;
+                                    break;
+                                case "string":
+                                case "text":
+                                case "decimal":
+                                default:
+                                    // do nothing
+                            }
                         }
                     }
 
