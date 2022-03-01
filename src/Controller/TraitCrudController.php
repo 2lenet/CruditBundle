@@ -178,7 +178,6 @@ trait TraitCrudController
                             switch ($mapping->type) {
                                 case "date":
                                 case "datetime":
-                                    dd($value);
                                     $value = new \DateTime($value);
                                     break;
                                 case "integer":
