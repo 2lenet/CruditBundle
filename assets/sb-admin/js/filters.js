@@ -26,10 +26,10 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Entity filter
     document.querySelectorAll('.entity-select').forEach(select => {
         const dataurl = select.dataset.url;
         const inioptions = JSON.parse(select.dataset.options);
+
         new TomSelect('#' + select.id,
             {
                 valueField: 'id',
@@ -57,7 +57,12 @@ window.addEventListener('DOMContentLoaded', function () {
                     select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
                 },
                 firstUrl(query) {
-                    return dataurl + encodeURIComponent(query) + '&limit=20';
+                    let params = new URLSearchParams({
+                        q: encodeURIComponent(query),
+                        limit: 20,
+                    });
+
+                    return dataurl + "?" + params.toString();
                 },
                 load(query, callback) {
                     let url = this.getUrl(query);
@@ -65,8 +70,14 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then(response => response.json())
                         .then(json => {
                             if (json.next_offset < json.total_count) {
-                                const next_url = dataurl + encodeURIComponent(query) + '&limit=20&offset=' + json.next_offset;
-                                this.setNextUrl(query, next_url);
+                                let params = new URLSearchParams({
+                                    q: encodeURIComponent(query),
+                                    limit: 20,
+                                    offset: json.next_offset,
+                                });
+                                let nextUrl = dataurl + "?" + params.toString();
+
+                                this.setNextUrl(query, nextUrl);
                             }
                             // add data to the results
                             callback(json.items);

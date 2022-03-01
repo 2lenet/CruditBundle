@@ -1,4 +1,36 @@
-{% if value %}
+{% if view.field.editInPlace %}
+    {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
+
+    <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
+        <form class="form-inline d-none">
+            <input type="hidden" id="input-doctrine-entity-{{ view.field.id|replace({':': "_"}) }}_items" name="{{ view.field.id }}_items"
+                   value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
+            <div class="control-group form-group d-flex justify-content-around align-items-center">
+                <input
+                        type="text"
+                        id="input-doctrine-entity-{{ view.field.id }}"
+                        class="form-control form-control-sm entity-select crudit-eip-input"
+                        autocomplete="off"
+                        value="{{ value }}"
+                        data-url="{{ view.field.url }}"
+                        data-options="[]"
+                        data-maxItems="{{ view.field.maxItems }}"
+                >
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-primary crudit-eip-submit">
+                        <i class="fa fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-default crudit-eip-cancel">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="editable-error-block help-block" style="display: none;">
+            </div>
+        </form>
+        <div class="crudit-eip-value">{{ value }}</div>
+    </div>
+{% elseif value %}
     {% if value is iterable %}
         <span class="badge bg-primary rounded-pill">{{ value|length }}</span>
     {% elseif not view.options.link %}

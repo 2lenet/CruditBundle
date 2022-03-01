@@ -10,7 +10,7 @@
                value="{{ data['value']|default('') }}"
                placeholder=""
                autocomplete="new-password"
-               data-url="{{ path(filter.dataRoute) }}?q="
+               data-url="{{ path(filter.dataRoute) }}"
                data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
         />
         <label>{{ filter.label|trans(domain=view.config.translation_domain) }}</label>
