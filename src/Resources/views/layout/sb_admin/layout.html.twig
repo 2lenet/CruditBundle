@@ -29,7 +29,9 @@
                     {% block brand %}
                         {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
                     {% endblock %}
-                    {% include '@LleCrudit/layout/sb_admin/menu.html.twig' %}
+                    {% block menu %}
+                        {% include '@LleCrudit/layout/sb_admin/menu.html.twig' %}
+                    {% endblock %}
                 </ul>
             </div>
 

@@ -1,6 +1,8 @@
-{% block brand %}
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-        <img src="/img/logo.png" alt="Logo">
-        <div class="sidebar-brand-text mx-3">CRUDIT</div>
-    </a>
-{% endblock%}
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+    {% block logo %}
+        <img src="/img/logo.png" alt="Logo" />
+        {% if app_name is defined %}
+            <div class="sidebar-brand-text mx-3">{{ app_name }}</div>
+        {% endif %}
+    {% endblock %}
+</a>

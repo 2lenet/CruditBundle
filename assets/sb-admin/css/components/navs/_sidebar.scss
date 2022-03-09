@@ -150,7 +150,7 @@ $icon-width: 32px;
     }
 
     &-brand {
-        height: $topbar-base-height;
+        height: #{$topbar-base-height + 1rem};
         text-decoration: none;
         font-size: 1rem;
         font-weight: 800;
@@ -161,7 +161,7 @@ $icon-width: 32px;
         letter-spacing: 0.05rem;
         z-index: 1;
         img {
-            height: 100%;
+            height: $topbar-base-height;
         }
         .sidebar-brand-icon i {
             font-size: 2rem;
