@@ -40,6 +40,7 @@
                     {% endblock %}
                     <div class="container-fluid">
                         {% block main %}
+                            {% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}
                             {% block content %}{% endblock %}
                         {% endblock main %}
                     </div>

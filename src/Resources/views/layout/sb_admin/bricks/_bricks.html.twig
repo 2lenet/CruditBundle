@@ -1,5 +1,3 @@
-{%  include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}
-
 <div class="row">
     {% for view in views %}
         {%  if view.role == null or is_granted(view.role) %}
