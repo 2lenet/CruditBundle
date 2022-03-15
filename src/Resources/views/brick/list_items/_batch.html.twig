@@ -21,10 +21,10 @@
                         {% else %}
                             href="{{ action.url ?? path(action.path.route, params) }}"
                         {% endif %}
-                        title="{{ action.label }}"
+                        title="{{ action.label|trans }}"
                 >
                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                    {% if not action.hideLabel %}{{ action.label }}{% endif %}
+                    {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
                 </a>
             {% endfor %}
         </ul>
