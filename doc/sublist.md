@@ -72,3 +72,13 @@ In setSublist, you can pass the ManyToOne property name that represents the main
 
 If you use `setSuccessRedirectPath($this->getPath(CrudConfigInterface::SHOW))`, it will redirect to the main entity.
 To redirect to your new entity, simply use `$yourNewEntityCrudConfig->getPath(CrudConfigInterface::SHOW)`.
+
+## Paginator
+
+if you want to change numbers of items per pages you have to go  src/Crud/AbstractCrudConfig.php 
+ 
+ public function getChoicesNbItems(): array
+    {
+        return [10, 30, 50, 100, 200, 500];
+    }
+   
