@@ -8,74 +8,76 @@
         {% endif %}
     </div>
 
-    {% set showChoicesNbItems = not view.config.choices_nb_items is empty and not (view.config.canModifyNbEntityPerPage is defined and not view.config.canModifyNbEntityPerPage)%}
-    <nav class="{{ showChoicesNbItems ? 'col-md-5 col-lg-6' : 'col-md-8' }}" aria-label="navigation">
-        <ul class="pagination justify-content-center justify-content-md-start mb-0">
-            {% if view.config.datasource_params.previous %}
-                {% set merge_params = {(view.config.name|lower~'_offset'): 0} %}
-                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.firstPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.first'|trans({}, 'LleCruditBundle') }}">
-                        <i class="fa fa-angle-double-left"></i>
-                    </a>
-                </li>
-                {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage-2)} %}
-                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.previousPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.previous'|trans({}, 'LleCruditBundle') }}">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
-                </li>
-            {% endif %}
-
-            {% if view.config.datasource_params.pages|length != 1 %}
-                {% for page in view.config.datasource_params.pages %}
-                    {% set merge_params = {(view.config.name|lower~'_offset'): (page-1)*view.config.datasource_params.limit} %}
+    {% if view.config.datasource_params.count > 0 %}
+        {% set showChoicesNbItems = not view.config.choices_nb_items is empty and not (view.config.canModifyNbEntityPerPage is defined and not view.config.canModifyNbEntityPerPage)%}
+        <nav class="{{ showChoicesNbItems ? 'col-md-5 col-lg-6' : 'col-md-8' }}" aria-label="navigation">
+            <ul class="pagination justify-content-center justify-content-md-start mb-0">
+                {% if view.config.datasource_params.previous %}
+                    {% set merge_params = {(view.config.name|lower~'_offset'): 0} %}
                     {% set parameters = app.request.query.all()|merge(merge_params) %}
                     {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                    {% set current = view.config.datasource_params.current(page) %}
-                    <li class="page-item {% if current %}active{% endif %}">
-                        <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.goToPage'|trans({'nb': page}, 'LleCruditBundle') }}">{{ page }}</a>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.firstPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.first'|trans({}, 'LleCruditBundle') }}">
+                            <i class="fa fa-angle-double-left"></i>
+                        </a>
                     </li>
-                {% endfor %}
-            {% endif %}
+                    {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage-2)} %}
+                    {% set parameters = app.request.query.all()|merge(merge_params) %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.previousPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.previous'|trans({}, 'LleCruditBundle') }}">
+                            <i class="fa fa-angle-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
 
-            {% if view.config.datasource_params.next %}
-                {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage)} %}
-                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.nextPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.next'|trans({}, 'LleCruditBundle') }}">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
-                </li>
-                {% set merge_params = {(view.config.name|lower~'_offset'): ((view.config.datasource_params.count/view.config.datasource_params.limit)|round(0, 'ceil')-1)*view.config.datasource_params.limit} %}
-                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.lastPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.last'|trans({}, 'LleCruditBundle') }}">
-                        <i class="fa fa-angle-double-right"></i>
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-
-    {% if showChoicesNbItems %}
-        <div class="col-md-3 col-lg-2">
-            <div class="form-floating">
-                <select id="items-per-page" class="form-control form-select form-select-sm" onchange="window.location.replace(this.value)">
-                    {% for limit in view.config.choices_nb_items %}
-                        {% set merge_params = {(view.config.name|lower~'_limit'): limit} %}
+                {% if view.config.datasource_params.pages|length != 1 %}
+                    {% for page in view.config.datasource_params.pages %}
+                        {% set merge_params = {(view.config.name|lower~'_offset'): (page-1)*view.config.datasource_params.limit} %}
                         {% set parameters = app.request.query.all()|merge(merge_params) %}
                         {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
-                        <option value="{{ url }}" {{ limit == view.config.datasource_params.limit ? "selected" : "" }}>{{ limit }}</option>
+                        {% set current = view.config.datasource_params.current(page) %}
+                        <li class="page-item {% if current %}active{% endif %}">
+                            <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.goToPage'|trans({'nb': page}, 'LleCruditBundle') }}">{{ page }}</a>
+                        </li>
                     {% endfor %}
-                </select>
-                <label class="form-label" for="items-per-page">{{ 'crudit.pagination.limit'|trans({}, 'LleCruditBundle') }}</label>
+                {% endif %}
+
+                {% if view.config.datasource_params.next %}
+                    {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage)} %}
+                    {% set parameters = app.request.query.all()|merge(merge_params) %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.nextPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.next'|trans({}, 'LleCruditBundle') }}">
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </li>
+                    {% set merge_params = {(view.config.name|lower~'_offset'): ((view.config.datasource_params.count/view.config.datasource_params.limit)|round(0, 'ceil')-1)*view.config.datasource_params.limit} %}
+                    {% set parameters = app.request.query.all()|merge(merge_params) %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.lastPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.last'|trans({}, 'LleCruditBundle') }}">
+                            <i class="fa fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        {% if showChoicesNbItems %}
+            <div class="col-md-3 col-lg-2">
+                <div class="form-floating">
+                    <select id="items-per-page" class="form-control form-select form-select-sm" onchange="window.location.replace(this.value)">
+                        {% for limit in view.config.choices_nb_items %}
+                            {% set merge_params = {(view.config.name|lower~'_limit'): limit} %}
+                            {% set parameters = app.request.query.all()|merge(merge_params) %}
+                            {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                            <option value="{{ url }}" {{ limit == view.config.datasource_params.limit ? "selected" : "" }}>{{ limit }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label" for="items-per-page">{{ 'crudit.pagination.limit'|trans({}, 'LleCruditBundle') }}</label>
+                </div>
             </div>
-        </div>
+        {% endif %}
     {% endif %}
 </div>

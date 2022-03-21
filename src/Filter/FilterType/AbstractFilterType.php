@@ -16,7 +16,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
     {
         $this->columnName = $fieldname;
         $this->id = $fieldname;
-        $this->label = "field." . $fieldname;
+        $this->label = "field." . strtolower(str_replace(".", "_", $fieldname));
         $this->alias = "root.";
     }
 
