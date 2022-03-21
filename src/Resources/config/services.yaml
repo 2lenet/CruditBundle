@@ -95,3 +95,4 @@ services:
 
     Lle\CruditBundle\Service\SanitizerService: ~
     Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
+    Lle\CruditBundle\Entity\Trait\AdresseTrait: ~
