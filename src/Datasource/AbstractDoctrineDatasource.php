@@ -163,7 +163,18 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             $field = array_shift($fields);
         }
 
-        $qb->addOrderBy($join . "." . $field, $order);
+        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+
+        if ($metadata->hasAssociation($field)
+            && ($metadata->getAssociationMapping($field)["type"] & ClassMetadataInfo::TO_MANY)
+        ) {
+            $alias = $alias . "_" . $field;
+            $qb->leftJoin("$join.$field", $alias);
+            $qb->addGroupBy($join);
+            $qb->addOrderBy("COUNT($alias)", $order);
+        } else {
+            $qb->addOrderBy("$join.$field", $order);
+        }
     }
 
     /**
