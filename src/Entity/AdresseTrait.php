@@ -11,36 +11,43 @@ trait AdresseTrait
     /**
      * @ORM\Column("string", length=255, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $adresse1;
 
     /**
      * @ORM\Column("string", length=255, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $adresse2;
 
     /**
      * @ORM\Column("string", length=20, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private ?string $cp;
 
     /**
      * @ORM\Column("string", length=255, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $ville;
 
     /**
      * @ORM\Column("string", length=20, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private ?string $codeInsee;
 
     /**
      * @ORM\Column("string", length=20, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private ?string $tel;
 
     /**
      * @ORM\Column("string", length=255, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $email;
 
     public function getAdresseComplete()
