@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
