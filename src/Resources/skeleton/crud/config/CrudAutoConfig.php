@@ -8,17 +8,8 @@ declare(strict_types=1);
 namespace <?= $namespace ?>;
 
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
-use Lle\CruditBundle\Brick\ListBrick\ListConfig;
-use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
-use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
-use Lle\CruditBundle\Contracts\DatasourceInterface;
-use Lle\CruditBundle\Dto\Action\ListAction;
-use Lle\CruditBundle\Dto\Action\ItemAction;
-use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use App\Form\<?= $entityClass ?>Type;
 use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
