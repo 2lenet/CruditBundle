@@ -13,7 +13,9 @@ use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 {
-    public function __construct(<?= $entityClass ?>Datasource $datasource)
+    public function __construct(
+        <?= $entityClass ?>Datasource $datasource
+    )
     {
         $this->datasource = $datasource;
     }
