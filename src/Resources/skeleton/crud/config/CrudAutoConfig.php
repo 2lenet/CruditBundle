@@ -1,7 +1,6 @@
 <?= "<?php" ?>
 <?php if ($strictType): ?>
 
-
 declare(strict_types=1);
 <?php endif; ?>
 
@@ -14,9 +13,7 @@ use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
 
 class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 {
-    public function __construct(
-        <?= $entityClass ?>Datasource $datasource
-    )
+    public function __construct(<?= $entityClass ?>Datasource $datasource)
     {
         $this->datasource = $datasource;
     }
@@ -28,13 +25,14 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
     public function getFields($key): array
     {
 <?php foreach ($fields as $field) { if ($field != 'id') { ?>
-        $<?php echo $field?> = Field::new('<?php echo $field?>');
+        $<?php echo $field['name'] ?> = Field::new('<?php echo $field['name'] ?>')<?php if (!$field['sortable']) { echo '->setSortable(false)'; } ?>;
 <?php }} ?>
-        // you can return different fields based on the block key
+
+        // You can return different fields based on the block key
         if ($key == CrudConfigInterface::INDEX || $key == CrudConfigInterface::SHOW) {
             return [
 <?php foreach ($fields as $field) { if ($field != 'id') { ?>
-               $<?= $field?>,
+               $<?= $field['name'] ?>,
 <?php }} ?>
             ];
         }
