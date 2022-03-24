@@ -8,7 +8,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class NumberField extends AbstractField
 {
-    
     public function support(string $type): bool
     {
         return (in_array($type, ['float', 'decimal', self::class]));
@@ -18,16 +17,15 @@ class NumberField extends AbstractField
     {
         return '@LleCrudit/field/number.html.twig';
     }
-    
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "tableCssClass"=>"text-end",
+            "tableCssClass" => "text-end",
             'decimals' => '2',
             'decimal_separator' => ',',
             'thousands_separator' => ' ',
         ]);
     }
-    
 }

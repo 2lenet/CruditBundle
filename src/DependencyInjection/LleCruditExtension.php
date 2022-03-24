@@ -11,9 +11,7 @@ use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
-use Lle\CruditBundle\Layout\LayoutInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -51,5 +49,4 @@ class LleCruditExtension extends Extension implements ExtensionInterface
             ));
         }
     }
-
 }

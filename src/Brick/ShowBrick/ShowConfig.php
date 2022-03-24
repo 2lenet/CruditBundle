@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ShowConfig extends AbstractBrickConfig
 {
-
     /** @var Field[] */
     private $fields = [];
 
@@ -102,6 +101,4 @@ class ShowConfig extends AbstractBrickConfig
     {
         return $this->fields;
     }
-
-
 }

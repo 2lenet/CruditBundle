@@ -201,7 +201,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
         $path = Path::new($this->getRootRoute() . '_' . $context, $params);
-        $path->setRole(sprintf("ROLE_%s_%s",
+        $path->setRole(sprintf(
+            "ROLE_%s_%s",
             $this->getName(),
             $context
         ));

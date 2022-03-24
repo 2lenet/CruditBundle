@@ -7,12 +7,10 @@ namespace Lle\CruditBundle\Brick\FilterBrick;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
-use Lle\CruditBundle\Dto\Filter\Filter;
 use Symfony\Component\HttpFoundation\Request;
 
 class FilterConfig extends AbstractBrickConfig
 {
-
     private ?FilterSetInterface $filterset = null;
     private string $className;
 

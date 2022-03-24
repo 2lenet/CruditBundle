@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SublistConfig extends AbstractBrickConfig
 {
-
     /** @var Field[] */
     private $fields = [];
 
@@ -172,5 +171,4 @@ class SublistConfig extends AbstractBrickConfig
         $this->fieldname = $fieldname;
         return $this;
     }
-
 }

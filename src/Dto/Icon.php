@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Dto;
 
 class Icon
 {
-
     public const TYPE_FA = 'fa';
     public const TYPE_FAR = 'far';
     public const TYPE_IMG = 'img';

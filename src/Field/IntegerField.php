@@ -8,7 +8,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class IntegerField extends AbstractField
 {
-
     public function support(string $type): bool
     {
         return (in_array($type, ['integer', 'smallint', 'bigint', self::class]));
@@ -23,9 +22,8 @@ class IntegerField extends AbstractField
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "tableCssClass"=>"text-end",
+            "tableCssClass" => "text-end",
             'thousands_separator' => ' ',
         ]);
     }
-
 }

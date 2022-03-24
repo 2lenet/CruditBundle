@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
-use Lle\CruditBundle\Brick\TitleBrick\TitleConfig;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\BrickView;

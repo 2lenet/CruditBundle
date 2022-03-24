@@ -29,7 +29,7 @@ class WorkflowFilterType extends AbstractFilterType
 
         if (in_array($op, ["isnull", "isnotnull"])) {
             $queryBuilder->andWhere($query);
-        } else if (
+        } elseif (
             isset($this->data["value"])
             && $this->data["value"]
         ) {

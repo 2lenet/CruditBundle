@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  This file is part of the Lego project.
  *
@@ -7,6 +8,7 @@
  *  For the full copyright and license information, please view the LICENSE
  *  file that was distributed with this source code.
  */
+
 namespace Lle\CruditBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -21,7 +23,6 @@ use Symfony\Component\Form\Extension\Core\Type\FormType as ParentType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Lle\CruditBundle\Service\GedmoTranslatableFieldManager;
 
-
 class GedmoTranslatableType extends AbstractType
 {
     protected $translatablefieldmanager;
@@ -34,7 +35,7 @@ class GedmoTranslatableType extends AbstractType
     public function __construct($defaultLocale, $locales, GedmoTranslatableFieldManager $translatableFieldManager, TranslatorInterface $translator)
     {
         $this->defaultLocale = $defaultLocale;
-        $this->locales = (\count($locales) <= 1)? ['fr','en','de']:$locales;
+        $this->locales = (\count($locales) <= 1) ? ['fr','en','de'] : $locales;
         $this->translatablefieldmanager = $translatableFieldManager;
         $this->currentLocale = $translator->getLocale();
     }

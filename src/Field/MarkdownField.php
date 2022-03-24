@@ -13,5 +13,4 @@ class MarkdownField extends AbstractField
     {
         return '@LleCrudit/field/markdown.html.twig';
     }
-
 }

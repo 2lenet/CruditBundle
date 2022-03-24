@@ -33,7 +33,6 @@ class DateTimeFilterType extends AbstractFilterType
         list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
-
             $datetime = $this->data["value"] . " ";
             if (isset($this->data["time"])) {
                 $datetime .= $this->data["time"];

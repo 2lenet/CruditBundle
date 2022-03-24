@@ -11,7 +11,6 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
-use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -34,7 +33,6 @@ class SublistFactory extends AbstractBasicBrickFactory
     {
         $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof SublistConfig) {
-
             $config = $brickConfigurator->getConfig($this->getRequest());
 
             $view
@@ -62,13 +60,13 @@ class SublistFactory extends AbstractBasicBrickFactory
     private function getLines(SublistConfig $brickConfigurator): array
     {
         $lines = [];
-        $foreign_key_value = $this->getRequest()->get('id');
+        $foreignKeyValue = $this->getRequest()->get('id');
         // normal list
         $dsParams = $brickConfigurator->getDatasourceParams();
-        $fk_filter = new DatasourceFilter($brickConfigurator->getFieldname(), $foreign_key_value);
-        $fk_filter->setOperator("IN");
+        $fkFilter = new DatasourceFilter($brickConfigurator->getFieldname(), $foreignKeyValue);
+        $fkFilter->setOperator("IN");
         $dsParams->setEnableFilters(false);
-        $dsParams->setFilters([$fk_filter]);
+        $dsParams->setFilters([$fkFilter]);
         $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
         $resources = $brickConfigurator->getDatasource()->list($dsParams);
 

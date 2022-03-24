@@ -119,7 +119,9 @@ class CruditTelephoneFilterExtension extends AbstractExtension
 
     private function applyMask(string $mask, string $value)
     {
-        $result = ""; $i = 0; $counter = 0;
+        $result = "";
+        $i = 0;
+        $counter = 0;
         $lenValue = strlen($value);
         $lenMask = strlen($mask);
         while ($counter < $lenValue && $i < $lenMask) {

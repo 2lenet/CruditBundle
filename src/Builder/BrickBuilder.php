@@ -13,7 +13,6 @@ use Lle\CruditBundle\Provider\BrickProvider;
 
 class BrickBuilder
 {
-
     /** @var BrickView[]  */
     private $bricks = [];
 

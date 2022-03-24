@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Dto;
 
 class ResourceView
 {
-
     /** @var int|string */
     private $id;
 
@@ -69,7 +68,7 @@ class ResourceView
     private function getValue(array $keys, object $value)
     {
         $key = array_key_first($keys);
-        $value = $value->{'get'.ucfirst($keys[$key])}();
+        $value = $value->{'get' . ucfirst($keys[$key])}();
 
         if (count($keys) > 1) {
             unset($keys[$key]);

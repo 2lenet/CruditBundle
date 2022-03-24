@@ -11,7 +11,6 @@ use Lle\CruditBundle\Dto\ResourceView;
 
 class TemplateFactory extends AbstractBasicBrickFactory
 {
-
     public function support(BrickConfigInterface $brickConfigurator): bool
     {
         return (TemplateConfig::class === get_class($brickConfigurator));

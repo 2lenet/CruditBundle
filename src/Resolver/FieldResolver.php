@@ -57,7 +57,6 @@ class FieldResolver
 
                 // if we are not at the last iteration
                 if (array_key_last($cascade) !== $k) {
-
                     // it should always be a class
                     $subClass = $propertyType->isCollection()
                         ? $propertyType->getCollectionValueTypes()[0]

@@ -26,5 +26,4 @@ class SanitizerExtension extends AbstractExtension
     {
         return $this->sanitizer->sanitize($html);
     }
-
 }

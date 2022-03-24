@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface BrickConfigInterface
 {
-
     public function getCrudConfig(): CrudConfigInterface;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self;

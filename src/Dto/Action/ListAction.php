@@ -9,7 +9,6 @@ use Lle\CruditBundle\Dto\Path;
 
 class ListAction
 {
-
     /** @var string  */
     protected $label;
 

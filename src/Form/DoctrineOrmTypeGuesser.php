@@ -63,9 +63,9 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             case Types::DATEINTERVAL:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateIntervalType', ["label" => $label], Guess::HIGH_CONFIDENCE);
             case Types::DATE_MUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ["label" => $label, "widget"=>"single_text"], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ["label" => $label, "widget" => "single_text"], Guess::HIGH_CONFIDENCE);
             case Types::DATE_IMMUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ['input' => 'datetime_immutable', "label" => $label, "widget"=>"single_text"], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ['input' => 'datetime_immutable', "label" => $label, "widget" => "single_text"], Guess::HIGH_CONFIDENCE);
             case Types::TIME_MUTABLE:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TimeType', ["label" => $label], Guess::HIGH_CONFIDENCE);
             case Types::TIME_IMMUTABLE:

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Field;
 
 use Lle\CruditBundle\Contracts\FieldInterface;
-use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exception\CruditException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -50,9 +49,9 @@ abstract class AbstractField implements FieldInterface
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         $optionsResolver->setDefaults([
-            "cssClass"=>"col-12 col-md-6",
-            "tableCssClass"=>"text-nowrap",
-            "edit_route"=>null,
+            "cssClass" => "col-12 col-md-6",
+            "tableCssClass" => "text-nowrap",
+            "edit_route" => null,
         ]);
     }
 

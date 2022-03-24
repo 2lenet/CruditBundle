@@ -75,13 +75,13 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         } else {
                             $result = "?";
                         }
-                    } else if ($type === "boolean") {
+                    } elseif ($type === "boolean") {
                         $result = $value ? "crudit.boolean.yes" : "crudit.boolean.no";
-                    } else if ($type === "date") {
+                    } elseif ($type === "date") {
                         $result = $value ? $value->format("d/m/Y") : "";
-                    } else if ($type === "datetime") {
+                    } elseif ($type === "datetime") {
                         $result = $value ? $value->format("d/m/Y H:i:s") : "";
-                    } else if (is_array($value)) {
+                    } elseif (is_array($value)) {
                         $result = implode(", ", $value);
                     }
 

@@ -8,7 +8,6 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 
 class Tab
 {
-
     /** @var BrickConfigInterface[] */
     private $bricks;
 
@@ -61,5 +60,4 @@ class Tab
         $this->role = $role;
         return $this;
     }
-
 }

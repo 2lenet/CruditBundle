@@ -30,6 +30,4 @@ class GroupType extends AbstractType
     {
         return 'crudit_group';
     }
-
-
 }

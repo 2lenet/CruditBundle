@@ -93,7 +93,7 @@ class BrickView
 
     public function getCssClass(): ?string
     {
-        if (array_key_exists('cssClass',$this->options)) {
+        if (array_key_exists('cssClass', $this->options)) {
             return $this->options["cssClass"];
         } else {
             return null;

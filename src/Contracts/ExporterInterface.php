@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Lle\CruditBundle\Contracts;
-
 
 use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\HttpFoundation\Response;

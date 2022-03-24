@@ -9,7 +9,6 @@ use Lle\CruditBundle\Brick\BrickResponse\FlashBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -92,7 +91,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 $this->brickResponseCollector->add(new RedirectBrickResponse(
                     $this->urlGenerator->generate(
                         $brickConfig->getSuccessRedirectPath()->getRoute(),
-                        array_merge($brickConfig->getSuccessRedirectPath()->getParams(), ['id'=> $resource->getId()])
+                        array_merge($brickConfig->getSuccessRedirectPath()->getParams(), ['id' => $resource->getId()])
                     )
                 ));
             } else {

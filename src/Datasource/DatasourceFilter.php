@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Lle\CruditBundle\Datasource;
-
 
 class DatasourceFilter
 {
@@ -55,5 +53,4 @@ class DatasourceFilter
         $this->alias = $alias;
         $this->operator = $operator;
     }
-
 }

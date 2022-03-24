@@ -13,7 +13,6 @@ use Symfony\Component\Security\Core\Security;
 
 class ResourceResolver
 {
-
     /** @var FieldResolver */
     private $fieldResolver;
 
