@@ -14,7 +14,7 @@ To do so, go to the entity corresponding to your list and add a new getter:
 
 If you refresh your list and got to your code inspector, you will see that a class has been added to `<tr>` tags: 
 
-![](./tr_class.png)
+![](img/tr_class.png)
 
 All you have to do next is go to the CSS of your project and apply a background color to this new class:
 
@@ -28,6 +28,6 @@ All you have to do next is go to the CSS of your project and apply a background 
 }
 ```
 
-![](./color_list.png)
+![](img/color_list.png)
 
 

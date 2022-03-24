@@ -92,13 +92,13 @@ When we declare a new action in our page, we indicate the path of our method. Th
 
 In ```src/Form/EntityType.php```. The form is a basic Symfony form. Several formtypes are available. See : [Form types](form_types.md)
 
-![](form.png)
+![](img/form.png)
 
 ## Configure the filters in your list
 
 In  ```src/Crudit/Datasource/Filterset/EntityFilterSet.php```. See [Filters](filter.md)
 
-![](filter.png)
+![](img/filter.png)
 
 
 > :warning: **Don't forget to add your new crud to the menu in src/Crudit/CrudMenu/AppMenuProvider.php:**

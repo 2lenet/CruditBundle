@@ -22,7 +22,7 @@ Usage in form builder:
 $builder->add('description', MarkdownType::class);
 ````
 The rendering in the form will be:
-![](markdown_editor.png)
+![](img/markdown_editor.png)
 
 
 ### MarkdownField
@@ -40,4 +40,4 @@ Usage in CrudConfig:
 $description = Field::new('description')->setType(MarkdownField::class);
 ````
 The rendering in the page will be:
-![](markdown_interpretor.png)
+![](img/markdown_interpretor.png)
