@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -170,6 +171,7 @@ final class MakeCrudit extends AbstractMaker
     ): string
     {
         $fields = $this->getFields($entityClass);
+
         $template = 'CrudAuto';
         $shortEntity = basename(str_replace('\\', '/', $entityClass));
         $configuratorClassNameDetails = $generator->createClassNameDetails(
@@ -177,6 +179,7 @@ final class MakeCrudit extends AbstractMaker
             'Crudit\\Config\\',
             'CrudConfig'
         );
+
         $generator->generateClass(
             $configuratorClassNameDetails->getFullName(),
             $this->getSkeletonTemplate('config/' . $template . 'Config.php'),
@@ -205,10 +208,17 @@ final class MakeCrudit extends AbstractMaker
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
-                $fields[] = $fieldname;
+                $fields[] = ['name' => $fieldname, 'sortable' => true];
             }
+
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
-                $fields[] = $fieldassoc;
+                if ($metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
+                    $sortable = true;
+                } else {
+                    $sortable = false;
+                }
+
+                $fields[] = ['name' => $fieldassoc, 'sortable' => $sortable];
             }
         }
 

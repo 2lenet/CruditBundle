@@ -20,10 +20,10 @@
                                             {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
                                             {% set icon = 'fa-sort' %}
                                             {% if sorted %}
-                                                {% set icon = 'fa-sort-amount-up-alt' %}
+                                                {% set icon = 'fa-sort-up' %}
                                             {% endif %}
                                             {% if sorted and order=='asc' %}
-                                                {% set icon = 'fa-sort-amount-down-alt' %}
+                                                {% set icon = 'fa-sort-down' %}
                                                 {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
                                             {% endif %}
                                             {% set parameters = app.request.query.all()|merge(merge_params) %}

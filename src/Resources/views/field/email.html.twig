@@ -1,1 +1,3 @@
-<a href="mailto:{{ value }}">{{ value }}</a>
+<a href="mailto:{{ value }}" onclick="event.preventDefault();window.open('mailto:{{ value }}');">
+    {{ value }}
+</a>
