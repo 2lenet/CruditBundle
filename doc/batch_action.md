@@ -34,7 +34,7 @@ Then, in your src/Controller/Crudit/EntityContoller.php you can write the method
 
 This will result in:
 
-![](./batch.png)
+![](img/batch.png)
 
 That's it!
 

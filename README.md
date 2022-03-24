@@ -1,6 +1,6 @@
 # CruditBundle
 
-![](doc/crudit.png)
+![](doc/img/crudit.png)
 [![Build Status](https://github.com/2lenet/CruditBundle/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/2lenet/CruditBundle/actions)
 [![Build Status](https://github.com/2lenet/CruditBundle/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/2lenet/CruditBundle/actions)
 
@@ -72,7 +72,7 @@ The layout and menu are independant from the crud. You can integrate easily you 
 ## Feature
 
 ### List view
-![](doc/list.png)
+![](doc/img/list.png)
 The list view has the following features :
 - Pagination
 - Sorting
@@ -86,7 +86,7 @@ The list view has the following features :
 The list view need a Datasource but is not bounded to Doctrine or any ORM.
 
 ### Show view
-![](doc/show.png)
+![](doc/img/show.png)
 The show view has the following feature :
 - Show all fields
 - Title can use the entity to title the object by its name
@@ -96,7 +96,7 @@ The show view has the following feature :
 - Layout customisation is possible ( doc TODO / Block principle )
 
 ### Form view
-![](doc/edit.png)
+![](doc/img/edit.png)
 The edit view is a classical Symfony Form. You write your own FormType
 
 Crudit provides some help to be nicely integrated :
