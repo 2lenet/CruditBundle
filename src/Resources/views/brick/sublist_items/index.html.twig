@@ -30,9 +30,9 @@
                                             {% set parameters = app.request.query.all()|merge(merge_params) %}
                                             {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
                                             <span>
-                                                    <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                                        <i class="fas {{ icon }}"></i>
-                                                    </a>
+                                                <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
+                                                    <i class="fas {{ icon }}"></i>
+                                                </a>
                                             </span>
                                         {% endif %}
                                     </th>
