@@ -3,100 +3,104 @@
         {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
     <div class="card-body">
+        {#        TODO: DOC !#}
         <div class="table-responsive">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 {% if not view.options.noHeader|default(false) %}
                     <thead class="thead-light">
-                        <tr>
-                            {% for field in view.config.fields %}
-                                {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                                    <th class="text-nowrap">{{ field.label |trans(domain=view.config.translation_domain) }}
-                                        {% if field.sortable %}
-                                            {% set merge_params = {
-                                                ((view.config.name|lower)~'_sort'): field.name,
-                                                ((view.config.name|lower)~'_sort_order'): 'asc'
-                                            } %}
-                                            {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
-                                            {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
-                                            {% set icon = 'fa-sort' %}
-                                            {% if sorted %}
-                                                {% set icon = 'fa-sort-up' %}
-                                            {% endif %}
-                                            {% if sorted and order=='asc' %}
-                                                {% set icon = 'fa-sort-down' %}
-                                                {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                            {% endif %}
-                                            {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                            {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
-                                            <span>
+                    <tr>
+                        {% for field in view.config.fields %}
+                            {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
+                                <th class="text-nowrap">{{ field.label |trans(domain=view.config.translation_domain) }}
+                                    {% if field.sortable %}
+                                        {% set merge_params = {
+                                            ((view.config.name|lower)~'_sort'): field.name,
+                                            ((view.config.name|lower)~'_sort_order'): 'asc'
+                                        } %}
+                                        {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
+                                        {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
+                                        {% set icon = 'fa-sort' %}
+                                        {% if sorted %}
+                                            {% set icon = 'fa-sort-up' %}
+                                        {% endif %}
+                                        {% if sorted and order=='asc' %}
+                                            {% set icon = 'fa-sort-down' %}
+                                            {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
+                                        {% endif %}
+                                        {% set parameters = app.request.query.all()|merge(merge_params) %}
+                                        {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
+                                        <span>
                                                 <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
                                                     <i class="fas {{ icon }}"></i>
                                                 </a>
                                             </span>
-                                        {% endif %}
-                                    </th>
-                                {% endif %}
-                            {% endfor %}
-                            {% if view.config.actions|length %}
-                                <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                {% endif %}
-                <tbody>
-                    {% set ruptval1 = "" %}
-                    {% set ruptval2 = "" %}
-
-                    {% for line in view.data.lines %}
-                        {% for column in line.fields %}
-                            {# RUPTURE NIVEAU 1 #}
-                            {% if column.field.ruptGroup==1 %}
-                                {% if ruptval1 != column.value %}
-                                    <tr>
-                                        <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
-                                    </tr>
-                                    {% set ruptval2 = "" %}
-                                {% endif %}
-                                {% set ruptval1 = column.value %}
-                            {% endif %}
-
-                            {# RUPTURE NIVEAU 2 #}
-                            {% if column.field.ruptGroup==2 %}
-                                {% if ruptval2 != column.value %}
-                                    <tr>
-                                        <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
-                                    </tr>
-                                {% endif %}
-                                {% set ruptval2 = column.value %}
-                            {% endif %}
-
-                            {% if column.field.ruptGroup==0 %}
-                                {% if loop.first %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
-                                {% endif %}
-                                <td>
-                                    {% if column.field.path %}
-                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                        {% endif %}
-                                        {{ column.value|raw }}
-                                        {% if column.field.path %}
-                                    </a>
                                     {% endif %}
-                                </td>
+                                </th>
                             {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
+                            <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                {% endif %}
+                <tbody>
+                {% set ruptval1 = "" %}
+                {% set ruptval2 = "" %}
+
+                {% for line in view.data.lines %}
+                    {% for column in line.fields %}
+                        {# RUPTURE NIVEAU 1 #}
+                        {# Don't display ruptGroup1 if there is a ruptGroup2 #}
+                        {% if column.field.ruptGroup == 1 and view.data.lines[1].fields[1].field.ruptGroup != 2 %}
+                            {% if ruptval1 != column.value %}
+                                <tr>
+                                    <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
+                                </tr>
+                                {% set ruptval2 = "" %}
+                            {% endif %}
+                            <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                            {% set ruptval1 = column.value %}
+                        {% endif %}
+
+                        {# RUPTURE NIVEAU 2 #}
+                        {% if column.field.ruptGroup == 2 %}
+                            {% if ruptval2 != column.value %}
+                                <tr>
+                                    <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }} - {{ column.value|raw }}</th>
+                                </tr>
+                            {% endif %}
+                            <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                            {% set ruptval2 = column.value %}
+                        {% endif %}
+
+                        {% if column.field.ruptGroup == 0 %}
+                            {% if loop.first %}
+                                <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                            {% endif %}
                             <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    {% for action in view.config.actions %}
-                                        {% if action.path.role is null or is_granted(action.path.role) %}
-                                            {% set params = { 'id': line.resource.id } %}
-                                            {% do action.setResource(line.resource) %}
-                                            {% if action.modal %}
-                                                {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
-                                            {% endif %}
-                                            <span class="btn-wrapper"
-                                                  title="{{ action.title|trans(domain=view.config.translation_domain) }}">
+                                {% if column.field.path %}
+                                <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
+                                    {% endif %}
+                                    {{ column.value|raw }}
+                                    {% if column.field.path %}
+                                </a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                    {% if view.config.actions|length %}
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                {% for action in view.config.actions %}
+                                    {% if action.path.role is null or is_granted(action.path.role) %}
+                                        {% set params = { 'id': line.resource.id } %}
+                                        {% do action.setResource(line.resource) %}
+                                        {% if action.modal %}
+                                            {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
+                                        {% endif %}
+                                        <span class="btn-wrapper"
+                                              title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                                                 <a
                                                         class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
@@ -110,13 +114,13 @@
                                                     {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
                                                 </a>
                                             </span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </td>
-                        {% endif %}
-                        </tr>
-                    {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                    {% endif %}
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
