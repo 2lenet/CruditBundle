@@ -38,3 +38,6 @@ services:
   Lle\CruditBundle\Field\MarkdownField:
     arguments: [ '@twig' ]
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\CurrencyField:
+    arguments: [ '@twig', '@request_stack' ]
+    tags: [ 'crudit.field' ]
