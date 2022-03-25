@@ -3,6 +3,7 @@
         {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
     <div class="card-body">
+{#        TODO: DOC !#}
         <div class="table-responsive">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 {% if not view.options.noHeader|default(false) %}
@@ -50,37 +51,40 @@
                     {% for line in view.data.lines %}
                         {% for column in line.fields %}
                             {# RUPTURE NIVEAU 1 #}
-                            {% if column.field.ruptGroup==1 %}
+                            {# Don't display ruptGroup1 if there is a ruptGroup2 #}
+                            {% if column.field.ruptGroup == 1 and view.data.lines[1].fields[1].field.ruptGroup != 2 %}
                                 {% if ruptval1 != column.value %}
                                     <tr>
-                                        <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
                                     </tr>
                                     {% set ruptval2 = "" %}
                                 {% endif %}
+                                <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% set ruptval1 = column.value %}
                             {% endif %}
 
                             {# RUPTURE NIVEAU 2 #}
-                            {% if column.field.ruptGroup==2 %}
+                            {% if column.field.ruptGroup == 2 %}
                                 {% if ruptval2 != column.value %}
                                     <tr>
-                                        <th colspan="{{ line.fields|length +1 }}">{{ column.value|raw }}</th>
+                                        <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }} - {{ column.value|raw }}</th>
                                     </tr>
                                 {% endif %}
+                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% set ruptval2 = column.value %}
                             {% endif %}
 
-                            {% if column.field.ruptGroup==0 %}
+                            {% if column.field.ruptGroup == 0 %}
                                 {% if loop.first %}
                                     <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% endif %}
                                 <td>
                                     {% if column.field.path %}
-                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                        {% endif %}
-                                        {{ column.value|raw }}
-                                        {% if column.field.path %}
-                                    </a>
+                                        <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
+                                    {% endif %}
+                                            {{ column.value|raw }}
+                                    {% if column.field.path %}
+                                        </a>
                                     {% endif %}
                                 </td>
                             {% endif %}
