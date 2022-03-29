@@ -33,9 +33,6 @@ class CurrencyField extends AbstractField
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
             "tableCssClass"=>"text-end",
-            'decimals' => '2',
-            'decimal_separator' => ',',
-            'thousands_separator' => ' ',
             'locale' => $this->requestStack->getMainRequest()->getLocale(),
             'currency' => 'EUR',
             'property' => null,
