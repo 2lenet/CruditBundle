@@ -10,7 +10,7 @@ class NumberField extends AbstractField
 {
     public function support(string $type): bool
     {
-        return (in_array($type, ['float', 'decimal', self::class]));
+        return (in_array($type, ['float', self::class]));
     }
 
     public function getDefaultTemplate(): ?string
