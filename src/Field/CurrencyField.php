@@ -38,5 +38,4 @@ class CurrencyField extends AbstractField
             'property' => null,
         ]);
     }
-
 }
