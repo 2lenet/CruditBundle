@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Dto\Layout;
 
 class HorizontalSeparatorElement extends AbstractLayoutElement
 {
-
     public static function new(): self
     {
         return new self();

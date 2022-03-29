@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Lle\CruditBundle\Exporter;
-
 
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
@@ -22,7 +20,6 @@ class ExcelExporter extends AbstractExporter
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-
     }
 
     public function getSupportedFormat(): string
@@ -39,7 +36,6 @@ class ExcelExporter extends AbstractExporter
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
-
             if ($params->getIncludeHeaders() && !$headersAdded) {
                 $headers = $this->getHeaders($resource->getFields());
                 foreach ($headers as $j => $header) {
@@ -52,7 +48,6 @@ class ExcelExporter extends AbstractExporter
 
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
-
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
 
                 // TODO: fix field blank spaces to remove trim

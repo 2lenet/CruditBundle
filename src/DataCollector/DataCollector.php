@@ -30,13 +30,13 @@ class DataCollector extends BaseDataCollector
         $entities = [];
         $metas = $this->em->getMetadataFactory()->getAllMetadata();
         foreach ($metas as $meta) {
-            $e_data = [
-                'name'=>$meta->getName(),
+            $eData = [
+                'name' => $meta->getName(),
             ];
             $rc = $meta->getReflectionClass();
-            $e_data['has_tostring'] = $rc->hasMethod('__toString');
-            $e_data['has_candelete'] = $rc->hasMethod('candelete');
-            $entities[] = $e_data;
+            $eData['has_tostring'] = $rc->hasMethod('__toString');
+            $eData['has_candelete'] = $rc->hasMethod('candelete');
+            $entities[] = $eData;
         }
 
         $this->data = $entities;

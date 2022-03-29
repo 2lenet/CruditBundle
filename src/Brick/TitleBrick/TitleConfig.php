@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TitleConfig extends AbstractBrickConfig
 {
-
     /** @var DatasourceInterface */
     private $dataSource;
 

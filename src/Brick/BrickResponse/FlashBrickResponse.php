@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FlashBrickResponse implements BrickResponseInterface
 {
-
     public const SUCCESS = 'success';
     public const ERROR = 'danger';
 

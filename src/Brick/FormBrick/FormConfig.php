@@ -12,7 +12,6 @@ use Lle\CruditBundle\Dto\Path;
 
 class FormConfig extends AbstractBrickConfig
 {
-
     /** @var DatasourceInterface */
     private $dataSource;
 
@@ -176,5 +175,4 @@ class FormConfig extends AbstractBrickConfig
 
         return $this;
     }
-
 }

@@ -112,7 +112,7 @@ trait TraitCrudController
             $offset,
             []
         );
-        $nb_items = $dataSource->autocompleteCountQuery($request->query->get("q", ""));
+        $nbItems = $dataSource->autocompleteCountQuery($request->query->get("q", ""));
 
         $items = $dataSource->autocompleteQuery(
             $request->query->get("q", ""),
@@ -129,7 +129,7 @@ trait TraitCrudController
 
         return new JsonResponse(
             [
-                "total_count" => $nb_items,
+                "total_count" => $nbItems,
                 "next_offset" => $offset + $limit,
                 "incomplete_results" => false,
                 "items" => $res,
@@ -321,14 +321,12 @@ trait TraitCrudController
         $item = $dataSource->get($id);
 
         if ($item && $transition) {
-
-            $role_transition = str_replace("-", "_", strtoupper($transition));
+            $roleTransition = str_replace("-", "_", strtoupper($transition));
             $this->denyAccessUnlessGranted(
-                "ROLE_" . $this->config->getName() . "_WF_" . $role_transition
+                "ROLE_" . $this->config->getName() . "_WF_" . $roleTransition
             );
 
             foreach ($wfRegistry->all($item) as $wf) {
-
                 if ($wf->can($item, $transition)) {
                     $wf->apply($item, $transition);
                     $dataSource->save($item);

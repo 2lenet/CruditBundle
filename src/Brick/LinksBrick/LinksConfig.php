@@ -60,7 +60,7 @@ class LinksConfig extends AbstractBrickConfig
     public function getConfig(Request $request): array
     {
         return [
-            'title' => $this->options['title']??"",
+            'title' => $this->options['title'] ?? "",
             'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
         ];
     }

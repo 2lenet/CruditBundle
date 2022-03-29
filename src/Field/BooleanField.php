@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
-use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BooleanField extends AbstractField

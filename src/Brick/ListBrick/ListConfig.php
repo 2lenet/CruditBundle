@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ListConfig extends AbstractBrickConfig
 {
-
     /** @var Field[] */
     private $fields = [];
 
@@ -167,5 +166,4 @@ class ListConfig extends AbstractBrickConfig
 
         return $this;
     }
-
 }

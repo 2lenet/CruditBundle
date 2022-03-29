@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Lle\CruditBundle\Exporter;
-
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Exception\ExporterException;

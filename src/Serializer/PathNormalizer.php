@@ -11,7 +11,6 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class PathNormalizer implements NormalizerInterface
 {
-
     /** @var RouterInterface */
     private $router;
 

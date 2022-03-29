@@ -22,7 +22,7 @@ class FilterState
         $this->request = $requestStack->getMainRequest();
     }
 
-    public function handleRequest(Request $request):void
+    public function handleRequest(Request $request): void
     {
         $session = $request->getSession();
         $filterdata = $session->get('crudit_filters');
@@ -36,13 +36,12 @@ class FilterState
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
             }
 
-            if ($request->query->get($filterId.'_reset')) {
+            if ($request->query->get($filterId . '_reset')) {
                 $filterdata[$filterId] = $this->initDefaultData($filterset);
                 // we remove cached sort & page
                 $session->remove($sessionKey);
             } else {
-
-                if ($request->query->get($filterId.'_filter')) {
+                if ($request->query->get($filterId . '_filter')) {
                     //go back to the first page
                     $params = $session->get($sessionKey);
                     if (isset($params) && isset($params["offset"])) {
@@ -69,9 +68,9 @@ class FilterState
                     }
 
                     foreach ($filterType->getAdditionnalKeys() as $addProps) {
-                        $add_data = $request->query->get($key . '_'.$addProps);
-                        if ($add_data !== null) {
-                            $filterdata[$filterId][$filterType->getId()][$addProps] = $add_data;
+                        $addData = $request->query->get($key . '_' . $addProps);
+                        if ($addData !== null) {
+                            $filterdata[$filterId][$filterType->getId()][$addProps] = $addData;
                         }
                     }
                 }
@@ -109,6 +108,4 @@ class FilterState
         }
         return $filterdata;
     }
-
-
 }

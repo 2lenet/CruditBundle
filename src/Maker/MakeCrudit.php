@@ -76,7 +76,6 @@ final class MakeCrudit extends AbstractMaker
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
         $inputConfig->setArgumentAsNonInteractive('filter');
-
     }
 
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void

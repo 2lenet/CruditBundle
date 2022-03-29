@@ -13,7 +13,7 @@ class DatasourceParams
     protected array $sorts;
 
     protected array $filters;
-    
+
     protected bool $enableFilters = true;
 
     public function __construct(int $limit, int $offset, array $sorts, array $filters = [])

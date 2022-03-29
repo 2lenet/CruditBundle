@@ -76,9 +76,9 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this;
     }
 
-    public function setDefault($default_data): self
+    public function setDefault($defaultData): self
     {
-        $this->default = $default_data;
+        $this->default = $defaultData;
 
         return $this;
     }
@@ -206,5 +206,4 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
         return $this;
     }
-
 }

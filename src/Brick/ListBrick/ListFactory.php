@@ -74,7 +74,6 @@ class ListFactory extends AbstractBasicBrickFactory
         $lines = [];
 
         if ($brickConfigurator->getDatasource()) {
-
             // normal list
             $dsParams = $brickConfigurator->getDatasourceParams();
             $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));

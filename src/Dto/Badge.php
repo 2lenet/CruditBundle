@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Dto;
 
 class Badge
 {
-
     /** @var string */
     private $libelle;
 

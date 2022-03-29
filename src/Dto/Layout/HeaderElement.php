@@ -6,7 +6,6 @@ namespace Lle\CruditBundle\Dto\Layout;
 
 class HeaderElement extends AbstractLayoutElement
 {
-
     /** @var string */
     protected $libelle;
 

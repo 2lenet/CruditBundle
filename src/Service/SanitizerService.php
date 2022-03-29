@@ -15,5 +15,4 @@ class SanitizerService implements SanitizerInterface
         $sanitizer = new HTMLPurifier($config);
         return $sanitizer->purify($dirtyHtml);
     }
-
 }

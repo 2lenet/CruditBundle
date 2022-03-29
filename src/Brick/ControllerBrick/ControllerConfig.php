@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ControllerConfig extends AbstractBrickConfig
 {
-
     public static function new(array $options = []): self
     {
         return new self($options);

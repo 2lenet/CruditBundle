@@ -209,7 +209,8 @@ class ItemAction
     public function getRoleVoter(): string
     {
         if (!$this->path->getRole()) {
-            $what = sprintf("To use a voter on action '%s', please set the role in the action path.",
+            $what = sprintf(
+                "To use a voter on action '%s', please set the role in the action path.",
                 $this->getLabel()
             );
             throw new CruditException($what);

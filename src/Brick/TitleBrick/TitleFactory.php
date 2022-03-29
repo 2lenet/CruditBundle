@@ -7,8 +7,6 @@ namespace Lle\CruditBundle\Brick\TitleBrick;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
-use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\ResourceView;
 
 class TitleFactory extends AbstractBasicBrickFactory
 {
@@ -30,7 +28,7 @@ class TitleFactory extends AbstractBasicBrickFactory
         }
         return $view;
     }
-    
+
     private function getItem(TitleConfig $brickConfigurator): ?string
     {
         $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));

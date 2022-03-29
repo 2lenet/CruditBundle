@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Lle\CruditBundle\Exporter;
-
 
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
@@ -40,7 +38,6 @@ class CsvExporter extends AbstractExporter
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
-
             if ($params->getIncludeHeaders() && !$headersAdded) {
                 $headers = $this->getHeaders($resource->getFields());
                 fputcsv($file, $headers, $params->getSeparator());

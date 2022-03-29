@@ -8,7 +8,6 @@ use Lle\CruditBundle\Dto\Path;
 
 class Field
 {
-
     /**
      * @var string
      */
@@ -100,9 +99,9 @@ class Field
         return $this;
     }
 
-    public function setEditable(string $edit_route): self
+    public function setEditable(string $editRoute): self
     {
-        $this->options['edit_route'] = $edit_route;
+        $this->options['edit_route'] = $editRoute;
         $this->editInPlace = true;
         return $this;
     }

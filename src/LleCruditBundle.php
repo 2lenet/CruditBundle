@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class LleCruditBundle extends Bundle
 {
-
     /** @return void */
     public function build(ContainerBuilder $container)
     {

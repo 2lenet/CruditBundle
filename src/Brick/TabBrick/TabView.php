@@ -8,7 +8,6 @@ use Lle\CruditBundle\Dto\BrickView;
 
 class TabView
 {
-
     /** @var BrickView[] */
     private $bricks;
 
@@ -49,7 +48,7 @@ class TabView
 
     public function getId(): string
     {
-        return str_replace('tab.','',$this->getLabel());
+        return str_replace('tab.', '', $this->getLabel());
     }
 
     public function getRole(): ?string

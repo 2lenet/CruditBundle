@@ -43,7 +43,7 @@ class NumberFilterType extends AbstractFilterType
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
             }
-        } else if (isset($this->data['value']) && $this->data['value']) {
+        } elseif (isset($this->data['value']) && $this->data['value']) {
             switch ($this->data['op']) {
                 case 'neq':
                     $queryBuilder->andWhere($queryBuilder->expr()->neq($alias . $column, ':' . $paramname));

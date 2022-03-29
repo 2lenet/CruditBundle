@@ -3,7 +3,6 @@
 namespace Lle\CruditBundle\Contracts;
 
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * FilterTypeInterface
@@ -19,5 +18,4 @@ interface FilterTypeInterface
     public function getId(): string;
 
     public function apply(QueryBuilder $queryBuilder): void;
-
 }

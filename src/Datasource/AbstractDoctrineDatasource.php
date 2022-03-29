@@ -34,7 +34,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $entityClass = $this->getClassName();
 
         $this->searchFields = array_merge($this->searchFields, self::getInitSearchFields($entityClass));
-
     }
 
     public static function getInitSearchFields(string $entityClass): array
@@ -114,7 +113,8 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                 $alias = $filter->getAlias() ?? "root";
                 $field = $alias . "." . $filter->getField();
 
-                if ($metadata->hasAssociation($filter->getField())
+                if (
+                    $metadata->hasAssociation($filter->getField())
                     && $metadata->getAssociationMapping($filter->getField())["type"] === ClassMetadataInfo::MANY_TO_MANY
                 ) {
                     // it's a ManyToMany, we need to join.
@@ -169,7 +169,8 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         $metadata = $this->entityManager->getClassMetadata($this->getClassName());
 
-        if ($metadata->hasAssociation($field)
+        if (
+            $metadata->hasAssociation($field)
             && ($metadata->getAssociationMapping($field)["type"] & ClassMetadataInfo::TO_MANY)
         ) {
             $alias = $alias . "_" . $field;
