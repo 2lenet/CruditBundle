@@ -50,7 +50,6 @@ class ExcelExporter extends AbstractExporter
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
 
-                // TODO: fix field blank spaces to remove trim
                 $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
             }
 
@@ -101,7 +100,6 @@ class ExcelExporter extends AbstractExporter
             case "smallint":
             case "float":
             case "integer":
-            case "decimal":
                 $result = DataType::TYPE_NUMERIC;
                 break;
             case "boolean":

@@ -27,6 +27,7 @@ abstract class AbstractExporter implements ExporterInterface
                         $result = "";
                     }
                     break;
+                case "decimal":
                 case DoctrineEntityField::class:
                     $result = $field->getValue();
                     break;
