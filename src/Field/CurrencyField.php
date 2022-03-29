@@ -32,7 +32,7 @@ class CurrencyField extends AbstractField
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "tableCssClass"=>"text-end",
+            "tableCssClass" => "text-end",
             'locale' => $this->requestStack->getMainRequest()->getLocale(),
             'currency' => 'EUR',
             'property' => null,
