@@ -20,16 +20,21 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% else %}
-    <div class="text-end me-3">
-        {% if value %}
-            {% if options.property %}
-                {% set currency = options.property|split('.')|reduce(
-                    (object, property) => object ? attribute(object, property) : null, resource
+    {% if value %}
+        {% if options.property %}
+            {% set currency = options.property|split('.')|reduce(
+                (object, property) => object ? attribute(object, property) : null, resource
                 ) %}
-                {{ value|format_currency(currency, [], options.locale) }}
-            {% else %}
-                {{ value|format_currency(options.currency, [], options.locale) }}
-            {% endif %}
+            {% set result = value|format_currency(currency, [], options.locale) %}
+        {% else %}
+            {% set result = value|format_currency(options.currency, [], options.locale) %}
         {% endif %}
-    </div>
+        {% if options.removeHtml %}
+            {{ result }}
+        {% else %}
+            <div class="text-end me-3">
+                {{ result }}
+            </div>
+        {% endif %}
+    {% endif %}
 {% endif %}
