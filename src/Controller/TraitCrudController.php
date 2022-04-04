@@ -165,7 +165,8 @@ trait TraitCrudController
                     if ($value === "") {
                         $value = null;
                     } else {
-                        $associations = $this->entityManager->getClassMetadata($dataSource->getClassName())->associationMappings;
+                        $em = $this->getDoctrine()->getManager();
+                        $associations = $em->getClassMetadata($dataSource->getClassName())->associationMappings;
 
                         if (array_key_exists($field, $associations)) {
                             $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
