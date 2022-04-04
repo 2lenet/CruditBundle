@@ -18,7 +18,7 @@ abstract class AbstractCrudController extends AbstractController
         $subscribeds[BrickBuilder::class] = '?' . BrickBuilder::class;
         $subscribeds[SerializerInterface::class] = '?' . SerializerInterface::class;
         $subscribeds[BrickResponseCollector::class] = '?' . BrickResponseCollector::class;
-        $subscribeds['doctrine'] = '?'.ManagerRegistry::class;
+        $subscribeds['doctrine'] = '?' . ManagerRegistry::class;
 
         return $subscribeds;
     }
