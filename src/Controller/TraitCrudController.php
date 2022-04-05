@@ -120,10 +120,15 @@ trait TraitCrudController
             $rqParams
         );
 
+        $method = "__toString";
+        if (method_exists($dataSource->getClassName(), "textAutocomplete")) {
+            $method = "textAutocomplete";
+        }
+
         foreach ($items as $item) {
             $res[] = [
                 "id" => $item->getId(),
-                "text" => (string)$item,
+                "text" => $item->{$method}(),
             ];
         }
 

@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 dataUrl.forEach(url => {
                     let fetchUrl = '';
 
-                    if (Object.keys(url)[0] == 'url') {
+                    if (Object.prototype.hasOwnProperty.call(url, 'url')) {
                         fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
                     } else {
                         fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
