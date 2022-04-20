@@ -19,8 +19,8 @@ class StringFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "startswith" => ["icon" => "far fa-caret-square-right"],
             "contains" => ["icon" => "fa fa-text-width"],
+            "startswith" => ["icon" => "far fa-caret-square-right"],
             "endswith" => ["icon" => "far fa-caret-square-left"],
             "eq" => ["icon" => "fas fa-equals"],
             "neq" => ["icon" => "fas fa-not-equal"],
