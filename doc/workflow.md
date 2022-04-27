@@ -4,7 +4,7 @@ Crudit supports Symfony's Workflow component.
 
 To enable workflows for a field, you need to set the type :
 ```php
-$status = Field::new("status")->setType(WorkflowField::class);
+$status = Field::new("status", WorkflowField::class);
 ```
 
 And it's done !  
