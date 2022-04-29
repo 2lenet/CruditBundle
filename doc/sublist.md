@@ -51,7 +51,7 @@ That's it!
 To enable striped tables in the sublists, you must add this scss :
 
 ```scss
-.crudit-sublist-striped {
+.crudit-sublist {
     & > tbody > tr:nth-of-type(odd) {
         --#{$variable-prefix}table-accent-bg: var(--#{$variable-prefix}table-striped-bg);
         color: var(--#{$variable-prefix}table-striped-color);

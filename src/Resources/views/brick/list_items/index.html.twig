@@ -6,8 +6,8 @@
     </div>
 
     <div class="card-body">
-        <div class="table-responsive">
-            <table id="{{ view.id }}_table" class="table table-sm table-hover crudit-list-striped">
+        <div class="table-responsive crudit-list">
+            <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 {% if not view.options.noHeader|default(false) %}
                     <thead class="thead-light">
                         <tr>
