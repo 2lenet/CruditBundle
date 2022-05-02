@@ -100,6 +100,18 @@ In  ```src/Crudit/Datasource/Filterset/EntityFilterSet.php```. See [Filters](fil
 
 ![](img/filter.png)
 
+## Enable striped tables
+
+To enable striped tables in the lists, you must add this scss :
+
+```scss
+.crudit-list {
+    & > tbody > tr:nth-of-type(odd) {
+        --#{$variable-prefix}table-accent-bg: var(--#{$variable-prefix}table-striped-bg);
+        color: var(--#{$variable-prefix}table-striped-color);
+    }
+}
+```
 
 > :warning: **Don't forget to add your new crud to the menu in src/Crudit/CrudMenu/AppMenuProvider.php:**
 

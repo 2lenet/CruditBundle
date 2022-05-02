@@ -46,6 +46,19 @@ Then, for each tab, declare a getEntityFields() method allowing you to list all 
 
 That's it!
 
+## Enable striped tables
+
+To enable striped tables in the sublists, you must add this scss :
+
+```scss
+.crudit-sublist {
+    & > tbody > tr:nth-of-type(odd) {
+        --#{$variable-prefix}table-accent-bg: var(--#{$variable-prefix}table-striped-bg);
+        color: var(--#{$variable-prefix}table-striped-color);
+    }
+}
+```
+
 ## Sub-lists forms
 You can add a form to your sub-list to allow the user to expand it.
 Simply add a FormConfig to your tab (tabs allow multiple elements, by passing an array) and configure it.

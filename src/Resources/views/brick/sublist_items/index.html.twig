@@ -3,8 +3,7 @@
         {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
     </div>
     <div class="card-body">
-        {#        TODO: DOC !#}
-        <div class="table-responsive">
+        <div class="table-responsive crudit-sublist">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 {% if not view.options.noHeader|default(false) %}
                     <thead class="thead-light">
