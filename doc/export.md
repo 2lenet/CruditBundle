@@ -85,13 +85,17 @@ class CustomExporter implements ExporterInterface
         return new Response("Hello from custom export!");
     }
 }
+```
 
-// in your crudconfig...
-ListAction::new()->setConfig(
-    [
-        "export" => ["custom"],
-    ]
-);
+Don't forget to add action in your CrudConfig
+```php
+ListAction::new()
+    ->setModal("@LleCrudit/modal/_export.html.twig")
+    ->setConfig(
+        [
+            "export" => ["custom"],
+        ]
+    );
 ```
 
 Crudit will automatically detect the exporters and complete the export form.
