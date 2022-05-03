@@ -1,4 +1,12 @@
 .crudit-eip {
+    &-input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    &-submit:not(input[type="checkbox"]) {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
     &-value {
         position: relative;
         min-height: 24px;
