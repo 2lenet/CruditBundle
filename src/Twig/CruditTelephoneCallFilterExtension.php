@@ -10,6 +10,9 @@ use Twig\TwigFilter;
  */
 class CruditTelephoneCallFilterExtension extends AbstractExtension
 {
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return [

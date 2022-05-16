@@ -15,6 +15,9 @@ class SanitizerExtension extends AbstractExtension
         $this->sanitizer = $sanitizer;
     }
 
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return [
