@@ -7,6 +7,9 @@ use Twig\TwigFilter;
 
 class TelephoneFilterExtension extends AbstractExtension
 {
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return [

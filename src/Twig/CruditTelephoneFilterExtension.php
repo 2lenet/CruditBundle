@@ -88,6 +88,9 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         ],
     ];
 
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return [

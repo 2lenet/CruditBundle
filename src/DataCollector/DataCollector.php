@@ -47,6 +47,9 @@ class DataCollector extends BaseDataCollector
         return $this->data;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'crudit';

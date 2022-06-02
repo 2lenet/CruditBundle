@@ -21,6 +21,9 @@ class CruditExtension extends AbstractExtension
         $this->router = $router;
     }
 
+    /**
+     * @return array
+     */
     public function getFunctions()
     {
         return [
