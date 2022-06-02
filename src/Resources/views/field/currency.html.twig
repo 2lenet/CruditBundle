@@ -1,6 +1,5 @@
 {% if view.field.editInPlace %}
     {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
-
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
@@ -9,32 +8,30 @@
                     <button type="button" class="btn btn-primary crudit-eip-submit">
                         <i class="fa fa-check"></i>
                     </button>
-                    <button type="button" class="btn btn-default crudit-eip-cancel">
+                    <button type="button" class="btn btn-danger crudit-eip-cancel">
                         <i class="fa fa-close"></i>
                     </button>
                 </div>
             </div>
-            <div class="editable-error-block help-block" style="display: none;">
-            </div>
+            <div class="editable-error-block help-block" style="display: none;"></div>
         </form>
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
-{% else %}
-    {% if value %}
-        {% if options.property %}
-            {% set currency = options.property|split('.')|reduce(
-                (object, property) => object ? attribute(object, property) : null, resource
-                ) %}
-            {% set result = value|format_currency(currency, [], options.locale) %}
-        {% else %}
-            {% set result = value|format_currency(options.currency, [], options.locale) %}
-        {% endif %}
-        {% if options.removeHtml %}
+{% elseif value %}
+    {% if options.property %}
+        {% set currency = options.property|split('.')|reduce(
+            (object, property) => object ? attribute(object, property) : null, resource
+            ) %}
+        {% set result = value|format_currency(currency, [], options.locale) %}
+    {% else %}
+        {% set result = value|format_currency(options.currency, [], options.locale) %}
+    {% endif %}
+
+    {% if options.removeHtml %}
+        {{ result }}
+    {% else %}
+        <div class="text-end me-3">
             {{ result }}
-        {% else %}
-            <div class="text-end me-3">
-                {{ result }}
-            </div>
-        {% endif %}
+        </div>
     {% endif %}
 {% endif %}
