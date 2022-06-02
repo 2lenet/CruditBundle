@@ -47,7 +47,9 @@ trait TraitCrudController
      */
     public function show(Request $request, $id): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_SHOW');
+        $resource = $this->getResource($request, false);
+
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_SHOW', $resource);
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::SHOW);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -61,7 +63,9 @@ trait TraitCrudController
      */
     public function edit(Request $request, $id): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
+        $resource = $this->getResource($request, false);
+
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT', $resource);
 
         $views = $this->getBrickBuilder()->build($this->config, CrudConfigInterface::EDIT);
         $response = $this->render('@LleCrudit/crud/index.html.twig', ['views' => $views]);
@@ -87,11 +91,11 @@ trait TraitCrudController
      */
     public function delete(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_DELETE');
-
-        $dataSource = $this->config->getDatasource();
         $resource = $this->getResource($request, false);
 
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_DELETE', $resource);
+
+        $dataSource = $this->config->getDatasource();
         $dataSource->delete($dataSource->getIdentifier($resource));
 
         return $this->redirectToRoute($this->config->getRootRoute() . "_index");
