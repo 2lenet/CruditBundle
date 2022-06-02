@@ -1,5 +1,6 @@
 {# Get allowed transitions #}
-{% set transitions = workflow_transitions(resource) %}
+
+{% set transitions = workflow_transitions(resource, options.name|default(null)) %}
 {# Filter by user role #}
 {% if view.config %}
     {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (view.config.name) ~ '_WF_' ~ (t.name | upper | replace({'-': '_'})))) %}
