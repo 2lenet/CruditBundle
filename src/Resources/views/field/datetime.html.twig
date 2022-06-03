@@ -23,5 +23,5 @@
         <div class="crudit-eip-value">{{ value|date(options.format) }}</div>
     </div>
 {% elseif value %}
-    {{ date(options.format) }}
+    {{ value|date(options.format) }}
 {% endif %}
