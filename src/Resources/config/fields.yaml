@@ -44,3 +44,6 @@ services:
   Lle\CruditBundle\Field\JsonField:
     arguments: [ '@twig', '@request_stack' ]
     tags: [ 'crudit.field' ]
+  Lle\CruditBundle\Field\ColorField:
+    arguments: [ '@twig' ]
+    tags: [ 'crudit.field' ]
