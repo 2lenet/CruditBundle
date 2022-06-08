@@ -70,8 +70,19 @@ $input-height: 42px;
 
     & .col-form-label {
         position: absolute;
-        top: -8px;
-        left: -50%;
+        top: -25px;
+        left: calc(-50% - 10px);
         transform: scale(0.7) translateX(calc(50% + 0.8rem));
+    }
+}
+
+.tab-pane {
+    .form-floating {
+        & .col-form-label {
+            position: absolute;
+            top: -8px;
+            left: -50%;
+            transform: scale(0.7) translateX(calc(50% + 0.8rem));
+        }
     }
 }
