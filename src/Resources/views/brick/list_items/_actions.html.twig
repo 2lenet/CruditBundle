@@ -18,17 +18,10 @@
 
                 <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                     <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
-                            {% if action.target %}
-                                target="{{ action.target }}"
-                            {% endif %}
                             {% if action.modal %}
                                 data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                             {% elseif not action.disabled %}
-                                {% if action.url %}
-                                    href="{{ absolute_url(action.url) }}"
-                                {% else %}
-                                    href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                {% endif %}
+                                href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                             {% endif %}
                     >
                         {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}

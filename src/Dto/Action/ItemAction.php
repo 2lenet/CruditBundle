@@ -44,8 +44,6 @@ class ItemAction
 
     protected bool $hasVoter = false;
 
-    protected ?string $target = null;
-
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
         return (new static($label, $path))
@@ -219,17 +217,5 @@ class ItemAction
         }
 
         return $this->path->getRole() . "_VOTER";
-    }
-
-    public function getTarget(): ?string
-    {
-        return $this->target;
-    }
-
-    public function setTarget(string $target):self
-    {
-        $this->target = $target;
-
-        return $this;
     }
 }
