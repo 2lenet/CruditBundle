@@ -45,30 +45,47 @@ window.addEventListener('DOMContentLoaded', function () {
                 globalSearch.parentElement.querySelector('.ts-dropdown').style.display = 'none';
             },
             firstUrl(query) {
-                return dataUrl + encodeURIComponent(query) + '&limit=20';
+                let urls = {};
+
+                dataUrl.forEach(url => {
+                    let entity = url['entity'];
+
+                    if (Object.keys(url)[0] == 'url') {
+                        urls[entity] = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+                    } else {
+                        urls[entity] = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+                    }
+                });
+
+                return urls;
             },
             load(query, callback) {
-                let datas = [];
+                let urls = this.getUrl(query);
 
                 let fetchsFinished = 0;
 
-                dataUrl.forEach(url => {
-                    let fetchUrl = '';
+                let datas = [];
 
-                    if (Object.keys(url)[0] == 'url') {
-                        fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
-                    } else {
-                        fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
-                    }
+                for (let entity in urls) {
+                    let url = urls[entity];
 
-                    fetch(fetchUrl)
+                    fetch(url)
                         .then(response => response.json())
                         .then(json => {
+                            if (json.next_offset < json.total_count) {
+                                let nextUrl = url.replace(/offset=(\d+)?/, "offset=" + json.next_offset.toString())
+                                urls[entity] = nextUrl;
+
+                                this.setNextUrl(query, urls);
+                            } else {
+                                delete urls[entity];
+                            }
+
                             fetchsFinished++;
 
                             for (let item of json.items) {
-                                item.id = url['entity'] + '#' + item.id;
-                                item.optgroup = url['entity'];
+                                item.id = entity + '#' + item.id;
+                                item.optgroup = entity;
                             }
 
                             datas.push(...json.items);
@@ -82,11 +99,11 @@ window.addEventListener('DOMContentLoaded', function () {
                             console.log('error', e);
                             callback();
                         });
-                });
+                }
             },
             render: {
                 loading_more() {
-                    return '<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>';
+                    return '';
                 },
                 no_more_results() {
                     return '';
