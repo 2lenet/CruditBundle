@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const dataOptions = JSON.parse(globalSearch.dataset.options);
 
         // To know if the request has changed
-        let registeredQuery = [];
+        let registeredQuery = null;
 
         new TomSelect('#' + globalSearch.id, {
             valueField: 'id',
@@ -90,7 +90,6 @@ window.addEventListener('DOMContentLoaded', function () {
                                 let nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
 
                                 urls[entity] = nextUrl;
-
                                 this.setNextUrl(query, urls);
                             } else {
                                 delete urls[entity];
@@ -111,7 +110,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             }
                         })
                         .catch((error) => {
-                            console.log('error', e);
+                            console.log('error', error);
                             callback();
                         });
                 }
