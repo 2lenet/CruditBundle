@@ -3614,7 +3614,7 @@ function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.it
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function (_e) { function e(_x) { return _e.apply(this, arguments); } e.toString = function () { return _e.toString(); }; return e; }(function (e) { throw e; }), f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function (_e2) { function e(_x2) { return _e2.apply(this, arguments); } e.toString = function () { return _e2.toString(); }; return e; }(function (e) { didErr = true; err = e; }), f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -3627,7 +3627,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
   if (globalSearch) {
     var dataUrl = JSON.parse(globalSearch.dataset.url);
-    var dataOptions = JSON.parse(globalSearch.dataset.options);
+    var dataOptions = JSON.parse(globalSearch.dataset.options); // To know if the request has changed
+
+    var registeredQuery = [];
     new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + globalSearch.id, {
       valueField: 'id',
       labelField: 'text',
@@ -3663,11 +3665,16 @@ window.addEventListener('DOMContentLoaded', function () {
         var urls = {};
         dataUrl.forEach(function (url) {
           var entity = url['entity'];
+          var params = new URLSearchParams({
+            q: encodeURIComponent(query),
+            limit: url['limit'],
+            offset: 0
+          });
 
           if (Object.keys(url)[0] == 'url') {
-            urls[entity] = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+            urls[entity] = url['url'] + '?' + params.toString();
           } else {
-            urls[entity] = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+            urls[entity] = '/' + url['entity'] + '/autocomplete?' + params.toString();
           }
         });
         return urls;
@@ -3678,14 +3685,33 @@ window.addEventListener('DOMContentLoaded', function () {
         var urls = this.getUrl(query);
         var fetchsFinished = 0;
         var datas = [];
+        var offsetZero = true; // If the request has not changed, we save all previous data and don't set the offset to 0
+
+        if (query === registeredQuery) {
+          datas = Object.values(this.options);
+          offsetZero = false;
+        } else {
+          datas = [];
+          registeredQuery = query;
+          offsetZero = true;
+        }
 
         var _loop = function _loop(entity) {
           var url = urls[entity];
           fetch(url).then(function (response) {
             return response.json();
           }).then(function (json) {
+            var _datas;
+
             if (json.next_offset < json.total_count) {
-              var nextUrl = url.replace(/offset=(\d+)?/, "offset=" + json.next_offset.toString());
+              var nextUrl = ''; // Set the offset to 0 if the request has changed
+
+              if (offsetZero) {
+                nextUrl = url.replace(/offset=(\d+)?/, 'offset=0');
+              } else {
+                nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
+              }
+
               urls[entity] = nextUrl;
 
               _this.setNextUrl(query, urls);
@@ -3710,12 +3736,13 @@ window.addEventListener('DOMContentLoaded', function () {
               _iterator.f();
             }
 
-            datas.push.apply(datas, _toConsumableArray(json.items)); // show 'no results' ONLY if last ajax call returns no results
+            (_datas = datas).push.apply(_datas, _toConsumableArray(json.items)); // show 'no results' ONLY if last ajax call returns no results
+
 
             if (datas.length > 0 || fetchsFinished === dataUrl.length) {
               callback(datas);
             }
-          })["catch"](function (e) {
+          })["catch"](function (error) {
             console.log('error', e);
             callback();
           });
