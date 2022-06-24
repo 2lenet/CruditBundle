@@ -71,16 +71,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 let urls = this.getUrl(query);
                 let fetchsFinished = 0;
                 let datas = [];
-                let offsetZero = true;
 
-                // If the request has not changed, we save all previous data and don't set the offset to 0
+                // If the request has not changed, we save all previous data
                 if (query === registeredQuery) {
                     datas = Object.values(this.options);
-                    offsetZero = false;
                 } else {
                     datas = [];
                     registeredQuery = query;
-                    offsetZero = true;
                 }
 
                 for (let entity in urls) {
@@ -90,14 +87,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then(response => response.json())
                         .then(json => {
                             if (json.next_offset < json.total_count) {
-                                let nextUrl = '';
-
-                                // Set the offset to 0 if the request has changed
-                                if (offsetZero) {
-                                    nextUrl = url.replace(/offset=(\d+)?/, 'offset=0');
-                                } else {
-                                    nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
-                                }
+                                let nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
 
                                 urls[entity] = nextUrl;
 
