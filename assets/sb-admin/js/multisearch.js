@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const dataUrl = JSON.parse(globalSearch.dataset.url);
         const dataOptions = JSON.parse(globalSearch.dataset.options);
 
+        // To know if the request has changed
         let registeredQuery = [];
 
         new TomSelect('#' + globalSearch.id, {
@@ -72,6 +73,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 let datas = [];
                 let offsetZero = true;
 
+                // If the request has not changed, we save all previous data and don't set the offset to 0
                 if (query === registeredQuery) {
                     datas = Object.values(this.options);
                     offsetZero = false;
@@ -90,6 +92,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             if (json.next_offset < json.total_count) {
                                 let nextUrl = '';
 
+                                // Set the offset to 0 if the request has changed
                                 if (offsetZero) {
                                     nextUrl = url.replace(/offset=(\d+)?/, 'offset=0');
                                 } else {
