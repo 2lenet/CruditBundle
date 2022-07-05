@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
@@ -335,6 +336,13 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             }
         }
         return null;
+    }
+
+    public function getAssociationMappings(): array
+    {
+        $associations = $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+
+        return $associations;
     }
 
     public function createQuery(string $alias): QueryAdapterInterface

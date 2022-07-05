@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
+use App\Entity\Commande;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ORM\Mapping\Column;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
@@ -12,6 +14,7 @@ use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Symfony\Bridge\Doctrine\PropertyInfo\DoctrineExtractor;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -155,7 +158,7 @@ trait TraitCrudController
                 $reflection = new \ReflectionClass($item);
                 $annotationReader = new AnnotationReader();
 
-                $data = json_decode($request->request->get("data", []), true);
+                $data = json_decode($request->request->get("data", "{}"), true);
 
                 foreach ($data as $field => $value) {
                     if ($field === "id") {
@@ -165,17 +168,16 @@ trait TraitCrudController
                     if ($value === "") {
                         $value = null;
                     } else {
-                        $associations = $this->entityManager->getClassMetadata($dataSource->getClassName())->associationMappings;
+                        $associations = $dataSource->getAssociations();
+                        dd($associations);
 
                         if (array_key_exists($field, $associations)) {
                             $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
                         } else {
-                            $mapping = $annotationReader->getPropertyAnnotation(
-                                $reflection->getProperty($field),
-                                Column::class
-                            );
+                            $fields = $this->entityManager->getClassMetadata($dataSource->getClassName());
+                            $type = $fields->fieldMappings[$field]['type'];
 
-                            switch ($mapping->type) {
+                            switch ($type) {
                                 case "date":
                                 case "datetime":
                                     $value = new \DateTime($value);
