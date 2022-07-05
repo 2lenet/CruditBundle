@@ -337,6 +337,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return null;
     }
 
+    public function getAssociationMappings(): array
+    {
+        return $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+    }
+
     public function createQuery(string $alias): QueryAdapterInterface
     {
         return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
