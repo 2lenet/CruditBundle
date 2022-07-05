@@ -337,9 +337,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return null;
     }
 
-    public function getAssociationMappings(): array
+    public function isEntity(string $field): bool
     {
-        return $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+        $associations = $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+
+        return array_key_exists($field, $associations);
     }
 
     public function createQuery(string $alias): QueryAdapterInterface
