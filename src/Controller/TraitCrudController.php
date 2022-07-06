@@ -169,7 +169,7 @@ trait TraitCrudController
                     if ($value === "") {
                         $value = null;
                     } else {
-                        $associations = $dataSource->getAssociationMappings();
+                        $associations = $dataSource->isEntity($field);
 
                         if (array_key_exists($field, $associations)) {
                             $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
