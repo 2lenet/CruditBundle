@@ -159,7 +159,7 @@ trait TraitCrudController
                 $reflection = new \ReflectionClass($item);
                 $annotationReader = new AnnotationReader();
 
-                $data = json_decode($request->request->get("data", []), true);
+                $data = json_decode($request->request->get("data", "{}"), true);
 
                 foreach ($data as $field => $value) {
                     if ($field === "id") {
@@ -169,18 +169,13 @@ trait TraitCrudController
                     if ($value === "") {
                         $value = null;
                     } else {
-                        $em = $this->getDoctrine()->getManager();
-                        $associations = $em->getClassMetadata($dataSource->getClassName())->associationMappings;
-
-                        if (array_key_exists($field, $associations)) {
+                        if ($dataSource->isEntity($field)) {
                             $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
                         } else {
-                            $mapping = $annotationReader->getPropertyAnnotation(
-                                $reflection->getProperty($field),
-                                Column::class
-                            );
+                            $fields = $this->entityManager->getClassMetadata($dataSource->getClassName());
+                            $type = $fields->fieldMappings[$field]['type'];
 
-                            switch ($mapping->type) {
+                            switch ($type) {
                                 case "date":
                                 case "datetime":
                                     $value = new \DateTime($value);
