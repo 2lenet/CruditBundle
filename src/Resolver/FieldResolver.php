@@ -8,6 +8,7 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Registry\FieldRegistry;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
@@ -46,6 +47,11 @@ class FieldResolver
                 $types = $this->propertyInfoExtractor->getTypes($subClass, $name);
 
                 if (!$types) {
+                    throw new CruditException(sprintf(
+                        "Could not determine type for property '%s' of class '%s'.",
+                        $name,
+                        $subClass,
+                    ));
                     break;
                 }
 
