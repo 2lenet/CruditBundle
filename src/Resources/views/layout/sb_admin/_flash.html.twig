@@ -1,11 +1,11 @@
-<div id="crudit-flash">
+<div class="crudit-flash">
     {% for type, flashMessages in app.session.flashBag.all %}
         {% for flashMessage in flashMessages %}
             <div class="alert alert-{{ type }} alert-dismissible" role="alert">
                 {% if flashMessage starts with "crudit." %}
-                    {{ flashMessage | raw | trans(domain='LleCruditBundle') }}
+                    {{ flashMessage|raw|trans(domain='LleCruditBundle') }}
                 {% else %}
-                    {{ flashMessage | raw | trans() }}
+                    {{ flashMessage|raw|trans() }}
                 {% endif %}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
