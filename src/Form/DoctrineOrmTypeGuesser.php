@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Form;
 
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
@@ -12,16 +13,18 @@ use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
+use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
-    protected $registry;
+    protected ManagerRegistry $registry;
+    protected Reader $annotationReader;
+    private array $cache = [];
 
-    private $cache = [];
-
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, Reader $annotationReader)
     {
         $this->registry = $registry;
+        $this->annotationReader = $annotationReader;
     }
 
     /**
@@ -45,6 +48,11 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                 'multiple' => $multiple,
                 "label" => $label,
             ], Guess::HIGH_CONFIDENCE);
+        }
+
+        $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
+        if ($this->annotationReader->getPropertyAnnotation($reflectionProperty, UploadableField::class)) {
+            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE);
         }
 
         switch ($metadata->getTypeOfField($property)) {

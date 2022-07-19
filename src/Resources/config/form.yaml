@@ -18,7 +18,7 @@ services:
             - '@Lle\CruditBundle\Service\GedmoTranslatableFieldManager'
             - '@Symfony\Contracts\Translation\TranslatorInterface'
         tags:
-           - { name: form.type, alias: lego_gedmo_translatable }
+            - { name: form.type, alias: lego_gedmo_translatable }
     Lle\CruditBundle\Form\Type\MarkdownType:
         autowire: true
         tags:
@@ -27,3 +27,7 @@ services:
         autowire: true
         tags:
             - { name: form.type, alias: crudit_group }
+    Lle\CruditBundle\Form\Type\FileType:
+        autowire: true
+        tags:
+            - { name: form.type, alias: crudit_file }

@@ -18,8 +18,26 @@ input[type="file"] {
     }
 }
 
+.form-floating {
+    .vich-file {
+        position: relative;
 
-// Used for file (image only) inputs
+        ~  .col-form-label {
+            top: -10px;
+            left: -25%;
+            @include media('<tablet') {
+                left: calc(-50% + 10px);
+            }
+        }
+
+        &.vich-file-full {
+            ~  .col-form-label {
+                left: calc(-50% + 10px);
+            }
+        }
+    }
+}
+
 .vich-image {
     input[type="file"] {
         &::file-selector-button,
