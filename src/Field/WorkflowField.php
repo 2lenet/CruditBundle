@@ -9,9 +9,12 @@ use Twig\Environment;
 
 class WorkflowField extends AbstractField
 {
-    public function __construct(Environment $twig, private ?string $name = null)
+    private ?string $name;
+
+    public function __construct(Environment $twig, $name = null)
     {
         parent::__construct($twig);
+        $this->name = $name;
     }
 
     public function support(string $type): bool
