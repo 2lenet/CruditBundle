@@ -237,7 +237,10 @@ trait TraitCrudController
 
         // we request all of the filtered resources, so no limit
         $dsParams->setLimit(0);
+        // Get all ressources i.e ask export on page 2 you also need the results from page 1
+        $dsParams->setOffset(0);
         $resources = $datasource->list($dsParams);
+
 
         $fields = $this->config->getFields(CrudConfigInterface::EXPORT);
         if (empty($fields)) {
