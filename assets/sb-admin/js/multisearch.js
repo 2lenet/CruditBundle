@@ -8,6 +8,9 @@ window.addEventListener('DOMContentLoaded', function () {
         const dataUrl = JSON.parse(globalSearch.dataset.url);
         const dataOptions = JSON.parse(globalSearch.dataset.options);
 
+        // To know if the request has changed
+        let registeredQuery = null;
+
         new TomSelect('#' + globalSearch.id, {
             valueField: 'id',
             labelField: 'text',
@@ -45,30 +48,58 @@ window.addEventListener('DOMContentLoaded', function () {
                 globalSearch.parentElement.querySelector('.ts-dropdown').style.display = 'none';
             },
             firstUrl(query) {
-                return dataUrl + encodeURIComponent(query) + '&limit=20';
-            },
-            load(query, callback) {
-                let datas = [];
-
-                let fetchsFinished = 0;
+                let urls = {};
 
                 dataUrl.forEach(url => {
-                    let fetchUrl = '';
+                    let entity = url['entity'];
+                    let params = new URLSearchParams({
+                        q: encodeURIComponent(query),
+                        limit: url['limit'],
+                        offset: 0,
+                    });
 
                     if (Object.keys(url)[0] == 'url') {
-                        fetchUrl = url['url'] + '?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+                        urls[entity] = url['url'] + '?' + params.toString();
                     } else {
-                        fetchUrl = '/' + url['entity'] + '/autocomplete?q=' + encodeURIComponent(query) + '&limit=' + (url['limit'] || '10') + '&offset=';
+                        urls[entity] = '/' + url['entity'] + '/autocomplete?' + params.toString();
                     }
+                });
 
-                    fetch(fetchUrl)
+                return urls;
+            },
+            load(query, callback) {
+                let urls = this.getUrl(query);
+                let fetchsFinished = 0;
+                let datas = [];
+
+                // If the request has not changed, we save all previous data
+                if (query === registeredQuery) {
+                    datas = Object.values(this.options);
+                } else {
+                    datas = [];
+                    registeredQuery = query;
+                }
+
+                for (let entity in urls) {
+                    let url = urls[entity];
+
+                    fetch(url)
                         .then(response => response.json())
                         .then(json => {
+                            if (json.next_offset < json.total_count) {
+                                let nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
+
+                                urls[entity] = nextUrl;
+                                this.setNextUrl(query, urls);
+                            } else {
+                                delete urls[entity];
+                            }
+
                             fetchsFinished++;
 
                             for (let item of json.items) {
-                                item.id = url['entity'] + '#' + item.id;
-                                item.optgroup = url['entity'];
+                                item.id = entity + '#' + item.id;
+                                item.optgroup = entity;
                             }
 
                             datas.push(...json.items);
@@ -78,20 +109,20 @@ window.addEventListener('DOMContentLoaded', function () {
                                 callback(datas);
                             }
                         })
-                        .catch((e) => {
-                            console.log('error', e);
+                        .catch((error) => {
+                            console.log('error', error);
                             callback();
                         });
-                });
+                }
             },
             render: {
                 loading_more() {
-                    return '<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>';
+                    return '';
                 },
                 no_more_results() {
                     return '';
                 },
-            }
+            },
         });
     }
 });
