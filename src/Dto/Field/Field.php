@@ -173,11 +173,6 @@ class Field
         return $this->path;
     }
 
-    public function getEntityPath(): ?Path
-    {
-        return $this->entityPath;
-    }
-
     public function getTemplate(): ?string
     {
         return $this->template;

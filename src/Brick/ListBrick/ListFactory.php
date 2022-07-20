@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ListFactory extends AbstractBasicBrickFactory
 {
+    private FormFactoryInterface $formFactory;
+
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
