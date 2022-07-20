@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Vich\UploaderBundle\Form\DataTransformer\FileTransformer;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 use Vich\UploaderBundle\Handler\UploadHandler;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactory;

@@ -66,6 +66,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 },
                 load(query, callback) {
                     let url = this.getUrl(query);
+
                     fetch(url)
                         .then(response => response.json())
                         .then(json => {

@@ -214,7 +214,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    public function autocompleteCountQuery($queryTerm): int
+    public function autocompleteCountQuery(string $queryTerm): int
     {
         $qb = $this->buildQueryBuilder(null);
         $qb->select('count(DISTINCT(root.id))');
