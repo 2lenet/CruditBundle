@@ -22,7 +22,7 @@
         {% else %}
             {% if field.vars.name != '_token' %}
                 <div class="{{ field.vars.attr.class|default('') }}">
-                    <div class="form-floating mb-4">
+                    <div class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'vich_file') %}row flex-row-reverse align-items-start{% endif %}">
                         {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
                         {{ form_widget(field, {attr}) }}
                         {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
