@@ -8,7 +8,6 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Vich\UploaderBundle\Form\DataTransformer\FileTransformer;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 use Vich\UploaderBundle\Handler\UploadHandler;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactory;
@@ -31,11 +30,13 @@ class FileType extends VichFileType
         parent::buildView($view, $form, $options);
 
         if ($form->getParent() && $form->getParent()->getData() && $form->getParent()->getData()->getId()) {
-            $url = $this->urlGenerator->generate(
-                'lle_pdf_generator_show_ressource',
-                ['id' => $form->getParent()->getData()->getId()]
-            );
-            $view->vars['download_uri'] = $url;
+            if ($options['download_route']) {
+                $url = $this->urlGenerator->generate(
+                    $options['download_route'],
+                    ['id' => $form->getParent()->getData()->getId()]
+                );
+                $view->vars['download_uri'] = $url;
+            }
 
             $filePath = $this->resolveUriOption(true, $form->getParent()->getData(), $form);
             $view->vars['image_uri'] = $filePath;
@@ -51,9 +52,15 @@ class FileType extends VichFileType
         parent::configureOptions($resolver);
         $resolver->setDefault('required', false);
         $resolver->setDefault('allow_delete', false);
+        $resolver->setDefault('download_route', null);
     }
 
     public function getName(): string
+    {
+        return 'crudit_file';
+    }
+
+    public function getBlockPrefix(): string
     {
         return 'crudit_file';
     }
