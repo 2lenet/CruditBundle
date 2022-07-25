@@ -32,7 +32,7 @@ trait TraitCrudController
      * @var EntityManagerInterface
      */
     protected $entityManager;
-    
+
     /**
      * @Route("/")
      */
