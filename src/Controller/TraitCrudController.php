@@ -28,6 +28,11 @@ trait TraitCrudController
      */
     protected $config;
 
+     /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
+    
     /**
      * @Route("/")
      */
