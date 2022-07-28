@@ -3,3 +3,13 @@ $breakpoints: (
         tablet: 992px, // 769px - 992px
         laptop: 1200px, // 993px - 1200px
 );
+
+$grid-breakpoints: (
+        xs: 0,
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1200px,
+        xxl: 1400px,
+        xxxl: 1750px
+)

@@ -57,7 +57,7 @@
             <div class="row">
                 {% for field in form.children %}
                     {% if field.vars.name != '_token' %}
-                        {% set classes = 'col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap' %}
+                        {% set classes = 'col-xxxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap' %}
                         {% set classes = (field.vars.block_prefixes[1] == 'hidden') ? 'd-none' : classes %}
                         <div class="{{ classes }}">
                             <div class="form-floating">
@@ -67,7 +67,7 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-                <div class="col-xxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap">
+                <div class="col-xxxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap">
                     <button type="submit" class="btn btn-sm btn-primary mt-2">
                         <i class="fas fa-check"></i>&nbsp;
                         {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
