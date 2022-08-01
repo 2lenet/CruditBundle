@@ -1,3 +1,5 @@
+$eip-icon-size: 16px;
+
 .crudit-eip {
     &-input {
         border-top-right-radius: 0;
@@ -10,6 +12,7 @@
     &-value {
         position: relative;
         min-height: 24px;
+        padding-right: $eip-icon-size + 4px;
         border-bottom: dotted 1px #0b2e13;
         cursor: pointer;
         &::after {
@@ -17,8 +20,8 @@
             position: absolute;
             top: 50%;
             right: 0;
-            width: 16px;
-            height: 16px;
+            width: $eip-icon-size;
+            height: $eip-icon-size;
             transform: translate(0, -50%);
             @include iconsFont;
             font-size: 0.8rem;
