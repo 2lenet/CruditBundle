@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Controller;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Exception\CruditException;
@@ -28,7 +29,7 @@ trait TraitCrudController
      */
     protected $config;
 
-     /**
+    /**
      * @var EntityManagerInterface
      */
     protected $entityManager;
