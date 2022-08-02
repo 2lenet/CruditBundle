@@ -174,6 +174,8 @@ trait TraitCrudController
                         $value = null;
                     } else {
                         if ($dataSource->isEntity($field)) {
+                            $associations = $this->entityManager->getClassMetadata($dataSource->getClassName())->associationMappings;
+
                             $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
                         } else {
                             $fields = $this->entityManager->getClassMetadata($dataSource->getClassName());
