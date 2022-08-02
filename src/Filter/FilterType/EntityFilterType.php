@@ -14,7 +14,7 @@ class EntityFilterType extends AbstractFilterType
     protected string $entityClass;
     protected ?string $dataRoute;
 
-    public function __construct($fieldname, string $entityClass, ?string $dataRoute = null)
+    public function __construct(string $fieldname, string $entityClass, ?string $dataRoute = null)
     {
         parent::__construct($fieldname);
         $this->entityClass = $entityClass;
@@ -31,7 +31,7 @@ class EntityFilterType extends AbstractFilterType
         $this->dataRoute = $dataRoute;
     }
 
-    public static function new(string $fieldname, $entityClass, ?string $customRoute = null): self
+    public static function new(string $fieldname, string $entityClass, ?string $customRoute = null): self
     {
         return new self($fieldname, $entityClass, $customRoute);
     }

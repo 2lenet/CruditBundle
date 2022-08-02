@@ -15,17 +15,14 @@ class SanitizerExtension extends AbstractExtension
         $this->sanitizer = $sanitizer;
     }
 
-    /**
-     * @return array
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('sanitize', [$this, 'sanitize'])
         ];
     }
 
-    public function sanitize($html)
+    public function sanitize(?string $html): string
     {
         return $this->sanitizer->sanitize($html);
     }

@@ -9,8 +9,7 @@ use Lle\CruditBundle\Contracts\MenuProviderInterface;
 
 class MenuRegistry
 {
-    /** @var iterable */
-    private $providers;
+    private iterable $providers;
 
     public function __construct(iterable $providers)
     {
@@ -28,7 +27,7 @@ class MenuRegistry
         return null;
     }
 
-    public function getElements($navid): array
+    public function getElements(string $navid): array
     {
         $elements = [];
         foreach ($this->providers as $k => $provider) {

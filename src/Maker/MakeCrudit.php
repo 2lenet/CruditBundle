@@ -26,14 +26,11 @@ use Symfony\Component\Console\Question\Question;
 
 final class MakeCrudit extends AbstractMaker
 {
-    /** @var FileManager */
-    private $fileManager;
+    private FileManager $fileManager;
 
-    /** @var DoctrineHelper */
-    private $entityHelper;
+    private DoctrineHelper $entityHelper;
 
-    /** @var bool */
-    private $withController;
+    private bool $withController;
 
     public function __construct(
         FileManager    $fileManager,
@@ -211,6 +208,7 @@ final class MakeCrudit extends AbstractMaker
             }
 
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
+                /** @var ClassMetadataInfo $metadata */
                 if ($metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
                     $sortable = true;
                 } else {

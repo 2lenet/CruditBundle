@@ -19,7 +19,6 @@ class LayoutNormalizer implements NormalizerInterface
 
     public function normalize($topic, string $format = null, array $context = [])
     {
-        /** @var LayoutInterface $topic */
         /** @var array $data */
         $data = $this->normalizer->normalize($topic, $format, $context);
         $data['elements'] = [];

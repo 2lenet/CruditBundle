@@ -8,38 +8,23 @@ use Lle\CruditBundle\Dto\Path;
 
 class Field
 {
-    /**
-     * @var string
-     */
-    private $label;
+    private string $label;
 
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
 
-    /**
-     * @var bool
-     */
-    private $sort;
+    private bool $sort;
 
-    /** @var ?Path */
-    private $path;
+    private ?Path $path;
 
-    /** @var string */
     private string $linkId = 'id';
 
-    /** @var array */
-    private $options;
+    private array $options;
 
-    /** @var ?string */
-    private $type;
+    private ?string $type;
 
-    /** @var ?string */
-    private $template;
+    private ?string $template;
 
-    /** @var ?string */
-    private $ruptGroup = 0;
+    private ?int $ruptGroup = 0;
 
     private ?string $role = null;
 
@@ -74,6 +59,7 @@ class Field
         unset($options['path']);
         unset($options['template']);
         $this->options = $options;
+
         return $this;
     }
 
@@ -85,6 +71,7 @@ class Field
     public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -96,6 +83,7 @@ class Field
     public function setEditInPlace(bool $editInPlace): self
     {
         $this->editInPlace = $editInPlace;
+
         return $this;
     }
 
@@ -103,12 +91,14 @@ class Field
     {
         $this->options['edit_route'] = $editRoute;
         $this->editInPlace = true;
+
         return $this;
     }
 
-    public function setCssClass($cssClass): self
+    public function setCssClass(?string $cssClass): self
     {
         $this->options["cssClass"] = $cssClass;
+
         return $this;
     }
 
@@ -126,6 +116,7 @@ class Field
     {
         $this->name = $name;
         $this->label = ($this->label) ? $this->name : $this->label;
+
         return $this;
     }
 
@@ -142,6 +133,7 @@ class Field
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -153,6 +145,7 @@ class Field
     public function setSortable(bool $sort): self
     {
         $this->sort = $sort;
+
         return $this;
     }
 
@@ -160,6 +153,7 @@ class Field
     {
         $this->path = $path;
         $this->linkId = $linkId;
+
         return $this;
     }
 
@@ -181,6 +175,7 @@ class Field
     public function setTemplate(string $template): self
     {
         $this->template = $template;
+
         return $this;
     }
 
@@ -192,21 +187,15 @@ class Field
     public function setRuptGroup(int $ruptGroup): self
     {
         $this->ruptGroup = $ruptGroup;
+
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getRole(): ?string
     {
         return $this->role;
     }
 
-    /**
-     * @param string|null $role
-     * @return self
-     */
     public function setRole(?string $role): self
     {
         $this->role = $role;

@@ -10,11 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class LinksConfig extends AbstractBrickConfig
 {
-    /** @var array  */
-    protected $actions = [];
+    protected array $actions = [];
 
-    /** @var bool  */
-    protected $back = false;
+    protected bool $back = false;
 
     public static function new(array $options = []): self
     {
@@ -49,7 +47,7 @@ class LinksConfig extends AbstractBrickConfig
         return $this->actions;
     }
 
-    public function setActions($actions): self
+    public function setActions(array $actions): self
     {
         $this->actions = array_filter($actions, function ($a) {
             return !$a->isBatch();

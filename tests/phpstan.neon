@@ -10,7 +10,7 @@ includes:
 #  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
 
 parameters:
-  level: 1
+  level: 6
   paths:
     - ../src
     - ../tests

@@ -9,8 +9,7 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 
 class KernelFilterListener
 {
-    /** @var FilterState  */
-    private $filterState;
+    private FilterState $filterState;
 
     public function __construct( FilterState $filterState)
     {

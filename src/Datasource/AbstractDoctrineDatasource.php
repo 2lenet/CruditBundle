@@ -19,8 +19,7 @@ use Lle\CruditBundle\Filter\FilterState;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
-    /** @var EntityManagerInterface */
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
     protected ?FilterSetInterface $filterset;
     protected FilterState $filterState;
     protected array $searchFields = [];
@@ -97,10 +96,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param DatasourceParams|null $requestParams
-     * @return QueryBuilder
-     */
     public function buildQueryBuilder(?DatasourceParams $requestParams): QueryBuilder
     {
         /** @var QueryBuilder $qb */
@@ -194,7 +189,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->searchFields;
     }
 
-    public function autocompleteQuery(string $queryTerm, array $sorts, $requestParams = null): iterable
+    public function autocompleteQuery(string $queryTerm, array $sorts, ?DatasourceParams $requestParams = null): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb = $this->initializeAutocompleteQueryBuilder($qb, $queryTerm);
@@ -281,9 +276,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->newInstance();
     }
 
-    public function setSearchFields(array $fields)
+    public function setSearchFields(array $fields): self
     {
         $this->searchFields = $fields;
+
+        return $this;
     }
 
     public function save(object $resource): void
@@ -349,9 +346,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
     }
 
-    /**
-     * @return FilterSetInterface|null
-     */
     public function getFilterset(): ?FilterSetInterface
     {
         return $this->filterset;

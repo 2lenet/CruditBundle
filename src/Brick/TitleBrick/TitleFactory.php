@@ -29,7 +29,7 @@ class TitleFactory extends AbstractBasicBrickFactory
         return $view;
     }
 
-    private function getItem(TitleConfig $brickConfigurator): ?string
+    private function getItem(TitleConfig $brickConfigurator): string
     {
         $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
         return (string)$resource;

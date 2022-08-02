@@ -12,23 +12,18 @@ use Lle\CruditBundle\Dto\Path;
 
 class FormConfig extends AbstractBrickConfig
 {
-    /** @var DatasourceInterface */
-    private $dataSource;
+    private ?DatasourceInterface $dataSource = null;
 
-    /** @var ?string */
-    private $form = null;
+    private ?string $form = null;
 
     /** @var FormField[] */
-    private $fields = [];
+    private array $fields = [];
 
-    /** @var ?Path */
-    private $successRedirectPath;
+    private ?Path $successRedirectPath = null;
 
-    /** @var string */
-    private $messageSuccess;
+    private string $messageSuccess;
 
-    /** @var string */
-    private $messageError;
+    private string $messageError;
 
     protected ?Path $cancelPath = null;
 
@@ -84,7 +79,7 @@ class FormConfig extends AbstractBrickConfig
         return $this->messageSuccess ?? 'crudit.message.success';
     }
 
-    public function getForm($resource=null): ?string
+    public function getForm(?object $resource = null): ?string
     {
         return $this->form;
     }
@@ -157,18 +152,11 @@ class FormConfig extends AbstractBrickConfig
         return $this->dataSource;
     }
 
-    /**
-     * @return Path
-     */
     public function getCancelPath(): ?Path
     {
         return $this->cancelPath;
     }
 
-    /**
-     * @param Path $cancelPath
-     * @return FormConfig
-     */
     public function setCancelPath(?Path $cancelPath): FormConfig
     {
         $this->cancelPath = $cancelPath;

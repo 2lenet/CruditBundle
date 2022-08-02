@@ -13,11 +13,9 @@ class FlashBrickResponse implements BrickResponseInterface
     public const SUCCESS = 'success';
     public const ERROR = 'danger';
 
-    /** @var string  */
-    private $type;
+    private string $type;
 
-    /** @var string  */
-    private $message;
+    private string $message;
 
     public function __construct(string $type, string $message)
     {

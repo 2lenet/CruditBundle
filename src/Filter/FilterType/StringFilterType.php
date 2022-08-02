@@ -73,11 +73,10 @@ class StringFilterType extends AbstractFilterType
 
 
     /**
-     * @param string op the op to use
-     * @param string parameter the query parameter to set
-     * @return string
+     * @param string $op the op to use
+     * @param string $paramname the query parameter to set
      */
-    private function getPattern($op, $id, $alias, $col, $paramname)
+    private function getPattern(string $op, string $id, string $alias, string $col, string $paramname): ?string
     {
         $pattern = null;
         switch ($op) {

@@ -8,10 +8,16 @@ use Lle\CruditBundle\Datasource\DatasourceParams;
 
 interface DatasourceInterface
 {
+    public function getClassName(): string;
+
     /** @param string|int $id */
     public function get($id): ?object;
 
     public function list(?DatasourceParams $requestParams): iterable;
+
+    public function autocompleteQuery(string $queryTerm, array $sorts, ?DatasourceParams $requestParams = null): iterable;
+
+    public function autocompleteCountQuery(string $queryTerm): int;
 
     public function count(?DatasourceParams $requestParams): int;
 
@@ -21,22 +27,24 @@ interface DatasourceInterface
     /** @param string|int $id */
     public function put($id, array $data): ?object;
 
+    public function newInstance(): object;
+
     /** @param string|int $id */
     public function patch($id, array $data): ?object;
 
-    public function newInstance(): object;
+    public function setSearchFields(array $fields): self;
 
     public function save(object $resource): void;
-
-    public function getClassName(): string;
 
     public function getType(string $property, object $resource): string;
 
     public function getIdentifier(object $resource): string;
 
-    public function createQuery(string $alias): QueryAdapterInterface;
-
     public function getAssociationFieldName(string $className): ?string;
 
     public function isEntity(string $field): bool;
+
+    public function createQuery(string $alias): QueryAdapterInterface;
+
+    public function getFilterset(): ?FilterSetInterface;
 }

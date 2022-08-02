@@ -18,9 +18,10 @@ class LinksFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
+        /** @var LinksConfig $brickConfigurator */
+
         $resource = $this->getItem($brickConfigurator);
 
-        /** @var LinksConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/links')
@@ -33,8 +34,9 @@ class LinksFactory extends AbstractBasicBrickFactory
         return $view;
     }
 
-    public function getActions(LinksConfig $brickConfig): array
+    public function getActions(BrickConfigInterface $brickConfig): array
     {
+        /** @var LinksConfig $brickConfig */
         $actions = $brickConfig->getActions();
         if ($brickConfig->hasBack()) {
             $action = ListAction::new('crudit.action.back', $brickConfig->getCrudConfig()->getPath());
@@ -46,7 +48,8 @@ class LinksFactory extends AbstractBasicBrickFactory
         }
         return $actions;
     }
-    private function getItem(LinksConfig $brickConfigurator)
+
+    private function getItem(BrickConfigInterface $brickConfigurator): ?object
     {
         $id = $this->getRequest()->get('id');
         if ($id) {

@@ -12,8 +12,7 @@ use Twig\Environment;
 
 abstract class AbstractField implements FieldInterface
 {
-    /** @var Environment  */
-    protected $twig;
+    protected Environment $twig;
 
     public function __construct(Environment $twig)
     {

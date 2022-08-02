@@ -7,17 +7,14 @@ use Twig\TwigFilter;
 
 class TelephoneFilterExtension extends AbstractExtension
 {
-    /**
-     * @return array
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('telephone', [$this, 'formatTelephone'])
         ];
     }
 
-    public function formatTelephone($telephone)
+    public function formatTelephone(string $telephone): string
     {
         $substr = substr($telephone, 1);
         return str_replace(' ', '', '+33' . $substr);

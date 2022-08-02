@@ -9,11 +9,10 @@ class ResourceView
     /** @var int|string */
     private $id;
 
-    /** @var object */
-    private $resource;
+    private object $resource;
 
     /** @var FieldView[] */
-    private $fields;
+    private array $fields;
 
     /**
      * @param int|string $id
@@ -31,7 +30,6 @@ class ResourceView
         return $this->id;
     }
 
-    /** @return object */
     public function getResource(): object
     {
         return $this->resource;
@@ -43,6 +41,7 @@ class ResourceView
         return $this->fields;
     }
 
+    /** @return ?int|?string */
     public function getLinkId(string $fieldName)
     {
         if ($fieldName === 'id') {
@@ -74,6 +73,7 @@ class ResourceView
             unset($keys[$key]);
             return $this->getValue($keys, $value);
         }
+
         return $value;
     }
 }

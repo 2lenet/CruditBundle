@@ -21,14 +21,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FormFactory extends AbstractBasicBrickFactory
 {
-    /** @var FormFactoryInterface */
-    private $formFactory;
+    private FormFactoryInterface $formFactory;
 
-    /** @var BrickResponseCollector  */
-    private $brickResponseCollector;
+    private BrickResponseCollector $brickResponseCollector;
 
-    /** @var UrlGeneratorInterface  */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
     protected PropertyAccessorInterface $propertyAccessor;
 
@@ -68,7 +65,7 @@ class FormFactory extends AbstractBasicBrickFactory
             ->setData([
                 'form' => $form->createView(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
-                ]);
+            ]);
 
         return $view;
     }
@@ -153,7 +150,7 @@ class FormFactory extends AbstractBasicBrickFactory
         return $resource;
     }
 
-    private function addFlash(string $type, string $message)
+    private function addFlash(string $type, string $message): void
     {
         $request = $this->getRequest();
 

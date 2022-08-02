@@ -80,7 +80,7 @@ class FilterState
         $session->set('crudit_filters', $filterdata);
     }
 
-    public function getData($filterSetId, $filterId): ?array
+    public function getData(string $filterSetId, string $filterId): ?array
     {
         $this->loadData();
 

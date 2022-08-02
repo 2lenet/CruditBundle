@@ -88,17 +88,14 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         ],
     ];
 
-    /**
-     * @return array
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('telephone', [$this, 'formatTelephone'])
         ];
     }
 
-    public function formatTelephone($telephone)
+    public function formatTelephone(string $telephone): string
     {
         $telephone = str_replace(' ', '', $telephone);
 
@@ -117,10 +114,11 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         } elseif (strlen($telephone) == 10) {
             $mask = "## ## ## ## ##";
         }
+
         return ($mask != null ? $this->applyMask($mask, $telephone) : $telephone);
     }
 
-    private function applyMask(string $mask, string $value)
+    private function applyMask(string $mask, string $value): string
     {
         $result = "";
         $i = 0;
@@ -132,6 +130,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             $result .= ($char === '#') ? $value[$counter++] : $char;
             $i++;
         }
+
         return $result;
     }
 }

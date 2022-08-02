@@ -15,24 +15,22 @@ use Symfony\Component\HttpFoundation\Request;
 class SublistConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
-    private $fields = [];
+    private array $fields = [];
 
     /** @var ItemAction[] */
-    private $actions = [];
+    private array $actions = [];
 
-    /** @var DatasourceInterface */
-    private $datasource;
+    private ?DatasourceInterface $datasource;
 
-    /** @var DatasourceParams */
-    private $datasourceParams;
+    private DatasourceParams $datasourceParams;
 
-    /** @var string */
-    private $className;
-    private $fieldname;
+    private string $className;
+
+    private string $fieldname;
 
     protected CrudConfigInterface $subCrudConfig;
 
-    public function __construct($fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
+    public function __construct(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
     {
         $this->fieldname = $fieldname;
         $this->options = $options;
@@ -112,7 +110,7 @@ class SublistConfig extends AbstractBrickConfig
         return $this->actions;
     }
 
-    public function setActions($actions): self
+    public function setActions(array $actions): self
     {
         $this->actions = $actions;
 

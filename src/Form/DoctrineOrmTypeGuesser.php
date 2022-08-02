@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Form;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -171,14 +172,18 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     public function guessMaxLength(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
-        if ($ret && isset($ret[0]->fieldMappings[$property]) && !$ret[0]->hasAssociation($property)) {
-            $mapping = $ret[0]->getFieldMapping($property);
+
+        /** @var ClassMetadata $classMetaData */
+        $classMetaData = $ret[0];
+
+        if ($ret && isset($classMetaData->fieldMappings[$property]) && !$classMetaData->hasAssociation($property)) {
+            $mapping = $classMetaData->getFieldMapping($property);
 
             if (isset($mapping['length'])) {
                 return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
             }
 
-            if (\in_array($ret[0]->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
+            if (\in_array($classMetaData->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
                 return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
             }
         }
@@ -192,8 +197,12 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     public function guessPattern(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
-        if ($ret && isset($ret[0]->fieldMappings[$property]) && !$ret[0]->hasAssociation($property)) {
-            if (\in_array($ret[0]->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
+
+        /** @var ClassMetadata $classMetaData */
+        $classMetaData = $ret[0];
+
+        if ($ret && isset($classMetaData->fieldMappings[$property]) && !$classMetaData->hasAssociation($property)) {
+            if (\in_array($classMetaData->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
                 return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
             }
         }

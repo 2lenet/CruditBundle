@@ -7,17 +7,19 @@ namespace Lle\CruditBundle\Brick\ShowBrick;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
+use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Component\HttpFoundation\Request;
 
 class ShowConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
-    private $fields = [];
+    private array $fields = [];
 
-    /** @var DatasourceInterface */
-    private $dataSource;
-    private $actions;
+    private ?DatasourceInterface $dataSource = null;
+
+    /** @var ItemAction[] */
+    private array $actions = [];
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
@@ -59,9 +61,10 @@ class ShowConfig extends AbstractBrickConfig
         return [];
     }
 
-    public function setActions($actions): self
+    public function setActions(array $actions): self
     {
         $this->actions = $actions;
+
         return $this;
     }
 
@@ -80,6 +83,7 @@ class ShowConfig extends AbstractBrickConfig
     public function addField(Field $field): self
     {
         $this->fields[] = $field;
+
         return $this;
     }
 
@@ -88,6 +92,7 @@ class ShowConfig extends AbstractBrickConfig
         foreach ($fields as $field) {
             $this->addField($field);
         }
+
         return $this;
     }
 

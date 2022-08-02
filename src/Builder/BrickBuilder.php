@@ -14,14 +14,11 @@ use Lle\CruditBundle\Provider\BrickProvider;
 class BrickBuilder
 {
     /** @var BrickView[]  */
-    private $bricks = [];
+    private array $bricks = [];
 
-    /** @var BrickProvider  */
-    private $brickProvider;
+    private BrickProvider $brickProvider;
 
-    public function __construct(
-        BrickProvider $brickProvider
-    ) {
+    public function __construct(BrickProvider $brickProvider) {
         $this->brickProvider = $brickProvider;
     }
 
@@ -66,7 +63,7 @@ class BrickBuilder
     {
         foreach ($crudConfig->getBrickConfigs() as $pageKey => $page) {
             foreach ($page as $k => $brickConfig) {
-                    $this->init($crudConfig, $pageKey, $k, $brickConfig);
+                $this->init($crudConfig, $pageKey, $k, $brickConfig);
                 if ($brickConfig->getId() === $id) {
                     return $this->buildBrick($crudConfig, $pageKey, $brickConfig);
                 }
