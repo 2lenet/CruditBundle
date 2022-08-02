@@ -29,7 +29,7 @@ class GedmoTranslatableType extends AbstractType
     protected GedmoTranslatableFieldManager $translatablefieldmanager;
     private array $locales;
     private string $defaultLocale;
-    private string$currentLocale;
+    private string $currentLocale;
 
     //the 2eme argument is best if $locales
     public function __construct(string $defaultLocale, array $locales, GedmoTranslatableFieldManager $translatableFieldManager, TranslatorInterface $translator)
