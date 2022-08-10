@@ -37,6 +37,7 @@ class CurrencyField extends AbstractField
             "currency" => "EUR",
             "property" => null,
             "removeHtml" => false,
+            "params" => [],
         ]);
     }
 }
