@@ -48,7 +48,7 @@
 {% block crudit_group_label %}
 {% endblock %}
 
-{% block vich_file_widget %}
+{% block crudit_file_widget %}
     <div class="{% if download_uri or form.delete is defined %}col-md-9{% else %}col-12 vich-file-full{% endif %} vich-file">
         {%- if errors|length > 0 -%}
             {%- set attr = attr|merge({class: (attr.class|default('') ~ ' is-invalid')|trim}) -%}

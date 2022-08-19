@@ -51,7 +51,18 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         }
 
         $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
-        if ($this->annotationReader->getPropertyAnnotation($reflectionProperty, UploadableField::class)) {
+        $isUploadableField = false;
+        // The php version comparison is done because getAttributes() method doesn't exist in php < 8
+        if (PHP_MAJOR_VERSION >= 8) {
+            $attributes = $reflectionProperty->getAttributes();
+            foreach ($attributes as $attribute) {
+                if ($attribute->getName() === UploadableField::class) {
+                    $isUploadableField = true;
+                }
+            }
+        }
+
+        if ($isUploadableField || $this->annotationReader->getPropertyAnnotation($reflectionProperty, UploadableField::class)) {
             return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE);
         }
 
