@@ -20,6 +20,6 @@ class AbstractFilterSet implements FilterSetInterface
     {
         $className = get_class($this);
 
-        return strtolower(str_replace("FilterSet", "", (substr($className, strrpos($className, '\\') + 1))));
+        return str_replace("filterset", "", strtolower(substr($className, strrpos($className, '\\') + 1)));
     }
 }
