@@ -18,7 +18,7 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% elseif value %}
-    <div class="text-end me-3">
+    <div class="{{ view.field.options['tableCssClass']|default('text-end') }} me-3">
         {{ value|number_format(null, null, options.thousands_separator) }}
     </div>
 {% endif %}
