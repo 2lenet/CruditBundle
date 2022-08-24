@@ -30,7 +30,7 @@
     {% if options.removeHtml %}
         {{ result }}
     {% else %}
-        <div class="text-end me-3">
+        <div class="{{ view.field.options['tableCssClass']|default('text-end') }} me-3">
             {{ result }}
         </div>
     {% endif %}
