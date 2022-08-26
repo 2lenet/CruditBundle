@@ -58,5 +58,10 @@
         "psr-4": {
             "Lle\\CruditBundle\\": "src/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
