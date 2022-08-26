@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Dto\Field;
 
 use Lle\CruditBundle\Dto\Path;
+
 use function Symfony\Component\String\u;
 
 class Field

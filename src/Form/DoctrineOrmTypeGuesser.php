@@ -14,6 +14,7 @@ use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
 use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
+
 use function Symfony\Component\String\u;
 
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
