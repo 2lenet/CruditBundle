@@ -32,7 +32,7 @@ services:
         arguments: ['@Lle\CruditBundle\Resolver\FieldResolver', '@security.helper']
 
     Lle\CruditBundle\Maker\MakeCrudit:
-        arguments: ["@maker.file_manager","@maker.doctrine_helper"]
+        arguments: ["@maker.file_manager","@maker.doctrine_helper", "@kernel"]
         tags: [maker.command]
 
     Lle\CruditBundle\Provider\ConfigProvider:
