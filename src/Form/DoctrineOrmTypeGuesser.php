@@ -14,6 +14,7 @@ use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
 use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
+use function Symfony\Component\String\u;
 
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
@@ -32,7 +33,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessType(string $class, string $property)
     {
-        $label = "field." . strtolower(str_replace('.', '_', $property));
+        $label = "field." . u(str_replace('.', '_', $property))->snake()->toString();
         if (!$ret = $this->getMetadata($class)) {
             return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', ["label" => $label], Guess::LOW_CONFIDENCE);
         }

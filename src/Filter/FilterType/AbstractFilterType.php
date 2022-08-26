@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
+use function Symfony\Component\String\u;
 
 /**
  * AbstractFilterType
@@ -16,7 +17,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
     {
         $this->columnName = $fieldname;
         $this->id = $fieldname;
-        $this->label = "field." . strtolower(str_replace(".", "_", $fieldname));
+        $this->label = "field." . u(str_replace(".", "_", $fieldname))->snake()->toString();
         $this->alias = "root.";
     }
 

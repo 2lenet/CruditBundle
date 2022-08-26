@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Dto\Field;
 
 use Lle\CruditBundle\Dto\Path;
+use function Symfony\Component\String\u;
 
 class Field
 {
@@ -48,7 +49,7 @@ class Field
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
         $this->name = $name;
-        $this->label = 'field.' . strtolower(str_replace('.', '_', $name));
+        $this->label = 'field.' . u(str_replace('.', '_', $name))->snake()->toString();
         $this->type = $type;
         $this->setOptions($options);
     }

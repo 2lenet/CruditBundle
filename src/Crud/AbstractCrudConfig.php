@@ -25,6 +25,7 @@ use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\HttpFoundation\Request;
+use function Symfony\Component\String\u;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
@@ -195,7 +196,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getTitle(string $key): ?string
     {
-        return "crud.title." . strtolower($key) . "." . strtolower($this->getName());
+        $className = get_class($this);
+        $name = str_replace("CrudConfig", "", (substr($className, strrpos($className, '\\') + 1)));
+
+        return "crud.title." . strtolower($key) . "." . u($name)->snake()->toString();
     }
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
