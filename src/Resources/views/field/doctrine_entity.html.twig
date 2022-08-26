@@ -3,12 +3,12 @@
 
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
-            <input type="hidden" id="input-doctrine-entity-{{ view.field.id|replace({':': "_"}) }}_items" name="{{ view.field.id }}_items"
+            <input type="hidden" id="input-doctrine-entity-{{ view.field.id|replace({':': "_"}) }}-{{ resource.id }}_items" name="{{ view.field.id }}_items"
                    value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
             <div class="control-group form-group d-flex justify-content-around align-items-center">
                 <input
                         type="text"
-                        id="input-doctrine-entity-{{ view.field.id }}"
+                        id="input-doctrine-entity-{{ view.field.id }}-{{ resource.id }}"
                         class="form-control form-control-sm entity-select crudit-eip-input"
                         autocomplete="off"
                         value="{{ value }}"
