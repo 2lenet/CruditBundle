@@ -38,7 +38,8 @@
         "twig/markdown-extra": "^3.3",
         "twig/extra-bundle": "^3.3",
         "twig/intl-extra": "^3.3",
-        "vich/uploader-bundle": "^1.19"
+        "vich/uploader-bundle": "^1.19",
+        "symfony/string": "^5.1|^6.0"
     },
     "require-dev": {
         "ergebnis/phpstan-rules": "^0.15.3",
@@ -57,11 +58,6 @@
     "autoload": {
         "psr-4": {
             "Lle\\CruditBundle\\": "src/"
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
