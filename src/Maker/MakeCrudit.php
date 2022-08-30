@@ -23,6 +23,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 final class MakeCrudit extends AbstractMaker
 {
@@ -35,13 +37,18 @@ final class MakeCrudit extends AbstractMaker
     /** @var bool */
     private $withController;
 
+    /** @var string */
+    private $projectDir;
+
     public function __construct(
         FileManager    $fileManager,
-        DoctrineHelper $entityHelper
+        DoctrineHelper $entityHelper,
+        KernelInterface $kernel,
     )
     {
         $this->fileManager = $fileManager;
         $this->entityHelper = $entityHelper;
+        $this->projectDir = $kernel->getProjectDir();
     }
 
     public static function getCommandName(): string
@@ -92,7 +99,8 @@ final class MakeCrudit extends AbstractMaker
         if (null === $input->getArgument('namespace-controller')) {
             $argument = $command->getDefinition()->getArgument('namespace-controller');
             $question = new Question($argument->getDescription(), 'Crudit');
-            $finder = $this->fileManager->createFinder('src/Controller/');
+            $finder = new Finder();
+            $finder->in($this->projectDir . '/src/Controller/');
             $controllerNamespaces = [null];
             foreach ($finder->directories() as $dir) {
                 /* @var SplFileInfo $dir */
