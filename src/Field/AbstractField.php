@@ -52,6 +52,7 @@ abstract class AbstractField implements FieldInterface
             "cssClass" => "col-12 col-md-6",
             "tableCssClass" => "text-nowrap",
             "edit_route" => null,
+            "sortProperty" => null,
         ]);
     }
 

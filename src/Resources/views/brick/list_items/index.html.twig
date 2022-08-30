@@ -25,7 +25,7 @@
                                         {% if field.sortable %}
                                             {% set name = view.config.name|lower %}
                                             {% set merge_params = {
-                                                (name ~ '_sort'): field.name,
+                                                (name ~ '_sort'): field.options.sortProperty ?? field.name,
                                                 (name ~ '_sort_order'): 'asc'
                                             } %}
                                             {% set params = app.request.session.get('crudit_datasourceparams_' ~ name) %}
@@ -34,7 +34,7 @@
                                             ] %}
 
                                             {% set order = sorts|first|last %}
-                                            {% set sorted = (sorts|first|first == field.name) %}
+                                            {% set sorted = (sorts|first|first == field.options.sortProperty ?? field.name) %}
 
                                             {% set icon = 'fa-sort' %}
                                             {% if sorted %}
