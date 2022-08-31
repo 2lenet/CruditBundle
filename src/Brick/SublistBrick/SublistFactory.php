@@ -74,7 +74,8 @@ class SublistFactory extends AbstractBasicBrickFactory
             $lines[] = $this->resourceResolver->resolve(
                 $resource,
                 $this->getFields($brickConfigurator),
-                $brickConfigurator->getDatasource()
+                $brickConfigurator->getDatasource(),
+                $brickConfigurator->getSubCrudConfig()
             );
         }
 

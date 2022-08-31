@@ -171,4 +171,9 @@ class SublistConfig extends AbstractBrickConfig
         $this->fieldname = $fieldname;
         return $this;
     }
+
+    public function getSubCrudConfig(): CrudConfigInterface
+    {
+        return $this->subCrudConfig;
+    }
 }
