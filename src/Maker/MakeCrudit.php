@@ -43,7 +43,7 @@ final class MakeCrudit extends AbstractMaker
     public function __construct(
         FileManager    $fileManager,
         DoctrineHelper $entityHelper,
-        KernelInterface $kernel,
+        KernelInterface $kernel
     )
     {
         $this->fileManager = $fileManager;
