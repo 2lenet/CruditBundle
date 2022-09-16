@@ -161,9 +161,6 @@ trait TraitCrudController
                 $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
                     ->getPropertyAccessor();
 
-                $reflection = new \ReflectionClass($item);
-                $annotationReader = new AnnotationReader();
-
                 $data = json_decode($request->request->get("data", "{}"), true);
 
                 foreach ($data as $field => $value) {
