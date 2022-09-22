@@ -359,7 +359,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    public function editData(int $id, Request $request): string
+    public function editData(int $id, Request $request): bool
     {
         $item = $this->get($id);
 
@@ -411,9 +411,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
             $this->save($item);
 
-            return "ok";
+            return true;
         }
 
-        return "ko";
+        return false;
     }
 }

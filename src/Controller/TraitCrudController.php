@@ -148,7 +148,7 @@ trait TraitCrudController
 
             $dataSource = $this->config->getDatasource();
 
-            if ($dataSource->editData($id, $request) === "ok") {
+            if ($dataSource->editData($id, $request)) {
                 return new JsonResponse(["status" => "ok"]);
             }
 
