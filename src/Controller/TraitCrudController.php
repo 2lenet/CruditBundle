@@ -30,11 +30,6 @@ trait TraitCrudController
     protected $config;
 
     /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
-
-    /**
      * @Route("/")
      */
     public function index(Request $request): Response
@@ -155,59 +150,8 @@ trait TraitCrudController
             $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
 
             $dataSource = $this->config->getDatasource();
-            $item = $dataSource->get($id);
 
-            if ($item) {
-                $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-                    ->getPropertyAccessor();
-
-                $reflection = new \ReflectionClass($item);
-                $annotationReader = new AnnotationReader();
-
-                $data = json_decode($request->request->get("data", "{}"), true);
-
-                foreach ($data as $field => $value) {
-                    if ($field === "id") {
-                        continue;
-                    }
-
-                    if ($value === "") {
-                        $value = null;
-                    } else {
-                        if ($dataSource->isEntity($field)) {
-                            $associations = $this->entityManager->getClassMetadata($dataSource->getClassName())->associationMappings;
-
-                            $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
-                        } else {
-                            $fields = $this->entityManager->getClassMetadata($dataSource->getClassName());
-                            $type = $fields->fieldMappings[$field]['type'];
-
-                            switch ($type) {
-                                case "date":
-                                case "datetime":
-                                    $value = new \DateTime($value);
-                                    break;
-                                case "integer":
-                                case "smallint":
-                                    $value = (int)$value;
-                                    break;
-                                case "float":
-                                    $value = (float)$value;
-                                    break;
-                                case "string":
-                                case "text":
-                                case "decimal":
-                                default:
-                                    // do nothing
-                            }
-                        }
-                    }
-
-                    $propertyAccessor->setValue($item, $field, $value);
-                }
-
-                $dataSource->save($item);
-
+            if ($dataSource->editData($id, $request) === "ok") {
                 return new JsonResponse(["status" => "ok"]);
             }
 

@@ -16,6 +16,8 @@ use Lle\CruditBundle\Field\DoctrineEntityField;
 use Lle\CruditBundle\Field\EmailField;
 use Lle\CruditBundle\Field\TelephoneField;
 use Lle\CruditBundle\Filter\FilterState;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
@@ -355,5 +357,63 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function getFilterset(): ?FilterSetInterface
     {
         return $this->filterset;
+    }
+
+    public function editData(int $id, Request $request): string
+    {
+        $item = $this->get($id);
+
+        if ($item) {
+            $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+                ->getPropertyAccessor();
+
+            $data = json_decode($request->request->get("data", "{}"), true);
+
+            foreach ($data as $field => $value) {
+                if ($field === "id") {
+                    continue;
+                }
+
+                if ($value === "") {
+                    $value = null;
+                } else {
+                    if ($this->isEntity($field)) {
+                        $associations = $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+
+                        $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
+                    } else {
+                        $fields = $this->entityManager->getClassMetadata($this->getClassName());
+                        $type = $fields->fieldMappings[$field]['type'];
+
+                        switch ($type) {
+                            case "date":
+                            case "datetime":
+                                $value = new \DateTime($value);
+                                break;
+                            case "integer":
+                            case "smallint":
+                                $value = (int)$value;
+                                break;
+                            case "float":
+                                $value = (float)$value;
+                                break;
+                            case "string":
+                            case "text":
+                            case "decimal":
+                            default:
+                                // do nothing
+                        }
+                    }
+                }
+
+                $propertyAccessor->setValue($item, $field, $value);
+            }
+
+            $this->save($item);
+
+            return "ok";
+        }
+
+        return "ko";
     }
 }
