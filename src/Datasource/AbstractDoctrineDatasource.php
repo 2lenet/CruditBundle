@@ -16,7 +16,6 @@ use Lle\CruditBundle\Field\DoctrineEntityField;
 use Lle\CruditBundle\Field\EmailField;
 use Lle\CruditBundle\Field\TelephoneField;
 use Lle\CruditBundle\Filter\FilterState;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
@@ -359,15 +358,13 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    public function editData(int $id, Request $request): bool
+    public function editData(string $id, array $data): bool
     {
         $item = $this->get($id);
 
         if ($item) {
             $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
                 ->getPropertyAccessor();
-
-            $data = json_decode($request->request->get("data", "{}"), true);
 
             foreach ($data as $field => $value) {
                 if ($field === "id") {

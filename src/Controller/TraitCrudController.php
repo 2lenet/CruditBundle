@@ -141,14 +141,16 @@ trait TraitCrudController
     /**
      * @Route("/editdata/{id}")
      */
-    public function editdata($id, Request $request, TranslatorInterface $translator): Response
+    public function editdata(string $id, Request $request, TranslatorInterface $translator): Response
     {
         try {
             $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
 
             $dataSource = $this->config->getDatasource();
 
-            if ($dataSource->editData($id, $request)) {
+            $data = json_decode($request->request->get("data", "{}"), true);
+
+            if ($dataSource->editData($id, $data)) {
                 return new JsonResponse(["status" => "ok"]);
             }
 

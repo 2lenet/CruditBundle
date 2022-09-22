@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Symfony\Component\HttpFoundation\Request;
 
 interface DatasourceInterface
 {
@@ -41,5 +40,5 @@ interface DatasourceInterface
 
     public function isEntity(string $field): bool;
 
-    public function editData(int $id, Request $request): bool;
+    public function editData(string $id, array $data): bool;
 }
