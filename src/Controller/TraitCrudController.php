@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Exception\CruditException;
@@ -16,7 +14,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Workflow\Registry;
@@ -28,11 +25,6 @@ trait TraitCrudController
      * @var CrudConfigInterface
      */
     protected $config;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
 
     /**
      * @Route("/")
@@ -149,65 +141,16 @@ trait TraitCrudController
     /**
      * @Route("/editdata/{id}")
      */
-    public function editdata($id, Request $request, TranslatorInterface $translator): Response
+    public function editdata(string $id, Request $request, TranslatorInterface $translator): Response
     {
         try {
             $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
 
             $dataSource = $this->config->getDatasource();
-            $item = $dataSource->get($id);
 
-            if ($item) {
-                $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-                    ->getPropertyAccessor();
+            $data = json_decode($request->request->get("data", "{}"), true);
 
-                $reflection = new \ReflectionClass($item);
-                $annotationReader = new AnnotationReader();
-
-                $data = json_decode($request->request->get("data", "{}"), true);
-
-                foreach ($data as $field => $value) {
-                    if ($field === "id") {
-                        continue;
-                    }
-
-                    if ($value === "") {
-                        $value = null;
-                    } else {
-                        if ($dataSource->isEntity($field)) {
-                            $associations = $this->entityManager->getClassMetadata($dataSource->getClassName())->associationMappings;
-
-                            $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
-                        } else {
-                            $fields = $this->entityManager->getClassMetadata($dataSource->getClassName());
-                            $type = $fields->fieldMappings[$field]['type'];
-
-                            switch ($type) {
-                                case "date":
-                                case "datetime":
-                                    $value = new \DateTime($value);
-                                    break;
-                                case "integer":
-                                case "smallint":
-                                    $value = (int)$value;
-                                    break;
-                                case "float":
-                                    $value = (float)$value;
-                                    break;
-                                case "string":
-                                case "text":
-                                case "decimal":
-                                default:
-                                    // do nothing
-                            }
-                        }
-                    }
-
-                    $propertyAccessor->setValue($item, $field, $value);
-                }
-
-                $dataSource->save($item);
-
+            if ($dataSource->editData($id, $data)) {
                 return new JsonResponse(["status" => "ok"]);
             }
 

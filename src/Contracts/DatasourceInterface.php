@@ -39,4 +39,6 @@ interface DatasourceInterface
     public function getAssociationFieldName(string $className): ?string;
 
     public function isEntity(string $field): bool;
+
+    public function editData(string $id, array $data): bool;
 }
