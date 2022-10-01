@@ -3680,8 +3680,6 @@ window.addEventListener('DOMContentLoaded', function () {
         return urls;
       },
       load: function load(query, callback) {
-        var _this = this;
-
         var urls = this.getUrl(query);
         var fetchsFinished = 0;
         var datas = []; // If the request has not changed, we save all previous data
@@ -3699,15 +3697,6 @@ window.addEventListener('DOMContentLoaded', function () {
             return response.json();
           }).then(function (json) {
             var _datas;
-
-            if (json.next_offset < json.total_count) {
-              var nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
-              urls[entity] = nextUrl;
-
-              _this.setNextUrl(query, urls);
-            } else {
-              delete urls[entity];
-            }
 
             fetchsFinished++;
 

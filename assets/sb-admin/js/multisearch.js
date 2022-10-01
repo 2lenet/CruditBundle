@@ -86,15 +86,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     fetch(url)
                         .then(response => response.json())
                         .then(json => {
-                            if (json.next_offset < json.total_count) {
-                                let nextUrl = url.replace(/offset=(\d+)?/, 'offset=' + json.next_offset.toString());
-
-                                urls[entity] = nextUrl;
-                                this.setNextUrl(query, urls);
-                            } else {
-                                delete urls[entity];
-                            }
-
                             fetchsFinished++;
 
                             for (let item of json.items) {
