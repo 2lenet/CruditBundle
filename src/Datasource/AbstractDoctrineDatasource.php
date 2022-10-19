@@ -198,6 +198,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function autocompleteQuery(string $queryTerm, array $sorts, $requestParams = null): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
+
         $qb = $this->initializeAutocompleteQueryBuilder($qb, $queryTerm);
 
         foreach ($sorts as $sort) {
@@ -228,11 +229,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function initializeAutocompleteQueryBuilder(QueryBuilder $qb, string $queryTerm): QueryBuilder
     {
         $orStatements = $qb->expr()->orX();
-
         foreach ($this->getAutoCompleteSearchFields() as $field) {
             $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal($queryTerm . '%'))
+                $qb->expr()->like('root.' . $field, $qb->expr()->literal('%' .$queryTerm . '%'))
             );
+
+            // allow null if the user didn't type anything
+            if (!$queryTerm) {
+                $orStatements->add(
+                    $qb->expr()->isNull('root.' . $field)
+                );
+            }
         }
 
         $qb->andWhere($orStatements);
