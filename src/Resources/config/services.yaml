@@ -95,3 +95,9 @@ services:
 
     Lle\CruditBundle\Service\SanitizerService: ~
     Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
+
+    Lle\CruditBundle\Service\EasyAdminConverter\Converter:
+        class: Lle\CruditBundle\Service\EasyAdminConverter\Converter
+
+    Lle\CruditBundle\Command\ConvertEasyAdmin:
+        tags: [ 'console.command' ]
