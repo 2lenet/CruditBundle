@@ -97,7 +97,10 @@ services:
     Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
 
     Lle\CruditBundle\Service\EasyAdminConverter\Converter:
-        class: Lle\CruditBundle\Service\EasyAdminConverter\Converter
+        arguments:
+            - '@maker.generator'
+            - '@Lle\CruditBundle\Maker\MakeCrudit'
+            - '@filesystem'
 
     Lle\CruditBundle\Command\ConvertEasyAdmin:
         tags: [ 'console.command' ]

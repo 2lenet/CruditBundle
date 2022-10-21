@@ -179,7 +179,6 @@ final class MakeCrudit extends AbstractMaker
     {
         $fields = $this->getFields($entityClass);
 
-        $template = 'CrudAuto';
         $shortEntity = basename(str_replace('\\', '/', $entityClass));
         $configuratorClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
@@ -189,7 +188,7 @@ final class MakeCrudit extends AbstractMaker
 
         $generator->generateClass(
             $configuratorClassNameDetails->getFullName(),
-            $this->getSkeletonTemplate('config/' . $template . 'Config.php'),
+            $this->getSkeletonTemplate('config/CrudAutoConfig.php'),
             [
                 'namespace' => 'App',
                 'fields' => $fields,
@@ -232,7 +231,7 @@ final class MakeCrudit extends AbstractMaker
         return $fields;
     }
 
-    private function getSkeletonTemplate(string $templateName): string
+    public function getSkeletonTemplate(string $templateName): string
     {
         return __DIR__ . '/../Resources/skeleton/crud/' . $templateName;
     }

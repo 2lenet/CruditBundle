@@ -6,6 +6,7 @@ use Lle\CruditBundle\Service\EasyAdminConverter\Converter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -29,6 +30,7 @@ class ConvertEasyAdmin extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $path = $this->kernel->getProjectDir() . self::EASYADMIN_PATH;
 
         $config = [];
@@ -46,7 +48,11 @@ class ConvertEasyAdmin extends Command
 
         $config = $config["easy_admin"];
 
-        $this->converter->convert($config);
+        foreach ($this->converter->convert($config) as $type => $log) {
+            if ($log) {
+                $io->{$type}($log);
+            }
+        }
 
         return Command::SUCCESS;
     }
