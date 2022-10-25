@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\Annotation;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
+use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -41,7 +42,7 @@ final class MakeCrudit extends AbstractMaker
     private $projectDir;
 
     public function __construct(
-        FileManager    $fileManager,
+        FileManager $fileManager,
         DoctrineHelper $entityHelper,
         KernelInterface $kernel
     )
@@ -172,12 +173,16 @@ final class MakeCrudit extends AbstractMaker
 
     private function createConfigurator(
         InputInterface $input,
-        ConsoleStyle   $io,
-        Generator      $generator,
-        string         $entityClass
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
     ): string
     {
         $fields = $this->getFields($entityClass);
+        $cruds = [
+            'CrudConfigInterface::INDEX' => $fields,
+            'CrudConfigInterface::SHOW' => $fields,
+        ];
 
         $shortEntity = basename(str_replace('\\', '/', $entityClass));
         $configuratorClassNameDetails = $generator->createClassNameDetails(
@@ -192,6 +197,7 @@ final class MakeCrudit extends AbstractMaker
             [
                 'namespace' => 'App',
                 'fields' => $fields,
+                'cruds' => $cruds,
                 'entityClass' => $shortEntity,
                 'fullEntityClass' => $entityClass,
                 'strictType' => true,
@@ -204,6 +210,7 @@ final class MakeCrudit extends AbstractMaker
         );
         $generator->writeChanges();
         $this->writeSuccessMessage($io);
+
         return $configuratorClassNameDetails->getFullName();
     }
 
@@ -214,7 +221,12 @@ final class MakeCrudit extends AbstractMaker
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
-                $fields[] = ['name' => $fieldname, 'sortable' => true];
+
+                if ($fieldname === "id") {
+                    continue;
+                }
+
+                $fields[] = Field::new($fieldname);
             }
 
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
@@ -224,7 +236,7 @@ final class MakeCrudit extends AbstractMaker
                     $sortable = false;
                 }
 
-                $fields[] = ['name' => $fieldassoc, 'sortable' => $sortable];
+                $fields[] = Field::new($fieldassoc)->setSortable($sortable);
             }
         }
 
@@ -238,9 +250,9 @@ final class MakeCrudit extends AbstractMaker
 
     private function createFormType(
         InputInterface $input,
-        ConsoleStyle   $io,
-        Generator      $generator,
-        string         $entityClass
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
     ): void
     {
         $fields = $this->getFields($entityClass);
@@ -276,9 +288,9 @@ final class MakeCrudit extends AbstractMaker
 
     private function createFilterset(
         InputInterface $input,
-        ConsoleStyle   $io,
-        Generator      $generator,
-        string         $entityClass
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
     ): void
     {
         $shortEntity = basename(str_replace('\\', '/', $entityClass));
@@ -354,6 +366,7 @@ final class MakeCrudit extends AbstractMaker
         );
         $generator->writeChanges();
         $this->writeSuccessMessage($io);
+
         return $controllerClassNameDetails->getFullName();
     }
 

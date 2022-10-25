@@ -16,7 +16,7 @@ class ConvertEasyAdmin extends Command
 {
     public const EASYADMIN_PATH = "/config/packages/easy_admin";
 
-    protected static $defaultName = "lle-crudit:convert-easyadmin";
+    protected static $defaultName = "lle:crudit:convert-easyadmin";
 
     protected static $defaultDescription = "Convert an EasyAdmin project to a Crudit Project.";
 

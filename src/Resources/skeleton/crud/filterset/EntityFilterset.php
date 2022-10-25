@@ -15,9 +15,9 @@ class <?= $entityClass ?>FilterSet extends AbstractFilterSet
     public function getFilters(): array
     {
         return [
-<?php foreach($fields as $field) { if ($field !='id') { ?>
-            StringFilterType::new('<?= $field['name'] ?>'),
-<?php }} ?>
+<?php foreach($fields as $field) { ?>
+            StringFilterType::new('<?= $field->getName() ?>'),
+<?php } ?>
         ];
      }
 }

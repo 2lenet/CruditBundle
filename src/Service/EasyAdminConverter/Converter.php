@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Service\EasyAdminConverter;
 
+use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Maker\MakeCrudit;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -69,7 +70,7 @@ class Converter
 
         $fields = [];
         foreach ($entityConfig["filter"]["fields"] as $filter) {
-            $fields[] = ["name" => $filter["property"]];
+            $fields[] = Field::new($filter["property"]);
         }
 
         $filtersetClassNameDetails = $this->generator->createClassNameDetails(
@@ -125,12 +126,42 @@ class Converter
         $entityClass = $entityConfig["class"];
         $shortEntity = $this->getShortEntityName($entityClass);
         $fields = [];
+        $cruds = [];
 
+        foreach ($entityConfig["list"]["fields"] ?? [] as $property) {
+            if (!isset($property["property"])) {
+                yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
+                continue;
+            }
 
-        $fields = [];
-        foreach ($entityConfig["list"]["fields"] as $property) {
             $sortable = isset($property["sortable"]) ? $property["sortable"] : true;
-            $fields[] = ["name" => $property["property"], "sortable" => $sortable];
+
+            // the duplicate field is on purpose
+            $fields[] = Field::new($property["property"]);
+            $cruds["CrudConfigInterface::INDEX"][] = Field::new($property["property"])
+                ->setSortable($sortable);
+        }
+
+        foreach ($entityConfig["show"]["fields"] ?? [] as $property) {
+            if (!isset($property["property"])) {
+                yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
+                continue;
+            }
+
+            // the duplicate field is on purpose
+            $fields[] = Field::new($property["property"]);
+            $cruds["CrudConfigInterface::SHOW"][] = Field::new($property["property"]);
+        }
+
+        foreach ($entityConfig["export"]["fields"] ?? [] as $property) {
+            if (!isset($property["property"])) {
+                yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
+                continue;
+            }
+
+            // the duplicate field is on purpose
+            $fields[] = Field::new($property["property"]);
+            $cruds["CrudConfigInterface::EXPORT"][] = Field::new($property["property"]);
         }
 
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
@@ -144,12 +175,14 @@ class Converter
             $this->cruditMaker->getSkeletonTemplate("config/CrudAutoConfig.php"),
             [
                 "namespace" => "App",
-                "fields" => $fields,
+                // array_unique with flag SORT_REGULAR will compare object properties.
+                "fields" => array_unique($fields, SORT_REGULAR),
+                "cruds" => $cruds,
                 "entityClass" => $shortEntity,
                 "fullEntityClass" => $entityClass,
                 "strictType" => true,
                 "form" => true,
-                "controllerRoute" => $shortEntity,
+                "controllerRoute" => "crudit_" . $shortEntity,
             ]
         );
         $this->generator->writeChanges();
@@ -198,7 +231,7 @@ class Converter
         }
 
         foreach ($formConfig as $property) {
-            $fields[] = ["name" => $property["property"]];
+            $fields[] = Field::new($property["property"]);
         }
 
 

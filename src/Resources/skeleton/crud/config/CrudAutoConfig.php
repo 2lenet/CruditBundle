@@ -1,6 +1,7 @@
 <?= "<?php" ?>
 <?php if ($strictType): ?>
 
+
 declare(strict_types=1);
 <?php endif; ?>
 
@@ -26,25 +27,29 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
     */
     public function getFields($key): array
     {
-<?php foreach ($fields as $field) { if ($field != 'id') { ?>
-        $<?php echo $field['name'] ?> = Field::new('<?php echo $field['name'] ?>')<?php if (!$field['sortable']) { echo '->setSortable(false)'; } ?>;
-<?php }} ?>
+<?php foreach ($fields as $field) { ?>
+        $<?php echo $field->getName() ?> = Field::new("<?php echo $field->getName() ?>");
+<?php } ?>
 
-        // You can return different fields based on the block key
-        if ($key == CrudConfigInterface::INDEX || $key == CrudConfigInterface::SHOW) {
-            return [
-<?php foreach ($fields as $field) { if ($field != 'id') { ?>
-               $<?= $field['name'] ?>,
-<?php }} ?>
-            ];
+        switch ($key) {
+<?php foreach ($cruds as $crud => $crudFields) { ?>
+            case <?= $crud ?>:
+                $fields = [
+<?php foreach ($crudFields as $field) { ?>
+                    $<?= $field->getName() ?><?php if (!$field->isSortable()) { echo "->setSortable(false)"; } ?>,
+<?php } ?>
+                ];
+                break;
+<?php } ?>
+            default:
+                $fields = [];
         }
 
-        return [];
+        return $fields;
     }
 
     public function getRootRoute(): string
     {
-        return 'app_<?= strtolower($controllerRoute) ?>';
+        return "app_<?= strtolower($controllerRoute) ?>";
     }
-
 }
