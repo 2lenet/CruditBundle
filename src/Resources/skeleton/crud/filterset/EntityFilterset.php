@@ -8,15 +8,17 @@ declare(strict_types=1);
 namespace <?= $namespace ?>;
 
 use Lle\CruditBundle\Datasource\AbstractFilterSet;
-use Lle\CruditBundle\Filter\FilterType\StringFilterType;
+<?php foreach ($uses as $use) { ?>
+use <?= $use ?>;
+<?php } ?>
 
 class <?= $entityClass ?>FilterSet extends AbstractFilterSet
 {
     public function getFilters(): array
     {
         return [
-<?php foreach($fields as $field) { ?>
-            StringFilterType::new('<?= $field->getName() ?>'),
+<?php foreach($filters as $filter) { ?>
+            <?= $filter["type"] ?>::new("<?= $filter["property"] ?>"<?php if ($filter["options"]) { ?>, <?= implode(", ", $filter["options"]) ?><?php } ?>),
 <?php } ?>
         ];
      }
