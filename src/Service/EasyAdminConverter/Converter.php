@@ -4,17 +4,10 @@ namespace Lle\CruditBundle\Service\EasyAdminConverter;
 
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Maker\MakeCrudit;
+use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**
- * TODO
- * - warn for custom filter types
- * - choice filter types
- * - fields in show/list
- * - form types ?
- * - labels and other field options
- */
 class Converter
 {
     protected $logs = [];
@@ -23,6 +16,7 @@ class Converter
         protected Generator $generator,
         protected MakeCrudit $cruditMaker,
         protected Filesystem $filesystem,
+        protected DoctrineHelper $doctrineHelper,
     )
     {
     }
@@ -68,10 +62,18 @@ class Converter
         $entityClass = $entityConfig["class"];
         $shortEntity = $this->getShortEntityName($entityClass);
 
-        $fields = [];
+        $filters = [];
+        $metadata = $this->doctrineHelper->getMetadata($entityClass);
         foreach ($entityConfig["filter"]["fields"] as $filter) {
-            $fields[] = Field::new($filter["property"]);
+            $filters[] = $this->cruditMaker->getFilterType($metadata, $filter["property"]);
         }
+
+        $uses = [];
+        foreach ($filters as $filter) {
+            array_push($uses, ...$filter["uses"]);
+        }
+        $uses = array_unique($uses);
+        sort($uses);
 
         $filtersetClassNameDetails = $this->generator->createClassNameDetails(
             $shortEntity,
@@ -86,8 +88,9 @@ class Converter
                 "namespace" => "App",
                 "entityClass" => $shortEntity,
                 "fullEntityClass" => $entityClass,
-                "fields" => $fields,
+                "filters" => $filters,
                 "strictType" => true,
+                "uses" => $uses,
             ]
         );
         $this->generator->writeChanges();

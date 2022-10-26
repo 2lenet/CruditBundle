@@ -10,6 +10,12 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
+use Lle\CruditBundle\Filter\FilterType\DateFilterType;
+use Lle\CruditBundle\Filter\FilterType\DateTimeFilterType;
+use Lle\CruditBundle\Filter\FilterType\EntityFilterType;
+use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
+use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -268,7 +274,7 @@ final class MakeCrudit extends AbstractMaker
         return $filters;
     }
 
-    private function getFilterType(ClassMetadata $metadata, string $property): array
+    public function getFilterType(ClassMetadata $metadata, string $property): array
     {
         if ($metadata->hasAssociation($property)) {
             $mapping = $metadata->getAssociationMapping($property);
@@ -277,6 +283,7 @@ final class MakeCrudit extends AbstractMaker
                 "type" => "EntityFilterType",
                 "property" => $property,
                 "options" => [$this->getBasename($mapping["targetEntity"]) . "::class"],
+                "uses" => [EntityFilterType::class, $mapping["targetEntity"]],
             ];
         }
 
@@ -287,6 +294,7 @@ final class MakeCrudit extends AbstractMaker
                     "type" => "BooleanFilterType",
                     "property" => $property,
                     "options" => [],
+                    "uses" => [BooleanFilterType::class],
                 ];
             case Types::DATETIME_MUTABLE:
             case Types::DATETIMETZ_MUTABLE:
@@ -296,6 +304,7 @@ final class MakeCrudit extends AbstractMaker
                     "type" => "DateTimeFilterType",
                     "property" => $property,
                     "options" => [],
+                    "uses" => [DateTimeFilterType::class],
                 ];
             case Types::DATE_IMMUTABLE:
             case Types::DATE_MUTABLE:
@@ -303,6 +312,7 @@ final class MakeCrudit extends AbstractMaker
                     "type" => "DateFilterType",
                     "property" => $property,
                     "options" => [],
+                    "uses" => [DateFilterType::class],
                 ];
             case Types::FLOAT:
             case Types::INTEGER:
@@ -312,12 +322,14 @@ final class MakeCrudit extends AbstractMaker
                     "type" => "NumberFilterType",
                     "property" => $property,
                     "options" => [],
+                    "uses" => [NumberFilterType::class],
                 ];
             default:
                 return [
                     "type" => "StringFilterType",
                     "property" => $property,
                     "options" => [],
+                    "uses" => [StringFilterType::class],
                 ];
         }
     }
@@ -375,15 +387,11 @@ final class MakeCrudit extends AbstractMaker
         $shortEntity = $this->getBasename($entityClass);
 
         $filters = $this->getFilters($entityClass);
+
         $uses = [];
-
         foreach ($filters as $filter) {
-            $uses[] = "Lle\\CruditBundle\\Filter\\FilterType\\" . $filter["type"];
-            if ($filter["type"] === "EntityFilterType") {
-                $uses[] = "App\\Entity\\" . str_replace("::class", "", $filter["options"][0]);
-            }
+            array_push($uses, ...$filter["uses"]);
         }
-
         $uses = array_unique($uses);
         sort($uses);
 
