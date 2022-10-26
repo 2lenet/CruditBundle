@@ -274,14 +274,33 @@ final class MakeCrudit extends AbstractMaker
         return $filters;
     }
 
-    public function getFilterType(ClassMetadata $metadata, string $property): array
+    public function getFilterType(ClassMetadataInfo $metadata, string $property): array
     {
+        $fields = explode(".", $property);
+        $multiLevelProperty = str_replace(".", ":", $property);
+
+        if (count($fields) > 1) {
+            // multi level
+            for ($i = 0; $i < count($fields); $i++) {
+                $field = $fields[$i];
+
+                if ($i === count($fields) - 1) {
+                    // it's the property
+                    $property = $field;
+                    break;
+                }
+
+                $association = $metadata->getAssociationMapping($field);
+                $metadata = $this->entityHelper->getMetadata($association["targetEntity"]);
+            }
+        }
+
         if ($metadata->hasAssociation($property)) {
             $mapping = $metadata->getAssociationMapping($property);
 
             return [
                 "type" => "EntityFilterType",
-                "property" => $property,
+                "property" => $multiLevelProperty,
                 "options" => [$this->getBasename($mapping["targetEntity"]) . "::class"],
                 "uses" => [EntityFilterType::class, $mapping["targetEntity"]],
             ];
@@ -292,7 +311,7 @@ final class MakeCrudit extends AbstractMaker
             case Types::BOOLEAN:
                 return [
                     "type" => "BooleanFilterType",
-                    "property" => $property,
+                    "property" => $multiLevelProperty,
                     "options" => [],
                     "uses" => [BooleanFilterType::class],
                 ];
@@ -302,7 +321,7 @@ final class MakeCrudit extends AbstractMaker
             case Types::DATETIMETZ_IMMUTABLE:
                 return [
                     "type" => "DateTimeFilterType",
-                    "property" => $property,
+                    "property" => $multiLevelProperty,
                     "options" => [],
                     "uses" => [DateTimeFilterType::class],
                 ];
@@ -310,7 +329,7 @@ final class MakeCrudit extends AbstractMaker
             case Types::DATE_MUTABLE:
                 return [
                     "type" => "DateFilterType",
-                    "property" => $property,
+                    "property" => $multiLevelProperty,
                     "options" => [],
                     "uses" => [DateFilterType::class],
                 ];
@@ -320,14 +339,14 @@ final class MakeCrudit extends AbstractMaker
             case Types::SMALLINT:
                 return [
                     "type" => "NumberFilterType",
-                    "property" => $property,
+                    "property" => $multiLevelProperty,
                     "options" => [],
                     "uses" => [NumberFilterType::class],
                 ];
             default:
                 return [
                     "type" => "StringFilterType",
-                    "property" => $property,
+                    "property" => $multiLevelProperty,
                     "options" => [],
                     "uses" => [StringFilterType::class],
                 ];

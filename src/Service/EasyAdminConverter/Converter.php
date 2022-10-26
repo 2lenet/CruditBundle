@@ -200,7 +200,7 @@ class Converter
 
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
             $shortEntity,
-            "Controller\\",
+            "Controller\\Crudit\\",
             "Controller"
         );
         $this->generator->generateClass(
