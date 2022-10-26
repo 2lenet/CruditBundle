@@ -54,6 +54,8 @@ class Converter
             }
         }
 
+        yield from $this->makeMenu($config);
+
         yield "success" => "Conversion finished ! Please note the warnings above and fix them.";
     }
 
@@ -257,6 +259,93 @@ class Converter
         $this->generator->writeChanges();
 
         yield;
+    }
+
+    public function makeMenu(array $config): iterable
+    {
+        if (!isset($config["design"]["menu"])) {
+            yield;
+        }
+
+        $items = [];
+
+        foreach ($config["design"]["menu"] as $menu) {
+            $parent = $this->getMenuItem($config, $menu);
+            $items[] = $parent;
+
+            if (isset($menu["children"])) {
+                foreach ($menu["children"] as $child) {
+                    $item = $this->getMenuItem($config, $child);
+                    $item["parent"] = $parent["label"];
+                    $items[] = $item;
+                }
+            }
+        }
+
+        $className = "MenuProvider";
+        $classDetails = $this->generator->createClassNameDetails(
+            "MenuProvider",
+            "Crudit\\CrudMenu",
+        );
+        $this->generator->generateClass(
+            $classDetails->getFullName(),
+            $this->cruditMaker->getSkeletonTemplate("menu/MenuProvider.php"),
+            [
+                "namespace" => "App",
+                "className" => $className,
+                "items" => $items,
+            ]
+        );
+        $this->generator->writeChanges();
+
+        yield;
+    }
+
+    protected function getMenuItem(array $config, $menu): array
+    {
+        if (is_string($menu)) {
+            // entity
+            $entity = $config["entities"][$menu]["class"];
+
+            $item = [
+                "label" => "menu." . strtolower($menu),
+                "route" => "app_crudit_" . strtolower($this->getShortEntityName($entity)) . "_index",
+            ];
+        } elseif (is_array($menu)) {
+            if (!isset($menu["entity"]) && !isset($menu["url"]) && !isset($menu["route"]) && !isset($menu["children"])) {
+                $item = ["type" => "separator"];
+                if (isset($menu["role"])) {
+                    $item["role"] = $menu["role"];
+                }
+            } else {
+                $item = [
+                    "label" => $menu["label"] ?? "menu." . strtolower($menu["entity"]),
+                ];
+
+                if (isset($menu["icon"])) {
+                    $item["icon"] = $menu["icon"];
+                }
+
+                if (isset($menu["entity"])) {
+                    $entity = $config["entities"][$menu["entity"]]["class"];
+                    $item["route"] = "app_crudit_" . strtolower($this->getShortEntityName($entity)) . "_index";
+                }
+
+                if (isset($menu["role"])) {
+                    $item["role"] = $menu["role"];
+                }
+
+                if (isset($menu["route"])) {
+                    $item["route"] = $menu["route"];
+                }
+
+                if (isset($menu["url"])) {
+                    $item["url"] = $menu["url"];
+                }
+            }
+        }
+
+        return $item;
     }
 
     protected function getShortEntityName(string $class): string
