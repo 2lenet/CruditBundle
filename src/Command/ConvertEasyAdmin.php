@@ -23,6 +23,7 @@ class ConvertEasyAdmin extends Command
     public function __construct(
         private KernelInterface $kernel,
         private Converter $converter,
+        private Filesystem $filesystem
     )
     {
         parent::__construct(null);
@@ -32,6 +33,12 @@ class ConvertEasyAdmin extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $path = $this->kernel->getProjectDir() . self::EASYADMIN_PATH;
+
+        if ($input->hasOption("delete")) {
+            $this->filesystem->remove(["src/Controller"]);
+            $this->filesystem->remove(["src/Crudit"]);
+            $this->filesystem->remove(["src/Form"]);
+        }
 
         $config = [];
 
@@ -55,5 +62,15 @@ class ConvertEasyAdmin extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    protected function configure()
+    {
+        $this->addOption(
+            "delete",
+            "d",
+            null,
+            "Delete existing Crudit files. Useful if you have to re-run the command."
+        );
     }
 }

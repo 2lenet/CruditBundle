@@ -15,7 +15,6 @@ class Converter
     public function __construct(
         protected Generator $generator,
         protected MakeCrudit $cruditMaker,
-        protected Filesystem $filesystem,
         protected DoctrineHelper $doctrineHelper,
     )
     {
@@ -23,12 +22,6 @@ class Converter
 
     public function convert(array $config): iterable
     {
-        // TODO REMOVE
-        $this->filesystem->remove(["src/Controller"]);
-        $this->filesystem->remove(["src/Crudit"]);
-        $this->filesystem->remove(["src/Form"]);
-        //
-
         $ignoreDuplicates = [];
 
         if (isset($config["entities"])) {
@@ -57,6 +50,7 @@ class Converter
         yield from $this->makeMenu($config);
 
         yield "success" => "Conversion finished ! Please note the warnings above and fix them.";
+        yield "warning" => "Note that the converter is not perfect. Some things were ignored, some things were modified. You need to check all pages.";
     }
 
     protected function makeFilterSet(array $entityConfig): iterable
@@ -170,11 +164,18 @@ class Converter
         }
 
         $forms = [];
-        if (isset($entityConfig["edit"])) {
-            $forms["CrudConfigInterface::EDIT"] = "Edit";
+        if (!isset($entityConfig["form"])) {
+            if (isset($entityConfig["edit"])) {
+                $forms["CrudConfigInterface::EDIT"] = "Edit";
+            }
+            if (isset($entityConfig["new"])) {
+                $forms["CrudConfigInterface::NEW"] = "New";
+            }
         }
-        if (isset($entityConfig["new"])) {
-            $forms["CrudConfigInterface::NEW"] = "New";
+
+        $tabs = [];
+        if (isset($entityConfig["show"]["fields"])) {
+            $tabs = $this->getTabs($entityConfig);
         }
 
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
@@ -195,6 +196,7 @@ class Converter
                 "fullEntityClass" => $entityClass,
                 "strictType" => true,
                 "forms" => $forms,
+                "tabs" => $tabs,
                 "controllerRoute" => "crudit_" . $shortEntity,
             ]
         );
@@ -359,6 +361,46 @@ class Converter
                 "strictType" => true
             ]
         );
+    }
+
+    protected function getTabs(array $entityConfig): array
+    {
+        $tabs = [];
+        foreach ($entityConfig["show"]["fields"] as $field) {
+            if (is_array($field) && isset($field["type"])) {
+                if ($field["type"] === "sublist") {
+
+                    $metadata = $this->doctrineHelper->getMetadata($entityConfig["class"]);
+                    // "No mapping found for field ..." => your sublist property does not exist
+
+                    if (!isset($field["property"])) {
+                        foreach ($metadata->getAssociationMappings() as $mapping) {
+                            if ($this->getShortEntityName($mapping["targetEntity"]) === $field["entity"]) {
+                                $association = $mapping;
+                                break;
+                            }
+                        }
+                    } else {
+                        $association = $metadata->getAssociationMapping($field["property"]);
+                    }
+                    $mappedBy = $association["mappedBy"];
+
+                    $tabs[] = [
+                        "type" => "sublist",
+                        "label" => $field["label"] ?? "tab." . strtolower($field["property"]),
+                        "property" => $mappedBy,
+                        "linkedEntity" => $this->getShortEntityName($association["targetEntity"]),
+                    ];
+                } elseif($field["type"] === "tab" && isset($field["action"]) && $field["action"] === "historyAction") {
+                    $tabs[] = [
+                        "type" => "history",
+                        "label" => $field["label"] ?? "tab.history",
+                    ];
+                }
+            }
+        }
+
+        return $tabs;
     }
 
     protected function getShortEntityName(string $class): string

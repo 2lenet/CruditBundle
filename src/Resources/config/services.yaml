@@ -100,7 +100,6 @@ services:
         arguments:
             - '@maker.generator'
             - '@Lle\CruditBundle\Maker\MakeCrudit'
-            - '@filesystem'
             - '@maker.doctrine_helper'
 
     Lle\CruditBundle\Command\ConvertEasyAdmin:
