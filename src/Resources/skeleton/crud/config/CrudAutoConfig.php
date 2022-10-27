@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace <?= $namespace ?>;
 
+<?php if (count($tabs)) { ?>
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
+<?php } ?>
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
