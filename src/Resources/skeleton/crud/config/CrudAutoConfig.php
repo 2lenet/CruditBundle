@@ -91,6 +91,13 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         ];
     }
 <?php } ?>
+<?php if (isset($sort["property"]) && isset($sort["order"])) { ?>
+
+    public function getDefaultSort(): array
+    {
+        return [["<?= $sort["property"] ?>", "<?= $sort["order"] ?>"]];
+    }
+<?php } ?>
 
     public function getRootRoute(): string
     {

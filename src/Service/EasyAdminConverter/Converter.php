@@ -178,6 +178,12 @@ class Converter
             $tabs = $this->getTabs($entityConfig);
         }
 
+        $sort = [];
+        if (isset($entityConfig["list"]["sort"])) {
+            $sort["property"] = $entityConfig["list"]["sort"][0];
+            $sort["order"] = $entityConfig["list"]["sort"][1];
+        }
+
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
             $shortEntity,
             "Crudit\\Config\\",
@@ -197,6 +203,7 @@ class Converter
                 "strictType" => true,
                 "forms" => $forms,
                 "tabs" => $tabs,
+                "sort" => $sort,
                 "controllerRoute" => "crudit_" . $shortEntity,
             ]
         );
