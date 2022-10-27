@@ -15,12 +15,12 @@ class <?= $entityClass ?>Type extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 <?php foreach($fields as $field) { ?>
-        $builder->add('<?= $field->getName() ?>');
+        $builder->add("<?= $field->getName() ?>");
 <?php } ?>
     }
 
     public function getName(): string
     {
-        return '<?= strtolower($entityClass) ?>_form';
+        return "<?= strtolower($entityClass) ?>_form";
     }
 }

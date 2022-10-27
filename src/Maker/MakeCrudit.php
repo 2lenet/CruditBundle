@@ -209,7 +209,6 @@ final class MakeCrudit extends AbstractMaker
                 'entityClass' => $shortEntity,
                 'fullEntityClass' => $entityClass,
                 'strictType' => true,
-                'form' => true,
                 'controllerRoute' => ($input->getArgument('namespace-controller')) ?
                     $this->getStringArgument('namespace-controller', $input) . '_' .
                     $shortEntity :

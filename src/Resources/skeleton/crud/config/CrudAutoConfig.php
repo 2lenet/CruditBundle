@@ -47,6 +47,27 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
 
         return $fields;
     }
+<?php if (isset($forms)) { ?>
+    protected function getFormType(string $pageKey): ?string
+    {
+        switch ($pageKey) {
+<?php foreach ($forms as $key => $formPrefix) { ?>
+            case <?= $key ?>:
+                $prefix = "<?= $formPrefix ?>";
+                break;
+<?php } ?>
+            default:
+                return null;
+        }
+
+        return str_replace(
+            "App\\Crudit\\Config\\",
+            "App\\Form\\" . $prefix,
+            str_replace("CrudConfig", "Type", get_class($this))
+        );
+    }
+
+<?php } ?>
 
     public function getRootRoute(): string
     {

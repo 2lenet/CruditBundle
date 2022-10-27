@@ -169,6 +169,14 @@ class Converter
             $cruds["CrudConfigInterface::EXPORT"][] = Field::new($property["property"]);
         }
 
+        $forms = [];
+        if (isset($entityConfig["edit"])) {
+            $forms["CrudConfigInterface::EDIT"] = "Edit";
+        }
+        if (isset($entityConfig["new"])) {
+            $forms["CrudConfigInterface::NEW"] = "New";
+        }
+
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
             $shortEntity,
             "Crudit\\Config\\",
@@ -186,7 +194,7 @@ class Converter
                 "entityClass" => $shortEntity,
                 "fullEntityClass" => $entityClass,
                 "strictType" => true,
-                "form" => true,
+                "forms" => $forms,
                 "controllerRoute" => "crudit_" . $shortEntity,
             ]
         );
@@ -223,39 +231,18 @@ class Converter
     protected function makeFormType(array $entityConfig): iterable
     {
         $entityClass = $entityConfig["class"];
-        $shortEntity = $this->getShortEntityName($entityClass);
 
-        $fields = [];
-
-        if (isset($entityConfig["new"]["fields"])) {
-            $formConfig = $entityConfig["new"]["fields"];
-        } elseif (isset($entityConfig["edit"]["fields"])) {
-            $formConfig = $entityConfig["edit"]["fields"];
+        if (isset($entityConfig["form"]["fields"])) {
+            $this->addFormType($entityConfig["form"]["fields"], $entityClass, "");
         } else {
-            return;
+            if (isset($entityConfig["edit"]["fields"])) {
+                $this->addFormType($entityConfig["edit"]["fields"], $entityClass, "Edit");
+            }
+            if (isset($entityConfig["new"]["fields"])) {
+                $this->addFormType($entityConfig["new"]["fields"], $entityClass, "New");
+            }
         }
 
-        foreach ($formConfig as $property) {
-            $fields[] = Field::new($property["property"]);
-        }
-
-
-        $formTypeClassNameDetails = $this->generator->createClassNameDetails(
-            $shortEntity,
-            "Form\\",
-            "Type"
-        );
-        $this->generator->generateClass(
-            $formTypeClassNameDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("form/EntityCruditType.php"),
-            [
-                "namespace" => "App",
-                "entityClass" => $shortEntity,
-                "fullEntityClass" => $entityClass,
-                "fields" => $fields,
-                "strictType" => true
-            ]
-        );
         $this->generator->writeChanges();
 
         yield;
@@ -346,6 +333,32 @@ class Converter
         }
 
         return $item;
+    }
+
+    protected function addFormType(array $properties, string $entityClass, string $prefix): void
+    {
+        $shortEntity = $this->getShortEntityName($entityClass);
+
+        $fields = [];
+        foreach ($properties as $property) {
+            $fields[] = Field::new($property["property"]);
+        }
+
+        $formTypeClassNameDetails = $this->generator->createClassNameDetails(
+            $prefix . $shortEntity,
+            "Form\\",
+            "Type"
+        );
+        $this->generator->generateClass(
+            $formTypeClassNameDetails->getFullName(),
+            $this->cruditMaker->getSkeletonTemplate("form/EntityCruditType.php"),
+            [
+                "namespace" => "App",
+                "entityClass" => $prefix . $shortEntity,
+                "fields" => $fields,
+                "strictType" => true
+            ]
+        );
     }
 
     protected function getShortEntityName(string $class): string
