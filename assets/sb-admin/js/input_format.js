@@ -21,14 +21,14 @@ window.addEventListener('load', function () {
         })
     })
     document.querySelectorAll(".crudit-upper-format").forEach(input_elem => {
-        input_elem.addEventListener('keyup', () => {
-            input_elem.value = input_elem.value.toUpperCase()
-        })
+        input_elem.addEventListener('blur', () => {
+            input_elem.value = input_elem.value.toUpperCase();
+        });
     });
     document.querySelectorAll(".crudit-lower-format").forEach(input_elem => {
-        input_elem.addEventListener('keyup', () => {
-            input_elem.value = input_elem.value.toLowerCase()
-        })
+        input_elem.addEventListener('blur', () => {
+            input_elem.value = input_elem.value.toLowerCase();
+        });
     });
     document.querySelectorAll(".crudit-email-format").forEach(input_elem => {
         input_elem.addEventListener('keyup', () => {
