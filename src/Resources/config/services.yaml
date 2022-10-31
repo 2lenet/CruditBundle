@@ -95,3 +95,12 @@ services:
 
     Lle\CruditBundle\Service\SanitizerService: ~
     Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
+
+    Lle\CruditBundle\Service\EasyAdminConverter\Converter:
+        arguments:
+            - '@maker.generator'
+            - '@Lle\CruditBundle\Maker\MakeCrudit'
+            - '@maker.doctrine_helper'
+
+    Lle\CruditBundle\Command\ConvertEasyAdmin:
+        tags: [ 'console.command' ]

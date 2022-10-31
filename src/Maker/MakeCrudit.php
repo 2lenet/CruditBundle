@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Maker;
 
 use Doctrine\Common\Annotations\Annotation;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
+use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
+use Lle\CruditBundle\Filter\FilterType\DateFilterType;
+use Lle\CruditBundle\Filter\FilterType\DateTimeFilterType;
+use Lle\CruditBundle\Filter\FilterType\EntityFilterType;
+use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
+use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -41,7 +49,7 @@ final class MakeCrudit extends AbstractMaker
     private $projectDir;
 
     public function __construct(
-        FileManager    $fileManager,
+        FileManager $fileManager,
         DoctrineHelper $entityHelper,
         KernelInterface $kernel
     )
@@ -172,15 +180,19 @@ final class MakeCrudit extends AbstractMaker
 
     private function createConfigurator(
         InputInterface $input,
-        ConsoleStyle   $io,
-        Generator      $generator,
-        string         $entityClass
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
     ): string
     {
         $fields = $this->getFields($entityClass);
+        $cruds = [
+            'CrudConfigInterface::INDEX' => $fields,
+            'CrudConfigInterface::SHOW' => $fields,
+        ];
 
-        $template = 'CrudAuto';
-        $shortEntity = basename(str_replace('\\', '/', $entityClass));
+        $shortEntity = $this->getBasename($entityClass);
+
         $configuratorClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
             'Crudit\\Config\\',
@@ -189,14 +201,14 @@ final class MakeCrudit extends AbstractMaker
 
         $generator->generateClass(
             $configuratorClassNameDetails->getFullName(),
-            $this->getSkeletonTemplate('config/' . $template . 'Config.php'),
+            $this->getSkeletonTemplate('config/CrudAutoConfig.php'),
             [
                 'namespace' => 'App',
                 'fields' => $fields,
+                'cruds' => $cruds,
                 'entityClass' => $shortEntity,
                 'fullEntityClass' => $entityClass,
                 'strictType' => true,
-                'form' => true,
                 'controllerRoute' => ($input->getArgument('namespace-controller')) ?
                     $this->getStringArgument('namespace-controller', $input) . '_' .
                     $shortEntity :
@@ -205,6 +217,7 @@ final class MakeCrudit extends AbstractMaker
         );
         $generator->writeChanges();
         $this->writeSuccessMessage($io);
+
         return $configuratorClassNameDetails->getFullName();
     }
 
@@ -215,7 +228,12 @@ final class MakeCrudit extends AbstractMaker
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
-                $fields[] = ['name' => $fieldname, 'sortable' => true];
+
+                if ($fieldname === "id") {
+                    continue;
+                }
+
+                $fields[] = Field::new($fieldname);
             }
 
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
@@ -225,27 +243,129 @@ final class MakeCrudit extends AbstractMaker
                     $sortable = false;
                 }
 
-                $fields[] = ['name' => $fieldassoc, 'sortable' => $sortable];
+                $fields[] = Field::new($fieldassoc)->setSortable($sortable);
             }
         }
 
         return $fields;
     }
 
-    private function getSkeletonTemplate(string $templateName): string
+    private function getFilters(string $entityClass): array
+    {
+        $filters = [];
+
+        $metadata = $this->entityHelper->getMetadata($entityClass);
+        if ($metadata instanceof ClassMetadata) {
+            foreach ($metadata->getFieldNames() as $fieldname) {
+
+                if ($fieldname === "id") {
+                    continue;
+                }
+
+                $filters[] = $this->getFilterType($metadata, $fieldname);
+            }
+
+            foreach ($metadata->getAssociationNames() as $fieldassoc) {
+                $filters[] = $this->getFilterType($metadata, $fieldassoc);
+            }
+        }
+
+        return $filters;
+    }
+
+    public function getFilterType(ClassMetadataInfo $metadata, string $property): array
+    {
+        $fields = explode(".", $property);
+        $multiLevelProperty = str_replace(".", ":", $property);
+
+        if (count($fields) > 1) {
+            // multi level
+            for ($i = 0; $i < count($fields); $i++) {
+                $field = $fields[$i];
+
+                if ($i === count($fields) - 1) {
+                    // it's the property
+                    $property = $field;
+                    break;
+                }
+
+                $association = $metadata->getAssociationMapping($field);
+                $metadata = $this->entityHelper->getMetadata($association["targetEntity"]);
+            }
+        }
+
+        if ($metadata->hasAssociation($property)) {
+            $mapping = $metadata->getAssociationMapping($property);
+
+            return [
+                "type" => "EntityFilterType",
+                "property" => $multiLevelProperty,
+                "options" => [$this->getBasename($mapping["targetEntity"]) . "::class"],
+                "uses" => [EntityFilterType::class, $mapping["targetEntity"]],
+            ];
+        }
+
+        $type = $metadata->getTypeOfField($property);
+        switch ($type) {
+            case Types::BOOLEAN:
+                return [
+                    "type" => "BooleanFilterType",
+                    "property" => $multiLevelProperty,
+                    "options" => [],
+                    "uses" => [BooleanFilterType::class],
+                ];
+            case Types::DATETIME_MUTABLE:
+            case Types::DATETIMETZ_MUTABLE:
+            case Types::DATETIME_IMMUTABLE:
+            case Types::DATETIMETZ_IMMUTABLE:
+                return [
+                    "type" => "DateTimeFilterType",
+                    "property" => $multiLevelProperty,
+                    "options" => [],
+                    "uses" => [DateTimeFilterType::class],
+                ];
+            case Types::DATE_IMMUTABLE:
+            case Types::DATE_MUTABLE:
+                return [
+                    "type" => "DateFilterType",
+                    "property" => $multiLevelProperty,
+                    "options" => [],
+                    "uses" => [DateFilterType::class],
+                ];
+            case Types::FLOAT:
+            case Types::INTEGER:
+            case Types::BIGINT:
+            case Types::SMALLINT:
+                return [
+                    "type" => "NumberFilterType",
+                    "property" => $multiLevelProperty,
+                    "options" => [],
+                    "uses" => [NumberFilterType::class],
+                ];
+            default:
+                return [
+                    "type" => "StringFilterType",
+                    "property" => $multiLevelProperty,
+                    "options" => [],
+                    "uses" => [StringFilterType::class],
+                ];
+        }
+    }
+
+    public function getSkeletonTemplate(string $templateName): string
     {
         return __DIR__ . '/../Resources/skeleton/crud/' . $templateName;
     }
 
     private function createFormType(
         InputInterface $input,
-        ConsoleStyle   $io,
-        Generator      $generator,
-        string         $entityClass
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
     ): void
     {
         $fields = $this->getFields($entityClass);
-        $shortEntity = basename(str_replace('\\', '/', $entityClass));
+        $shortEntity = $this->getBasename($entityClass);
 
         $formTypeClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
@@ -277,14 +397,22 @@ final class MakeCrudit extends AbstractMaker
 
     private function createFilterset(
         InputInterface $input,
-        ConsoleStyle   $io,
-        Generator      $generator,
-        string         $entityClass
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
     ): void
     {
-        $shortEntity = basename(str_replace('\\', '/', $entityClass));
+        $shortEntity = $this->getBasename($entityClass);
 
-        $fields = $this->getFields($entityClass);
+        $filters = $this->getFilters($entityClass);
+
+        $uses = [];
+        foreach ($filters as $filter) {
+            array_push($uses, ...$filter["uses"]);
+        }
+        $uses = array_unique($uses);
+        sort($uses);
+
         $filtersetClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
             'Crudit\Datasource\Filterset\\',
@@ -297,8 +425,9 @@ final class MakeCrudit extends AbstractMaker
                 'namespace' => 'App',
                 'entityClass' => $shortEntity,
                 'fullEntityClass' => $input->getArgument('entity-class'),
-                'fields' => $fields,
-                'strictType' => true
+                'filters' => $filters,
+                'strictType' => true,
+                'uses' => $uses,
             ]
         );
         $generator->writeChanges();
@@ -310,7 +439,7 @@ final class MakeCrudit extends AbstractMaker
         if (count(AbstractDoctrineDatasource::getInitSearchFields($entityClass)) == 0) {
             $io->warning("You must set the searchFields property for autocompletion.");
         }
-        $shortEntity = basename(str_replace('\\', '/', $this->getStringArgument('entity-class', $input)));
+        $shortEntity = $this->getBasename($this->getStringArgument('entity-class', $input));
 
         $datasourceClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
@@ -334,7 +463,7 @@ final class MakeCrudit extends AbstractMaker
 
     private function createController(InputInterface $input, ConsoleStyle $io, Generator $generator): string
     {
-        $shortEntity = basename(str_replace('\\', '/', $this->getStringArgument('entity-class', $input)));
+        $shortEntity = $this->getBasename($this->getStringArgument('entity-class', $input));
 
         $controllerClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
@@ -355,6 +484,7 @@ final class MakeCrudit extends AbstractMaker
         );
         $generator->writeChanges();
         $this->writeSuccessMessage($io);
+
         return $controllerClassNameDetails->getFullName();
     }
 
@@ -372,5 +502,10 @@ final class MakeCrudit extends AbstractMaker
             return (string)(new \ReflectionClass($class))->getFileName();
         }
         throw new InvalidArgumentException('entity class ' . $class . ' not found');
+    }
+
+    private function getBasename(string $class): string
+    {
+        return basename(str_replace('\\', '/', $class));
     }
 }
