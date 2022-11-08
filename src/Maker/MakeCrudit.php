@@ -228,7 +228,6 @@ final class MakeCrudit extends AbstractMaker
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
-
                 if ($fieldname === "id") {
                     continue;
                 }
@@ -257,7 +256,6 @@ final class MakeCrudit extends AbstractMaker
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
-
                 if ($fieldname === "id") {
                     continue;
                 }

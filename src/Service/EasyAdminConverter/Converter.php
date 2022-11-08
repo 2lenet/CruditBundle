@@ -6,18 +6,26 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Maker\MakeCrudit;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
 use Symfony\Bundle\MakerBundle\Generator;
-use Symfony\Component\Filesystem\Filesystem;
 
 class Converter
 {
     protected $logs = [];
 
+    protected Generator $generator;
+
+    protected MakeCrudit $cruditMaker;
+
+    protected DoctrineHelper $doctrineHelper;
+
     public function __construct(
-        protected Generator $generator,
-        protected MakeCrudit $cruditMaker,
-        protected DoctrineHelper $doctrineHelper,
+        Generator $generator,
+        MakeCrudit $cruditMaker,
+        DoctrineHelper $doctrineHelper
     )
     {
+        $this->generator = $generator;
+        $this->cruditMaker = $cruditMaker;
+        $this->doctrineHelper = $doctrineHelper;
     }
 
     public function convert(array $config): iterable
@@ -26,7 +34,6 @@ class Converter
 
         if (isset($config["entities"])) {
             foreach ($config["entities"] as $short => $entityConfig) {
-
                 if (isset($ignoreDuplicates[$entityConfig["class"]])) {
                     // EasyAdmin allows to define multiple CRUDs for a single entity
                     // we don"t bother handling that case in Crudit and simply
@@ -267,11 +274,17 @@ class Converter
 
         foreach ($config["design"]["menu"] as $menu) {
             $parent = $this->getMenuItem($config, $menu);
+            if (!$parent) {
+                continue;
+            }
             $items[] = $parent;
 
             if (isset($menu["children"])) {
                 foreach ($menu["children"] as $child) {
                     $item = $this->getMenuItem($config, $child);
+                    if (!$item) {
+                        continue;
+                    }
                     $item["parent"] = $parent["label"];
                     $items[] = $item;
                 }
@@ -297,8 +310,9 @@ class Converter
         yield;
     }
 
-    protected function getMenuItem(array $config, $menu): array
+    protected function getMenuItem(array $config, $menu): ?array
     {
+        $item = null;
         if (is_string($menu)) {
             // entity
             $entity = $config["entities"][$menu]["class"];
@@ -376,10 +390,10 @@ class Converter
         foreach ($entityConfig["show"]["fields"] as $field) {
             if (is_array($field) && isset($field["type"])) {
                 if ($field["type"] === "sublist") {
-
                     $metadata = $this->doctrineHelper->getMetadata($entityConfig["class"]);
                     // "No mapping found for field ..." => your sublist property does not exist
 
+                    $association = null;
                     if (!isset($field["property"])) {
                         foreach ($metadata->getAssociationMappings() as $mapping) {
                             if ($this->getShortEntityName($mapping["targetEntity"]) === $field["entity"]) {
@@ -390,15 +404,18 @@ class Converter
                     } else {
                         $association = $metadata->getAssociationMapping($field["property"]);
                     }
-                    $mappedBy = $association["mappedBy"];
 
-                    $tabs[] = [
-                        "type" => "sublist",
-                        "label" => $field["label"] ?? "tab." . strtolower($field["property"]),
-                        "property" => $mappedBy,
-                        "linkedEntity" => $this->getShortEntityName($association["targetEntity"]),
-                    ];
-                } elseif($field["type"] === "tab" && isset($field["action"]) && $field["action"] === "historyAction") {
+                    if ($association) {
+                        $mappedBy = $association["mappedBy"];
+
+                        $tabs[] = [
+                            "type" => "sublist",
+                            "label" => $field["label"] ?? "tab." . strtolower($field["property"]),
+                            "property" => $mappedBy,
+                            "linkedEntity" => $this->getShortEntityName($association["targetEntity"]),
+                        ];
+                    }
+                } elseif ($field["type"] === "tab" && isset($field["action"]) && $field["action"] === "historyAction") {
                     $tabs[] = [
                         "type" => "history",
                         "label" => $field["label"] ?? "tab.history",
