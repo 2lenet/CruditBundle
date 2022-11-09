@@ -231,7 +231,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $orStatements = $qb->expr()->orX();
         foreach ($this->getAutoCompleteSearchFields() as $field) {
             $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal('%' .$queryTerm . '%'))
+                $qb->expr()->like('root.' . $field, $qb->expr()->literal('%' . $queryTerm . '%'))
             );
 
             // allow null if the user didn't type anything

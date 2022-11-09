@@ -20,13 +20,23 @@ class ConvertEasyAdmin extends Command
 
     protected static $defaultDescription = "Convert an EasyAdmin project to a Crudit Project.";
 
+    private KernelInterface $kernel;
+
+    private Converter $converter;
+
+    private Filesystem $filesystem;
+
     public function __construct(
-        private KernelInterface $kernel,
-        private Converter $converter,
-        private Filesystem $filesystem
+        KernelInterface $kernel,
+        Converter $converter,
+        Filesystem $filesystem
     )
     {
         parent::__construct(null);
+
+        $this->kernel = $kernel;
+        $this->converter = $converter;
+        $this->filesystem = $filesystem;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
