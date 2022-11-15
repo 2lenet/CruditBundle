@@ -52,6 +52,7 @@ crudit:
         createdBy: "Created by"
         updatedAt: "Updated at"
         updatedBy: "Updated by"
+        modification: "{0}has no change|{1} 1 change|]1,Inf[ %count% changes"
 
     filter:
         action: "Filter"

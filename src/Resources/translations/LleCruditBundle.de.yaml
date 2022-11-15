@@ -51,6 +51,7 @@ crudit:
         createdBy: "Erstellt von"
         updatedAt: "Aktualisiert am"
         updatedBy: "Aktualisiert von"
+        modification: "{0}hat keine Modifikation|{1} 1 änderung|]1,Inf[ %count% änderungen"
 
     filter:
         action: "Auswählen"
