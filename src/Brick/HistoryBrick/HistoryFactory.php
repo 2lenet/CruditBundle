@@ -65,7 +65,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 foreach ($log->getData() as $property => $value) {
                     $type = $metadata->getTypeOfField($property);
                     $result = $value;
-
+                    $class = false;
                     if ($metadata->hasAssociation($property) && is_array($value) && $value) {
                         $type = $metadata->isSingleValuedAssociation($property) ? "single_assoc" : "multi_assoc";
                         $association = $metadata->getAssociationMapping($property);
@@ -73,6 +73,8 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         $subItem = $this->em->getRepository($association["targetEntity"])->findOneBy($value);
                         if ($subItem) {
                             $result = (string)$subItem;
+                            $namespace = $this->em->getClassMetadata(get_class($subItem))->getName();
+                            $class = explode("\\", $namespace);
                         } else {
                             $result = "?";
                         }
@@ -91,14 +93,9 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         "type" => $type,
                         "raw" => $value,
                     ];
-
-                    if ($data[$property]['type'] === 'single_assoc') {
-                        $namespace = $this->em->getClassMetadata($subItem::class)->getName();
-                        $class = explode("\\", $namespace);
-
+                    if ($class) {
                         $data[$property] = array_merge($data[$property], ['classname' => strtolower(end($class))]);
                     }
-
                 }
                 $history[] = [
                     "log" => $log,

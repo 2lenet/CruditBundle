@@ -50,9 +50,13 @@
                                                     </span>
                                                 {% elseif value.type == 'single_assoc' %}
                                                     <span class="badge bg-primary">
-                                                      <a href="
+                                                        {% if value.classname is defined %}
+                                                            <a href="
                                                         {{ path('app_crudit_'~ value.classname ~'_show', {'id': value.raw.id}) }}
                                                         " class="text-light text-decoration-none">{{ value.value }}</a>
+                                                        {% else %}
+                                                            {{ value.value }}
+                                                        {% endif %}
                                                     </span>
                                                 {% else %}
                                                     {{ value.value }}
