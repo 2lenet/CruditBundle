@@ -9,18 +9,30 @@
 
                     <div class="card mb-3">
                         <div class="card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-history-{{ loop.index }}" aria-expanded="false" aria-controls="collapse-history-{{ loop.index }}">
-                        <span class="badge me-4 bg-secondary">
-                            {{ ('crudit.history.action.' ~ entry.log.action)|trans(domain='LleCruditBundle') }}
-                        </span>
-                            <span class="me-4 fw-bold">{{ entry.log.username }}</span>
-                            <span>
-                            <i class="far fa-clock"></i>&nbsp;
-                            {{ entry.log.loggedAt|date('d/m/Y H:i') }}
-                        </span>
-
-                            <span class="btn float-end card-toggle">
-                            <i class="fa fa-chevron-down"></i>
-                        </span>
+                            <div class="row">
+                                <div class="col-xl-2">
+                                <span class="badge me-4 bg-secondary">
+                                {{ ('crudit.history.action.' ~ entry.log.action)|trans(domain='LleCruditBundle') }}
+                                </span>
+                                </div>
+                                <div class="col-xl-2">
+                                    <span class="me-4 fw-bold">{{ entry.log.username }}</span>
+                                </div>
+                                <div class="col-xl-2">
+                                <span><i class="far fa-clock"></i>&nbsp;
+                                    {{ entry.log.loggedAt|date('d/m/Y H:i') }}
+                                </span>
+                                </div>
+                                <div class="col-lg-5">
+                                    {% set count =  entry.data|length %}
+                                    <i class="fa fa-exchange"></i> {{ 'crudit.field.modification'|trans({'%count%': count}, domain='LleCruditBundle') }}
+                                </div>
+                                <div class="col-md-1">
+                                <span class="btn float-end card-toggle">
+                                <i class="fa fa-chevron-down"></i>
+                                </span>
+                                </div>
+                            </div>
                         </div>
                         <div id="collapse-history-{{ loop.index }}" class="collapse">
                             <div class="card-body">
@@ -38,7 +50,9 @@
                                                     </span>
                                                 {% elseif value.type == 'single_assoc' %}
                                                     <span class="badge bg-primary">
-                                                        {{ value.value }}
+                                                      <a href="
+                                                        {{ path('app_crudit_'~ value.classname ~'_show', {'id': value.raw.id}) }}
+                                                        " class="text-light text-decoration-none">{{ value.value }}</a>
                                                     </span>
                                                 {% else %}
                                                     {{ value.value }}
@@ -59,7 +73,8 @@
                 </div>
             </div>
         {% else %}
-            <p>{{ 'crudit.history.no_history'|trans(domain='LleCruditBundle') }}</p>
+            <div class="m-4 text-center"><p>{{ 'crudit.history.no_history'|trans(domain='LleCruditBundle') }}</p>
+            </div>
         {% endif %}
     </div>
 </div>

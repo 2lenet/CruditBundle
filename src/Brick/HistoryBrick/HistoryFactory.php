@@ -9,6 +9,7 @@ use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class HistoryFactory extends AbstractBasicBrickFactory
@@ -90,8 +91,15 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         "type" => $type,
                         "raw" => $value,
                     ];
-                }
 
+                    if ($data[$property]['type'] === 'single_assoc') {
+                        $namespace = $this->em->getClassMetadata($subItem::class)->getName();
+                        $class = explode("\\", $namespace);
+
+                        $data[$property] = array_merge($data[$property], ['classname' => strtolower(end($class))]);
+                    }
+
+                }
                 $history[] = [
                     "log" => $log,
                     "data" => $data,
