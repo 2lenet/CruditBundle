@@ -63,6 +63,14 @@ $input-group-prepend-length: 60px;
                 z-index: $zindex-dropdown;
             }
         }
+
+        @media (max-width: 1400px) {
+            input[type="date"] {
+                padding-left: 0.3rem;
+                padding-right: 0.3rem;
+                font-size: 13px;
+            }
+        }
     }
 }
 
