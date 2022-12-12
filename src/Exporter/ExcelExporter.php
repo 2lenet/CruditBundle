@@ -68,9 +68,10 @@ class ExcelExporter extends AbstractExporter
         $response->headers->set("Content-Type", "application/vnd.ms-excel");
 
         $filename = $params->getFilename() ?? "export";
+        $date = (new \DateTime())->format("YmdHis");
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.xls"
+            $filename . "_" . $date . ".xls"
         );
         $response->headers->set("Content-Disposition", $disposition);
 
