@@ -74,6 +74,7 @@ class Field
         unset($options['path']);
         unset($options['template']);
         $this->options = $options;
+
         return $this;
     }
 
@@ -85,6 +86,7 @@ class Field
     public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -96,6 +98,7 @@ class Field
     public function setEditInPlace(bool $editInPlace): self
     {
         $this->editInPlace = $editInPlace;
+
         return $this;
     }
 
@@ -103,12 +106,14 @@ class Field
     {
         $this->options['edit_route'] = $editRoute;
         $this->editInPlace = true;
+
         return $this;
     }
 
     public function setCssClass($cssClass): self
     {
         $this->options["cssClass"] = $cssClass;
+
         return $this;
     }
 
@@ -126,6 +131,7 @@ class Field
     {
         $this->name = $name;
         $this->label = ($this->label) ? $this->name : $this->label;
+
         return $this;
     }
 
@@ -142,6 +148,7 @@ class Field
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -153,6 +160,7 @@ class Field
     public function setSortable(bool $sort): self
     {
         $this->sort = $sort;
+
         return $this;
     }
 
@@ -160,6 +168,7 @@ class Field
     {
         $this->path = $path;
         $this->linkId = $linkId;
+
         return $this;
     }
 
@@ -178,9 +187,10 @@ class Field
         return $this->template;
     }
 
-    public function setTemplate(string $template): self
+    public function setTemplate(?string $template): self
     {
         $this->template = $template;
+
         return $this;
     }
 
@@ -192,6 +202,7 @@ class Field
     public function setRuptGroup(int $ruptGroup): self
     {
         $this->ruptGroup = $ruptGroup;
+
         return $this;
     }
 
