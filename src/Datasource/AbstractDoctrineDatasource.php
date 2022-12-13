@@ -110,6 +110,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $metadata = $this->entityManager->getClassMetadata($this->getClassName());
 
         if ($requestParams) {
+            $i = 0;
             foreach ($requestParams->getFilters() as $filter) {
                 $alias = $filter->getAlias() ?? "root";
                 $field = $alias . "." . $filter->getField();
@@ -124,11 +125,16 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                     $field = $joinAlias;
                 }
 
+                $parameterName = "filter_" . $filter->getAlias() . "_" . $i;
                 if ($filter->getOperator() == "IN") {
-                    $qb->andWhere($field . " " . $filter->getOperator() . "(" . $filter->getValue() . ")");
+                    $qb->andWhere($field . " " . $filter->getOperator() . "(:$parameterName)");
                 } else {
-                    $qb->andWhere($field . $filter->getOperator() . $filter->getValue());
+                    $qb->andWhere($field . " " . $filter->getOperator() . " :$parameterName");
                 }
+
+                $qb->setParameter($parameterName, $filter->getValue());
+
+                $i++;
             }
         }
 
