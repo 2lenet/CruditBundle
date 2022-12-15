@@ -15,7 +15,10 @@
                 {% if view.config.datasource_params.previous %}
                     {% set merge_params = {(view.config.name|lower~'_offset'): 0} %}
                     {% set parameters = app.request.query.all()|merge(merge_params) %}
-                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    {% if tab is defined %}
+                        {% set parameters = parameters|merge({ tab: tab.id }) %}
+                    {% endif %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode ~ (tab is defined ? '#' ~ tab.id) %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.firstPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.first'|trans({}, 'LleCruditBundle') }}">
                             <i class="fa fa-angle-double-left"></i>
@@ -23,7 +26,10 @@
                     </li>
                     {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage-2)} %}
                     {% set parameters = app.request.query.all()|merge(merge_params) %}
-                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    {% if tab is defined %}
+                        {% set parameters = parameters|merge({ tab: tab.id }) %}
+                    {% endif %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode ~ (tab is defined ? '#' ~ tab.id) %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.previousPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.previous'|trans({}, 'LleCruditBundle') }}">
                             <i class="fa fa-angle-left"></i>
@@ -35,7 +41,10 @@
                     {% for page in view.config.datasource_params.pages %}
                         {% set merge_params = {(view.config.name|lower~'_offset'): (page-1)*view.config.datasource_params.limit} %}
                         {% set parameters = app.request.query.all()|merge(merge_params) %}
-                        {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                        {% if tab is defined %}
+                            {% set parameters = parameters|merge({ tab: tab.id }) %}
+                        {% endif %}
+                        {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode ~ (tab is defined ? '#' ~ tab.id) %}
                         {% set current = view.config.datasource_params.current(page) %}
                         <li class="page-item {% if current %}active{% endif %}">
                             <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.goToPage'|trans({'nb': page}, 'LleCruditBundle') }}">{{ page }}</a>
@@ -46,7 +55,10 @@
                 {% if view.config.datasource_params.next %}
                     {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage)} %}
                     {% set parameters = app.request.query.all()|merge(merge_params) %}
-                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    {% if tab is defined %}
+                        {% set parameters = parameters|merge({ tab: tab.id }) %}
+                    {% endif %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode ~ (tab is defined ? '#' ~ tab.id) %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.nextPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.next'|trans({}, 'LleCruditBundle') }}">
                             <i class="fa fa-angle-right"></i>
@@ -54,7 +66,10 @@
                     </li>
                     {% set merge_params = {(view.config.name|lower~'_offset'): ((view.config.datasource_params.count/view.config.datasource_params.limit)|round(0, 'ceil')-1)*view.config.datasource_params.limit} %}
                     {% set parameters = app.request.query.all()|merge(merge_params) %}
-                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                    {% if tab is defined %}
+                        {% set parameters = parameters|merge({ tab: tab.id }) %}
+                    {% endif %}
+                    {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode ~ (tab is defined ? '#' ~ tab.id) %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url }}" title="{{ 'crudit.pagination.lastPage'|trans({}, 'LleCruditBundle') }}" aria-label="{{ 'crudit.pagination.last'|trans({}, 'LleCruditBundle') }}">
                             <i class="fa fa-angle-double-right"></i>
@@ -71,7 +86,10 @@
                         {% for limit in view.config.choices_nb_items %}
                             {% set merge_params = {(view.config.name|lower~'_limit'): limit} %}
                             {% set parameters = app.request.query.all()|merge(merge_params) %}
-                            {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode %}
+                            {% if tab is defined %}
+                                {% set parameters = parameters|merge({ tab: tab.id }) %}
+                            {% endif %}
+                            {% set url = app.request.pathinfo ~ '?' ~ parameters|url_encode ~ (tab is defined ? '#' ~ tab.id) %}
                             <option value="{{ url }}" {{ limit == view.config.datasource_params.limit ? "selected" : "" }}>{{ limit }}</option>
                         {% endfor %}
                     </select>
