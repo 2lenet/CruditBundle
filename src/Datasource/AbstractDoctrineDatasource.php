@@ -267,7 +267,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function delete($id): bool
     {
-        $resource = $this->entityManager->getReference($this->getClassName(), $id);
+        $resource = $this->entityManager->find($this->getClassName(), $id);
         if ($resource) {
             $this->entityManager->remove($resource);
             $this->entityManager->flush();
