@@ -34,7 +34,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         $entityClass = $this->getClassName();
 
-        $this->searchFields = array_merge($this->searchFields, self::getInitSearchFields($entityClass));
+        $this->searchFields = array_merge($this->searchFields, static::getInitSearchFields($entityClass));
     }
 
     public static function getInitSearchFields(string $entityClass): array
