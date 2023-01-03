@@ -3,7 +3,13 @@
         {% for tab in view.config.tabs %}
             {% if tab.role == null or is_granted(tab.role) %}
                 <li class="nav-item " role="presentation">
-                    <a class="nav-link {% if(loop.first) %}active{% endif %}" data-bs-toggle="tab" href="#{{ tab.id }}"
+                    <a
+                            class="nav-link
+                            {% if (loop.first and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                            active
+                            {% endif %}"
+                            data-bs-toggle="tab"
+                            href="#{{ tab.id }}"
                        role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}</a>
                 </li>
             {% endif %}
@@ -13,7 +19,13 @@
     <div class="tab-content">
         {% for tab in view.config.tabs %}
             {% if tab.role == null or is_granted(tab.role) %}
-                <div id="{{ tab.id }}" role="tabpanel" class="tab-pane fade {% if(loop.first) %}show active{% endif %}">
+                <div
+                        id="{{ tab.id }}"
+                        role="tabpanel"
+                        class="tab-pane fade
+                        {% if (loop.first and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                            show active
+                        {% endif %}">
                     {% for view in tab.views %}
                         {% include view.indexTemplate with { 'view': view, 'tab': tab } only %}
                     {% endfor %}
