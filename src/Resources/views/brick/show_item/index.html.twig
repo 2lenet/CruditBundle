@@ -1,18 +1,45 @@
 <div class="card shadow mb-4 {% if view.data.resource.resource and view.data.resource.resource.getCssClass is defined %}{{ view.data.resource.resource.getCssClass }}{% endif %}">
-<div class="card-body">
+    <div class="card-body">
         <div class="row" id="{{ view.data.resource.id }}">
-            {% for field in view.data.resource.fields %}
-                <div class="crudit-field {{ field.options.cssClass }}">
-                    <dl class="row">
-                        <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                        <dd class="col-sm-9">
-                            {% if field.field.path %}<a
-                                    href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
-                                {{ field.value |raw }}
-                                {% if field.field.path %}</a>{% endif %}
-                        </dd>
-                    </dl>
-                </div>
+            {% for key, field in view.data.resource.fields %}
+                {% if field is iterable %}
+                    <div class="col-sm-12">
+                        <div class="card box box-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title">{{ key|trans }}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for cardField in field %}
+                                        <div class="crudit-field {{ cardField.options.cssClass }}">
+                                            <dl class="row">
+                                                <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
+                                                <dd class="col-sm-9">
+                                                    {% if cardField.field.path %}<a
+                                                            href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                                        {{ cardField.value |raw }}
+                                                        {% if cardField.field.path %}</a>{% endif %}
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="crudit-field {{ field.options.cssClass }}">
+                        <dl class="row">
+                            <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
+                            <dd class="col-sm-9">
+                                {% if field.field.path %}<a
+                                        href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                    {{ field.value |raw }}
+                                    {% if field.field.path %}</a>{% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
