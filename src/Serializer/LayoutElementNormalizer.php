@@ -6,14 +6,13 @@ namespace Lle\CruditBundle\Serializer;
 
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class LayoutElementNormalizer implements NormalizerInterface
 {
-    /** @var ObjectNormalizer $normalizer */
+    /** @var NormalizerInterface $normalizer */
     private $normalizer;
 
-    public function __construct(ObjectNormalizer $normalizer)
+    public function __construct(NormalizerInterface $normalizer)
     {
         $this->normalizer = $normalizer;
     }

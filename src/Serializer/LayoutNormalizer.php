@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Serializer;
 
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class LayoutNormalizer implements NormalizerInterface
 {
-    /** @var ObjectNormalizer  */
+    /** @var NormalizerInterface  */
     private $normalizer;
 
-    public function __construct(ObjectNormalizer $normalizer)
+    public function __construct(NormalizerInterface $normalizer)
     {
         $this->normalizer = $normalizer;
     }
