@@ -80,14 +80,27 @@ class ShowConfig extends AbstractBrickConfig
     public function addField(Field $field): self
     {
         $this->fields[] = $field;
+
+        return $this;
+    }
+
+    public function addArrayFields(string $cardTitle, array $fields): self
+    {
+        $this->fields[$cardTitle] = $fields;
+
         return $this;
     }
 
     public function addFields(array $fields): self
     {
-        foreach ($fields as $field) {
-            $this->addField($field);
+        foreach ($fields as $key => $field) {
+            if (is_array($field)) {
+                $this->addArrayFields($key, $field);
+            } else {
+                $this->addField($field);
+            }
         }
+
         return $this;
     }
 
