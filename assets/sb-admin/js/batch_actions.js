@@ -40,7 +40,10 @@ window.addEventListener('load', function () {
                     document.getElementById(form.name + '_ids').value = ids;
                 });
             } else {
-                event.currentTarget.href = event.currentTarget.href + '?ids=' + ids;
+                let url = new URL(event.currentTarget.href);
+                url.searchParams.set('ids', ids);
+
+                event.currentTarget.href = url.toString();
             }
         });
     });
