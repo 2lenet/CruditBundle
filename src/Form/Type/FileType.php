@@ -5,6 +5,8 @@ namespace Lle\CruditBundle\Form\Type;
 use Lle\CruditBundle\Contracts\SanitizerInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -16,24 +18,37 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class FileType extends VichFileType
 {
     protected SanitizerInterface $sanitizer;
+
     protected UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(SanitizerInterface $sanitizer, UrlGeneratorInterface $urlGenerator, StorageInterface $storage, UploadHandler $handler, PropertyMappingFactory $factory, PropertyAccessorInterface $propertyAccessor = null)
+    protected Request $request;
+
+    public function __construct(
+        SanitizerInterface $sanitizer,
+        UrlGeneratorInterface $urlGenerator,
+        StorageInterface $storage,
+        UploadHandler $handler,
+        PropertyMappingFactory $factory,
+        PropertyAccessorInterface $propertyAccessor = null,
+        RequestStack $requestStack
+    )
     {
         parent::__construct($storage, $handler, $factory, $propertyAccessor);
+
         $this->sanitizer = $sanitizer;
         $this->urlGenerator = $urlGenerator;
+        $this->request = $requestStack->getMainRequest();
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         parent::buildView($view, $form, $options);
 
-        if ($form->getParent() && $form->getParent()->getData() && $form->getParent()->getData()->getId()) {
+        if ($form->getParent() && $form->getParent()->getData() && $this->request->attributes->has("id")) {
             if ($options['download_route']) {
                 $url = $this->urlGenerator->generate(
                     $options['download_route'],
-                    ['id' => $form->getParent()->getData()->getId()]
+                    ['id' => $this->request->attributes->get("id")]
                 );
                 $view->vars['download_uri'] = $url;
             }
