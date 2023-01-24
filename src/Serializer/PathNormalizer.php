@@ -7,17 +7,16 @@ namespace Lle\CruditBundle\Serializer;
 use Lle\CruditBundle\Dto\Path;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class PathNormalizer implements NormalizerInterface
 {
     /** @var RouterInterface */
     private $router;
 
-    /** @var ObjectNormalizer */
+    /** @var NormalizerInterface */
     private $normalizer;
 
-    public function __construct(RouterInterface $router, ObjectNormalizer $normalizer)
+    public function __construct(RouterInterface $router, NormalizerInterface $normalizer)
     {
         $this->router = $router;
         $this->normalizer = $normalizer;
