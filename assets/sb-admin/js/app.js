@@ -2,6 +2,7 @@ import "bootstrap";
 
 import "./editinplace";
 import "./batch_actions";
+import './input_date';
 import "./input_format";
 import "./markdown_textarea";
 import './filters';
