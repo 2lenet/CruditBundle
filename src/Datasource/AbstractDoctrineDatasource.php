@@ -81,20 +81,8 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->distinct();
 
-        if ($this->filterset && $requestParams->isEnableFilters()) {
-            $this->applyFilters($qb);
-        }
+        $this->applyParamsOnQuery($qb, $requestParams);
 
-        if ($requestParams->getLimit()) {
-            $qb->setMaxResults($requestParams->getLimit());
-        }
-        foreach ($requestParams->getSorts() as $sort) {
-            $this->addOrderBy($qb, $sort[0], $sort[1]);
-        }
-
-        if ($requestParams->getOffset()) {
-            $qb->setFirstResult($requestParams->getOffset());
-        }
         return $qb->getQuery()->execute();
     }
 
@@ -103,6 +91,13 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb = $this->buildSublistQueryBuilder($requestParams);
         $qb->distinct();
 
+        $this->applyParamsOnQuery($qb, $requestParams);
+
+        return $qb->getQuery()->execute();
+    }
+
+    public function applyParamsOnQuery(QueryBuilder $qb, ?DatasourceParams $requestParams): QueryBuilder
+    {
         if ($this->filterset && $requestParams->isEnableFilters()) {
             $this->applyFilters($qb);
         }
@@ -117,7 +112,8 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
-        return $qb->getQuery()->execute();
+
+        return $qb;
     }
 
     /**
