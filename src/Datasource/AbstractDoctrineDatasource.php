@@ -98,6 +98,28 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
+    public function sublist(?DatasourceParams $requestParams): iterable
+    {
+        $qb = $this->buildSublistQueryBuilder($requestParams);
+        $qb->distinct();
+
+        if ($this->filterset && $requestParams->isEnableFilters()) {
+            $this->applyFilters($qb);
+        }
+
+        if ($requestParams->getLimit()) {
+            $qb->setMaxResults($requestParams->getLimit());
+        }
+        foreach ($requestParams->getSorts() as $sort) {
+            $this->addOrderBy($qb, $sort[0], $sort[1]);
+        }
+
+        if ($requestParams->getOffset()) {
+            $qb->setFirstResult($requestParams->getOffset());
+        }
+        return $qb->getQuery()->execute();
+    }
+
     /**
      * @param DatasourceParams|null $requestParams
      * @return QueryBuilder
@@ -139,6 +161,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
 
         return $qb;
+    }
+
+    public function buildSublistQueryBuilder(?DatasourceParams $requestParams): QueryBuilder
+    {
+        return $this->buildQueryBuilder($requestParams);
     }
 
     protected function applyFilters(QueryBuilder $qb)

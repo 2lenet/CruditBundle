@@ -13,6 +13,8 @@ interface DatasourceInterface
 
     public function list(?DatasourceParams $requestParams): iterable;
 
+    public function sublist(?DatasourceParams $requestParams): iterable;
+
     public function count(?DatasourceParams $requestParams): int;
 
     /** @param string|int $id */

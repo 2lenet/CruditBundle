@@ -68,7 +68,7 @@ class SublistFactory extends AbstractBasicBrickFactory
         $dsParams->setEnableFilters(false);
         $dsParams->setFilters([$fkFilter]);
         $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
-        $resources = $brickConfigurator->getDatasource()->list($dsParams);
+        $resources = $brickConfigurator->getDatasource()->sublist($dsParams);
 
         foreach ($resources as $resource) {
             $lines[] = $this->resourceResolver->resolve(
