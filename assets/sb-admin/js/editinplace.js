@@ -94,9 +94,13 @@ window.addEventListener('load', function () {
         });
 
         if (eip_val) {
-
             if (eip_input.type === "date") {
                 eip_val.textContent = new Date(eip_input.value).toLocaleDateString();
+            } else if (eip_input.tomselect !== undefined) {
+                let entityId = eip_input.tomselect.getValue();
+                let entity = eip_input.tomselect.options[entityId];
+                eip_val.textContent = entity.text;
+                eip_input.tomselect.clear();
             } else {
                 eip_val.textContent = eip_input.value;
             }
