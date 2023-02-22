@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace <?= $namespace; ?>;
 
-<?php if($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $entityClass ?>FilterSet;<?php echo "\n"; } ?>
+<?php if($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $prefixFilename ?>FilterSet;<?php echo "\n"; } ?>
 use App\Entity\<?= $entityClass ?>;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 
-class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
+class <?= $prefixFilename ?>Datasource extends AbstractDoctrineDatasource
 {
     public function getClassName(): string
     {
@@ -21,9 +21,9 @@ class <?= $entityClass ?>Datasource extends AbstractDoctrineDatasource
 
     /**
     * @required
-    * @param <?= $entityClass ?>FilterSet $filterSet
+    * @param <?= $prefixFilename ?>FilterSet $filterSet
     */
-    public function setFilterset(<?= $entityClass ?>FilterSet $filterSet): void
+    public function setFilterset(<?= $prefixFilename ?>FilterSet $filterSet): void
     {
          $this->filterset = $filterSet;
     }
