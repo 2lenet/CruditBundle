@@ -57,7 +57,7 @@
     </div>
     {% if download_uri or image_uri is defined or form.delete is defined %}
         <div class="col-md-3">
-            {%- if image_uri is defined and image_uri matches '/.*\.(png|jpg|jpeg|gif|svg)$/' -%}
+            {%- if image_uri is defined and image_uri != null and image_uri matches '/.*\.(png|jpg|jpeg|gif|svg)$/' -%}
                 <img class="col-12 mb-2" src="{{ image_uri }}" alt="" />
             {%- endif -%}
             {%- if download_uri -%}
