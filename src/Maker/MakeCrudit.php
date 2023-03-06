@@ -207,6 +207,7 @@ final class MakeCrudit extends AbstractMaker
                 'fields' => $fields,
                 'cruds' => $cruds,
                 'entityClass' => $shortEntity,
+                'prefixFilename' => $shortEntity,
                 'fullEntityClass' => $entityClass,
                 'strictType' => true,
                 'controllerRoute' => ($input->getArgument('namespace-controller')) ?
@@ -377,6 +378,7 @@ final class MakeCrudit extends AbstractMaker
             [
                 'namespace' => 'App',
                 'entityClass' => $shortEntity,
+                'prefixFilename' => $shortEntity,
                 'fullEntityClass' => $input->getArgument('entity-class'),
                 'fields' => $fields,
                 'strictType' => true
@@ -423,6 +425,7 @@ final class MakeCrudit extends AbstractMaker
             [
                 'namespace' => 'App',
                 'entityClass' => $shortEntity,
+                'prefixFilename' => $shortEntity,
                 'fullEntityClass' => $input->getArgument('entity-class'),
                 'filters' => $filters,
                 'strictType' => true,
@@ -451,6 +454,7 @@ final class MakeCrudit extends AbstractMaker
             [
                 'namespace' => 'App',
                 'entityClass' => $shortEntity,
+                'prefixFilename' => $shortEntity,
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'strictType' => true,
@@ -478,6 +482,7 @@ final class MakeCrudit extends AbstractMaker
                 'namespace' => 'App',
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'entityClass' => $shortEntity,
+                'prefixFilename' => $shortEntity,
                 'strictType' => true
             ]
         );

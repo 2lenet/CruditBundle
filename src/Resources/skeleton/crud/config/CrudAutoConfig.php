@@ -14,9 +14,9 @@ use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use App\Crudit\Datasource\<?= $entityClass ?>Datasource;
+use App\Crudit\Datasource\<?= $prefixFilename ?>Datasource;
 
-class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
+class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 {
     public function __construct(
 <?php foreach ($tabs as $tab) { ?>
@@ -24,7 +24,7 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
         private <?= $tab["linkedEntity"] ?>CrudConfig $<?= strtolower($tab["linkedEntity"]) ?>CrudConfig,
 <?php } ?>
 <?php } ?>
-        <?= $entityClass ?>Datasource $datasource
+        <?= $prefixFilename ?>Datasource $datasource
     )
     {
         $this->datasource = $datasource;
@@ -37,15 +37,29 @@ class <?= $entityClass ?>CrudConfig extends AbstractCrudConfig
     public function getFields($key): array
     {
 <?php foreach ($fields as $field) { ?>
-        $<?php echo $field->getName() ?> = Field::new("<?php echo $field->getName() ?>");
+<?php if (is_array($field)) { ?>
+<?php foreach ($field as $value) { ?>
+        $<?php echo str_replace(".", "", $value->getName()) ?> = Field::new("<?php echo $value->getName() ?>");
+<?php } ?>
+<?php } else { ?>
+        $<?php echo str_replace(".", "", $field->getName()) ?> = Field::new("<?php echo $field->getName() ?>");
+<?php } ?>
 <?php } ?>
 
         switch ($key) {
 <?php foreach ($cruds as $crud => $crudFields) { ?>
             case <?= $crud ?>:
                 $fields = [
-<?php foreach ($crudFields as $field) { ?>
-                    $<?= $field->getName() ?><?php if (!$field->isSortable()) { echo "->setSortable(false)"; } ?>,
+<?php foreach ($crudFields as $key => $field) { ?>
+<?php if (is_array($field)) { ?>
+                    "<?= $key ?>" => [
+<?php foreach ($field as $value) { ?>
+                        $<?= str_replace(".", "", $value->getName()) ?><?php if (!$value->isSortable()) { echo "->setSortable(false)"; } ?>,
+<?php } ?>
+                    ],
+<?php } else { ?>
+                    $<?= str_replace(".", "", $field->getName()) ?><?php if (!$field->isSortable()) { echo "->setSortable(false)"; } ?>,
+<?php } ?>
 <?php } ?>
                 ];
                 break;

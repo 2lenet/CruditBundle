@@ -12,7 +12,7 @@ use Lle\CruditBundle\Datasource\AbstractFilterSet;
 use <?= $use ?>;
 <?php } ?>
 
-class <?= $entityClass ?>FilterSet extends AbstractFilterSet
+class <?= $prefixFilename ?>FilterSet extends AbstractFilterSet
 {
     public function getFilters(): array
     {
@@ -21,5 +21,5 @@ class <?= $entityClass ?>FilterSet extends AbstractFilterSet
             <?= $filter["type"] ?>::new("<?= $filter["property"] ?>"<?php if ($filter["options"]) { ?>, <?= implode(", ", $filter["options"]) ?><?php } ?>),
 <?php } ?>
         ];
-     }
+    }
 }

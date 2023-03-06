@@ -10,7 +10,7 @@ namespace <?= $namespace ?>;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class <?= $entityClass ?>Type extends AbstractType
+class <?= $prefixFilename ?>Type extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -21,6 +21,6 @@ class <?= $entityClass ?>Type extends AbstractType
 
     public function getName(): string
     {
-        return "<?= strtolower($entityClass) ?>_form";
+        return "<?= strtolower($prefixFilename) ?>_form";
     }
 }

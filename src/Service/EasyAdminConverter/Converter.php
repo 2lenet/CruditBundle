@@ -34,23 +34,13 @@ class Converter
 
         if (isset($config["entities"])) {
             foreach ($config["entities"] as $short => $entityConfig) {
-                if (isset($ignoreDuplicates[$entityConfig["class"]])) {
-                    // EasyAdmin allows to define multiple CRUDs for a single entity
-                    // we don"t bother handling that case in Crudit and simply
-                    // warn the user
-                    yield "warning" => "Duplicate detected for " . $entityConfig["class"] . " (" . $short . "). Please check the CrudConfig and the FormType.";
-                    continue;
-                }
-
                 if (isset($entityConfig["filter"])) {
-                    yield from $this->makeFilterSet($entityConfig);
+                    yield from $this->makeFilterSet($entityConfig, $short);
                 }
-                yield from $this->makeDatasource($entityConfig);
-                yield from $this->makeCrudConfig($entityConfig);
-                yield from $this->makeController($entityConfig);
-                yield from $this->makeFormType($entityConfig);
-
-                $ignoreDuplicates[$entityConfig["class"]] = true;
+                yield from $this->makeDatasource($entityConfig, $short);
+                yield from $this->makeCrudConfig($entityConfig, $short);
+                yield from $this->makeController($entityConfig, $short);
+                yield from $this->makeFormType($entityConfig, $short);
             }
         }
 
@@ -60,7 +50,7 @@ class Converter
         yield "warning" => "Note that the converter is not perfect. Some things were ignored, some things were modified. You need to check all pages.";
     }
 
-    protected function makeFilterSet(array $entityConfig): iterable
+    protected function makeFilterSet(array $entityConfig, string $prefixFilename): iterable
     {
         $entityClass = $entityConfig["class"];
         $shortEntity = $this->getShortEntityName($entityClass);
@@ -79,7 +69,7 @@ class Converter
         sort($uses);
 
         $filtersetClassNameDetails = $this->generator->createClassNameDetails(
-            $shortEntity,
+            $prefixFilename,
             "Crudit\Datasource\Filterset\\",
             "FilterSet"
         );
@@ -89,7 +79,7 @@ class Converter
             $this->cruditMaker->getSkeletonTemplate("filterset/EntityFilterset.php"),
             [
                 "namespace" => "App",
-                "entityClass" => $shortEntity,
+                "prefixFilename" => $prefixFilename,
                 "fullEntityClass" => $entityClass,
                 "filters" => $filters,
                 "strictType" => true,
@@ -101,13 +91,13 @@ class Converter
         yield;
     }
 
-    protected function makeDatasource(array $entityConfig): iterable
+    protected function makeDatasource(array $entityConfig, string $prefixFilename): iterable
     {
         $entityClass = $entityConfig["class"];
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $datasourceClassNameDetails = $this->generator->createClassNameDetails(
-            $shortEntity,
+            $prefixFilename,
             "Crudit\\Datasource\\",
             "Datasource"
         );
@@ -116,6 +106,7 @@ class Converter
             $this->cruditMaker->getSkeletonTemplate("datasource/DoctrineDatasource.php"),
             [
                 "namespace" => "App",
+                "prefixFilename" => $prefixFilename,
                 "entityClass" => $shortEntity,
                 "hasFilterset" => isset($entityConfig["filter"]),
                 "fullEntityClass" => $entityClass,
@@ -127,7 +118,7 @@ class Converter
         yield;
     }
 
-    protected function makeCrudConfig(array $entityConfig): iterable
+    protected function makeCrudConfig(array $entityConfig, string $prefixFilename): iterable
     {
         $entityClass = $entityConfig["class"];
         $shortEntity = $this->getShortEntityName($entityClass);
@@ -148,15 +139,38 @@ class Converter
                 ->setSortable($sortable);
         }
 
+        $group = false;
+        $groupName = null;
+        $groupId = 0;
         foreach ($entityConfig["show"]["fields"] ?? [] as $property) {
-            if (!isset($property["property"])) {
+            if ((!isset($property["property"]) && !(isset($property["type"]) && $property["type"] === "group")) || (isset($property["type"]) && $property["type"] !== "group")) {
                 yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
                 continue;
             }
 
             // the duplicate field is on purpose
-            $fields[] = Field::new($property["property"]);
-            $cruds["CrudConfigInterface::SHOW"][] = Field::new($property["property"]);
+            if (!isset($property["type"])) {
+                $fields[] = Field::new($property["property"]);
+            }
+
+            // group management
+            if (isset($property["type"]) && $property["type"] === "group") {
+                $group = true;
+
+                if (isset($property["label"])) {
+                    $groupName = $property["label"];
+                    $cruds["CrudConfigInterface::SHOW"][$groupName] = [];
+                } else {
+                    $groupName = ++$groupId;
+                    $cruds["CrudConfigInterface::SHOW"][$groupName] = [];
+                }
+            } else {
+                if ($group) {
+                    $cruds["CrudConfigInterface::SHOW"][$groupName][] = Field::new($property["property"]);
+                } else {
+                    $cruds["CrudConfigInterface::SHOW"][] = Field::new($property["property"]);
+                }
+            }
         }
 
         foreach ($entityConfig["export"]["fields"] ?? [] as $property) {
@@ -192,7 +206,7 @@ class Converter
         }
 
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
-            $shortEntity,
+            $prefixFilename,
             "Crudit\\Config\\",
             "CrudConfig"
         );
@@ -205,7 +219,7 @@ class Converter
                 // array_unique with flag SORT_REGULAR will compare object properties.
                 "fields" => array_unique($fields, SORT_REGULAR),
                 "cruds" => $cruds,
-                "entityClass" => $shortEntity,
+                "prefixFilename" => $prefixFilename,
                 "fullEntityClass" => $entityClass,
                 "strictType" => true,
                 "forms" => $forms,
@@ -219,13 +233,13 @@ class Converter
         yield;
     }
 
-    protected function makeController(array $entityConfig): iterable
+    protected function makeController(array $entityConfig, string $prefixFilename): iterable
     {
         $entityClass = $entityConfig["class"];
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
-            $shortEntity,
+            $prefixFilename,
             "Controller\\Crudit\\",
             "Controller"
         );
@@ -235,7 +249,7 @@ class Converter
             [
                 "namespace" => "App",
                 "fullEntityClass" => $entityClass,
-                "entityClass" => $shortEntity,
+                "prefixFilename" => $prefixFilename,
                 "strictType" => true
             ]
         );
@@ -244,18 +258,16 @@ class Converter
         yield;
     }
 
-    protected function makeFormType(array $entityConfig): iterable
+    protected function makeFormType(array $entityConfig, string $prefixFilename): iterable
     {
-        $entityClass = $entityConfig["class"];
-
         if (isset($entityConfig["form"]["fields"])) {
-            $this->addFormType($entityConfig["form"]["fields"], $entityClass, "");
+            $this->addFormType($entityConfig["form"]["fields"], "", $prefixFilename);
         } else {
             if (isset($entityConfig["edit"]["fields"])) {
-                $this->addFormType($entityConfig["edit"]["fields"], $entityClass, "Edit");
+                $this->addFormType($entityConfig["edit"]["fields"], "Edit", $prefixFilename);
             }
             if (isset($entityConfig["new"]["fields"])) {
-                $this->addFormType($entityConfig["new"]["fields"], $entityClass, "New");
+                $this->addFormType($entityConfig["new"]["fields"], "New", $prefixFilename);
             }
         }
 
@@ -358,17 +370,15 @@ class Converter
         return $item;
     }
 
-    protected function addFormType(array $properties, string $entityClass, string $prefix): void
+    protected function addFormType(array $properties, string $prefix, string $prefixFilename): void
     {
-        $shortEntity = $this->getShortEntityName($entityClass);
-
         $fields = [];
         foreach ($properties as $property) {
             $fields[] = Field::new($property["property"]);
         }
 
         $formTypeClassNameDetails = $this->generator->createClassNameDetails(
-            $prefix . $shortEntity,
+            $prefix . $prefixFilename,
             "Form\\",
             "Type"
         );
@@ -377,7 +387,7 @@ class Converter
             $this->cruditMaker->getSkeletonTemplate("form/EntityCruditType.php"),
             [
                 "namespace" => "App",
-                "entityClass" => $prefix . $shortEntity,
+                "prefixFilename" => $prefix . $prefixFilename,
                 "fields" => $fields,
                 "strictType" => true
             ]
