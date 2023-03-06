@@ -12,7 +12,8 @@ class WorkflowFilterType extends AbstractFilterType
     public static function new(string $fieldname, WorkflowInterface $workflow): self
     {
         return (new self($fieldname))
-            ->setWorkflow($workflow);
+            ->setWorkflow($workflow)
+            ->setAdditionnalKeys(['items']);
     }
 
     public function apply(QueryBuilder $queryBuilder): void
@@ -33,7 +34,9 @@ class WorkflowFilterType extends AbstractFilterType
             isset($this->data["value"])
             && $this->data["value"]
         ) {
-            $queryBuilder->setParameter($paramname, $this->data["value"]);
+            $ids = explode(",", $this->data["value"]);
+
+            $queryBuilder->setParameter($paramname, $ids);
             $queryBuilder->andWhere($query);
         }
     }
