@@ -101,16 +101,30 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Normal select
     document.querySelectorAll(".tom-select").forEach(select => {
+        const inioptions = JSON.parse(select.dataset.options);
+
         new TomSelect("#" + select.id,
             {
                 maxItems: select.dataset.maxitems,
                 plugins: [
                     "remove_button"
                 ],
+                valueField: 'id',
+                labelField: 'text',
+                searchField: 'text',
+                options: inioptions,
                 onChange(value) {
                     let items = [];
+                    let values;
                     if (value != '') {
-                        value.split(',').forEach(v => {
+
+                        if (Array.isArray(value)) {
+                            values = value;
+                        } else {
+                            values = value.split(',');
+                        }
+
+                        values.forEach(v => {
                             items.push({id: v, text: this.options[v].text});
                         });
                     }
