@@ -62,6 +62,11 @@ services:
     Lle\CruditBundle\Twig\CruditTelephoneFilterExtension:
         tags: [ twig.extension ]
 
+    Lle\CruditBundle\Twig\RouteFilteredLinkExtension:
+        arguments:
+            - '@router'
+        tags: [ twig.extension ]
+
     Lle\CruditBundle\Twig\SanitizerExtension:
         autowire: true
         tags: [ twig.extension ]
