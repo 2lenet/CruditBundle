@@ -19,7 +19,7 @@ $input-group-prepend-length: 60px;
         display: flex;
         width: calc(100% - #{$input-group-prepend-length});
 
-        .form-control, .entity-select {
+        .form-control, .entity-select, .tom-select {
             background-color: transparent;
             border: solid 1px $gray-400;
             border-top-left-radius: 0;
@@ -31,7 +31,7 @@ $input-group-prepend-length: 60px;
             border-radius: 0;
         }
 
-        .entity-select {
+        .entity-select, .tom-select {
             & .ts-input {
                 position: absolute;
                 top: 0;
