@@ -26,34 +26,43 @@
         </span>
     </a>
 {% else %}
-    {% set active = crudit_menu_active(element, app.request) %}
-    <li class="nav-item {% if active %}active{% endif %} {{ element.cssClass }}">
-        {% if element.path %}
-            {% set path = path(element.path.route, element.path.params) %}
+    {% set mustBeDisplayed = (element.children|length) ? false : true %}
+    {% for child in element.children %}
+        {% if is_granted(child.role) %}
+            {% set mustBeDisplayed = true %}
         {% endif %}
-        <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path|default('#') }}">
-            {% if element.icon and element.icon.img %}
-                <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
-            {% elseif element.icon %}
-                <i class="nav-icon {{ element.icon.cssClass }}"></i>
+    {% endfor %}
+
+    {% if mustBeDisplayed %}
+        {% set active = crudit_menu_active(element, app.request) %}
+        <li class="nav-item {% if active %}active{% endif %} {{ element.cssClass }}">
+            {% if element.path %}
+                {% set path = path(element.path.route, element.path.params) %}
             {% endif %}
-            <span>
-                {{ element.libelle|trans() }}
-                {% for badge in element.badges %}
-                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
-                {% endfor %}
-            </span>
-        </a>
-        {% if element.children|length %}
-            <div id="collapse-{{ element.id|lower }}" class="collapse {% if active %}show{% endif %}">
-                <div class="py-0 collapse-inner">
-                    {% for child in element.children %}
-                        {% if is_granted(child.role) %}
-                            {% include child.template with {'element': child, 'submenu': true} %}
-                        {% endif %}
+            <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}" {% if element.children|length %}data-bs-toggle="collapse" data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path|default('#') }}">
+                {% if element.icon and element.icon.img %}
+                    <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
+                {% elseif element.icon %}
+                    <i class="nav-icon {{ element.icon.cssClass }}"></i>
+                {% endif %}
+                <span>
+                    {{ element.libelle|trans() }}
+                    {% for badge in element.badges %}
+                        <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
                     {% endfor %}
+                </span>
+            </a>
+            {% if element.children|length %}
+                <div id="collapse-{{ element.id|lower }}" class="collapse {% if active %}show{% endif %}">
+                    <div class="py-0 collapse-inner">
+                        {% for child in element.children %}
+                            {% if is_granted(child.role) %}
+                                {% include child.template with {'element': child, 'submenu': true} %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
-        {% endif %}
-    </li>
+            {% endif %}
+        </li>
+    {% endif %}
 {% endif %}
