@@ -1,11 +1,13 @@
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs" role="tablist">
+        {% set active = false %}
         {% for tab in view.config.tabs %}
             {% if tab.role == null or is_granted(tab.role) %}
                 <li class="nav-item " role="presentation">
                     <a
                             class="nav-link
-                            {% if (loop.first and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                            {% if (not active and is_granted(tab.role) and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                            {% set active = true %}
                             active
                             {% endif %}"
                             data-bs-toggle="tab"
@@ -17,13 +19,15 @@
     </ul>
 
     <div class="tab-content">
+        {% set active = false %}
         {% for tab in view.config.tabs %}
             {% if tab.role == null or is_granted(tab.role) %}
                 <div
                         id="{{ tab.id }}"
                         role="tabpanel"
                         class="tab-pane fade
-                        {% if (loop.first and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                        {% if (not active and is_granted(tab.role) and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                        {% set active = true %}
                             show active
                         {% endif %}">
                     {% for view in tab.views %}
