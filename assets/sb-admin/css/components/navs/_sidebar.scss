@@ -176,6 +176,10 @@ $icon-width: 32px;
     &-divider {
         margin: 0 1rem 1rem;
         border-top: 1px solid fade-out($white, 0.85);
+
+        & + .sidebar-divider {
+            display: none;
+        }
     }
 
     &-heading {
