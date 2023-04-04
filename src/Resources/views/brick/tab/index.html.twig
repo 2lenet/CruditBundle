@@ -6,7 +6,7 @@
                 <li class="nav-item " role="presentation">
                     <a
                             class="nav-link
-                            {% if (not active and is_granted(tab.role) and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                            {% if (not active and (tab.role and is_granted(tab.role)) and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
                             {% set active = true %}
                             active
                             {% endif %}"
@@ -26,7 +26,7 @@
                         id="{{ tab.id }}"
                         role="tabpanel"
                         class="tab-pane fade
-                        {% if (not active and is_granted(tab.role) and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
+                        {% if (not active and (tab.role and is_granted(tab.role)) and not app.request.query.has('tab') or app.request.query.get('tab') == tab.id) %}
                         {% set active = true %}
                             show active
                         {% endif %}">
