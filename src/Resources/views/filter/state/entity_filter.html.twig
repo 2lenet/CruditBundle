@@ -1,6 +1,12 @@
 {% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
 {% block value %}
-    {%  set items = data['items']|json_decode %}
+    {% if data.items is not defined and data.value is defined and data.value != '' %}
+        {% set data = data|merge({
+            items: data.value|split(',')|map((v) => entity_id_to_tomselect(v, filter.entityClass))|json_encode
+        }) %}
+    {% endif %}
+
+    {% set items = data['items']|json_decode %}
     {% for val in items %}
         {% set label = val.text %}
         <span class="badge bg-secondary">{{ label }}</span>

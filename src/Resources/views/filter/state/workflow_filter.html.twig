@@ -1,6 +1,6 @@
 {% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
 {% block value %}
-    {%  set items = data['items']|json_decode %}
+    {% set items = data['items']|json_decode %}
     {% for val in items %}
         <span class="badge bg-secondary">{{ ('wf.state.' ~ val.id) | trans(domain=view.config.translation_domain) }}</span>
     {% endfor %}

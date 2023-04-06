@@ -83,4 +83,9 @@ class EntityFilterType extends AbstractFilterType
     {
         return $this->dataRoute;
     }
+
+    public function getEntityClass(): string
+    {
+        return $this->entityClass;
+    }
 }

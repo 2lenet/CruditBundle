@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Twig;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -12,47 +13,49 @@ class RouteFilteredLinkExtension extends AbstractExtension
 {
     private RouterInterface $router;
 
-    public function __construct(RouterInterface $router)
+    private EntityManagerInterface $em;
+
+    public function __construct(RouterInterface $router, EntityManagerInterface $em)
     {
         $this->router = $router;
+        $this->em = $em;
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('crudit_route_filtered_link', [$this, 'getRouteFilteredLink'])
+            new TwigFunction('crudit_route_filtered_link', [$this, 'getRouteFilteredLink']),
+            new TwigFunction('entity_id_to_tomselect', [$this, 'getEntityIdToTomselect'])
         ];
     }
 
-    public function getRouteFilteredLink(string $entity, array $filters)
+    public function getRouteFilteredLink(string $entity, array $filters): string
     {
         $route = 'app_crudit_' . $entity . '_index';
 
-        try {
-            $this->router->generate($route);
-        } catch (RouteNotFoundException $e) {
-            return null;
-        }
-
         $parameters = [];
-        foreach ($filters as $filter) {
-            $filterName = 'filter_' . $entity . '_' . $filter[0];
+        foreach ($filters as $field => $filter) {
+            $filterName = 'filter_' . $entity . '_' . $field;
 
-            if (isset($filter[2])) {
-                $parameters[$filterName . '_op'] = $filter[2];
-            } else {
+            if (!array_key_exists('op', $filter)) {
                 $parameters[$filterName . '_op'] = 'eq';
             }
 
-            if (is_array($filter[1])) {
-                foreach ($filter[1] as $key => $value) {
-                    $parameters[$filterName . '_' . $key] = $value;
-                }
-            } else {
-                $parameters[$filterName . '_value'] = $filter[1];
+            foreach ($filter as $key => $value) {
+                $parameters[$filterName . '_' . $key] = $value;
             }
         }
 
         return $this->router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
+    }
+
+    public function getEntityIdToTomselect(int $id, string $class): array
+    {
+        $item = $this->em->find($class, $id);
+
+        return [
+            'id' => $id,
+            'text' => (string)$item
+        ];
     }
 }
