@@ -9,7 +9,6 @@ use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
-use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class HistoryFactory extends AbstractBasicBrickFactory

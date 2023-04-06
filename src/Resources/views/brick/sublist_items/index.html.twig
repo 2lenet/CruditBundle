@@ -1,16 +1,17 @@
-<div class="card shadow mb-4">
-    <div class="card-header py-1">
-        {% if tab is defined %}
-            {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab }%}
-        {% else %}
-            {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
-        {% endif %}
-    </div>
-    <div class="card-body">
-        <div class="table-responsive crudit-sublist">
-            <table id="{{ view.id }}_table" class="table table-sm table-hover">
-                {% if not view.options.noHeader|default(false) %}
-                    <thead class="thead-light">
+{% if not view.role or (view.role and is_granted(view.role)) %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-1">
+            {% if tab is defined %}
+                {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab }%}
+            {% else %}
+                {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive crudit-sublist">
+                <table id="{{ view.id }}_table" class="table table-sm table-hover">
+                    {% if not view.options.noHeader|default(false) %}
+                        <thead class="thead-light">
                         <tr>
                             {% for field in view.config.fields %}
                                 {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
@@ -45,9 +46,9 @@
                                 <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
                             {% endif %}
                         </tr>
-                    </thead>
-                {% endif %}
-                <tbody>
+                        </thead>
+                    {% endif %}
+                    <tbody>
                     {% set ruptval1 = "" %}
                     {% set ruptval2 = "" %}
 
@@ -73,7 +74,7 @@
                                         <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }} - {{ column.value|raw }}</th>
                                     </tr>
                                 {% endif %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                                <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% set ruptval2 = column.value %}
                             {% endif %}
 
@@ -83,11 +84,11 @@
                                 {% endif %}
                                 <td>
                                     {% if column.field.path %}
-                                        <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
-                                    {% endif %}
-                                            {{ column.value|raw }}
-                                    {% if column.field.path %}
-                                        </a>
+                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
+                                        {% endif %}
+                                        {{ column.value|raw }}
+                                        {% if column.field.path %}
+                                    </a>
                                     {% endif %}
                                 </td>
                             {% endif %}
@@ -124,11 +125,12 @@
                         {% endif %}
                         </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer py-1">
+            {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
         </div>
     </div>
-    <div class="card-footer py-1">
-        {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
-    </div>
-</div>
+{% endif %}
