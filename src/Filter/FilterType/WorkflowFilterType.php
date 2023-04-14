@@ -103,4 +103,18 @@ class WorkflowFilterType extends AbstractFilterType
 
         return $this;
     }
+
+    public function setData($data): void
+    {
+        parent::setData($data);
+
+        $items = [];
+        if (!isset($data['items']) && isset($data['value']) && $data['value'] !== '') {
+            foreach (explode(',', $data['value']) as $value) {
+                $items[] = ['id' => $value];
+            }
+        }
+
+        $this->data["items"] = json_encode($items);
+    }
 }
