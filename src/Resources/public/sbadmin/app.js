@@ -43889,20 +43889,20 @@ var __webpack_exports__ = {};
   !*** ./assets/sb-admin/js/app.js ***!
   \***********************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-/* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editinplace */ "./assets/sb-admin/js/editinplace.js");
-/* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_editinplace__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _batch_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./batch_actions */ "./assets/sb-admin/js/batch_actions.js");
-/* harmony import */ var _batch_actions__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_batch_actions__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _input_date__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./input_date */ "./assets/sb-admin/js/input_date.js");
-/* harmony import */ var _input_date__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_input_date__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _input_format__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./input_format */ "./assets/sb-admin/js/input_format.js");
-/* harmony import */ var _input_format__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_input_format__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _markdown_textarea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./markdown_textarea */ "./assets/sb-admin/js/markdown_textarea.js");
-/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./filters */ "./assets/sb-admin/js/filters.js");
-/* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./form */ "./assets/sb-admin/js/form.js");
-/* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_form__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _multisearch__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./multisearch */ "./assets/sb-admin/js/multisearch.js");
+/* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./editinplace */ "./assets/sb-admin/js/editinplace.js");
+/* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_editinplace__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _batch_actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./batch_actions */ "./assets/sb-admin/js/batch_actions.js");
+/* harmony import */ var _batch_actions__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_batch_actions__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _input_date__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./input_date */ "./assets/sb-admin/js/input_date.js");
+/* harmony import */ var _input_date__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_input_date__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _input_format__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./input_format */ "./assets/sb-admin/js/input_format.js");
+/* harmony import */ var _input_format__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_input_format__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _markdown_textarea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./markdown_textarea */ "./assets/sb-admin/js/markdown_textarea.js");
+/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./filters */ "./assets/sb-admin/js/filters.js");
+/* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./form */ "./assets/sb-admin/js/form.js");
+/* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_form__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _multisearch__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./multisearch */ "./assets/sb-admin/js/multisearch.js");
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
 
 
 
@@ -43932,6 +43932,14 @@ window.addEventListener('load', function () {
     tabEl.addEventListener('click', function () {
       window.location.hash = tabEl.attributes.href.value;
     });
+  });
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+  popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_8__.Popover(popoverTriggerEl);
+  });
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_8__.Tooltip(tooltipTriggerEl);
   });
 });
 })();
