@@ -10,6 +10,7 @@ import './form';
 import './multisearch';
 import './scroll-to-top';
 import './sidebar';
+import * as bootstrap from "bootstrap";
 
 window.addEventListener('load', function () {
     // tabs select from anchor
@@ -26,4 +27,12 @@ window.addEventListener('load', function () {
             window.location.hash = tabEl.attributes.href.value;
         });
     });
+    let popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+    })
+    let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
 });

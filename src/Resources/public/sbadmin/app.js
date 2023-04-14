@@ -43912,6 +43912,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 window.addEventListener('load', function () {
   // sidebar Toggle
   document.getElementById("sidebarToggle").addEventListener('click', function () {
@@ -43932,6 +43933,14 @@ window.addEventListener('load', function () {
     tabEl.addEventListener('click', function () {
       window.location.hash = tabEl.attributes.href.value;
     });
+  });
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+  popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_0__.Popover(popoverTriggerEl);
+  });
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_0__.Tooltip(tooltipTriggerEl);
   });
 });
 })();
