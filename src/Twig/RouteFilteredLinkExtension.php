@@ -3,7 +3,6 @@
 namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
