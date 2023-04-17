@@ -24,7 +24,7 @@
 <body id="page-top">
     {% block body %}
         <div id="wrapper">
-            <div id="collapse-sidebar" class="sidebar collapse">
+            <div id="collapse-sidebar" class="sidebar">
                 <ul class="bg-gradient-primary">
                     {% block brand %}
                         {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
@@ -52,6 +52,12 @@
                 {% endblock %}
             </div>
         </div>
+    {% endblock %}
+
+    {% block scroll_top %}
+        <a id="scroll-to-top" class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+        </a>
     {% endblock %}
 
     {% block body_javascript %}{% endblock %}

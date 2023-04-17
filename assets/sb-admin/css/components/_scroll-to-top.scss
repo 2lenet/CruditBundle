@@ -1,0 +1,21 @@
+.scroll-to-top {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    display: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: $white;
+    background-color: rgba($gray-800, 0.5);
+    text-align: center;
+    line-height: 46px;
+    &:focus,
+    &:hover {
+        color: $white;
+        background-color: $gray-800;
+    }
+
+    &--visible {
+        display: initial;
+    }
+}
