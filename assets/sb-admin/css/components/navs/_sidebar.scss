@@ -1,13 +1,17 @@
 $icon-width: 32px;
 
 .sidebar {
-    width: $sidebar-collapsed-width !important;
+    position: fixed;
+    display: flex !important;
+    width: 0 !important;
+    height: 100vh;
     overflow: initial !important;
     z-index: 10000;
     @include media('>mobile') {
-        position: sticky;
-        display: flex !important;
         width: $sidebar-base-width !important;
+    }
+    &.toggled {
+        width: $sidebar-collapsed-width !important;
     }
 
     > ul {

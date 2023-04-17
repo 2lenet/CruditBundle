@@ -6,16 +6,11 @@ import "./markdown_textarea";
 import './filters';
 import './form';
 import './multisearch';
+import './scroll-to-top';
+import './sidebar';
 import * as bootstrap from "bootstrap";
 
 window.addEventListener('load', function () {
-
-    // sidebar Toggle
-    document.getElementById("sidebarToggle").addEventListener('click', function () {
-        document.querySelector("body").classList.toggle("sidebar-toggled");
-        document.querySelector(".sidebar").classList.toggle("toggled");
-    });
-
     // tabs select from anchor
     var hash = window.location.hash;
     var triggerEl = document.querySelector('ul.nav a[href="' + hash + '"]')

@@ -1,14 +1,25 @@
 #wrapper {
     display: flex;
-    max-height: 100vh;
+}
 
+#content-wrapper {
+    width: 100%;
+    background-color: $gray-100;
+    overflow-x: hidden;
+    @include media('>mobile') {
+        width: calc(100% - $sidebar-base-width);
+        margin-left: $sidebar-base-width;
+    }
+
+    #content {
+        flex: 1 0 auto;
+    }
+}
+
+.sidebar-toggled {
     #content-wrapper {
-        width: 100%;
-        background-color: $gray-100;
-        overflow-x: hidden;
-        #content {
-            flex: 1 0 auto;
-        }
+        width: calc(100% - $sidebar-collapsed-width);
+        margin-left: $sidebar-collapsed-width;
     }
 }
 
