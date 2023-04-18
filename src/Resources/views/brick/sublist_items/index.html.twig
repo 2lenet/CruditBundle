@@ -1,4 +1,4 @@
-{% if not view.role or (view.role and is_granted(view.role)) %}
+{% if view.role is not defined or not view.role or is_granted(view.role) %}
     <div class="card shadow mb-4">
         <div class="card-header py-1">
             {% if tab is defined %}
