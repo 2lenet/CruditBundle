@@ -22,8 +22,16 @@
                                 <div class="row">
             {% else %}
                 {% if field.vars.name != '_token' %}
-                    <div class="{{ field.vars.attr.class|default('') }}">
-                        <div class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row flex-row-reverse align-items-start{% endif %}">
+                    <div class="position-relative {{ field.vars.attr.class|default('') }}">
+                        <div class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row flex-row-reverse align-items-start{% endif %}"
+                            {% if
+                                (field.vars.tooltip is defined and field.vars.tooltip)
+                                or (field.vars.tooltip_html is defined and field.vars.tooltip_html)
+                                or (field.vars.tooltip_template is defined and field.vars.tooltip_template)
+                            %}
+                                style="max-width: calc(100% - 40px)"
+                            {% endif %}
+                        >
                             {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
                             {{ form_widget(field, {attr}) }}
                             {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
@@ -34,6 +42,7 @@
                                 {{ form_errors(field) }}
                             </div>
                         </div>
+                        {% include '@LleCrudit/brick/form/_tooltip.html.twig' %}
                     </div>
                 {% endif %}
             {% endif %}
