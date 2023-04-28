@@ -8,6 +8,7 @@ import "./markdown_textarea";
 import './filters';
 import './form';
 import './multisearch';
+import './html_textarea';
 
 window.addEventListener('load', function () {
 

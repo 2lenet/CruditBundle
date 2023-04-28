@@ -5,12 +5,12 @@
             name="{{ id }}_items"
     >
     <input class="form-control entity-select"
-            data-url="{{ url }}"
-            data-options="{{ items|default('[]')|escape('html_attr') }}"
-            data-maxitems="{{ multiple ? 'null' : '1' }}"
-            id="{{ id }}"
-            name="{{ full_name }}"
-            value="{{ value|default('') }}"
+           data-url="{{ url }}"
+           data-options="{{ items|default('[]')|escape('html_attr') }}"
+           data-maxitems="{{ multiple ? 'null' : '1' }}"
+           id="{{ id }}"
+           name="{{ full_name }}"
+           value="{{ value|default('') }}"
             {{ required ? 'required' }}
     />
 {% endblock %}
@@ -22,7 +22,8 @@
             {% for locale in locales %}
                 {% set isActiveTab = (locale == currentlocale) ? 'active' : '' %}
                 <li class="nav-item {{ isActiveTab }}" role="presentation">
-                    <a class="nav-link {{ isActiveTab }}" href="{{ '#' ~ fieldname ~ '_' ~ locale }}" aria-expanded="true" data-bs-toggle="tab">
+                    <a class="nav-link {{ isActiveTab }}" href="{{ '#' ~ fieldname ~ '_' ~ locale }}"
+                       aria-expanded="true" data-bs-toggle="tab">
                         {{ tablabels[locale] }}
                     </a>
                 </li>
@@ -58,12 +59,13 @@
     {% if download_uri or image_uri is defined or form.delete is defined %}
         <div class="col-md-3">
             {%- if image_uri is defined and image_uri != null and image_uri matches '/.*\.(png|jpg|jpeg|gif|svg)$/' -%}
-                <img class="col-12 mb-2" src="{{ image_uri }}" alt="" />
+                <img class="col-12 mb-2" src="{{ image_uri }}" alt=""/>
             {%- endif -%}
             {%- if download_uri -%}
                 <div class="d-flex">
                     <i class="fas fa-download mt-1 text-primary"></i>&nbsp;
-                    <a class="d-block text-nowrap" href="{{ asset_helper is same as(true) ? asset(download_uri) : download_uri }}" download>
+                    <a class="d-block text-nowrap"
+                       href="{{ asset_helper is same as(true) ? asset(download_uri) : download_uri }}" download>
                         {{ translation_domain is same as(false) ? download_label : download_label|trans({}, translation_domain) }}
                         {% if filename is defined %}
                             &nbsp;:&nbsp;
@@ -77,4 +79,11 @@
             {%- endif -%}
         </div>
     {% endif %}
+{% endblock %}
+{% block crudit_html_widget %}
+    <div id="ckeditor_{{ id }}" class="ckeditor">
+        {{ data }}
+    </div>
+    <input id="hidden_ckeditor_{{ id }}" class="hidden_ckeditor" type="hidden" name="{{ full_name }}"/>
+    <button id="modal_ckeditor_{{ id }}" type="button" class="btn btn-primary">Let'sssssss go</button>
 {% endblock %}

@@ -1,3 +1,4 @@
 {
+  "bundles/crudit/app.css": "/app.css",
   "bundles/crudit/app.js": "/app.js"
 }
