@@ -40,6 +40,8 @@ class FormConfig extends AbstractBrickConfig
 
     protected bool $sublist = false;
 
+    protected ?string $title = null;
+
     public static function new(array $options = []): self
     {
         return new self($options);
@@ -172,6 +174,18 @@ class FormConfig extends AbstractBrickConfig
     public function setCancelPath(?Path $cancelPath): FormConfig
     {
         $this->cancelPath = $cancelPath;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title;
 
         return $this;
     }
