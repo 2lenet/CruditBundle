@@ -66,9 +66,10 @@ class FormFactory extends AbstractBasicBrickFactory
             ->setTemplate('@LleCrudit/brick/form')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
+                'title' => $brickConfigurator->getTitle(),
                 'form' => $form->createView(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
-                ]);
+            ]);
 
         return $view;
     }
