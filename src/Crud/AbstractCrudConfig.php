@@ -67,7 +67,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         /**
          * Create new resource action
          */
-        $actions[] = ListAction::new(
+        $actions[CrudConfigInterface::ACTION_ADD] = ListAction::new(
             'action.add',
             $this->getPath(CrudConfigInterface::NEW),
             Icon::new('plus')
@@ -76,7 +76,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         /**
          * Export filtered list action
          */
-        $actions[] = ListAction::new(
+        $actions[CrudConfigInterface::ACTION_EXPORT] = ListAction::new(
             "action.export",
             $this->getPath(CrudConfigInterface::EXPORT),
             Icon::new("file-export")
@@ -94,17 +94,20 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getItemActions(): array
     {
         $actions = [];
-        $actions[] = ItemAction::new(
+
+        $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
             'action.show',
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
         )->setCssClass('btn btn-primary btn-sm mr-1');
-        $actions[] = EditAction::new(
+
+        $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
-        $actions[] = DeleteAction::new(
+
+        $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
@@ -118,18 +121,20 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getShowActions(): array
     {
         $actions = [];
-        $actions[] = ItemAction::new(
+
+        $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
             'action.list',
             $this->getPath(CrudConfigInterface::INDEX),
             Icon::new('list')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
 
-        $actions[] = EditAction::new(
+        $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )->setCssClass('btn btn-secondary btn-sm mr-1');
-        $actions[] = DeleteAction::new(
+
+        $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
