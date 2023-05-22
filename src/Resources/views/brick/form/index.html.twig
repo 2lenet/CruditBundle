@@ -1,7 +1,6 @@
 {% if view.role is not defined or not view.role or is_granted(view.role) %}
     {% set form = view.data.form %}
     {% set currentGroup = 'FIRST' %}
-
     <div class="card mb-4">
         {% if view.data.title is defined and view.data.title != '' %}
             {% block form_title %}
@@ -11,7 +10,7 @@
             {% endblock %}
         {% endif %}
         <div class="card-body">
-            {{ form_start(form, {'attr': {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
+            {{ form_start(form, {'attr': {'id': view.id ~ '-' ~ form.vars.name, 'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
             {{ form_errors(form) }}
             {% for field in form.getIterator() %}
                 {% if field.vars.isGroup is defined and field.vars.isGroup %}
@@ -62,14 +61,16 @@
                         </div>
             {% endif %}
 
-            <div class="btn-group" role="group">
-                <button class="btn btn-primary" type="submit">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
-                {% if view.data.cancel_path %}
-                    <a class="btn btn-danger" href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}">
-                        {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
-                    </a>
-                {% endif %}
-            </div>
+            {% block form_buttons %}
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary" type="submit">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
+                    {% if view.data.cancel_path %}
+                        <a class="btn btn-danger" href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}">
+                            {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endblock %}
             {{ form_end(form) }}
         </div>
     </div>
