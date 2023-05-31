@@ -26,6 +26,9 @@
                         {% elseif not action.disabled %}
                             href="{{ action.url ?? path(action.path.route, params) }}"
                         {% endif %}
+                        {% if action.target %}
+                            target="{{ action.target }}"
+                        {% endif %}
                 >
                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
                     {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
