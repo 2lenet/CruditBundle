@@ -12,10 +12,13 @@
         <div class="card-body">
             {% set id = form.vars.name %}
 
+            {% set form_attributes =  {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}%}
             {% if view.id is defined and view.id %}
                 {% set id = view.id ~ '-' ~ form.vars.name %}
+                {% set form_attributes = form_attributes|merge({'id': id}) %}
             {% endif %}
-            {{ form_start(form, {'attr': {'id': id, 'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
+
+            {{ form_start(form, {'attr': form_attributes}) }}
             {{ form_errors(form) }}
             {% for field in form.getIterator() %}
                 {% if field.vars.isGroup is defined and field.vars.isGroup %}
