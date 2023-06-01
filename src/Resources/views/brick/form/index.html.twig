@@ -10,7 +10,12 @@
             {% endblock %}
         {% endif %}
         <div class="card-body">
-            {{ form_start(form, {'attr': {'id': view.id ~ '-' ~ form.vars.name, 'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
+            {% set id = form.vars.name %}
+
+            {% if view.id is defined and view.id %}
+                {% set id = view.id ~ '-' ~ form.vars.name %}
+            {% endif %}
+            {{ form_start(form, {'attr': {'id': id, 'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'}}) }}
             {{ form_errors(form) }}
             {% for field in form.getIterator() %}
                 {% if field.vars.isGroup is defined and field.vars.isGroup %}
