@@ -26,6 +26,7 @@
                         {% elseif not action.disabled %}
                             href="{{ action.url ?? path(action.path.route, params) }}"
                         {% endif %}
+
                         {% if action.target is defined and action.target %}
                             target="{{ action.target }}"
                         {% endif %}
