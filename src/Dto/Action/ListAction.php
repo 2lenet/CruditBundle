@@ -34,6 +34,8 @@ class ListAction
 
     protected ?string $form = "";
 
+    protected ?string $target = null;
+
     public static function new(string $label, Path $path, ?Icon $icon = null): self
     {
         return (new ListAction($label, $path))
@@ -166,6 +168,18 @@ class ListAction
     public function setForm(?string $form): self
     {
         $this->form = $form;
+
+        return $this;
+    }
+
+    public function getTarget(): ?string
+    {
+        return $this->target;
+    }
+
+    public function setTarget(string $target): self
+    {
+        $this->target = $target;
 
         return $this;
     }
