@@ -63,6 +63,9 @@ trait TestHelperTrait
 
         $showElements = $crawler->filter('span.btn-wrapper > a > i.fa-search');
         $this->checkAction($showElements, $client);
+
+        $exportElements = $crawler->filter('span.btn-wrapper > a > i.fa-file-export');
+        $this->checkAction($editElements, $client);
     }
 
     protected function checkAction(Crawler $elements, KernelBrowser $client): void
