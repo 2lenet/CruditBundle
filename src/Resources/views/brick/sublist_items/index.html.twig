@@ -2,7 +2,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-1">
             {% if tab is defined %}
-                {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab }%}
+                {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab } %}
             {% else %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
             {% endif %}
@@ -71,7 +71,8 @@
                             {% if column.field.ruptGroup == 2 %}
                                 {% if ruptval2 != column.value %}
                                     <tr>
-                                        <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }} - {{ column.value|raw }}</th>
+                                        <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }}
+                                            - {{ column.value|raw }}</th>
                                     </tr>
                                 {% endif %}
                                 <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
@@ -106,7 +107,7 @@
                                             <span class="btn-wrapper"
                                                   title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                                                 <a
-                                                        class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
+                                                    class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
                                                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                                                         {% elseif not action.disabled %}

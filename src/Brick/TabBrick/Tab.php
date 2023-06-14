@@ -10,10 +10,8 @@ class Tab
 {
     /** @var BrickConfigInterface[] */
     private $bricks;
-
     /** @var string */
     private $label;
-
     private $role = null;
 
     private function __construct(array $bricks)
@@ -35,12 +33,14 @@ class Tab
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
         return $this;
     }
 
     public function add(BrickConfigInterface $brick): self
     {
         $this->bricks[] = $brick;
+
         return $this;
     }
 
@@ -58,6 +58,7 @@ class Tab
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
         return $this;
     }
 }

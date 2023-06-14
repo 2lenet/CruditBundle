@@ -8,7 +8,6 @@ class Badge
 {
     /** @var string */
     private $libelle;
-
     /** @var string */
     private $cssClass;
 

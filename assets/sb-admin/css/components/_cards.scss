@@ -27,6 +27,7 @@ $timeline-icon-size: 30px;
         justify-content: center;
         align-items: flex-start;
         width: $timeline-size;
+
         &::after {
             content: '';
             position: absolute;

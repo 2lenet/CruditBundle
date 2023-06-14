@@ -66,6 +66,7 @@ class CruditExtension extends AbstractExtension
                 $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
                     (int)strrpos($linkRoute, '_') :
                     strlen($linkRoute);
+
                 return
                     (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
                     (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
@@ -73,6 +74,7 @@ class CruditExtension extends AbstractExtension
                 return $item->getPath()->getParams()['resource'] === $request->get('resource');
             }
         }
+
         return false;
     }
 

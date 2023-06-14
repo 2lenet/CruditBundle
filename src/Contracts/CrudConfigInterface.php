@@ -15,7 +15,6 @@ interface CrudConfigInterface
     public const NEW = "NEW";
     public const DELETE = "DELETE";
     public const EXPORT = "EXPORT";
-
     public const ACTION_LIST = "list";
     public const ACTION_SHOW = "show";
     public const ACTION_EDIT = "edit";

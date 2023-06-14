@@ -13,16 +13,12 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
 {
     /** @var CrudConfigInterface */
     protected $crudConfig;
-
     /** @var string */
     protected $pageKey;
-
     /** @var string */
     protected $id;
-
     /** @var array */
     protected $options = [];
-
     private $role = null;
 
     public function getPageKey(): string
@@ -33,6 +29,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setPageKey(string $pageKey): self
     {
         $this->pageKey = $pageKey;
+
         return $this;
     }
 
@@ -44,7 +41,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function getConfig(Request $request): array
     {
         return [
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 
@@ -56,6 +53,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         $this->crudConfig = $crudConfig;
+
         return $this;
     }
 
@@ -67,6 +65,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setId(string $id): BrickConfigInterface
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -91,6 +90,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setOptions(array $options): AbstractBrickConfig
     {
         $this->options = $options;
+
         return $this;
     }
 
@@ -108,6 +108,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setRole($role)
     {
         $this->role = $role;
+
         return $this;
     }
 }

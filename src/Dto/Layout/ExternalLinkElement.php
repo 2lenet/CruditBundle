@@ -10,7 +10,6 @@ class ExternalLinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
     public const TYPE_BODY = 'body';
-
     protected string $type;
     protected string $libelle;
     protected ?Icon $icon = null;
@@ -18,8 +17,13 @@ class ExternalLinkElement extends AbstractLayoutElement
     protected string $target;
     protected $cssClass;
 
-    public static function new(string $libelle, ?string $url, ?Icon $icon = null, ?string $target = '_blank', ?string $role = null): self
-    {
+    public static function new(
+        string $libelle,
+        ?string $url,
+        ?Icon $icon = null,
+        ?string $target = '_blank',
+        ?string $role = null
+    ): self {
         $item = new self($libelle, $url, $target, $icon, $role);
         $item->setId(str_replace('menu.', '', $libelle));
 
@@ -31,8 +35,13 @@ class ExternalLinkElement extends AbstractLayoutElement
         return '@LleCrudit/layout/sb_admin/elements/_external-link.html.twig';
     }
 
-    public function __construct(string $libelle, ?string $url, ?string $target, ?Icon $icon = null, ?string $role = null)
-    {
+    public function __construct(
+        string $libelle,
+        ?string $url,
+        ?string $target,
+        ?Icon $icon = null,
+        ?string $role = null
+    ) {
         $this->libelle = $libelle;
         $this->icon = $icon;
         $this->url = $url;
@@ -48,6 +57,7 @@ class ExternalLinkElement extends AbstractLayoutElement
     public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -59,6 +69,7 @@ class ExternalLinkElement extends AbstractLayoutElement
     public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
+
         return $this;
     }
 
@@ -70,6 +81,7 @@ class ExternalLinkElement extends AbstractLayoutElement
     public function setIcon(Icon $icon): self
     {
         $this->icon = $icon;
+
         return $this;
     }
 
@@ -81,6 +93,7 @@ class ExternalLinkElement extends AbstractLayoutElement
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -92,6 +105,7 @@ class ExternalLinkElement extends AbstractLayoutElement
     public function setTarget(string $target): self
     {
         $this->target = $target;
+
         return $this;
     }
 }

@@ -18,13 +18,13 @@ class BooleanFilterType extends AbstractFilterType
     {
         return [
             "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"]
+            "neq" => ["icon" => "fas fa-not-equal"],
         ];
     }
 
     public function apply($queryBuilder): void
     {
-        list($column, $alias, $params) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $params] = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             if ($this->data['op'] == 'eq' && $this->data['value'] !== 'all') {

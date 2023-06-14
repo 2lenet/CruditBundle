@@ -33,6 +33,7 @@ class ConfigProvider
                 return $configurator;
             }
         }
+
         return null;
     }
 

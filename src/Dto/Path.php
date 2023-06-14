@@ -8,10 +8,8 @@ class Path
 {
     /** @var string */
     private $route;
-
-    /** @var array  */
+    /** @var array */
     private $params;
-
     private ?string $role = null;
 
     public static function new(string $route, array $params = []): self

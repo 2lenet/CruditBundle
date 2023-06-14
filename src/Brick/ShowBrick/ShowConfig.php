@@ -14,7 +14,6 @@ class ShowConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private $fields = [];
-
     /** @var DatasourceInterface */
     private $dataSource;
     private $actions;
@@ -25,6 +24,7 @@ class ShowConfig extends AbstractBrickConfig
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }
+
         return $this;
     }
 
@@ -41,6 +41,7 @@ class ShowConfig extends AbstractBrickConfig
     public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
+
         return $this;
     }
 
@@ -62,6 +63,7 @@ class ShowConfig extends AbstractBrickConfig
     public function setActions($actions): self
     {
         $this->actions = $actions;
+
         return $this;
     }
 
@@ -73,7 +75,7 @@ class ShowConfig extends AbstractBrickConfig
             'name' => $this->getCrudConfig()->getName(),
             'title' => $this->getCrudConfig()->getTitle('show'),
             'hidden_action' => false,
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 

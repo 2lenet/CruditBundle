@@ -12,25 +12,18 @@ class LinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
     public const TYPE_BODY = 'body';
-
     /** @var string */
     protected $type;
-
     /** @var string */
     protected $libelle;
-
     /** @var ?Icon */
     protected $icon;
-
-    /** @var Path  */
+    /** @var Path */
     protected $path;
-
-    /** @var Badge[]  */
+    /** @var Badge[] */
     protected $badges;
-
     /** @var string */
     protected $cssClass;
-
     /** @var LinkElement[] */
     protected $children;
 
@@ -65,6 +58,7 @@ class LinkElement extends AbstractLayoutElement
     public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -76,6 +70,7 @@ class LinkElement extends AbstractLayoutElement
     public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
+
         return $this;
     }
 
@@ -87,6 +82,7 @@ class LinkElement extends AbstractLayoutElement
     public function setIcon(Icon $icon): self
     {
         $this->icon = $icon;
+
         return $this;
     }
 
@@ -98,6 +94,7 @@ class LinkElement extends AbstractLayoutElement
     public function setPath(Path $path): self
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -112,6 +109,7 @@ class LinkElement extends AbstractLayoutElement
     public function addBadge(Badge $badge): self
     {
         $this->badges[] = $badge;
+
         return $this;
     }
 

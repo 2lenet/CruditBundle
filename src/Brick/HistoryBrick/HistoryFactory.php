@@ -16,11 +16,10 @@ class HistoryFactory extends AbstractBasicBrickFactory
     private EntityManagerInterface $em;
 
     public function __construct(
-        ResourceResolver       $resourceResolver,
-        RequestStack           $requestStack,
+        ResourceResolver $resourceResolver,
+        RequestStack $requestStack,
         EntityManagerInterface $em
-    )
-    {
+    ) {
         parent::__construct($resourceResolver, $requestStack);
 
         $this->em = $em;

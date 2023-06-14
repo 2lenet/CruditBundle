@@ -19,7 +19,6 @@ class ShowFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
-
         $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof ShowConfig) {
             $item = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
@@ -41,6 +40,7 @@ class ShowFactory extends AbstractBasicBrickFactory
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData($data);
         }
+
         return $view;
     }
 
@@ -61,6 +61,7 @@ class ShowFactory extends AbstractBasicBrickFactory
                 $brickConfigurator->getCrudConfig()
             );
         }
+
         return null;
     }
 }

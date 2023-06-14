@@ -48,7 +48,7 @@ class EntityFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         $ids = [];
         if (isset($this->data['value']) && $this->data['value'] != '') {

@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class RedirectBrickResponse implements BrickResponseInterface
 {
-    /** @var string  */
+    /** @var string */
     private $url;
 
     public function __construct(string $url)

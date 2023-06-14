@@ -16,20 +16,15 @@ class SublistConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private $fields = [];
-
     /** @var ItemAction[] */
     private $actions = [];
-
     /** @var DatasourceInterface */
     private $datasource;
-
     /** @var DatasourceParams */
     private $datasourceParams;
-
     /** @var string */
     private $className;
     private $fieldname;
-
     protected CrudConfigInterface $subCrudConfig;
 
     public function __construct($fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
@@ -63,6 +58,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setDatasource(DatasourceInterface $datasource): self
     {
         $this->datasource = $datasource;
+
         return $this;
     }
 
@@ -92,7 +88,7 @@ class SublistConfig extends AbstractBrickConfig
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
             'canModifyNbEntityPerPage' => false,
             'choices_nb_items' => $this->subCrudConfig->getChoicesNbItems(),
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 
@@ -105,6 +101,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setFields(array $fields): self
     {
         $this->fields = $fields;
+
         return $this;
     }
 
@@ -128,6 +125,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setDatasourceParams(DatasourceParams $datasourceParams): self
     {
         $this->datasourceParams = $datasourceParams;
+
         return $this;
     }
 
@@ -170,6 +168,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setFieldname($fieldname)
     {
         $this->fieldname = $fieldname;
+
         return $this;
     }
 

@@ -8,27 +8,20 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 
 class BrickView
 {
-    /** @var string|null  */
+    /** @var string|null */
     private $template;
-
-    /** @var array  */
+    /** @var array */
     private $data;
-
     /** @var array */
     private $config = [];
-
-    /** @var bool  */
+    /** @var bool */
     private $movable;
-
-    /** @var string  */
+    /** @var string */
     private $id;
-
-    /** @var array  */
+    /** @var array */
     protected $options;
-
     /** @var ?Path */
     private $path;
-
     private $role = null;
 
     public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])
@@ -39,20 +32,24 @@ class BrickView
         $this->role = $brickConfig->getRole();
         $this->id = $brickConfig->getId();
         $this->options = $brickConfig->getOptions();
-        $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
-            'idBrick' => $brickConfig->getId()
-        ]));
+        $this->setPath(
+            $brickConfig->getCrudConfig()->getPath('brickdata', [
+                'idBrick' => $brickConfig->getId(),
+            ])
+        );
     }
 
     public function setTemplate(string $template): self
     {
         $this->template = $template;
+
         return $this;
     }
 
     public function setData(array $data): self
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -103,6 +100,7 @@ class BrickView
     public function setConfig(array $config): self
     {
         $this->config = $config;
+
         return $this;
     }
 
@@ -124,6 +122,7 @@ class BrickView
     public function setPath(?Path $path): self
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -142,6 +141,7 @@ class BrickView
     public function setOptions(array $options): BrickView
     {
         $this->options = $options;
+
         return $this;
     }
 
@@ -149,9 +149,11 @@ class BrickView
     {
         return $this->role;
     }
+
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
         return $this;
     }
 }

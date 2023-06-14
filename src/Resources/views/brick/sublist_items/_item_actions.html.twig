@@ -1,5 +1,5 @@
-{%  set index = 1  %}
-{%  if not view.config.hidden_action %}
+{% set index = 1 %}
+{% if not view.config.hidden_action %}
     <td class="actions">
         {% for entityAction in view.config.actions %}
             {% if entityAction.isShow(item) %}
@@ -10,36 +10,37 @@
                 {% else %}
                     {% if entityAction.isXhr %}
                         <span
-                                data-line="{{ view.gid('line') }}-{{ item.id }}"
-                                data-confirm="Voulez vous vraiment effectuer cette action ?"
-                                data-donnes="{'index':{{ index }} }"
-                                data-type="html"
-                                data-url="{{ path(path.route, path.params) }}"
-                                data-content-reload="{{ path(pathline.route,pathline.params) }}"
-                                data-content-reload-callback="legoReloadLine"
-                                class="jsa-ajax btn btn-primary btn-xs">
-                                {% if entityAction.getIconFor(item) is not null %}<i class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}
+                            data-line="{{ view.gid('line') }}-{{ item.id }}"
+                            data-confirm="Voulez vous vraiment effectuer cette action ?"
+                            data-donnes="{'index':{{ index }} }"
+                            data-type="html"
+                            data-url="{{ path(path.route, path.params) }}"
+                            data-content-reload="{{ path(pathline.route,pathline.params) }}"
+                            data-content-reload-callback="legoReloadLine"
+                            class="jsa-ajax btn btn-primary btn-xs">
+                                {% if entityAction.getIconFor(item) is not null %}<i
+                                    class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}
                             {{ entityAction.getLabelFor(item) }}
                             </span>
                     {% elseif entityAction.isModal %}
                         {% include entityAction.modal %}
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-{{ item.id }}"
                            class="btn btn-xs {{ entityAction.cssClass }}"><i
-                                    class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{{ entityAction.getLabelFor(item) | trans(domain=view.config.translation_domain) }}
+                                class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{{ entityAction.getLabelFor(item) | trans(domain=view.config.translation_domain) }}
                         </a>
                     {% elseif entityAction.isPopup %}
                         <span
-                                data-url="{{ path(path.route,path.params) }}"
-                                class="jsa-popup btn btn-primary btn-xs">
+                            data-url="{{ path(path.route,path.params) }}"
+                            class="jsa-popup btn btn-primary btn-xs">
                                 {% if entityAction.getIconFor(item) is not null %}<i
                                     class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}
                             {{ entityAction.getLabelFor(item) }}
                             </span>
                     {% elseif path %}
                         <a {% if entityAction.target %} target="{{ entityAction.target }}" {% endif %}
-                                id="action-{{ index }}-{{ entityAction.getLabelFor(item) }}"
-                                href="{{ path(path.route, path.params) }}"
-                                class="btn {{ entityAction.cssClass }} btn-xs">
+                            id="action-{{ index }}-{{ entityAction.getLabelFor(item) }}"
+                            href="{{ path(path.route, path.params) }}"
+                            class="btn {{ entityAction.cssClass }} btn-xs">
                             {% if entityAction.getIconFor(item) is not null %}<i
                                 class="fa fa-{{ entityAction.getIconFor(item) }}"></i>{% endif %}{{ entityAction.getLabelFor(item)|trans(domain=view.config.translation_domain) }}
                         </a>
@@ -48,10 +49,10 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
-        {%  if view.config.detail %}
+        {% if view.config.detail %}
             <div class="jsa-ajax pull-right btn btn-default btn-xs"
-                 data-target="{{ view.gid('line')  }}-{{ item.id }}-td-detail"
-                 data-show="{{ view.gid('line')  }}-{{ item.id }}-tr-detail"
+                 data-target="{{ view.gid('line') }}-{{ item.id }}-td-detail"
+                 data-show="{{ view.gid('line') }}-{{ item.id }}-tr-detail"
                  data-pre-callback="{{ view.gid('preShowDetail') }}"
                  data-callback="{{ view.gid('showDetail') }}"
                  data-method="get"
@@ -59,4 +60,4 @@
             ><i class="fa fa-plus"></i></div>
         {% endif %}
     </td>
-{%  endif %}
+{% endif %}

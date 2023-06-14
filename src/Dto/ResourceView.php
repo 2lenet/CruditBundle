@@ -8,10 +8,8 @@ class ResourceView
 {
     /** @var int|string */
     private $id;
-
     /** @var object */
     private $resource;
-
     /** @var FieldView[] */
     private $fields;
 
@@ -62,6 +60,7 @@ class ResourceView
                 return $this->getValue($keys, $field->getRawValue());
             }
         }
+
         return null;
     }
 
@@ -72,8 +71,10 @@ class ResourceView
 
         if (count($keys) > 1) {
             unset($keys[$key]);
+
             return $this->getValue($keys, $value);
         }
+
         return $value;
     }
 }

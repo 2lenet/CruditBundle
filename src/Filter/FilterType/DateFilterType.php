@@ -28,7 +28,7 @@ class DateFilterType extends AbstractFilterType
     public function apply(QueryBuilder $queryBuilder): void
     {
         // ADD JOIN IF NEEDED
-        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {

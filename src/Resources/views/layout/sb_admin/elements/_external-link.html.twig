@@ -23,7 +23,8 @@
     </a>
 {% else %}
     <li class="nav-item {{ element.cssClass }}">
-        <a id="heading-{{ element.id }}" class="nav-link py-2" href="{{ element.url|default('#') }}" target="{{ element.target }}">
+        <a id="heading-{{ element.id }}" class="nav-link py-2" href="{{ element.url|default('#') }}"
+           target="{{ element.target }}">
             {% if element.icon and element.icon.img %}
                 <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
             {% elseif element.icon %}

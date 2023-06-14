@@ -1,45 +1,45 @@
 services:
 
-  Lle\CruditBundle\Brick\ListBrick\ListFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\ListBrick\ListFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState', '@security.helper']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState', '@security.helper']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\SublistBrick\SublistFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\SublistBrick\SublistFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\TabBrick\TabFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\TabBrick\TabFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\TitleBrick\TitleFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\TitleBrick\TitleFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\TemplateBrick\TemplateFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\TemplateBrick\TemplateFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\ControllerBrick\ControllerFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\ControllerBrick\ControllerFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\FormBrick\FormFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default', '@property_accessor']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\FormBrick\FormFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@form.factory', '@Lle\CruditBundle\Brick\BrickResponseCollector', '@router.default', '@property_accessor']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\LinksBrick\LinksFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\LinksBrick\LinksFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        tags: ['crudit.brick']
 
-  Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory:
-    arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@doctrine.orm.default_entity_manager']
-    tags: [ 'crudit.brick' ]
+    Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory:
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@doctrine.orm.default_entity_manager']
+        tags: ['crudit.brick']

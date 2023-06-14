@@ -12,7 +12,6 @@ use Doctrine\ORM\QueryBuilder;
 class ChoiceFilterType extends AbstractFilterType
 {
     protected array $choices;
-
     protected bool $multiple;
 
     /**
@@ -55,7 +54,7 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value']) {
             if ($this->getMultiple()) {

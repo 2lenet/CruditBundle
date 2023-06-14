@@ -13,13 +13,14 @@ class TelephoneFilterExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('telephone', [$this, 'formatTelephone'])
+            new TwigFilter('telephone', [$this, 'formatTelephone']),
         ];
     }
 
     public function formatTelephone($telephone)
     {
         $substr = substr($telephone, 1);
+
         return str_replace(' ', '', '+33' . $substr);
     }
 }

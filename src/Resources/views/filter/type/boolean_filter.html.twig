@@ -4,8 +4,10 @@
     <div class="form-floating">
         <select class="form-control" name="{{ id }}_value" id="input_{{ id }}">
             <option value="all">{{ 'crudit.boolean.all'|trans({}, 'LleCruditBundle') }}</option>
-            <option value="true" {% if filtertype.isSelected(data, 'true') %} selected="selected" {% endif %}>{{ 'crudit.boolean.yes'|trans({}, 'LleCruditBundle') }}</option>
-            <option value="false" {% if filtertype.isSelected(data, 'false') %} selected="selected" {% endif %}>{{ 'crudit.boolean.no'|trans({}, 'LleCruditBundle') }}</option>
+            <option
+                value="true" {% if filtertype.isSelected(data, 'true') %} selected="selected" {% endif %}>{{ 'crudit.boolean.yes'|trans({}, 'LleCruditBundle') }}</option>
+            <option
+                value="false" {% if filtertype.isSelected(data, 'false') %} selected="selected" {% endif %}>{{ 'crudit.boolean.no'|trans({}, 'LleCruditBundle') }}</option>
         </select>
         <label for="input_{{ id }}">
             {{ filter.label|trans(domain=view.config.translation_domain) }}

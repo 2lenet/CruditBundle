@@ -20,11 +20,10 @@ class FilterFactory extends AbstractBasicBrickFactory
 
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack     $requestStack,
-        FilterState      $filterState,
-        Security         $security
-    )
-    {
+        RequestStack $requestStack,
+        FilterState $filterState,
+        Security $security
+    ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->filterState = $filterState;
         $this->security = $security;
@@ -45,9 +44,10 @@ class FilterFactory extends AbstractBasicBrickFactory
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData([
                     'filters' => $this->buildFilterMap($filterset),
-                    'filterset' => $filterset
+                    'filterset' => $filterset,
                 ]);
         }
+
         return $view;
     }
 
@@ -62,6 +62,7 @@ class FilterFactory extends AbstractBasicBrickFactory
             $filter->setData($this->filterState->getData($filterset->getId(), $filter->getId()));
             $ret[$filterset->getId() . '_' . $filter->getId()] = $filter;
         }
+
         return $ret;
     }
 }

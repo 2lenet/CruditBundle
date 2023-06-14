@@ -45,8 +45,7 @@ class DatasourceFilter
         return $operator;
     }
 
-
-    public function __construct($fieldname, $fieldvalue, $alias="root", $operator = "=")
+    public function __construct($fieldname, $fieldvalue, $alias = "root", $operator = "=")
     {
         $this->fieldname = $fieldname;
         $this->fieldvalue = $fieldvalue;

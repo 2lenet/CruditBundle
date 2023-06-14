@@ -17,6 +17,7 @@ class BrickResponseCollector
     public function add(BrickResponseInterface $response): self
     {
         $this->responses[] = $response;
+
         return $this;
     }
 
@@ -32,6 +33,7 @@ class BrickResponseCollector
         if (\count($redirect) > 1) {
             throw new CruditException('multi redirection');
         }
+
         return $response;
     }
 }

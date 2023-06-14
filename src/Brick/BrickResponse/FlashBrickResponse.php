@@ -12,11 +12,9 @@ class FlashBrickResponse implements BrickResponseInterface
 {
     public const SUCCESS = 'success';
     public const ERROR = 'danger';
-
-    /** @var string  */
+    /** @var string */
     private $type;
-
-    /** @var string  */
+    /** @var string */
     private $message;
 
     public function __construct(string $type, string $message)
@@ -35,6 +33,7 @@ class FlashBrickResponse implements BrickResponseInterface
         if (method_exists($request->getSession(), 'getFlashBag')) {
             $request->getSession()->getFlashBag()->add($this->type, $this->message);
         }
+
         return $response;
     }
 }

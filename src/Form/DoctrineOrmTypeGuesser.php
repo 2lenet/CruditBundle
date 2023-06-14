@@ -34,7 +34,11 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     {
         $label = "field." . strtolower(str_replace('.', '_', $property));
         if (!$ret = $this->getMetadata($class)) {
-            return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', ["label" => $label], Guess::LOW_CONFIDENCE);
+            return new TypeGuess(
+                'Symfony\Component\Form\Extension\Core\Type\TextType',
+                ["label" => $label],
+                Guess::LOW_CONFIDENCE
+            );
         }
 
         [$metadata, $name] = $ret;
@@ -62,45 +66,105 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             }
         }
 
-        if ($isUploadableField || $this->annotationReader->getPropertyAnnotation($reflectionProperty, UploadableField::class)) {
-            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE);
+        if ($isUploadableField || $this->annotationReader->getPropertyAnnotation(
+                $reflectionProperty,
+                UploadableField::class
+            )) {
+            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE
+            );
         }
 
         switch ($metadata->getTypeOfField($property)) {
             case Types::ARRAY:
             case Types::SIMPLE_ARRAY:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\CollectionType', ["label" => $label], Guess::MEDIUM_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\CollectionType',
+                    ["label" => $label],
+                    Guess::MEDIUM_CONFIDENCE
+                );
             case Types::BOOLEAN:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\CheckboxType', ["label" => $label], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\CheckboxType',
+                    ["label" => $label],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::DATETIME_MUTABLE:
             case Types::DATETIMETZ_MUTABLE:
             case 'vardatetime':
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateTimeType', ["label" => $label], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\DateTimeType',
+                    ["label" => $label],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::DATETIME_IMMUTABLE:
             case Types::DATETIMETZ_IMMUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateTimeType', ['input' => 'datetime_immutable', "label" => $label], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\DateTimeType',
+                    ['input' => 'datetime_immutable', "label" => $label],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::DATEINTERVAL:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateIntervalType', ["label" => $label], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\DateIntervalType',
+                    ["label" => $label],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::DATE_MUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ["label" => $label, "widget" => "single_text"], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\DateType',
+                    ["label" => $label, "widget" => "single_text"],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::DATE_IMMUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ['input' => 'datetime_immutable', "label" => $label, "widget" => "single_text"], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\DateType',
+                    ['input' => 'datetime_immutable', "label" => $label, "widget" => "single_text"],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::TIME_MUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TimeType', ["label" => $label], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\TimeType',
+                    ["label" => $label],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::TIME_IMMUTABLE:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TimeType', ['input' => 'datetime_immutable', "label" => $label], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\TimeType',
+                    ['input' => 'datetime_immutable', "label" => $label],
+                    Guess::HIGH_CONFIDENCE
+                );
             case Types::FLOAT:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\NumberType', ["label" => $label], Guess::MEDIUM_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\NumberType',
+                    ["label" => $label],
+                    Guess::MEDIUM_CONFIDENCE
+                );
             case Types::INTEGER:
             case Types::BIGINT:
             case Types::SMALLINT:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\IntegerType', ["label" => $label], Guess::MEDIUM_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\IntegerType',
+                    ["label" => $label],
+                    Guess::MEDIUM_CONFIDENCE
+                );
             case Types::STRING:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', ["label" => $label], Guess::MEDIUM_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\TextType',
+                    ["label" => $label],
+                    Guess::MEDIUM_CONFIDENCE
+                );
             case Types::TEXT:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextareaType', ["label" => $label], Guess::MEDIUM_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\TextareaType',
+                    ["label" => $label],
+                    Guess::MEDIUM_CONFIDENCE
+                );
             default:
-                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', ["label" => $label], Guess::LOW_CONFIDENCE);
+                return new TypeGuess(
+                    'Symfony\Component\Form\Extension\Core\Type\TextType',
+                    ["label" => $label],
+                    Guess::LOW_CONFIDENCE
+                );
         }
     }
 
@@ -152,7 +216,9 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 
         // Check whether the field exists and is nullable or not
         if (isset($classMetadata->fieldMappings[$property])) {
-            if (!$classMetadata->isNullable($property) && Types::BOOLEAN !== $classMetadata->getTypeOfField($property)) {
+            if (!$classMetadata->isNullable($property) && Types::BOOLEAN !== $classMetadata->getTypeOfField(
+                    $property
+                )) {
                 return new ValueGuess(true, Guess::HIGH_CONFIDENCE);
             }
 

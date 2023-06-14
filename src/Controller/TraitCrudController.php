@@ -54,7 +54,6 @@ trait TraitCrudController
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
-
     /**
      * @Route("/edit/{id}")
      */
@@ -190,7 +189,6 @@ trait TraitCrudController
         // Get all ressources i.e ask export on page 2 you also need the results from page 1
         $dsParams->setOffset(0);
         $resources = $datasource->list($dsParams);
-
 
         $fields = $this->config->getFields(CrudConfigInterface::EXPORT);
         if (empty($fields)) {

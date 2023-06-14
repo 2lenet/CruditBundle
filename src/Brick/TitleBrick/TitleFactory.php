@@ -23,15 +23,17 @@ class TitleFactory extends AbstractBasicBrickFactory
                 ->setTemplate('@LleCrudit/brick/title')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData([
-                    'entity' => $this->getItem($brickConfigurator)
+                    'entity' => $this->getItem($brickConfigurator),
                 ]);
         }
+
         return $view;
     }
 
     private function getItem(TitleConfig $brickConfigurator): ?string
     {
         $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+
         return (string)$resource;
     }
 }

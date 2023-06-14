@@ -25,6 +25,7 @@ class MenuRegistry
                 return $element;
             }
         }
+
         return null;
     }
 
@@ -48,6 +49,7 @@ class MenuRegistry
             }
         }
         ksort($elements);
+
         return $elements;
     }
 }

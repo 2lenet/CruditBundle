@@ -3,6 +3,7 @@
 How to do a menu hierarchy
 
 **1. Internal links**
+
 ```php
     LinkElement::new(
         'menu.parametrage',
@@ -27,10 +28,10 @@ The menu registry will consolidate the menu.
 
 The id is automaticaly build with the label without the "menu.". You can force the id with setId().
 
-
 **2. External links**
 
 An external link can be created by adding ExternalLinkElement object to the menu.
+
 ```php
     ExternalLinkElement::new(
         'menu.google',
@@ -40,6 +41,7 @@ An external link can be created by adding ExternalLinkElement object to the menu
 ```
 
 By default, the target of this external link is "_blank", but it can be changed :
+
 ```php
     ExternalLinkElement::new(
         'menu.google',

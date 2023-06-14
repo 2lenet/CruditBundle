@@ -9,23 +9,17 @@ use Lle\CruditBundle\Dto\Field\Field;
 
 class FieldView
 {
-    /** @var Field  */
+    /** @var Field */
     private $field;
-
     /** @var mixed */
     private $value;
-
     /** @var ?string */
     private $stringValue;
-
     private $options;
-
     /** @var ?object */
     private $resource = null;
-
     /** @var ?object */
     private $parentResource = null;
-
     private ?CrudConfigInterface $config = null;
 
     /** @param mixed $value */
@@ -62,6 +56,7 @@ class FieldView
     public function setStringValue(?string $stringValue): self
     {
         $this->stringValue = $stringValue;
+
         return $this;
     }
 
@@ -96,6 +91,7 @@ class FieldView
     public function setOptions($options)
     {
         $this->options = $options;
+
         return $this;
     }
 

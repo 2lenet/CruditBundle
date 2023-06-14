@@ -3,7 +3,8 @@
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
-                <input type="date" class="form-control form-control-sm crudit-eip-input" autocomplete="off" value="{{ value ? value|date("Y-m-d") }}">
+                <input type="date" class="form-control form-control-sm crudit-eip-input" autocomplete="off"
+                       value="{{ value ? value|date("Y-m-d") }}">
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">
                         <i class="fa fa-check"></i>

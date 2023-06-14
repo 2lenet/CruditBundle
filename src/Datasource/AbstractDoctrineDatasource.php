@@ -95,6 +95,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
+
         return $qb->getQuery()->execute();
     }
 
@@ -198,6 +199,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if (count($this->searchFields) == 0) {
             throw new BadConfigException('No searchFields found');
         }
+
         return $this->searchFields;
     }
 
@@ -337,6 +339,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         foreach ($metadata->getIdentifier() as $identifier) {
             $identifierValue .= $metadata->getIdentifierValues($resource)[$identifier];
         }
+
         return $identifierValue;
     }
 
@@ -348,6 +351,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                 return $associationMapping['fieldName'];
             }
         }
+
         return null;
     }
 
@@ -388,7 +392,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                     $value = null;
                 } else {
                     if ($this->isEntity($field)) {
-                        $associations = $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+                        $associations = $this->entityManager->getClassMetadata(
+                            $this->getClassName()
+                        )->associationMappings;
 
                         $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
                     } else {

@@ -1,6 +1,6 @@
 services:
     Lle\CruditBundle\Form\Type\AutocompleteType:
-        tags: [ form.type ]
+        tags: [form.type]
         arguments:
             - "@router"
             - "@doctrine.orm.entity_manager"

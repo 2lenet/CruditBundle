@@ -11,7 +11,6 @@ use Twig\TwigFunction;
 class RouteFilteredLinkExtension extends AbstractExtension
 {
     private RouterInterface $router;
-
     private EntityManagerInterface $em;
 
     public function __construct(RouterInterface $router, EntityManagerInterface $em)
@@ -24,7 +23,7 @@ class RouteFilteredLinkExtension extends AbstractExtension
     {
         return [
             new TwigFunction('crudit_route_filtered_link', [$this, 'getRouteFilteredLink']),
-            new TwigFunction('entity_id_to_tomselect', [$this, 'getEntityIdToTomselect'])
+            new TwigFunction('entity_id_to_tomselect', [$this, 'getEntityIdToTomselect']),
         ];
     }
 
@@ -54,7 +53,7 @@ class RouteFilteredLinkExtension extends AbstractExtension
 
         return [
             'id' => $id,
-            'text' => (string)$item
+            'text' => (string)$item,
         ];
     }
 }

@@ -31,6 +31,7 @@ class TabConfig extends AbstractBrickConfig
     public function add(string $label, BrickConfigInterface $brickConfig, $role = null): self
     {
         $this->addTab(Tab::new($label, [$brickConfig])->setRole($role));
+
         return $this;
     }
 
@@ -38,12 +39,14 @@ class TabConfig extends AbstractBrickConfig
     public function adds(string $label, array $bricksConfig, ?string $role = null): self
     {
         $this->addTab(Tab::new($label, $bricksConfig)->setRole($role));
+
         return $this;
     }
 
     public function addTab(Tab $tab): self
     {
         $this->tabs[] = $tab;
+
         return $this;
     }
 
@@ -58,6 +61,7 @@ class TabConfig extends AbstractBrickConfig
                 }
             }
         }
+
         return $brickConfigs;
     }
 }

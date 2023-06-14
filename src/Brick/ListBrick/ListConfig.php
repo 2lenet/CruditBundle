@@ -16,19 +16,14 @@ class ListConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private $fields = [];
-
     /** @var ItemAction[] */
     private $actions = [];
-
     /** @var ListAction[] */
     private $batch_actions = [];
-
     /** @var DatasourceInterface */
     private $datasource;
-
     /** @var DatasourceParams */
     private $datasourceParams;
-
     /** @var string */
     private $className;
 
@@ -93,7 +88,7 @@ class ListConfig extends AbstractBrickConfig
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
             'choices_nb_items' => $this->getCrudConfig()->getChoicesNbItems(),
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 
@@ -111,6 +106,7 @@ class ListConfig extends AbstractBrickConfig
     public function setActions($actions): self
     {
         $this->actions = $actions;
+
         return $this;
     }
 
@@ -119,6 +115,7 @@ class ListConfig extends AbstractBrickConfig
         $this->batch_actions = array_filter($actions, function ($a) {
             return $a->isBatch();
         });
+
         return $this;
     }
 

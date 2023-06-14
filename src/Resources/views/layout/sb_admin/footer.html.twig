@@ -2,13 +2,14 @@
     <div class="container my-auto text-center">
         {% block footer_text %}
             <span class="copyright">
-                {% if app_name is defined %}{{ app_name }}{% endif%} &copy; {{ 'now'|date('Y') }}.
+                {% if app_name is defined %}{{ app_name }}{% endif %} &copy; {{ 'now'|date('Y') }}.
                 {{ 'crudit.footer.copyrights'|trans(domain='LleCruditBundle') }}
             </span>
         {% endblock %}
     </div>
 
     {% if app_version is defined %}
-        <span class="position-absolute bottom-0 end-0 pe-3 pb-1 small">{{ 'crudit.footer.release'|trans(domain='LleCruditBundle') }} {{ app_version }}</span>
+        <span
+            class="position-absolute bottom-0 end-0 pe-3 pb-1 small">{{ 'crudit.footer.release'|trans(domain='LleCruditBundle') }} {{ app_version }}</span>
     {% endif %}
 </footer>

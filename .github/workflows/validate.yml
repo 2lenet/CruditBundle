@@ -1,47 +1,47 @@
 name: Validate
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  php-coding-standard:
-    name: "PHP Coding Standard ${{ matrix.php-version }}"
+    php-coding-standard:
+        name: "PHP Coding Standard ${{ matrix.php-version }}"
 
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php_version: [ 7.4 ]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php_version: [7.4]
 
-    steps:
-      - uses: actions/checkout@v2
+        steps:
+            -   uses: actions/checkout@v2
 
-      - name: 'Validate composer.json and composer.lock'
-        run: composer validate
+            -   name: 'Validate composer.json and composer.lock'
+                run: composer validate
 
-      - name: 'Cache Composer packages'
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
+            -   name: 'Cache Composer packages'
+                id: composer-cache
+                uses: actions/cache@v2
+                with:
+                    path: vendor
+                    key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-php-
 
-      - name: 'Install dependencies with Composer'
-        uses: php-actions/composer@v5
-        with:
-          php_version: ${{ matrix.php_version }}
-          version: 2
-          args: --profile --ignore-platform-reqs
+            -   name: 'Install dependencies with Composer'
+                uses: php-actions/composer@v5
+                with:
+                    php_version: ${{ matrix.php_version }}
+                    version: 2
+                    args: --profile --ignore-platform-reqs
 
-      - name: 'PHP CodeSniffer Validations'
-        run: vendor/bin/phpcs
+            -   name: 'PHP CodeSniffer Validations'
+                run: vendor/bin/phpcs
 
-      - name: 'PHPStan Static Analysis'
-        uses: php-actions/phpstan@v2
-        with:
-          configuration: tests/phpstan.neon
-          memory_limit: 256M
+            -   name: 'PHPStan Static Analysis'
+                uses: php-actions/phpstan@v2
+                with:
+                    configuration: tests/phpstan.neon
+                    memory_limit: 256M

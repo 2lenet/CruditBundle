@@ -41,10 +41,12 @@ public function getFields($key): array
 ```
 
 Crudit already comes with some exporters:
+
 - CsvExporter for csv files
 - ExcelExporter for xls files
 
 ### Configuration
+
 If you want to change the behaviour of the exporters, you can edit your CrudConfig::getExportParams.
 
 ```php
@@ -58,6 +60,7 @@ public function getExportParams(string $format): ExportParams
 ```
 
 ### Extending
+
 You can add your own exporters.
 
 Your exporter must implement Lle\CruditBundle\Contracts\ExporterInterface
@@ -66,6 +69,7 @@ Your exporter must implement Lle\CruditBundle\Contracts\ExporterInterface
 * `export`: the actual export action. It must return a Response.
 
 Example:
+
 ```php
 <?php
 
@@ -88,6 +92,7 @@ class CustomExporter implements ExporterInterface
 ```
 
 Don't forget to add action in your CrudConfig
+
 ```php
 ListAction::new()
     ->setModal("@LleCrudit/modal/_export.html.twig")

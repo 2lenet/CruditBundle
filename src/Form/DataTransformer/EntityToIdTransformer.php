@@ -9,9 +9,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 class EntityToIdTransformer implements DataTransformerInterface
 {
     private EntityManagerInterface $em;
-
     private ?string $class;
-
     private bool $multiple = false;
 
     public function __construct(EntityManagerInterface $em)
@@ -88,7 +86,7 @@ class EntityToIdTransformer implements DataTransformerInterface
 
             if (count($entities) !== count($ids)) {
                 throw new TransformationFailedException(
-                    // An identifier from the input wasn't found in database
+                // An identifier from the input wasn't found in database
                     "Number of found entities does not equal the number of input values"
                 );
             }
@@ -102,11 +100,13 @@ class EntityToIdTransformer implements DataTransformerInterface
             ->find($id);
 
         if (!$entity) {
-            throw new TransformationFailedException(sprintf(
-                "Entity of class %s with id '%s' does not exist!",
-                $this->class,
-                $id
-            ));
+            throw new TransformationFailedException(
+                sprintf(
+                    "Entity of class %s with id '%s' does not exist!",
+                    $this->class,
+                    $id
+                )
+            );
         }
 
         return $entity;

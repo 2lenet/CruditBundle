@@ -24,7 +24,6 @@ class HeaderElement extends AbstractLayoutElement
         $this->libelle = $libelle;
     }
 
-
     public function getLibelle(): ?string
     {
         return $this->libelle;

@@ -38,13 +38,10 @@ final class MakeCrudit extends AbstractMaker
 {
     /** @var FileManager */
     private $fileManager;
-
     /** @var DoctrineHelper */
     private $entityHelper;
-
     /** @var bool */
     private $withController;
-
     /** @var string */
     private $projectDir;
 
@@ -52,8 +49,7 @@ final class MakeCrudit extends AbstractMaker
         FileManager $fileManager,
         DoctrineHelper $entityHelper,
         KernelInterface $kernel
-    )
-    {
+    ) {
         $this->fileManager = $fileManager;
         $this->entityHelper = $entityHelper;
         $this->projectDir = $kernel->getProjectDir();
@@ -183,8 +179,7 @@ final class MakeCrudit extends AbstractMaker
         ConsoleStyle $io,
         Generator $generator,
         string $entityClass
-    ): string
-    {
+    ): string {
         $fields = $this->getFields($entityClass);
         $cruds = [
             'CrudConfigInterface::INDEX' => $fields,
@@ -362,8 +357,7 @@ final class MakeCrudit extends AbstractMaker
         ConsoleStyle $io,
         Generator $generator,
         string $entityClass
-    ): void
-    {
+    ): void {
         $fields = $this->getFields($entityClass);
         $shortEntity = $this->getBasename($entityClass);
 
@@ -381,7 +375,7 @@ final class MakeCrudit extends AbstractMaker
                 'prefixFilename' => $shortEntity,
                 'fullEntityClass' => $input->getArgument('entity-class'),
                 'fields' => $fields,
-                'strictType' => true
+                'strictType' => true,
             ]
         );
         $generator->writeChanges();
@@ -401,8 +395,7 @@ final class MakeCrudit extends AbstractMaker
         ConsoleStyle $io,
         Generator $generator,
         string $entityClass
-    ): void
-    {
+    ): void {
         $shortEntity = $this->getBasename($entityClass);
 
         $filters = $this->getFilters($entityClass);
@@ -436,8 +429,12 @@ final class MakeCrudit extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    private function createDatasource(InputInterface $input, ConsoleStyle $io, Generator $generator, string $entityClass): void
-    {
+    private function createDatasource(
+        InputInterface $input,
+        ConsoleStyle $io,
+        Generator $generator,
+        string $entityClass
+    ): void {
         if (count(AbstractDoctrineDatasource::getInitSearchFields($entityClass)) == 0) {
             $io->warning("You must set the searchFields property for autocompletion.");
         }
@@ -483,7 +480,7 @@ final class MakeCrudit extends AbstractMaker
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'entityClass' => $shortEntity,
                 'prefixFilename' => $shortEntity,
-                'strictType' => true
+                'strictType' => true,
             ]
         );
         $generator->writeChanges();

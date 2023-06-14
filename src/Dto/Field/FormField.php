@@ -8,10 +8,8 @@ class FormField
 {
     /** @var string */
     private $name;
-
     /** @var ?string */
     private $type = 'text';
-
     /** @var array */
     private $options = [];
 
@@ -35,6 +33,7 @@ class FormField
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -46,6 +45,7 @@ class FormField
     public function setType(?string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -57,6 +57,7 @@ class FormField
     public function setOptions(array $options): self
     {
         $this->options = $options;
+
         return $this;
     }
 }

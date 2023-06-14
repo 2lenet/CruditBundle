@@ -12,37 +12,27 @@ class Field
      * @var string
      */
     private $label;
-
     /**
      * @var string
      */
     private $name;
-
     /**
      * @var bool
      */
     private $sort;
-
     /** @var ?Path */
     private $path;
-
     /** @var string */
     private string $linkId = 'id';
-
     /** @var array */
     private $options;
-
     /** @var ?string */
     private $type;
-
     /** @var ?string */
     private $template;
-
     /** @var ?string */
     private $ruptGroup = 0;
-
     private ?string $role = null;
-
     private bool $editInPlace = false;
 
     public function __construct(string $name, ?string $type = null, array $options = [])

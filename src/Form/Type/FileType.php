@@ -18,9 +18,7 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class FileType extends VichFileType
 {
     protected SanitizerInterface $sanitizer;
-
     protected UrlGeneratorInterface $urlGenerator;
-
     protected Request $request;
 
     public function __construct(
@@ -31,8 +29,7 @@ class FileType extends VichFileType
         PropertyMappingFactory $factory,
         PropertyAccessorInterface $propertyAccessor = null,
         RequestStack $requestStack
-    )
-    {
+    ) {
         parent::__construct($storage, $handler, $factory, $propertyAccessor);
 
         $this->sanitizer = $sanitizer;
@@ -57,7 +54,10 @@ class FileType extends VichFileType
             $view->vars['image_uri'] = $filePath;
 
             $filename = substr($filePath, strrpos($filePath, '/') + 1);
-            $filename = substr($filename, 0, strrpos($filename, '-')) . '.' . substr($filename, strrpos($filename, '.') + 1);
+            $filename = substr($filename, 0, strrpos($filename, '-')) . '.' . substr(
+                    $filename,
+                    strrpos($filename, '.') + 1
+                );
             $view->vars['filename'] = $filename;
         }
     }

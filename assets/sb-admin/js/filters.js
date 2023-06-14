@@ -9,11 +9,10 @@ window.addEventListener('DOMContentLoaded', function () {
             hidden.value = e.target.dataset.value;
 
             // Set into the button the icon selected in the dropdown
-            const icon =  document.getElementById(e.target.dataset.valueid + '_icon');
+            const icon = document.getElementById(e.target.dataset.valueid + '_icon');
             icon.classList = e.target.querySelector('i').classList;
-        })
+        });
     });
-
 
     // Submit form on press on Enter and prevent operators dropdown opening
     const filtersContainer = document.getElementById('collapse-filters');
@@ -41,13 +40,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 options: inioptions,
                 plugins: [
                     'virtual_scroll',
-                    'remove_button'
+                    'remove_button',
                 ],
                 onChange(value) {
                     let items = [];
                     if (value != '') {
                         value.split(',').forEach(v => {
-                            items.push({id: v, text: this.options[v].text});
+                            items.push({ id: v, text: this.options[v].text });
                         });
                     }
                     document.getElementById(select.id + '_items').value = JSON.stringify(items);
@@ -62,7 +61,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         limit: 20,
                     });
 
-                    return dataurl + "?" + params.toString();
+                    return dataurl + '?' + params.toString();
                 },
                 load(query, callback) {
                     let url = this.getUrl(query);
@@ -76,7 +75,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                     limit: 20,
                                     offset: json.next_offset,
                                 });
-                                let nextUrl = dataurl + "?" + params.toString();
+                                let nextUrl = dataurl + '?' + params.toString();
 
                                 this.setNextUrl(query, nextUrl);
                             }
@@ -93,21 +92,21 @@ window.addEventListener('DOMContentLoaded', function () {
                     },
                     no_more_results() {
                         return '';
-                    }
-                }
-            }
+                    },
+                },
+            },
         );
     });
 
     // Normal select
-    document.querySelectorAll(".tom-select").forEach(select => {
+    document.querySelectorAll('.tom-select').forEach(select => {
         const inioptions = JSON.parse(select.dataset.options);
 
-        new TomSelect("#" + select.id,
+        new TomSelect('#' + select.id,
             {
                 maxItems: select.dataset.maxitems,
                 plugins: [
-                    "remove_button"
+                    'remove_button',
                 ],
                 valueField: 'id',
                 labelField: 'text',
@@ -125,16 +124,16 @@ window.addEventListener('DOMContentLoaded', function () {
                         }
 
                         values.forEach(v => {
-                            items.push({id: v, text: this.options[v].text});
+                            items.push({ id: v, text: this.options[v].text });
                         });
                     }
-                    document.getElementById(select.id + "_items").value = JSON.stringify(items);
+                    document.getElementById(select.id + '_items').value = JSON.stringify(items);
                 },
                 onItemAdd() {
-                    select.parentElement.querySelector('.ts-input > input').value = "";
-                    select.parentElement.querySelector('.ts-dropdown').style.display = "none";
+                    select.parentElement.querySelector('.ts-input > input').value = '';
+                    select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
                 },
-            }
+            },
         );
     });
 

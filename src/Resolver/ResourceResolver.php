@@ -15,7 +15,6 @@ class ResourceResolver
 {
     /** @var FieldResolver */
     private $fieldResolver;
-
     private Security $security;
 
     public function __construct(
@@ -34,8 +33,7 @@ class ResourceResolver
         array $fields,
         DatasourceInterface $datasource,
         ?CrudConfigInterface $crudConfig = null
-    ): ResourceView
-    {
+    ): ResourceView {
         return new ResourceView(
             $datasource->getIdentifier($resource),
             $resource,
@@ -51,14 +49,18 @@ class ResourceResolver
         object $resource,
         DatasourceInterface $datasource,
         ?CrudConfigInterface $crudConfig = null
-    ): array
-    {
+    ): array {
         $fieldViews = [];
         foreach ($fields as $key => $field) {
             if (is_array($field)) {
                 foreach ($field as $cardField) {
                     if ($cardField->getRole() == null || $this->security->isGranted($cardField->getRole())) {
-                        $fieldViews[$key][] = $this->fieldResolver->resolveView($cardField, $resource, $datasource, $crudConfig);
+                        $fieldViews[$key][] = $this->fieldResolver->resolveView(
+                            $cardField,
+                            $resource,
+                            $datasource,
+                            $crudConfig
+                        );
                     }
                 }
             } else {

@@ -10,19 +10,15 @@ use Symfony\Bundle\MakerBundle\Generator;
 class Converter
 {
     protected $logs = [];
-
     protected Generator $generator;
-
     protected MakeCrudit $cruditMaker;
-
     protected DoctrineHelper $doctrineHelper;
 
     public function __construct(
         Generator $generator,
         MakeCrudit $cruditMaker,
         DoctrineHelper $doctrineHelper
-    )
-    {
+    ) {
         $this->generator = $generator;
         $this->cruditMaker = $cruditMaker;
         $this->doctrineHelper = $doctrineHelper;
@@ -250,7 +246,7 @@ class Converter
                 "namespace" => "App",
                 "fullEntityClass" => $entityClass,
                 "prefixFilename" => $prefixFilename,
-                "strictType" => true
+                "strictType" => true,
             ]
         );
         $this->generator->writeChanges();
@@ -389,7 +385,7 @@ class Converter
                 "namespace" => "App",
                 "prefixFilename" => $prefix . $prefixFilename,
                 "fields" => $fields,
-                "strictType" => true
+                "strictType" => true,
             ]
         );
     }

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block page_title %}{% if app_name is defined %}{{ app_name }}{% else %}CRUD-IT{% endif %}{% endblock %}</title>
     {% block favicon %}
-        <link rel="shortcut icon" href="/img/logo.png" />
-        <link rel="apple-touch-icon" href="/img/logo.png" />
+        <link rel="shortcut icon" href="/img/logo.png"/>
+        <link rel="apple-touch-icon" href="/img/logo.png"/>
     {% endblock %}
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('bundles/llecrudit/sbadmin/app.css') }}">
@@ -22,44 +22,44 @@
 </head>
 
 <body id="page-top">
-    {% block body %}
-        <div id="wrapper">
-            <div id="collapse-sidebar" class="sidebar">
-                <ul class="bg-gradient-primary">
-                    {% block brand %}
-                        {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
-                    {% endblock %}
-                    {% block menu %}
-                        {% include '@LleCrudit/layout/sb_admin/menu.html.twig' %}
-                    {% endblock %}
-                </ul>
-            </div>
-
-            <div id="content-wrapper" class="d-flex flex-column">
-                <div id="content">
-                    {% block header %}
-                        {% include '@LleCrudit/layout/sb_admin/header.html.twig' %}
-                    {% endblock %}
-                    <div class="container-fluid">
-                        {% block main %}
-                            {% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}
-                            {% block content %}{% endblock %}
-                        {% endblock main %}
-                    </div>
-                </div>
-                {% block footer %}
-                    {% include '@LleCrudit/layout/sb_admin/footer.html.twig' %}
+{% block body %}
+    <div id="wrapper">
+        <div id="collapse-sidebar" class="sidebar">
+            <ul class="bg-gradient-primary">
+                {% block brand %}
+                    {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
                 {% endblock %}
-            </div>
+                {% block menu %}
+                    {% include '@LleCrudit/layout/sb_admin/menu.html.twig' %}
+                {% endblock %}
+            </ul>
         </div>
-    {% endblock %}
 
-    {% block scroll_top %}
-        <a id="scroll-to-top" class="scroll-to-top rounded" href="#page-top">
-            <i class="fas fa-angle-up"></i>
-        </a>
-    {% endblock %}
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                {% block header %}
+                    {% include '@LleCrudit/layout/sb_admin/header.html.twig' %}
+                {% endblock %}
+                <div class="container-fluid">
+                    {% block main %}
+                        {% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}
+                        {% block content %}{% endblock %}
+                    {% endblock main %}
+                </div>
+            </div>
+            {% block footer %}
+                {% include '@LleCrudit/layout/sb_admin/footer.html.twig' %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
 
-    {% block body_javascript %}{% endblock %}
+{% block scroll_top %}
+    <a id="scroll-to-top" class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+{% endblock %}
+
+{% block body_javascript %}{% endblock %}
 </body>
 </html>

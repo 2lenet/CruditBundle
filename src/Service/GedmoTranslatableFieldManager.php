@@ -25,7 +25,6 @@ class GedmoTranslatableFieldManager
     public const GEDMO_TRANSLATION_WALKER = 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker';
     public const GEDMO_PERSONAL_TRANSLATIONS_GET = 'getTranslations';
     public const GEDMO_PERSONAL_TRANSLATIONS_SET = 'addTranslation';
-
     protected $em;
 
     public function __construct(EntityManagerInterface $em)
@@ -33,7 +32,8 @@ class GedmoTranslatableFieldManager
         $this->em = $em;
     }
 
-    public function getTranslationRepository($entity){
+    public function getTranslationRepository($entity)
+    {
         $reflectionClass = new \ReflectionClass(get_class($entity));
         $r = new AnnotationReader();
         $annotation = $r->getClassAnnotation($reflectionClass, Gedmo\TranslationEntity::class);
@@ -46,8 +46,10 @@ class GedmoTranslatableFieldManager
 
     private function getTranslations($entity, $fieldName)
     {
-        if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) && \is_callable(array($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET))) {
-            $translations = array();
+        if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) && \is_callable(
+                [$entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET]
+            )) {
+            $translations = [];
             foreach ($entity->getTranslations() as $translation) {
                 if ($translation->getField() == $fieldName) {
                     $translations[$translation->getLocale()] = $translation->getContent();
@@ -57,10 +59,12 @@ class GedmoTranslatableFieldManager
             return $translations;
         } else {
             // 'basic' translations (ext_translations table)
-            return \array_map(function($element) {return \array_shift($element);
+            return \array_map(function ($element) {
+                return \array_shift($element);
             }, $this->getTranslationRepository($entity)->findTranslations($entity));
         }
     }
+
     private function getEntityInDefaultLocale($entity, $defaultLocale)
     {
         $class = \get_class($entity);
@@ -93,11 +97,14 @@ class GedmoTranslatableFieldManager
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $translations[$defaultLocale] = $propertyAccessor->getValue($entityInDefaultLocale, $fieldName);
         }
+
         return $translations;
     }
+
     private function getPersonalTranslationClassName($entity)
     {
         $metadata = $this->em->getClassMetadata(\get_class($entity));
+
         return $metadata->getAssociationTargetClass('translations');
     }
 
@@ -111,7 +118,9 @@ class GedmoTranslatableFieldManager
             if (array_key_exists($locale, $submittedValues)) {
                 $value = $submittedValues[$locale];
                 // personal
-                if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) && \is_callable(array($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET))) {
+                if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) && \is_callable(
+                        [$entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET]
+                    )) {
                     $translationClassName = $this->getPersonalTranslationClassName($entity);
                     $needAddTranslation = true;
                     foreach ($entity->getTranslations() as $translation) {

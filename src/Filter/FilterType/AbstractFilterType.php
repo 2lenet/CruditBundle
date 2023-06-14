@@ -21,21 +21,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
     }
 
     protected string $columnName;
-
     protected bool $hidden = false;
-
     protected array $additionnalKeys = [];
-
     protected string $alias = 'root.';
-
     protected string $id;
-
     protected string $label = "";
-
     protected ?array $data = null;
-
     protected array $default = [];
-
     protected ?string $role = null;
 
     public function getOperators(): array
@@ -67,7 +59,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
     {
         return $this->label;
     }
-
 
     public function setLabel(string $label): self
     {
@@ -129,11 +120,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getStateTemplate(): string
     {
         $fqcn = get_class($this);
-        $name = strtolower(preg_replace(
-            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
-            '${1}',
-            $fqcn
-        ));
+        $name = strtolower(
+            preg_replace(
+                "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+                '${1}',
+                $fqcn
+            )
+        );
 
         return "@LleCrudit/filter/state/{$name}_filter.html.twig";
     }
@@ -141,11 +134,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getTemplate(): string
     {
         $fqcn = get_class($this);
-        $name = strtolower(preg_replace(
-            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
-            '${1}',
-            $fqcn
-        ));
+        $name = strtolower(
+            preg_replace(
+                "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+                '${1}',
+                $fqcn
+            )
+        );
 
         return "@LleCrudit/filter/type/{$name}_filter.html.twig";
     }

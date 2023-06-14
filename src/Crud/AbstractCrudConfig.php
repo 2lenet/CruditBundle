@@ -157,7 +157,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $params = $request->getSession()->get($sessionKey, [
             "limit" => $this->getNbItems(),
             "offset" => 0,
-            "sorts" => $this->getDefaultSort()
+            "sorts" => $this->getDefaultSort(),
         ]);
 
         $limit = $request->query->get(strtolower($this->getName()) . "_limit");
@@ -165,7 +165,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $params["limit"] = max((int)$limit, 1);
         }
 
-        $offset = $request->query->get(strtolower($this->getName()) . "_offset") ;
+        $offset = $request->query->get(strtolower($this->getName()) . "_offset");
         if ($offset !== null) {
             $params["offset"] = max((int)$offset, 0);
         }
@@ -206,11 +206,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
         $path = Path::new($this->getRootRoute() . '_' . $context, $params);
-        $path->setRole(sprintf(
-            "ROLE_%s_%s",
-            $this->getName(),
-            $context
-        ));
+        $path->setRole(
+            sprintf(
+                "ROLE_%s_%s",
+                $this->getName(),
+                $context
+            )
+        );
 
         return $path;
     }
@@ -254,14 +256,14 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
                 LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::EDIT))
-                    ->setCancelPath($this->getPath(CrudConfigInterface::INDEX))
+                    ->setCancelPath($this->getPath(CrudConfigInterface::INDEX)),
             ],
             CrudConfigInterface::NEW => [
                 LinksConfig::new(['title' => $this->getTitle('new')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::NEW))
-                    ->setCancelPath($this->getPath(CrudConfigInterface::INDEX))
-            ]
+                    ->setCancelPath($this->getPath(CrudConfigInterface::INDEX)),
+            ],
         ];
     }
 
@@ -283,10 +285,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $fields = $this->getFields(self::INDEX);
 
-        return count($fields) > 0 ? [[
-            $fields[0]->getName(),
-            "ASC",
-        ]] : [];
+        return count($fields) > 0 ? [
+            [
+                $fields[0]->getName(),
+                "ASC",
+            ],
+        ] : [];
     }
 
     public function getExportParams(string $format): ExportParams

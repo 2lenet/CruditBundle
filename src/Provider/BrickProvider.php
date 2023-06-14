@@ -24,6 +24,7 @@ class BrickProvider
                 return $brick;
             }
         }
+
         return null;
     }
 }

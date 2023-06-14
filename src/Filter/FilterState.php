@@ -106,6 +106,7 @@ class FilterState
                 $filterdata[$filterType->getId()] = $data;
             }
         }
+
         return $filterdata;
     }
 }

@@ -18,7 +18,9 @@ class TooltipExtension extends AbstractTypeExtension
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefined(['tooltip', 'tooltip_html', 'tooltip_template', 'tooltip_position']);
-        $resolver->setDefaults(['tooltip' => null, 'tooltip_html' => null, 'tooltip_template' => null, 'tooltip_position' => null]);
+        $resolver->setDefaults(
+            ['tooltip' => null, 'tooltip_html' => null, 'tooltip_template' => null, 'tooltip_position' => null]
+        );
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)

@@ -10,10 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class LinksConfig extends AbstractBrickConfig
 {
-    /** @var array  */
+    /** @var array */
     protected $actions = [];
-
-    /** @var bool  */
+    /** @var bool */
     protected $back = false;
 
     public static function new(array $options = []): self
@@ -29,12 +28,14 @@ class LinksConfig extends AbstractBrickConfig
     public function addAction(ListAction $action): self
     {
         $this->actions[] = $action;
+
         return $this;
     }
 
     public function addBack(): self
     {
         $this->back = true;
+
         return $this;
     }
 
@@ -54,6 +55,7 @@ class LinksConfig extends AbstractBrickConfig
         $this->actions = array_filter($actions, function ($a) {
             return !$a->isBatch();
         });
+
         return $this;
     }
 
@@ -61,7 +63,7 @@ class LinksConfig extends AbstractBrickConfig
     {
         return [
             'title' => $this->options['title'] ?? "",
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 }

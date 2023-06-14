@@ -16,7 +16,7 @@ class CruditTelephoneCallFilterExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('telephoneCall', [$this, 'formatTelephone'])
+            new TwigFilter('telephoneCall', [$this, 'formatTelephone']),
         ];
     }
 
@@ -26,6 +26,7 @@ class CruditTelephoneCallFilterExtension extends AbstractExtension
 
         if (strlen($telephone) == 10 && substr($telephone, 0, 1) == '0') {
             $substr = substr($telephone, 1);
+
             return str_replace(' ', '', '+33' . $substr);
         }
 

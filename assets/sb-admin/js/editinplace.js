@@ -3,10 +3,10 @@
 //called when the DOM tree is built (before load)
 //avoid checkbox to be checked/unchecked before the click event is set
 window.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll(".crudit-eip-input[type='checkbox']").forEach(eip_checkbox => {
+    document.querySelectorAll('.crudit-eip-input[type=\'checkbox\']').forEach(eip_checkbox => {
         if (eip_checkbox.disabled) {
             //save the initial disabled value
-            eip_checkbox.setAttribute("initial-disabled", eip_checkbox.getAttribute("disabled"));
+            eip_checkbox.setAttribute('initial-disabled', eip_checkbox.getAttribute('disabled'));
         }
         eip_checkbox.disabled = true;
     });
@@ -14,18 +14,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
 window.addEventListener('load', function () {
 
-    document.querySelectorAll(".crudit-eip").forEach(eip_elem => {
-        let eip_val = eip_elem.querySelector(".crudit-eip-value");
-        let eip_submit = eip_elem.querySelector(".crudit-eip-submit");
-        let eip_input = eip_elem.querySelector(".crudit-eip-input");
-        let eip_cancel = eip_elem.querySelector(".crudit-eip-cancel");
-        let eip_form = eip_elem.querySelector("form");
+    document.querySelectorAll('.crudit-eip').forEach(eip_elem => {
+        let eip_val = eip_elem.querySelector('.crudit-eip-value');
+        let eip_submit = eip_elem.querySelector('.crudit-eip-submit');
+        let eip_input = eip_elem.querySelector('.crudit-eip-input');
+        let eip_cancel = eip_elem.querySelector('.crudit-eip-cancel');
+        let eip_form = eip_elem.querySelector('form');
 
         //if input type is checkbox retrieve initial disabled value
-        if (eip_input.type === "checkbox") {
-            if (eip_input.hasAttribute("initial-disabled")) {
-                eip_input.setAttribute("disabled", eip_input.getAttribute("initial-disabled"));
-                eip_input.removeAttribute("initial-disabled");
+        if (eip_input.type === 'checkbox') {
+            if (eip_input.hasAttribute('initial-disabled')) {
+                eip_input.setAttribute('disabled', eip_input.getAttribute('initial-disabled'));
+                eip_input.removeAttribute('initial-disabled');
             } else {
                 eip_input.disabled = false;
             }
@@ -39,7 +39,7 @@ window.addEventListener('load', function () {
                 }
 
                 // put user cursor in the text input
-                if (eip_input.type === "text" || eip_input.tagName === "TEXTAREA") {
+                if (eip_input.type === 'text' || eip_input.tagName === 'TEXTAREA') {
                     eip_input.focus();
                     setTimeout(function () {
                         eip_input.selectionStart = eip_input.selectionEnd = 10000;
@@ -56,45 +56,45 @@ window.addEventListener('load', function () {
         }
 
         if (eip_form) {
-            eip_form.addEventListener("submit", (e) => {
+            eip_form.addEventListener('submit', (e) => {
                 // disable submit, because the save is async
-                 e.preventDefault();
+                e.preventDefault();
                 submitEIP(eip_elem, eip_input, eip_val);
             });
         }
 
-        eip_submit.addEventListener("click", () => submitEIP(eip_elem, eip_input, eip_val));
+        eip_submit.addEventListener('click', () => submitEIP(eip_elem, eip_input, eip_val));
     });
 
     function submitEIP(eip_elem, eip_input, eip_val) {
-        eip_input = eip_elem.querySelector(".crudit-eip-input");
+        eip_input = eip_elem.querySelector('.crudit-eip-input');
 
         let url = eip_elem.dataset.edit_url;
         let formData = new FormData();
 
-        let value = eip_input.type === "checkbox" ? eip_input.checked : eip_input.value;
+        let value = eip_input.type === 'checkbox' ? eip_input.checked : eip_input.value;
         let data = {
             [eip_elem.dataset.field]: value,
-        }
-        formData.append("data", JSON.stringify(data));
+        };
+        formData.append('data', JSON.stringify(data));
         fetch(url,
             {
                 body: formData,
-                method: "post"
-            }
+                method: 'post',
+            },
         ).then((response) => {
             if (response.status >= 400) {
                 // error, tell the user
                 response.json().then((json) => {
-                    addFlash(json.message || "Error while saving EIP.", "danger");
+                    addFlash(json.message || 'Error while saving EIP.', 'danger');
                 }).catch(() => {
-                    addFlash("Unknown error, please contact an administrator.", "danger");
-                })
+                    addFlash('Unknown error, please contact an administrator.', 'danger');
+                });
             }
         });
 
         if (eip_val) {
-            if (eip_input.type === "date") {
+            if (eip_input.type === 'date') {
                 eip_val.textContent = new Date(eip_input.value).toLocaleDateString();
             } else if (eip_input.tomselect !== undefined) {
                 let entityId = eip_input.tomselect.getValue();
@@ -114,20 +114,20 @@ window.addEventListener('load', function () {
         }
     }
 
-    function addFlash(message, type = "success") {
-        let flash = document.createElement("div");
-        flash.classList.add("alert", "alert-dismissible");
-        flash.classList.add("alert-" + type);
-        flash.setAttribute("role", "alert");
+    function addFlash(message, type = 'success') {
+        let flash = document.createElement('div');
+        flash.classList.add('alert', 'alert-dismissible');
+        flash.classList.add('alert-' + type);
+        flash.setAttribute('role', 'alert');
         flash.innerText = message;
 
-        let closeButton = document.createElement("button");
-        closeButton.type = "button";
-        closeButton.classList.add("btn-close");
-        closeButton.setAttribute("data-bs-dismiss", "alert");
+        let closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.classList.add('btn-close');
+        closeButton.setAttribute('data-bs-dismiss', 'alert');
 
         flash.append(closeButton);
 
-        document.querySelector("#crudit-flash").append(flash);
+        document.querySelector('#crudit-flash').append(flash);
     }
 });

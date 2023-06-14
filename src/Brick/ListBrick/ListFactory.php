@@ -22,8 +22,7 @@ class ListFactory extends AbstractBasicBrickFactory
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FormFactoryInterface $formFactory
-    )
-    {
+    ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->formFactory = $formFactory;
     }

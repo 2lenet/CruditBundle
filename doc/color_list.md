@@ -1,9 +1,8 @@
 # How to color the rows of a list
 
-Crudit allows you to add a class to `<tr>` tags in lists. 
+Crudit allows you to add a class to `<tr>` tags in lists.
 
-To do so, go to the entity corresponding to your list and add a new getter: 
-
+To do so, go to the entity corresponding to your list and add a new getter:
 
 ```php
     public function getCssClass(): string
@@ -12,7 +11,7 @@ To do so, go to the entity corresponding to your list and add a new getter:
     }
 ```
 
-If you refresh your list and got to your code inspector, you will see that a class has been added to `<tr>` tags: 
+If you refresh your list and got to your code inspector, you will see that a class has been added to `<tr>` tags:
 
 ![](img/tr_class.png)
 

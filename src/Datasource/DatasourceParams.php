@@ -5,15 +5,10 @@ namespace Lle\CruditBundle\Datasource;
 class DatasourceParams
 {
     protected $count = 100;
-
     protected int $limit;
-
     protected int $offset;
-
     protected array $sorts;
-
     protected array $filters;
-
     protected bool $enableFilters = true;
 
     public function __construct(int $limit, int $offset, array $sorts, array $filters = [])
@@ -57,6 +52,7 @@ class DatasourceParams
     public function getNbPages(): int
     {
         $rest = $this->count % $this->limit ? 1 : 0;
+
         return intdiv($this->count, $this->limit) + $rest;
     }
 

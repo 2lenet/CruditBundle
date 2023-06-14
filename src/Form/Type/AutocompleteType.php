@@ -18,9 +18,7 @@ use Symfony\Component\Routing\RouterInterface;
 class AutocompleteType extends AbstractType
 {
     public const DEFAULT_AUTOCOMPLETE_ROUTE = "app_crudit_%s_autocomplete";
-
     private RouterInterface $router;
-
     private EntityManagerInterface $em;
 
     public function __construct(
@@ -52,10 +50,12 @@ class AutocompleteType extends AbstractType
             $url = $options["url"];
         } else {
             if (!$classFqcn) {
-                throw new CruditException(sprintf(
-                    "You must set the 'class' option in %s",
-                    self::class
-                ));
+                throw new CruditException(
+                    sprintf(
+                        "You must set the 'class' option in %s",
+                        self::class
+                    )
+                );
             }
 
             $class = strtolower(str_replace("App\\Entity\\", "", $classFqcn));
@@ -73,9 +73,11 @@ class AutocompleteType extends AbstractType
                     ->getRepository($classFqcn)
                     ->findBy(["id" => explode(",", $id)]);
             } else {
-                $entities = [$this->em
-                    ->getRepository($classFqcn)
-                    ->find($id)];
+                $entities = [
+                    $this->em
+                        ->getRepository($classFqcn)
+                        ->find($id),
+                ];
             }
 
             $items = [];

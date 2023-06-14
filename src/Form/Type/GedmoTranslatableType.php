@@ -30,12 +30,15 @@ class GedmoTranslatableType extends AbstractType
     private $defaultLocale;
     private $currentLocale;
 
-
     //the 2eme argument is best if $locales
-    public function __construct($defaultLocale, $locales, GedmoTranslatableFieldManager $translatableFieldManager, TranslatorInterface $translator)
-    {
+    public function __construct(
+        $defaultLocale,
+        $locales,
+        GedmoTranslatableFieldManager $translatableFieldManager,
+        TranslatorInterface $translator
+    ) {
         $this->defaultLocale = $defaultLocale;
-        $this->locales = (\count($locales) <= 1) ? ['fr','en','de'] : $locales;
+        $this->locales = (\count($locales) <= 1) ? ['fr', 'en', 'de'] : $locales;
         $this->translatablefieldmanager = $translatableFieldManager;
         $this->currentLocale = $translator->getLocale();
     }
@@ -45,24 +48,32 @@ class GedmoTranslatableType extends AbstractType
         $fieldName = $builder->getName();
         $locales = $this->locales;
         $defaultLocale = $this->defaultLocale;
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($locales, $options, $defaultLocale) {
-            $form = $event->getForm();
-            foreach ($locales as $locale) {
-                $form->add($locale, $options['fields_class'], [
-                    'label' => false,
-                    'required' => ($defaultLocale == $locale && $options['required'])
-                ]);
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $event) use ($locales, $options, $defaultLocale) {
+                $form = $event->getForm();
+                foreach ($locales as $locale) {
+                    $form->add($locale, $options['fields_class'], [
+                        'label' => false,
+                        'required' => ($defaultLocale == $locale && $options['required']),
+                    ]);
+                }
             }
-        });
+        );
         // submit
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($locales, $defaultLocale) {
             $form = $event->getForm();
             $this->translatablefieldmanager->persistTranslations($form, $locales, $defaultLocale);
         });
     }
+
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $translatedFieldValues = $this->translatablefieldmanager->getTranslatedFields($form->getParent()->getData(), $form->getName(), $this->defaultLocale);
+        $translatedFieldValues = $this->translatablefieldmanager->getTranslatedFields(
+            $form->getParent()->getData(),
+            $form->getName(),
+            $this->defaultLocale
+        );
         // set form field data (translations)
         foreach ($this->locales as $locale) {
             if (!isset($translatedFieldValues[$locale])) {
@@ -95,13 +106,13 @@ class GedmoTranslatableType extends AbstractType
 
     private function getTabLabels()
     {
-        $tabLabels = array();
+        $tabLabels = [];
         foreach ($this->locales as $locale) {
             $tabLabels[$locale] = ucfirst(\Locale::getDisplayLanguage($locale, $this->currentLocale));
         }
+
         return $tabLabels;
     }
-
 
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -110,7 +121,7 @@ class GedmoTranslatableType extends AbstractType
             'mapped' => false,
             'required' => false,
             'by_reference' => false,
-            'fields_class' => TextType::class
+            'fields_class' => TextType::class,
         ]);
     }
 }

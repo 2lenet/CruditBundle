@@ -1,4 +1,5 @@
-<div class="card shadow mb-4 {% if view.data.resource.resource and view.data.resource.resource.getCssClass is defined %}{{ view.data.resource.resource.getCssClass }}{% endif %}">
+<div
+    class="card shadow mb-4 {% if view.data.resource.resource and view.data.resource.resource.getCssClass is defined %}{{ view.data.resource.resource.getCssClass }}{% endif %}">
     <div class="card-body">
         <div class="row" id="{{ view.data.resource.id }}">
             {% for key, field in view.data.resource.fields %}
@@ -16,7 +17,7 @@
                                                 <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
                                                 <dd class="col-sm-9">
                                                     {% if cardField.field.path %}<a
-                                                            href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                                        href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
                                                         {{ cardField.value |raw }}
                                                         {% if cardField.field.path %}</a>{% endif %}
                                                 </dd>
@@ -33,7 +34,7 @@
                             <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
                             <dd class="col-sm-9">
                                 {% if field.field.path %}<a
-                                        href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                    href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
                                     {{ field.value |raw }}
                                     {% if field.field.path %}</a>{% endif %}
                             </dd>
@@ -46,9 +47,12 @@
     {% if view.data.createdAt is defined %}
         <div class="card-footer">
             <small>{{ 'crudit.field.createdAt'|trans({}, 'LleCruditBundle') }} {{ view.data.createdAt|date('d/m/Y H:i:s') }}</small>
-            {% if view.data.createdBy is defined %}<small>{{ 'crudit.field.createdBy'|trans({}, 'LleCruditBundle') }} {{ view.data.createdBy }}</small>{% endif %}
-            {% if view.data.updatedAt is defined %}- <small>{{ 'crudit.field.updatedAt'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedAt|date('d/m/Y H:i:s') }}</small>{% endif %}
-            {% if view.data.updatedBy is defined %}<small>{{ 'crudit.field.updatedBy'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedBy }}</small>{% endif %}
+            {% if view.data.createdBy is defined %}
+                <small>{{ 'crudit.field.createdBy'|trans({}, 'LleCruditBundle') }} {{ view.data.createdBy }}</small>{% endif %}
+            {% if view.data.updatedAt is defined %}-
+                <small>{{ 'crudit.field.updatedAt'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedAt|date('d/m/Y H:i:s') }}</small>{% endif %}
+            {% if view.data.updatedBy is defined %}
+                <small>{{ 'crudit.field.updatedBy'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedBy }}</small>{% endif %}
         </div>
     {% endif %}
 </div>

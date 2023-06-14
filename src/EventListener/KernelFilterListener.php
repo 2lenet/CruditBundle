@@ -9,10 +9,10 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 
 class KernelFilterListener
 {
-    /** @var FilterState  */
+    /** @var FilterState */
     private $filterState;
 
-    public function __construct( FilterState $filterState)
+    public function __construct(FilterState $filterState)
     {
         $this->filterState = $filterState;
     }

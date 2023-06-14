@@ -21,7 +21,7 @@ class SanitizerExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('sanitize', [$this, 'sanitize'])
+            new TwigFilter('sanitize', [$this, 'sanitize']),
         ];
     }
 

@@ -5,22 +5,22 @@
             {% if tab.role == null or is_granted(tab.role) %}
                 <li class="nav-item " role="presentation">
                     <a
-                            class="nav-link
+                        class="nav-link
                             {% if (
-                                (not active and not tab.role)
-                                or (
-                                    not active
-                                    and (tab.role and is_granted(tab.role))
-                                    and not app.request.query.has('tab')
-                                    or app.request.query.get('tab') == tab.id
-                                )
+                            (not active and not tab.role)
+                            or (
+                            not active
+                            and (tab.role and is_granted(tab.role))
+                            and not app.request.query.has('tab')
+                            or app.request.query.get('tab') == tab.id
+                            )
                             ) %}
                             {% set active = true %}
                             active
                             {% endif %}"
-                            data-bs-toggle="tab"
-                            href="#{{ tab.id }}"
-                       role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}</a>
+                        data-bs-toggle="tab"
+                        href="#{{ tab.id }}"
+                        role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}</a>
                 </li>
             {% endif %}
         {% endfor %}
@@ -31,17 +31,17 @@
         {% for tab in view.config.tabs %}
             {% if tab.role == null or is_granted(tab.role) %}
                 <div
-                        id="{{ tab.id }}"
-                        role="tabpanel"
-                        class="tab-pane fade
+                    id="{{ tab.id }}"
+                    role="tabpanel"
+                    class="tab-pane fade
                         {% if (
-                            (not active and not tab.role)
-                            or (
-                                not active
-                                and (tab.role and is_granted(tab.role))
-                                and not app.request.query.has('tab')
-                                or app.request.query.get('tab') == tab.id
-                            )
+                        (not active and not tab.role)
+                        or (
+                        not active
+                        and (tab.role and is_granted(tab.role))
+                        and not app.request.query.has('tab')
+                        or app.request.query.get('tab') == tab.id
+                        )
                         ) %}
                         {% set active = true %}
                             show active

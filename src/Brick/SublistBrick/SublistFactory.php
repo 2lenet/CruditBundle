@@ -19,8 +19,7 @@ class SublistFactory extends AbstractBasicBrickFactory
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack
-    )
-    {
+    ) {
         parent::__construct($resourceResolver, $requestStack);
     }
 
@@ -41,7 +40,7 @@ class SublistFactory extends AbstractBasicBrickFactory
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
                     'lines' => $this->getLines($brickConfigurator),
-                    'batch_actions' => [] // to use the same pager template as list
+                    'batch_actions' => [], // to use the same pager template as list
                 ]);
         }
 
@@ -99,6 +98,7 @@ class SublistFactory extends AbstractBasicBrickFactory
         if ($resource) {
             return $resource;
         }
+
         return null;
     }
 }

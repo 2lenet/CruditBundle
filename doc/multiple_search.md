@@ -7,6 +7,7 @@ You need to create a template `_search.html.twig` for example, in `templates/lay
 ![img.png](img/multiple_search_directory.png)
 
 **2. Add a variable urls (which must be an array)**
+
 - In this array you can add all of the urls you want to have in your multiple search.
 - For each url you need to define an entity, a title and a destUrl.
 - You can too add a limit to determine how many results you want to see (default: 10).

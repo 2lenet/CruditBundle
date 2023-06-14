@@ -2,7 +2,13 @@
     "name": "2lenet/crudit-bundle",
     "type": "symfony-bundle",
     "description": "The easy like Crud'it Bundle.",
-    "keywords": ["admin","backend","symfony","crud","generator"],
+    "keywords": [
+        "admin",
+        "backend",
+        "symfony",
+        "crud",
+        "generator"
+    ],
     "license": "MIT",
     "homepage": "https://github.com/2lenet/CruditBundle",
     "authors": [
@@ -11,7 +17,6 @@
             "homepage": "https://github.com/2lenet/CruditBundle/graphs/contributors"
         }
     ],
-
     "require": {
         "php": "^7.4 || ^8.0",
         "symfony/framework-bundle": "^4.4 || ^5.2 || ^6.0",

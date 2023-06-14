@@ -24,7 +24,7 @@ class WorkflowFilterType extends AbstractFilterType
 
         $op = $this->data["op"];
 
-        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
 

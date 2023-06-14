@@ -3,6 +3,7 @@ Crudit supports Symfony's Workflow component.
 ### Usage
 
 To enable workflows for a field, you need to set the type :
+
 ```php
 $status = Field::new("status", WorkflowField::class);
 ```
@@ -26,6 +27,7 @@ Example : ROLE_USER_WF_TO_BANNED
 - crudit-wf-transition-\<transition\> is added on the transitions
 
 ### Filter
+
 The WorkflowFilterType is available in Crudit.  
 You need to pass the workflow of your choice to the filter, like this :
 

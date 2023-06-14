@@ -1,7 +1,7 @@
-{%  if where == 'header-nav' %}
-    <li class="nav-item d-none d-sm-inline-block">
-{%  else %}
-    <li class="nav-header">
-{%  endif %}
+{% if where == 'header-nav' %}
+<li class="nav-item d-none d-sm-inline-block">
+    {% else %}
+<li class="nav-header">
+    {% endif %}
     {{ element.libelle|trans|upper }}
 </li>

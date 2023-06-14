@@ -10,40 +10,28 @@ use Lle\CruditBundle\Exception\CruditException;
 
 class ItemAction
 {
-    /** @var string  */
+    /** @var string */
     protected $label;
-
-    /** @var Path  */
+    /** @var Path */
     protected $path;
-
     /** @var ?Icon */
     protected $icon;
-
     /** @var ?string */
     protected $url;
-
     /** @var ?string */
     protected $cssClass;
-
     /** @var bool */
     protected $hideLabel = false;
-
     /** @var ?object */
     protected $resource = null;
-
     protected ?string $modal = null;
-
     /** @var bool */
     protected $dropdown = false;
-
     /** @var string */
     protected $title = null;
-
     /** @var bool */
     protected $disabled = false;
-
     protected bool $hasVoter = false;
-
     protected ?string $target = null;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
@@ -73,6 +61,7 @@ class ItemAction
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -89,6 +78,7 @@ class ItemAction
     public function setIcon(?Icon $icon): self
     {
         $this->icon = $icon;
+
         return $this;
     }
 
@@ -100,6 +90,7 @@ class ItemAction
     public function setCssClass(?string $cssClass): self
     {
         $this->cssClass = $cssClass;
+
         return $this;
     }
 
@@ -111,6 +102,7 @@ class ItemAction
     public function setHideLabel(bool $hideLabel): self
     {
         $this->hideLabel = $hideLabel;
+
         return $this;
     }
 

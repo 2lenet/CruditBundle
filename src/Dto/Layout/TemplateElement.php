@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Dto\Layout;
 
 class TemplateElement extends AbstractLayoutElement
 {
-    /** @var string  */
+    /** @var string */
     private $template;
 
     public static function new(string $template): self
