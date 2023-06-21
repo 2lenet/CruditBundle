@@ -22,8 +22,8 @@ class NumberRangeFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "isnull" => ["icon" => "far fa-square"],
             "interval" => ["icon" => "fas fa-arrows-alt-h"],
+            "isnull" => ["icon" => "far fa-square"],
         ];
     }
 
