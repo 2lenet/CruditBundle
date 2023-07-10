@@ -45,6 +45,8 @@ class RouteFilteredLinkExtension extends AbstractExtension
             }
         }
 
+        $parameters[$entity . '_offset'] = 0;
+
         return $this->router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
