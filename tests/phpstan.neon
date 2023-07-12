@@ -13,6 +13,5 @@ parameters:
         - ../tests
     excludePaths:
         - '../src/Resources/skeleton'
-        - '../src/Datasource/AbstractDoctrineDatasource.php'
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
