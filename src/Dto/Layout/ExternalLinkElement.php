@@ -22,7 +22,7 @@ class ExternalLinkElement extends AbstractLayoutElement
 
     protected string $target;
 
-    protected string $cssClass;
+    protected ?string $cssClass = null;
 
     public static function new(
         string $libelle,
