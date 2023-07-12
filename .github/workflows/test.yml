@@ -27,7 +27,7 @@ jobs:
                 with:
                     php_version: ${{ matrix.php_version }}
                     php_extensions: xdebug
-                    version: 10.2
+                    version: 9.5
                     configuration: tests/phpunit/phpunit.xml
                     bootstrap: vendor/autoload.php
                     args: --coverage-text=coverage.xml
