@@ -5,7 +5,9 @@ namespace Lle\CruditBundle\Exporter;
 class ExportParams
 {
     protected ?string $filename = null;
+
     protected string $separator = ";";
+
     protected bool $includeHeaders = true;
 
     public static function new(): self

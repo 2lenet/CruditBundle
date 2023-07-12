@@ -8,18 +8,18 @@ use Lle\CruditBundle\Contracts\LayoutElementInterface;
 
 abstract class AbstractLayoutElement implements LayoutElementInterface
 {
-    /** @var string|null */
-    protected $role;
-    /** @var string */
-    protected $cssClass;
-    /** @var int */
-    protected $priority = 1;
-    /**  @var string */
-    protected $id = null;
-    /** @var string */
-    protected $parent = null;
+    protected ?string $role = null;
+
+    protected string $cssClass;
+
+    protected int $priority = 1;
+
+    protected ?string $id = null;
+
+    protected ?string $parent = null;
+
     /** @var LayoutElementInterface[] */
-    protected $children = [];
+    protected array $children = [];
 
     public function getRole(): string
     {

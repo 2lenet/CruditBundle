@@ -11,6 +11,7 @@ use Twig\TwigFunction;
 class RouteFilteredLinkExtension extends AbstractExtension
 {
     private RouterInterface $router;
+
     private EntityManagerInterface $em;
 
     public function __construct(RouterInterface $router, EntityManagerInterface $em)

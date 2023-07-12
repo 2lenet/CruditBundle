@@ -18,7 +18,9 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class FileType extends VichFileType
 {
     protected SanitizerInterface $sanitizer;
+
     protected UrlGeneratorInterface $urlGenerator;
+
     protected Request $request;
 
     public function __construct(

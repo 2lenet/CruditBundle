@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormView;
 class MarkdownType extends AbstractType
 {
     private const ATTR_CLASS_NAME = "markdown-editor";
+
     protected SanitizerInterface $sanitizer;
 
     public function __construct(SanitizerInterface $sanitizer)

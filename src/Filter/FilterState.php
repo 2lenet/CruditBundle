@@ -10,8 +10,11 @@ use Symfony\Bundle\SecurityBundle\Security;
 class FilterState
 {
     private iterable $filtersets;
+
     private ?array $filterdata;
+
     private Security $security;
+
     private ?Request $request;
 
     public function __construct(iterable $filtersets, Security $security, RequestStack $requestStack)

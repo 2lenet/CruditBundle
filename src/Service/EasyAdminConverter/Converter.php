@@ -11,8 +11,11 @@ use Symfony\Bundle\MakerBundle\Generator;
 class Converter
 {
     protected array $logs = [];
+
     protected Generator $generator;
+
     protected MakeCrudit $cruditMaker;
+
     protected DoctrineHelper $doctrineHelper;
 
     public function __construct(

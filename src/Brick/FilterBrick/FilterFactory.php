@@ -16,6 +16,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 class FilterFactory extends AbstractBasicBrickFactory
 {
     private FilterState $filterState;
+
     private Security $security;
 
     public function __construct(

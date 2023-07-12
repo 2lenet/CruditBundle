@@ -6,8 +6,7 @@ namespace Lle\CruditBundle\Dto\Layout;
 
 class TitleElement extends AbstractLayoutElement
 {
-    /** @var string */
-    private $libelle;
+    private string $libelle;
 
     public static function new(string $libelle): self
     {

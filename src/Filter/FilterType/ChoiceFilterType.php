@@ -12,6 +12,7 @@ use Doctrine\ORM\QueryBuilder;
 class ChoiceFilterType extends AbstractFilterType
 {
     protected array $choices;
+
     protected bool $multiple;
 
     public static function new(string $fieldname, array $choices, bool $isMultiple = false): ChoiceFilterType
