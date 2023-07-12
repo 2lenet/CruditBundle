@@ -12,7 +12,25 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
  */
 abstract class AbstractFilterType implements FilterTypeInterface
 {
-    public function __construct($fieldname)
+    protected string $columnName;
+
+    protected bool $hidden = false;
+
+    protected array $additionnalKeys = [];
+
+    protected string $alias = 'root.';
+
+    protected string $id;
+
+    protected string $label = "";
+
+    protected ?array $data = null;
+
+    protected array $default = [];
+
+    protected ?string $role = null;
+
+    public function __construct(string $fieldname)
     {
         $this->columnName = $fieldname;
         $this->id = $fieldname;
@@ -20,42 +38,25 @@ abstract class AbstractFilterType implements FilterTypeInterface
         $this->alias = "root.";
     }
 
-    protected string $columnName;
-    protected bool $hidden = false;
-    protected array $additionnalKeys = [];
-    protected string $alias = 'root.';
-    protected string $id;
-    protected string $label = "";
-    protected ?array $data = null;
-    protected array $default = [];
-    protected ?string $role = null;
-
     public function getOperators(): array
     {
         return [
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getAdditionnalKeys(): array
     {
         return $this->additionnalKeys;
     }
 
-    /**
-     * @param array $additionnalKeys
-     * @return AbstractFilterType
-     */
-    public function setAdditionnalKeys(array $additionnalKeys): AbstractFilterType
+    public function setAdditionnalKeys(array $additionnalKeys): static
     {
         $this->additionnalKeys = $additionnalKeys;
 
         return $this;
     }
 
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
@@ -67,7 +68,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this;
     }
 
-    public function setDefault($defaultData): self
+    public function setDefault(array $defaultData): self
     {
         $this->default = $defaultData;
 
@@ -81,38 +82,40 @@ abstract class AbstractFilterType implements FilterTypeInterface
 
     /**
      * Returns empty string if no alias, otherwise make sure the alias has just one '.' after it.
-     *
-     * @return string
      */
-    protected function getAlias()
+    protected function getAlias(): string
     {
         return $this->alias;
     }
 
-    public function isHidden()
+    public function isHidden(): bool
     {
         return $this->hidden;
     }
 
-    public function setHidden($hidden)
+    public function setHidden(bool $hidden): self
     {
         $this->hidden = $hidden;
+
+        return $this;
     }
 
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-
-    public function getData()
+    public function getData(): ?array
     {
         return $this->data;
+    }
+
+    public function setData(?array $data): self
+    {
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
      * Get the value of default
      */
-    public function getDefault()
+    public function getDefault(): array
     {
         return $this->default;
     }
@@ -145,10 +148,6 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return "@LleCrudit/filter/type/{$name}_filter.html.twig";
     }
 
-    /**
-     * @param QueryBuilder $qb
-     * @return array
-     */
     protected function getQueryParams(QueryBuilder $qb): array
     {
         // parts (e.g. : user:post:title => [user, post, title]
@@ -183,18 +182,11 @@ abstract class AbstractFilterType implements FilterTypeInterface
         ];
     }
 
-    /**
-     * @return string|null
-     */
     public function getRole(): ?string
     {
         return $this->role;
     }
 
-    /**
-     * @param string|null $role
-     * @return self
-     */
     public function setRole(?string $role): self
     {
         $this->role = $role;

@@ -11,15 +11,15 @@ use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractBrickConfig implements BrickConfigInterface
 {
-    /** @var CrudConfigInterface */
-    protected $crudConfig;
-    /** @var string */
-    protected $pageKey;
-    /** @var string */
-    protected $id;
-    /** @var array */
-    protected $options = [];
-    private $role = null;
+    protected CrudConfigInterface $crudConfig;
+
+    protected string $pageKey;
+
+    protected string $id;
+
+    protected array $options = [];
+
+    private ?string $role = null;
 
     public function getPageKey(): string
     {
@@ -75,18 +75,11 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
-    /**
-     * @param array $options
-     * @return AbstractBrickConfig
-     */
     public function setOptions(array $options): AbstractBrickConfig
     {
         $this->options = $options;
@@ -94,10 +87,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
         return $this;
     }
 
-    /**
-     * @return ?string
-     */
-    public function getRole()
+    public function getRole(): ?string
     {
         return $this->role;
     }
@@ -105,7 +95,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /**
      * @param ?string $role
      */
-    public function setRole($role)
+    public function setRole(?string $role): BrickConfigInterface
     {
         $this->role = $role;
 

@@ -91,14 +91,4 @@ class SublistFactory extends AbstractBasicBrickFactory
     {
         return ['id'];
     }
-
-    private function getResource(SublistConfig $brickConfigurator): ?object
-    {
-        $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
-        if ($resource) {
-            return $resource;
-        }
-
-        return null;
-    }
 }

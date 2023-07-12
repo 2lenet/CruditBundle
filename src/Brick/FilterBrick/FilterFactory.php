@@ -11,7 +11,7 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class FilterFactory extends AbstractBasicBrickFactory
 {

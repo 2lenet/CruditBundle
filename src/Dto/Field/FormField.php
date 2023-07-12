@@ -6,12 +6,11 @@ namespace Lle\CruditBundle\Dto\Field;
 
 class FormField
 {
-    /** @var string */
-    private $name;
-    /** @var ?string */
-    private $type = 'text';
-    /** @var array */
-    private $options = [];
+    private string $name;
+
+    private ?string $type = 'text';
+
+    private array $options = [];
 
     public static function new(string $name, string $type = null, array $options = []): self
     {

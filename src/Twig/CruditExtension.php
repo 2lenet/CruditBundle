@@ -2,8 +2,10 @@
 
 namespace Lle\CruditBundle\Twig;
 
+use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
@@ -21,10 +23,7 @@ class CruditExtension extends AbstractExtension
         $this->router = $router;
     }
 
-    /**
-     * @return array
-     */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('crudit_menu_items', [$this, 'menuItems']),
@@ -41,13 +40,14 @@ class CruditExtension extends AbstractExtension
         ];
     }
 
-    public function menuItems($navid)
+    public function menuItems(string $navid): array
     {
         return $this->menuRegistry->getElements($navid);
     }
 
-    public function menuIsActive($item, $request)
+    public function menuIsActive(LayoutElementInterface $item, Request $request): bool
     {
+        /** @var LinkElement $item */
         if (\count($item->getChildren()) > 0) {
             foreach ($item->getChildren() as $child) {
                 if ($this->menuIsActive($child, $request)) {
@@ -56,29 +56,27 @@ class CruditExtension extends AbstractExtension
             }
         }
 
-        if ($item instanceof LinkElement) {
-            if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
-                $currentRoute = $request->get('_route');
-                $linkRoute = $item->getPath()->getRoute();
-                $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
-                    (int)strrpos($currentRoute, '_') :
-                    strlen($currentRoute);
-                $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
-                    (int)strrpos($linkRoute, '_') :
-                    strlen($linkRoute);
+        if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
+            $currentRoute = $request->get('_route');
+            $linkRoute = $item->getPath()->getRoute();
+            $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
+                (int)strrpos($currentRoute, '_') :
+                strlen($currentRoute);
+            $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
+                (int)strrpos($linkRoute, '_') :
+                strlen($linkRoute);
 
-                return
-                    (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
-                    (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
-            } elseif ($item->getPath() !== null && $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
-                return $item->getPath()->getParams()['resource'] === $request->get('resource');
-            }
+            return
+                (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
+                (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
+        } elseif ($item->getPath() !== null && $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
+            return $item->getPath()->getParams()['resource'] === $request->get('resource');
         }
 
         return false;
     }
 
-    public function jsonDecode($value)
+    public function jsonDecode(string $value): mixed
     {
         return json_decode($value, true);
     }

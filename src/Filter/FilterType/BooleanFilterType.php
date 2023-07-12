@@ -2,6 +2,8 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * BooleanFilterType
  *
@@ -22,7 +24,7 @@ class BooleanFilterType extends AbstractFilterType
         ];
     }
 
-    public function apply($queryBuilder): void
+    public function apply(QueryBuilder $queryBuilder): void
     {
         [$column, $alias, $params] = $this->getQueryParams($queryBuilder);
 
@@ -54,7 +56,7 @@ class BooleanFilterType extends AbstractFilterType
         }
     }
 
-    public function isSelected($data, $value)
+    public function isSelected(array $data, string $value): bool
     {
         if (is_array($data)) {
             if (array_key_exists('value', $data) && $data["value"] === $value) {

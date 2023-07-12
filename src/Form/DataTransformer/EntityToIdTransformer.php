@@ -9,7 +9,9 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 class EntityToIdTransformer implements DataTransformerInterface
 {
     private EntityManagerInterface $em;
+
     private ?string $class;
+
     private bool $multiple = false;
 
     public function __construct(EntityManagerInterface $em)
@@ -76,12 +78,15 @@ class EntityToIdTransformer implements DataTransformerInterface
             return $this->multiple ? [] : null;
         }
 
+        /** @var class-string $class */
+        $class = $this->class;
+
         // Multiple input
         if ($this->isMultiple()) {
             $ids = explode(",", $id);
 
             $entities = $this->em
-                ->getRepository($this->class)
+                ->getRepository($class)
                 ->findBy(["id" => $ids]);
 
             if (count($entities) !== count($ids)) {
@@ -96,7 +101,7 @@ class EntityToIdTransformer implements DataTransformerInterface
 
         // Single input
         $entity = $this->em
-            ->getRepository($this->class)
+            ->getRepository($class)
             ->find($id);
 
         if (!$entity) {

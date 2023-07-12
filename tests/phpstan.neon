@@ -1,25 +1,25 @@
 includes:
-  - ../vendor/phpstan/phpstan-phpunit/extension.neon
-  - ../vendor/phpstan/phpstan-mockery/extension.neon
-  - ../vendor/phpstan/phpstan-symfony/extension.neon
-  - ../vendor/phpstan/phpstan-symfony/rules.neon
-  # - ../vendor/phpstan/phpstan-doctrine/extension.neon
-  - ../vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - ../vendor/phpstan/phpstan-phpunit/extension.neon
+    - ../vendor/phpstan/phpstan-mockery/extension.neon
+    - ../vendor/phpstan/phpstan-symfony/extension.neon
+    - ../vendor/phpstan/phpstan-symfony/rules.neon
+    # - ../vendor/phpstan/phpstan-doctrine/extension.neon
+    - ../vendor/phpstan/phpstan-deprecation-rules/rules.neon
 
 #rules:
 #  - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
 
 parameters:
-  level: 1
-  paths:
-    - ../src
-    - ../tests
-  excludes_analyse:
-    - '../src/Resources/skeleton'
-    - '../src/Datasource/AbstractDoctrineDatasource.php'
-  checkMissingIterableValueType: false
-  checkGenericClassInNonGenericObjectType: false
-  #doctrine:
-  #  objectManagerLoader: ../tests/object-manager.php
-  #ignoreErrors:
-  #  - '#Call to an undefined method Doctrine\\Persistence\\ObjectRepository<[a-zA-Z]*>::[a-zA-Z]*\(\).#'
+    level: 6
+    paths:
+        - ../src
+        - ../tests
+    excludes_analyse:
+        - '../src/Resources/skeleton'
+        - '../src/Datasource/AbstractDoctrineDatasource.php'
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    #doctrine:
+    #  objectManagerLoader: ../tests/object-manager.php
+    #ignoreErrors:
+    #  - '#Call to an undefined method Doctrine\\Persistence\\ObjectRepository<[a-zA-Z]*>::[a-zA-Z]*\(\).#'

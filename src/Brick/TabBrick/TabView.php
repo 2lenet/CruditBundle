@@ -9,11 +9,12 @@ use Lle\CruditBundle\Dto\BrickView;
 class TabView
 {
     /** @var BrickView[] */
-    private $bricks;
-    /** @var string */
-    private $label;
-    /** @var string */
-    private $role;
+    private array $bricks;
+
+
+    private string $label;
+
+    private string $role;
 
     public function __construct(string $label)
     {

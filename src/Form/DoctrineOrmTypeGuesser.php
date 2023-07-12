@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\Proxy;
+use Metadata\ClassMetadata;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
@@ -75,7 +76,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         }
 
         switch ($metadata->getTypeOfField($property)) {
-            case Types::ARRAY:
+            case Types::JSON:
             case Types::SIMPLE_ARRAY:
                 return new TypeGuess(
                     'Symfony\Component\Form\Extension\Core\Type\CollectionType',
@@ -168,7 +169,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         }
     }
 
-    protected function getMetadata(string $class)
+    protected function getMetadata(string $class): ?array
     {
         // normalize class name
         $class = self::getRealClass(ltrim($class, '\\'));
@@ -180,6 +181,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         $this->cache[$class] = null;
         foreach ($this->registry->getManagers() as $name => $em) {
             try {
+                /** @var class-string $class */
                 return $this->cache[$class] = [$em->getClassMetadata($class), $name];
             } catch (MappingException $e) {
                 // not an entity or mapped super class
@@ -248,14 +250,18 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     public function guessMaxLength(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
-        if ($ret && isset($ret[0]->fieldMappings[$property]) && !$ret[0]->hasAssociation($property)) {
-            $mapping = $ret[0]->getFieldMapping($property);
+
+        /** @var ClassMetadataInfo $classMetadata */
+        $classMetadata = $ret[0];
+
+        if ($ret && isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
+            $mapping = $classMetadata->getFieldMapping($property);
 
             if (isset($mapping['length'])) {
                 return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
             }
 
-            if (\in_array($ret[0]->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
+            if (\in_array($classMetadata->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
                 return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
             }
         }
@@ -269,8 +275,12 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     public function guessPattern(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
-        if ($ret && isset($ret[0]->fieldMappings[$property]) && !$ret[0]->hasAssociation($property)) {
-            if (\in_array($ret[0]->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
+
+        /** @var ClassMetadataInfo $classMetadata */
+        $classMetadata = $ret[0];
+
+        if ($ret && isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
+            if (\in_array($classMetadata->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
                 return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
             }
         }

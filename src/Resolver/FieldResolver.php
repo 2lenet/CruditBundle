@@ -54,7 +54,6 @@ class FieldResolver
                             $subClass,
                         )
                     );
-                    break;
                 }
 
                 $propertyType = $types[0];

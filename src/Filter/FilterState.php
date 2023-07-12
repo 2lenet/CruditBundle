@@ -5,7 +5,7 @@ namespace Lle\CruditBundle\Filter;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class FilterState
 {
@@ -80,7 +80,7 @@ class FilterState
         $session->set('crudit_filters', $filterdata);
     }
 
-    public function getData($filterSetId, $filterId): ?array
+    public function getData(string $filterSetId, string $filterId): ?array
     {
         $this->loadData();
 
