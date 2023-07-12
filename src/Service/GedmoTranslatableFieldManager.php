@@ -55,9 +55,11 @@ class GedmoTranslatableFieldManager
 
     private function getTranslations(object $entity, string $fieldName): array
     {
-        if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) && \is_callable(
+        if (
+            \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) && \is_callable(
                 [$entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET]
-            )) {
+            )
+        ) {
             $translations = [];
             foreach ($entity->getTranslations() as $translation) {
                 if ($translation->getField() == $fieldName) {
@@ -130,9 +132,11 @@ class GedmoTranslatableFieldManager
             if (array_key_exists($locale, $submittedValues)) {
                 $value = $submittedValues[$locale];
                 // personal
-                if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) && \is_callable(
+                if (
+                    \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) && \is_callable(
                         [$entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET]
-                    )) {
+                    )
+                ) {
                     $translationClassName = $this->getPersonalTranslationClassName($entity);
                     $needAddTranslation = true;
                     // Phpstan doesn't recognise project entity with $form->getParent()->getData(), to avoid error the only solution is to ignore the next line

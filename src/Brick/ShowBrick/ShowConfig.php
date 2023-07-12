@@ -7,7 +7,6 @@ namespace Lle\CruditBundle\Brick\ShowBrick;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
-use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Component\HttpFoundation\Request;
 

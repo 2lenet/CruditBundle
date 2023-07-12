@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\Proxy;
-use Metadata\ClassMetadata;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
@@ -19,7 +18,9 @@ use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
     protected ManagerRegistry $registry;
+
     protected Reader $annotationReader;
+
     private array $cache = [];
 
     public function __construct(ManagerRegistry $registry, Reader $annotationReader)
@@ -67,12 +68,13 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             }
         }
 
-        if ($isUploadableField || $this->annotationReader->getPropertyAnnotation(
+        if (
+            $isUploadableField || $this->annotationReader->getPropertyAnnotation(
                 $reflectionProperty,
                 UploadableField::class
-            )) {
-            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE
-            );
+            )
+        ) {
+            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE);
         }
 
         switch ($metadata->getTypeOfField($property)) {
@@ -218,9 +220,11 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 
         // Check whether the field exists and is nullable or not
         if (isset($classMetadata->fieldMappings[$property])) {
-            if (!$classMetadata->isNullable($property) && Types::BOOLEAN !== $classMetadata->getTypeOfField(
+            if (
+                !$classMetadata->isNullable($property) && Types::BOOLEAN !== $classMetadata->getTypeOfField(
                     $property
-                )) {
+                )
+            ) {
                 return new ValueGuess(true, Guess::HIGH_CONFIDENCE);
             }
 
