@@ -10,7 +10,7 @@ abstract class AbstractLayoutElement implements LayoutElementInterface
 {
     protected ?string $role = null;
 
-    protected string $cssClass;
+    protected ?string $cssClass = null;
 
     protected int $priority = 1;
 

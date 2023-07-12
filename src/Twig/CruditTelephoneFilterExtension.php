@@ -95,7 +95,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         ];
     }
 
-    public function formatTelephone(string $telephone): string
+    public function formatTelephone(?string $telephone): string
     {
         $telephone = str_replace(' ', '', $telephone);
 

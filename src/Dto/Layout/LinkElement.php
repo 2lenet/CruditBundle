@@ -25,7 +25,7 @@ class LinkElement extends AbstractLayoutElement
     /** @var Badge[] */
     protected array $badges = [];
 
-    protected string $cssClass;
+    protected ?string $cssClass = null;
 
     /** @var LinkElement[] */
     protected array $children = [];
