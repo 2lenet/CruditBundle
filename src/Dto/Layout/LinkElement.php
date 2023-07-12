@@ -18,9 +18,9 @@ class LinkElement extends AbstractLayoutElement
 
     protected string $libelle;
 
-    protected ?Icon $icon;
+    protected ?Icon $icon = null;
 
-    protected Path $path;
+    protected ?Path $path = null;
 
     /** @var Badge[] */
     protected array $badges = [];
