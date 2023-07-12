@@ -16,14 +16,14 @@ jobs:
                 php_version: [8.1]
 
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v2
 
             -   name: 'Validate composer.json and composer.lock'
                 run: composer validate
 
             -   name: 'Cache Composer packages'
                 id: composer-cache
-                uses: actions/cache@v3
+                uses: actions/cache@v2
                 with:
                     path: vendor
                     key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -31,7 +31,7 @@ jobs:
                         ${{ runner.os }}-php-
 
             -   name: 'Install dependencies with Composer'
-                uses: php-actions/composer@v6
+                uses: php-actions/composer@v5
                 with:
                     php_version: ${{ matrix.php_version }}
                     version: 2
@@ -41,7 +41,7 @@ jobs:
                 run: vendor/bin/phpcs
 
             -   name: 'PHPStan Static Analysis'
-                uses: php-actions/phpstan@v3
+                uses: php-actions/phpstan@v2
                 with:
                     configuration: tests/phpstan.neon
                     memory_limit: 256M
