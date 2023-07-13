@@ -9,23 +9,26 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Action\ItemAction;
+use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Symfony\Component\HttpFoundation\Request;
 
 class ListConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
-    private $fields = [];
+    private array $fields = [];
+
     /** @var ItemAction[] */
-    private $actions = [];
+    private array $actions = [];
+
     /** @var ListAction[] */
-    private $batch_actions = [];
-    /** @var DatasourceInterface */
-    private $datasource;
-    /** @var DatasourceParams */
-    private $datasourceParams;
-    /** @var string */
-    private $className;
+    private array $batch_actions = [];
+
+    private ?DatasourceInterface $datasource = null;
+
+    private DatasourceParams $datasourceParams;
+
+    private string $className;
 
     public function __construct(array $options = [])
     {
@@ -103,14 +106,14 @@ class ListConfig extends AbstractBrickConfig
         return $this->actions;
     }
 
-    public function setActions($actions): self
+    public function setActions(array $actions): self
     {
         $this->actions = $actions;
 
         return $this;
     }
 
-    public function setBatchActions($actions): self
+    public function setBatchActions(array $actions): self
     {
         $this->batch_actions = array_filter($actions, function ($a) {
             return $a->isBatch();

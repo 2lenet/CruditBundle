@@ -9,12 +9,12 @@ use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class ResourceResolver
 {
-    /** @var FieldResolver */
-    private $fieldResolver;
+    private FieldResolver $fieldResolver;
+
     private Security $security;
 
     public function __construct(

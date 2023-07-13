@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormView;
 class MarkdownType extends AbstractType
 {
     private const ATTR_CLASS_NAME = "markdown-editor";
+
     protected SanitizerInterface $sanitizer;
 
     public function __construct(SanitizerInterface $sanitizer)
@@ -21,7 +22,7 @@ class MarkdownType extends AbstractType
         $this->sanitizer = $sanitizer;
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         //add attr class name if it's not already there
         $class = self::ATTR_CLASS_NAME;
@@ -34,19 +35,19 @@ class MarkdownType extends AbstractType
         $view->vars["attr"]["class"] = trim($class);
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $event->setData($this->sanitizer->sanitize($event->getData()));
         });
     }
 
-    public function getParent()
+    public function getParent(): string
     {
         return TextareaType::class;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'crudit_markdown';
     }

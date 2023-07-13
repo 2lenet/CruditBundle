@@ -6,8 +6,7 @@ namespace Lle\CruditBundle\Dto\Layout;
 
 class HeaderElement extends AbstractLayoutElement
 {
-    /** @var string */
-    protected $libelle;
+    protected string $libelle;
 
     public static function new(string $libelle): self
     {

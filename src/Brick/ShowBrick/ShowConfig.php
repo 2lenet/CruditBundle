@@ -13,10 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 class ShowConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
-    private $fields = [];
-    /** @var DatasourceInterface */
-    private $dataSource;
-    private $actions;
+    private array $fields = [];
+
+    private ?DatasourceInterface $dataSource = null;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
@@ -55,23 +54,10 @@ class ShowConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getActions(): array
-    {
-        return [];
-    }
-
-    public function setActions($actions): self
-    {
-        $this->actions = $actions;
-
-        return $this;
-    }
-
     public function getConfig(Request $request): array
     {
         return [
             'fields' => $this->getFields(),
-            'actions' => $this->getActions(),
             'name' => $this->getCrudConfig()->getName(),
             'title' => $this->getCrudConfig()->getTitle('show'),
             'hidden_action' => false,

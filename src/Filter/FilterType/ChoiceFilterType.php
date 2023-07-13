@@ -12,14 +12,9 @@ use Doctrine\ORM\QueryBuilder;
 class ChoiceFilterType extends AbstractFilterType
 {
     protected array $choices;
+
     protected bool $multiple;
 
-    /**
-     * @param string $fieldname
-     * @param array $choices
-     * @param bool $isMultiple
-     * @return ChoiceFilterType
-     */
     public static function new(string $fieldname, array $choices, bool $isMultiple = false): ChoiceFilterType
     {
         $f = new self($fieldname);
@@ -29,9 +24,6 @@ class ChoiceFilterType extends AbstractFilterType
         return $f;
     }
 
-    /**
-     * @param array $choices
-     */
     public function setChoices(array $choices): void
     {
         $this->choices = [];
@@ -44,9 +36,6 @@ class ChoiceFilterType extends AbstractFilterType
         }
     }
 
-    /**
-     * @param bool $isMultiple
-     */
     public function setMultiple(bool $isMultiple): void
     {
         $this->multiple = $isMultiple;
@@ -71,7 +60,7 @@ class ChoiceFilterType extends AbstractFilterType
         return $this->choices;
     }
 
-    public function isSelected($data, $value)
+    public function isSelected(array $data, string $value): bool
     {
         if (is_array($data['value'])) {
             return in_array($value, $data['value']);
@@ -85,7 +74,7 @@ class ChoiceFilterType extends AbstractFilterType
         return $this->multiple;
     }
 
-    public function isAssoc(array $arr)
+    public function isAssoc(array $arr): bool
     {
         if (empty($arr)) {
             return false;

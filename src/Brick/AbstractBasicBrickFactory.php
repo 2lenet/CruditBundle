@@ -12,10 +12,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 abstract class AbstractBasicBrickFactory implements BrickInterface
 {
-    /** @var ResourceResolver */
-    protected $resourceResolver;
-    /** @var RequestStack */
-    protected $requestStack;
+    protected ResourceResolver $resourceResolver;
+
+    protected RequestStack $requestStack;
 
     public function __construct(
         ResourceResolver $resourceResolver,

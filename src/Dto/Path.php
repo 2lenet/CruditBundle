@@ -6,10 +6,10 @@ namespace Lle\CruditBundle\Dto;
 
 class Path
 {
-    /** @var string */
-    private $route;
-    /** @var array */
-    private $params;
+    private string $route;
+
+    private array $params;
+
     private ?string $role = null;
 
     public static function new(string $route, array $params = []): self

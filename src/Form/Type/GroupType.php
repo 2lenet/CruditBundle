@@ -16,7 +16,7 @@ class GroupType extends AbstractType
         $this->sanitizer = $sanitizer;
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         parent::buildView($view, $form, $options);
         $view->vars['isGroup'] = true;
@@ -27,7 +27,7 @@ class GroupType extends AbstractType
         }
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'crudit_group';
     }

@@ -12,25 +12,29 @@ use Lle\CruditBundle\Dto\Path;
 
 class FormConfig extends AbstractBrickConfig
 {
-    /** @var DatasourceInterface */
-    private $dataSource;
-    /** @var ?string */
-    private $form = null;
+    private ?DatasourceInterface $dataSource = null;
+
+    private ?string $form = null;
+
     /** @var FormField[] */
-    private $fields = [];
-    /** @var ?Path */
-    private $successRedirectPath;
-    /** @var string */
-    private $messageSuccess;
-    /** @var string */
-    private $messageError;
+    private array $fields = [];
+
+    private ?Path $successRedirectPath = null;
+
+    private string $messageSuccess;
+
+    private string $messageError;
+
     protected ?Path $cancelPath = null;
+
     /**
      * For sublist forms.
      * assocField contains the name of the parent property
      */
     protected ?string $assocProperty = null;
+
     protected bool $sublist = false;
+
     protected ?string $title = null;
 
     public static function new(array $options = []): self
@@ -80,7 +84,7 @@ class FormConfig extends AbstractBrickConfig
         return $this->messageSuccess ?? 'crudit.message.success';
     }
 
-    public function getForm($resource = null): ?string
+    public function getForm(?object $resource = null): ?string
     {
         return $this->form;
     }
@@ -157,18 +161,11 @@ class FormConfig extends AbstractBrickConfig
         return $this->dataSource;
     }
 
-    /**
-     * @return Path
-     */
     public function getCancelPath(): ?Path
     {
         return $this->cancelPath;
     }
 
-    /**
-     * @param Path $cancelPath
-     * @return FormConfig
-     */
     public function setCancelPath(?Path $cancelPath): FormConfig
     {
         $this->cancelPath = $cancelPath;

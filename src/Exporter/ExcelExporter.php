@@ -77,7 +77,7 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
-    protected function getHeaders($fields)
+    protected function getHeaders(array $fields): array
     {
         $result = [];
 
@@ -89,7 +89,7 @@ class ExcelExporter extends AbstractExporter
         return $result;
     }
 
-    protected function getType(FieldView $field)
+    protected function getType(FieldView $field): string
     {
         if ($field->getRawValue() === null || $field->getRawValue() === "") {
             return DataType::TYPE_NULL;

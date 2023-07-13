@@ -74,20 +74,18 @@ class ListFactory extends AbstractBasicBrickFactory
     {
         $lines = [];
 
-        if ($brickConfigurator->getDatasource()) {
-            // normal list
-            $dsParams = $brickConfigurator->getDatasourceParams();
-            $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
-            $resources = $brickConfigurator->getDatasource()->list($dsParams);
+        // normal list
+        $dsParams = $brickConfigurator->getDatasourceParams();
+        $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+        $resources = $brickConfigurator->getDatasource()->list($dsParams);
 
-            foreach ($resources as $resource) {
-                $lines[] = $this->resourceResolver->resolve(
-                    $resource,
-                    $this->getFields($brickConfigurator),
-                    $brickConfigurator->getDatasource(),
-                    $brickConfigurator->getCrudConfig()
-                );
-            }
+        foreach ($resources as $resource) {
+            $lines[] = $this->resourceResolver->resolve(
+                $resource,
+                $this->getFields($brickConfigurator),
+                $brickConfigurator->getDatasource(),
+                $brickConfigurator->getCrudConfig()
+            );
         }
 
         return $lines;

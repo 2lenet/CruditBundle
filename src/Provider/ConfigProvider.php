@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Provider;
 
-use Lle\CruditBundle\{
-    Contracts\CrudConfigInterface,
-};
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ConfigProvider
 {
-    /** @var array */
-    private $configurators;
+    private array $configurators;
 
     public function __construct(iterable $configurators)
     {
