@@ -82,7 +82,11 @@ final class MakeCrudit extends AbstractMaker
                 InputArgument::OPTIONAL,
                 sprintf('Do you want some filters ?')
             )
-            ->setHelp((string)file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'));
+            ->setHelp(
+                "The <info>%command.name%</info> command generates several class for a CruditConfig" .
+                "<info>php %command.full_name% App\Entity\Article</info>" .
+                "If the argument is missing, the command will ask for the entity class name interactively."
+            );
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');

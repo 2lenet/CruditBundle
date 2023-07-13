@@ -23,22 +23,22 @@ abstract class AbstractCrudController extends AbstractController
         return $subscribeds;
     }
 
-    public function getBrickBuilder(): object
+    protected function getBrickBuilder(): object
     {
         return $this->container->get(BrickBuilder::class);
     }
 
-    public function getSerializer(): object
+    protected function getSerializer(): object
     {
         return $this->container->get(SerializerInterface::class);
     }
 
-    public function getBrickResponseCollector(): object
+    protected function getBrickResponseCollector(): object
     {
         return $this->container->get(BrickResponseCollector::class);
     }
 
-    public function getDoctrine(): ManagerRegistry
+    protected function getDoctrine(): ManagerRegistry
     {
         return $this->container->get('doctrine');
     }
