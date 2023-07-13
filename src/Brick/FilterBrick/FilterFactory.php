@@ -55,7 +55,7 @@ class FilterFactory extends AbstractBasicBrickFactory
     {
         $ret = [];
         foreach ($filterset->getFilters() as $filter) {
-            if ($filter->getRole() != null && $this->security->isGranted($filter->getRole()) == false) {
+            if ($filter->getRole() !== null && $this->security->isGranted($filter->getRole()) === false) {
                 continue;
             }
 

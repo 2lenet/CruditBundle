@@ -51,7 +51,7 @@ class FilterState
                 }
 
                 foreach ($filterset->getFilters() as $filterType) {
-                    if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {
+                    if ($filterType->getRole() !== null && $this->security->isGranted($filterType->getRole()) === false) {
                         unset($filterdata[$filterId][$filterType->getId()]);
                         continue;
                     }
@@ -98,7 +98,7 @@ class FilterState
     {
         $filterdata = [];
         foreach ($filterset->getFilters() as $filterType) {
-            if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {
+            if ($filterType->getRole() !== null && $this->security->isGranted($filterType->getRole()) === false) {
                 continue;
             }
             $data = $filterType->getDefault();

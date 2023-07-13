@@ -54,7 +54,7 @@ class ResourceResolver
         foreach ($fields as $key => $field) {
             if (is_array($field)) {
                 foreach ($field as $cardField) {
-                    if ($cardField->getRole() == null || $this->security->isGranted($cardField->getRole())) {
+                    if ($cardField->getRole() === null || $this->security->isGranted($cardField->getRole())) {
                         $fieldViews[$key][] = $this->fieldResolver->resolveView(
                             $cardField,
                             $resource,
@@ -64,7 +64,7 @@ class ResourceResolver
                     }
                 }
             } else {
-                if ($field->getRole() == null || $this->security->isGranted($field->getRole())) {
+                if ($field->getRole() === null || $this->security->isGranted($field->getRole())) {
                     $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource, $crudConfig);
                 }
             }
