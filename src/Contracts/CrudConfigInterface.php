@@ -46,4 +46,6 @@ interface CrudConfigInterface
     public function getChoicesNbItems(): array;
 
     public function getTranslationDomain(): string;
+
+    public function fieldsToUpdate(int|string $id): array;
 }

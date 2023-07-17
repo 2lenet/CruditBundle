@@ -81,9 +81,9 @@
 
                             {% if column.field.ruptGroup == 0 %}
                                 {% if loop.first %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                                    <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% endif %}
-                                <td>
+                                <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower }}">
                                     {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
                                         {% endif %}

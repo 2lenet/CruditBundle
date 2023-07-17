@@ -150,7 +150,10 @@ trait TraitCrudController
             $data = json_decode($request->request->get("data", "{}"), true);
 
             if ($dataSource->editData($id, $data)) {
-                return new JsonResponse(["status" => "ok"]);
+                return new JsonResponse([
+                    "status" => "ok",
+                    "fieldsToUpdate" => $this->config->fieldsToUpdate($id),
+                ]);
             }
 
             return new JsonResponse([

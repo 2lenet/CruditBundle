@@ -15,7 +15,7 @@
                                         <div class="crudit-field {{ cardField.options.cssClass }}">
                                             <dl class="row">
                                                 <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                                                <dd class="col-sm-9">
+                                                <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
                                                     {% if cardField.field.path %}<a
                                                         href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
                                                         {{ cardField.value |raw }}
@@ -32,7 +32,7 @@
                     <div class="crudit-field {{ field.options.cssClass }}">
                         <dl class="row">
                             <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                            <dd class="col-sm-9">
+                            <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
                                 {% if field.field.path %}<a
                                     href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
                                     {{ field.value |raw }}
