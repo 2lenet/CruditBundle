@@ -83,7 +83,13 @@ window.addEventListener('load', function () {
                 method: 'post',
             },
         ).then((response) => {
-            if (response.status >= 400) {
+            if (response.status === 200) {
+                response.json().then((json) => {
+                    Object.entries(json.fieldsToUpdate).forEach(field => {
+                        document.getElementById(field[0]).innerHTML = field[1];
+                    });
+                });
+            } else if (response.status >= 400) {
                 // error, tell the user
                 response.json().then((json) => {
                     addFlash(json.message || 'Error while saving EIP.', 'danger');

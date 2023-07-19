@@ -319,4 +319,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return 'messages';
     }
+
+    public function fieldsToUpdate(int|string $id): array
+    {
+        return [];
+    }
 }

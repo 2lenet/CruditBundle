@@ -99,14 +99,14 @@
 
                         {% if column.field.ruptGroup == 0 %}
                             {% if line_opened == 0 %}
-                                <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                                <tr id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                 {% set line_opened = 1 %}
                                 {% if has_batch %}
                                     <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox"
                                                autocomplete="off"/></td>
                                 {% endif %}
                             {% endif %}
-                            <td>
+                            <td id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower }}">
                                 {% if column.field.path %}
                                 <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
                                     {% endif %}

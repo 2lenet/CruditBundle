@@ -79,5 +79,7 @@ interface CrudConfigInterface
 
     public function getTranslationDomain(): string;
 
+    public function fieldsToUpdate(int|string $id): array;
+
     public function getRootRoute(): ?string;
 }
