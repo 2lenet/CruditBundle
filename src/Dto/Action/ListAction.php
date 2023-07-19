@@ -9,22 +9,26 @@ use Lle\CruditBundle\Dto\Path;
 
 class ListAction
 {
-    /** @var string */
-    protected $label;
-    /** @var Path */
-    protected $path;
-    /** @var ?Icon */
-    protected $icon;
-    /** @var ?string */
-    protected $url;
-    /** @var ?string */
-    protected $cssClass;
-    /** @var bool */
-    protected $hideLabel = false;
+    protected string $label;
+
+    protected Path $path;
+
+    protected ?Icon $icon;
+
+    protected ?string $url;
+
+    protected ?string $cssClass = null;
+
+    protected bool $hideLabel = false;
+
     protected ?string $modal = null;
+
     protected array $config = [];
+
     protected bool $batch = false;
+
     protected ?string $form = "";
+
     protected ?string $target = null;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): self
@@ -41,26 +45,14 @@ class ListAction
         $this->url = null;
     }
 
-    public function getPath(): Path
-    {
-        return $this->path;
-    }
-
     public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function setUrl(string $url): self
+    public function getPath(): Path
     {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
+        return $this->path;
     }
 
     public function getIcon(): ?Icon
@@ -71,6 +63,18 @@ class ListAction
     public function setIcon(?Icon $icon): self
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
 
         return $this;
     }
@@ -111,11 +115,6 @@ class ListAction
         return $this;
     }
 
-    public function getId(): string
-    {
-        return md5("crudit_action_" . spl_object_id($this));
-    }
-
     public function getConfig(): array
     {
         return $this->config;
@@ -128,31 +127,15 @@ class ListAction
         return $this;
     }
 
-    public function setIsBatch()
-    {
-        $this->batch = true;
-
-        return $this;
-    }
-
-    public function isBatch()
+    public function isBatch(): bool
     {
         return $this->batch;
     }
 
-    public function getTitle(): string
+    public function setIsBatch(): self
     {
-        return $this->getLabel();
-    }
+        $this->batch = true;
 
-    public function isDisabled(): bool
-    {
-        return false;
-    }
-
-    public function setResource(?object $resource): self
-    {
-        /** do nothing */
         return $this;
     }
 
@@ -177,6 +160,27 @@ class ListAction
     {
         $this->target = $target;
 
+        return $this;
+    }
+
+    public function getId(): string
+    {
+        return md5("crudit_action_" . spl_object_id($this));
+    }
+
+    public function getTitle(): string
+    {
+        return $this->getLabel();
+    }
+
+    public function isDisabled(): bool
+    {
+        return false;
+    }
+
+    public function setResource(?object $resource): self
+    {
+        /** do nothing */
         return $this;
     }
 }

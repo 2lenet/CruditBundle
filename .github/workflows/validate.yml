@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php_version: [7.4]
+                php_version: [8.1]
 
         steps:
             -   uses: actions/checkout@v2
@@ -41,7 +41,4 @@ jobs:
                 run: vendor/bin/phpcs
 
             -   name: 'PHPStan Static Analysis'
-                uses: php-actions/phpstan@v2
-                with:
-                    configuration: tests/phpstan.neon
-                    memory_limit: 256M
+                run: vendor/bin/phpstan analyse -c tests/phpstan.neon

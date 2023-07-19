@@ -68,7 +68,7 @@ class CsvExporter extends AbstractExporter
         return $response;
     }
 
-    protected function getHeaders($fields)
+    protected function getHeaders(array $fields): array
     {
         $result = [];
 

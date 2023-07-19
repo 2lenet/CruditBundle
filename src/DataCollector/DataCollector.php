@@ -12,20 +12,19 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector as BaseDataCollecto
  */
 class DataCollector extends BaseDataCollector
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->data = [];
     }
 
-    public function collect(Request $request, Response $response, $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null): void
     {
         $entities = [];
         $metas = $this->em->getMetadataFactory()->getAllMetadata();
@@ -47,10 +46,7 @@ class DataCollector extends BaseDataCollector
         return $this->data;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'crudit';
     }

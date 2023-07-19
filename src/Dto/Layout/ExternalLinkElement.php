@@ -9,13 +9,20 @@ use Lle\CruditBundle\Dto\Icon;
 class ExternalLinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
+
     public const TYPE_BODY = 'body';
+
     protected string $type;
+
     protected string $libelle;
+
     protected ?Icon $icon = null;
+
     protected string $url;
+
     protected string $target;
-    protected $cssClass;
+
+    protected ?string $cssClass = null;
 
     public static function new(
         string $libelle,

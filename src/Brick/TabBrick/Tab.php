@@ -9,10 +9,11 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 class Tab
 {
     /** @var BrickConfigInterface[] */
-    private $bricks;
-    /** @var string */
-    private $label;
-    private $role = null;
+    private array $bricks;
+
+    private string $label;
+
+    private ?string $role = null;
 
     private function __construct(array $bricks)
     {

@@ -2,7 +2,6 @@
 
 namespace Lle\CruditBundle\Test;
 
-use App\Repository\UserRepository;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

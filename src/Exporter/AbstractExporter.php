@@ -8,7 +8,7 @@ use Lle\CruditBundle\Field\DoctrineEntityField;
 
 abstract class AbstractExporter implements ExporterInterface
 {
-    protected function getValue(FieldView $field)
+    protected function getValue(FieldView $field): string
     {
         if ($field->getField()->getType() == DoctrineEntityField::class) {
             $field->getField()->setType("string");

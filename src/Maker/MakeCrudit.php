@@ -19,7 +19,6 @@ use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
-use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
@@ -36,21 +35,14 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 final class MakeCrudit extends AbstractMaker
 {
-    /** @var FileManager */
-    private $fileManager;
-    /** @var DoctrineHelper */
-    private $entityHelper;
-    /** @var bool */
-    private $withController;
-    /** @var string */
-    private $projectDir;
+    private DoctrineHelper $entityHelper;
+
+    private string $projectDir;
 
     public function __construct(
-        FileManager $fileManager,
         DoctrineHelper $entityHelper,
-        KernelInterface $kernel
+        KernelInterface $kernel,
     ) {
-        $this->fileManager = $fileManager;
         $this->entityHelper = $entityHelper;
         $this->projectDir = $kernel->getProjectDir();
     }
@@ -82,7 +74,11 @@ final class MakeCrudit extends AbstractMaker
                 InputArgument::OPTIONAL,
                 sprintf('Do you want some filters ?')
             )
-            ->setHelp((string)file_get_contents(__DIR__ . '/../Resources/help/make_crudit.txt'));
+            ->setHelp(
+                "The <info>%command.name%</info> command generates several class for a CruditConfig" .
+                "<info>php %command.full_name% App\Entity\Article</info>" .
+                "If the argument is missing, the command will ask for the entity class name interactively."
+            );
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
@@ -178,7 +174,7 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        string $entityClass
+        string $entityClass,
     ): string {
         $fields = $this->getFields($entityClass);
         $cruds = [
@@ -222,6 +218,7 @@ final class MakeCrudit extends AbstractMaker
     {
         $fields = [];
 
+        /** @var ClassMetadataInfo $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
@@ -250,6 +247,7 @@ final class MakeCrudit extends AbstractMaker
     {
         $filters = [];
 
+        /** @var ClassMetadataInfo $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
         if ($metadata instanceof ClassMetadata) {
             foreach ($metadata->getFieldNames() as $fieldname) {
@@ -284,11 +282,13 @@ final class MakeCrudit extends AbstractMaker
                     break;
                 }
 
+                /** @var ClassMetadataInfo $metadata */
                 $association = $metadata->getAssociationMapping($field);
                 $metadata = $this->entityHelper->getMetadata($association["targetEntity"]);
             }
         }
 
+        /** @var ClassMetadataInfo $metadata */
         if ($metadata->hasAssociation($property)) {
             $mapping = $metadata->getAssociationMapping($property);
 
@@ -356,7 +356,7 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        string $entityClass
+        string $entityClass,
     ): void {
         $fields = $this->getFields($entityClass);
         $shortEntity = $this->getBasename($entityClass);
@@ -394,7 +394,7 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        string $entityClass
+        string $entityClass,
     ): void {
         $shortEntity = $this->getBasename($entityClass);
 
@@ -433,7 +433,7 @@ final class MakeCrudit extends AbstractMaker
         InputInterface $input,
         ConsoleStyle $io,
         Generator $generator,
-        string $entityClass
+        string $entityClass,
     ): void {
         if (count(AbstractDoctrineDatasource::getInitSearchFields($entityClass)) == 0) {
             $io->warning("You must set the searchFields property for autocompletion.");
@@ -495,14 +495,6 @@ final class MakeCrudit extends AbstractMaker
             Annotation::class,
             'annotations'
         );
-    }
-
-    private function getPathOfClass(string $class): string
-    {
-        if (class_exists($class)) {
-            return (string)(new \ReflectionClass($class))->getFileName();
-        }
-        throw new InvalidArgumentException('entity class ' . $class . ' not found');
     }
 
     private function getBasename(string $class): string

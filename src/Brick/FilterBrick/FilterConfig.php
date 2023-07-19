@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 class FilterConfig extends AbstractBrickConfig
 {
     private ?FilterSetInterface $filterset = null;
+
     private string $className;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self

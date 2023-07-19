@@ -5,13 +5,16 @@ namespace Lle\CruditBundle\Filter;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class FilterState
 {
     private iterable $filtersets;
+
     private ?array $filterdata;
+
     private Security $security;
+
     private ?Request $request;
 
     public function __construct(iterable $filtersets, Security $security, RequestStack $requestStack)
@@ -51,7 +54,7 @@ class FilterState
                 }
 
                 foreach ($filterset->getFilters() as $filterType) {
-                    if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {
+                    if ($filterType->getRole() !== null && $this->security->isGranted($filterType->getRole()) === false) {
                         unset($filterdata[$filterId][$filterType->getId()]);
                         continue;
                     }
@@ -80,7 +83,7 @@ class FilterState
         $session->set('crudit_filters', $filterdata);
     }
 
-    public function getData($filterSetId, $filterId): ?array
+    public function getData(string $filterSetId, string $filterId): ?array
     {
         $this->loadData();
 
@@ -98,7 +101,7 @@ class FilterState
     {
         $filterdata = [];
         foreach ($filterset->getFilters() as $filterType) {
-            if ($filterType->getRole() != null && $this->security->isGranted($filterType->getRole()) == false) {
+            if ($filterType->getRole() !== null && $this->security->isGranted($filterType->getRole()) === false) {
                 continue;
             }
             $data = $filterType->getDefault();

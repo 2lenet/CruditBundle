@@ -11,11 +11,12 @@ use Symfony\Component\HttpFoundation\Response;
 class FlashBrickResponse implements BrickResponseInterface
 {
     public const SUCCESS = 'success';
+
     public const ERROR = 'danger';
-    /** @var string */
-    private $type;
-    /** @var string */
-    private $message;
+
+    private string $type;
+
+    private string $message;
 
     public function __construct(string $type, string $message)
     {

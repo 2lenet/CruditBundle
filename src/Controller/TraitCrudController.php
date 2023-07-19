@@ -21,14 +21,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait TraitCrudController
 {
-    /**
-     * @var CrudConfigInterface
-     */
-    protected $config;
+    protected CrudConfigInterface $config;
 
-    /**
-     * @Route("/")
-     */
+    #[Route('/')]
     public function index(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_INDEX');
@@ -39,9 +34,7 @@ trait TraitCrudController
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
-    /**
-     * @Route("/show/{id}")
-     */
+    #[Route('/show/{id}')]
     public function show(Request $request, $id): Response
     {
         $resource = $this->getResource($request, false);
@@ -54,9 +47,7 @@ trait TraitCrudController
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
-    /**
-     * @Route("/edit/{id}")
-     */
+    #[Route('/edit/{id}')]
     public function edit(Request $request, $id): Response
     {
         $resource = $this->getResource($request, false);
@@ -69,9 +60,7 @@ trait TraitCrudController
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
-    /**
-     * @Route("/new")
-     */
+    #[Route('/new')]
     public function new(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_NEW');
@@ -82,9 +71,7 @@ trait TraitCrudController
         return $this->getBrickResponseCollector()->handle($request, $response);
     }
 
-    /**
-     * @Route("/delete/{id}")
-     */
+    #[Route('/delete/{id}')]
     public function delete(Request $request): Response
     {
         $resource = $this->getResource($request, false);
@@ -97,9 +84,7 @@ trait TraitCrudController
         return $this->redirectToRoute($this->config->getRootRoute() . "_index");
     }
 
-    /**
-     * @Route("/autocomplete")
-     */
+    #[Route('/autocomplete')]
     public function autocomplete(Request $request): Response
     {
         $dataSource = $this->config->getDatasource();
@@ -137,9 +122,7 @@ trait TraitCrudController
         );
     }
 
-    /**
-     * @Route("/editdata/{id}")
-     */
+    #[Route('/editdata/{id}')]
     public function editdata(string $id, Request $request, TranslatorInterface $translator): Response
     {
         try {
@@ -173,9 +156,7 @@ trait TraitCrudController
         }
     }
 
-    /**
-     * @Route("/export")
-     */
+    #[Route('/export')]
     public function export(
         Request $request,
         FilterState $filterState,
@@ -213,9 +194,7 @@ trait TraitCrudController
         );
     }
 
-    /**
-     * @Route("/api/{pageKey}")
-     */
+    #[Route('/api/{pageKey}')]
     public function api(Request $request): Response
     {
         $views = $this->getBrickBuilder()->build($this->config, $request->get('pageKey'));
@@ -223,9 +202,7 @@ trait TraitCrudController
         return new JsonResponse($this->getSerializer()->normalize($views));
     }
 
-    /**
-     * @Route("/brick/{idBrick}.{_format}", format="json", requirements={"_format": "html|json"})
-     */
+    #[Route('/brick/{idBrick}.{_format}', format: 'json', requirements: ['_format' => 'html|json'])]
     public function brick(Request $request): Response
     {
         $view = $this->getBrickBuilder()->getView(
@@ -239,9 +216,7 @@ trait TraitCrudController
         }
     }
 
-    /**
-     * @Route("/brick/data/{idBrick}")
-     */
+    #[Route('/brick/data/{idBrick}')]
     public function brickData(Request $request): Response
     {
         $view = $this->getBrickBuilder()->getView(
@@ -252,9 +227,7 @@ trait TraitCrudController
         return new JsonResponse($this->getSerializer()->normalize($view->getData()));
     }
 
-    /**
-     * @Route("/brick/config/{idBrick}")
-     */
+    #[Route('/brick/config/{idBrick}')]
     public function brickConfig(Request $request): Response
     {
         $view = $this->getBrickBuilder()->getView(
@@ -265,9 +238,7 @@ trait TraitCrudController
         return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
     }
 
-    /**
-     * @Route("/workflow/{id}")
-     */
+    #[Route('/workflow/{id}')]
     public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
     {
         $transition = $request->get("transition");

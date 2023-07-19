@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
@@ -20,10 +21,12 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
-    /** @var EntityManagerInterface */
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
+
     protected ?FilterSetInterface $filterset;
+
     protected FilterState $filterState;
+
     protected array $searchFields = [];
 
     public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
@@ -73,7 +76,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     private function getRepository(): ObjectRepository
     {
-        return $this->entityManager->getRepository($this->getClassName());
+        /** @var class-string $className */
+        $className = $this->getClassName();
+
+        return $this->entityManager->getRepository($className);
     }
 
     public function list(?DatasourceParams $requestParams): iterable
@@ -99,16 +105,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param DatasourceParams|null $requestParams
-     * @return QueryBuilder
-     */
     public function buildQueryBuilder(?DatasourceParams $requestParams): QueryBuilder
     {
-        /** @var QueryBuilder $qb */
-        $qb = $this->getRepository()->createQueryBuilder("root");
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
 
-        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+        $qb = $repository->createQueryBuilder("root");
+
+        /** @var class-string $className */
+        $className = $this->getClassName();
+
+        $metadata = $this->entityManager->getClassMetadata($className);
 
         if ($requestParams) {
             $i = 0;
@@ -142,7 +149,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb;
     }
 
-    protected function applyFilters(QueryBuilder $qb)
+    protected function applyFilters(QueryBuilder $qb): void
     {
         foreach ($this->filterset->getFilters() as $filter) {
             $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
@@ -150,7 +157,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
     }
 
-    protected function addOrderBy(QueryBuilder $qb, $column, $order)
+    protected function addOrderBy(QueryBuilder $qb, string $column, ?string $order): void
     {
         // parts (e.g. : user.post.title => [user, post, title]
         $fields = explode(".", $column);
@@ -175,7 +182,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             $field = array_shift($fields);
         }
 
-        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+        /** @var class-string $className */
+        $className = $this->getClassName();
+
+        $metadata = $this->entityManager->getClassMetadata($className);
 
         if (
             $metadata->hasAssociation($field)
@@ -203,7 +213,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->searchFields;
     }
 
-    public function autocompleteQuery(string $queryTerm, array $sorts, $requestParams = null): iterable
+    public function autocompleteQuery(string $queryTerm, array $sorts, ?DatasourceParams $requestParams = null): iterable
     {
         $qb = $this->buildQueryBuilder($requestParams);
 
@@ -269,7 +279,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function delete($id): bool
     {
-        $resource = $this->entityManager->find($this->getClassName(), $id);
+        /** @var class-string $className */
+        $className = $this->getClassName();
+
+        $resource = $this->entityManager->find($className, $id);
         if ($resource) {
             $this->entityManager->remove($resource);
             $this->entityManager->flush();
@@ -297,9 +310,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->newInstance();
     }
 
-    public function setSearchFields(array $fields)
+    public function setSearchFields(array $fields): self
     {
         $this->searchFields = $fields;
+
+        return $this;
     }
 
     public function save(object $resource): void
@@ -345,7 +360,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function getAssociationFieldName(string $className): ?string
     {
-        $metadata = $this->entityManager->getClassMetadata($this->getClassName());
+        /** @var class-string $classname */
+        $classname = $this->getClassName();
+
+        $metadata = $this->entityManager->getClassMetadata($classname);
         foreach ($metadata->getAssociationMappings() as $associationMapping) {
             if ($associationMapping['targetEntity'] === $className) {
                 return $associationMapping['fieldName'];
@@ -357,19 +375,22 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function isEntity(string $field): bool
     {
-        $associations = $this->entityManager->getClassMetadata($this->getClassName())->associationMappings;
+        /** @var class-string $className */
+        $className = $this->getClassName();
+
+        $associations = $this->entityManager->getClassMetadata($className)->associationMappings;
 
         return array_key_exists($field, $associations);
     }
 
     public function createQuery(string $alias): QueryAdapterInterface
     {
-        return new DoctrineQueryAdapter($this->getRepository()->createQueryBuilder($alias));
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
+
+        return new DoctrineQueryAdapter($repository->createQueryBuilder($alias));
     }
 
-    /**
-     * @return FilterSetInterface|null
-     */
     public function getFilterset(): ?FilterSetInterface
     {
         return $this->filterset;
@@ -391,14 +412,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                 if ($value === "") {
                     $value = null;
                 } else {
+                    /** @var class-string $className */
+                    $className = $this->getClassName();
+
                     if ($this->isEntity($field)) {
                         $associations = $this->entityManager->getClassMetadata(
-                            $this->getClassName()
+                            $className
                         )->associationMappings;
 
                         $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
                     } else {
-                        $fields = $this->entityManager->getClassMetadata($this->getClassName());
+                        $fields = $this->entityManager->getClassMetadata($className);
                         $type = $fields->fieldMappings[$field]['type'];
 
                         switch ($type) {

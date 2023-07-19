@@ -11,7 +11,7 @@ class WorkflowField extends AbstractField
 {
     private ?string $name;
 
-    public function __construct(Environment $twig, $name = null)
+    public function __construct(Environment $twig, ?string $name = null)
     {
         parent::__construct($twig);
         $this->name = $name;

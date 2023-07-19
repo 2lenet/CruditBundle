@@ -18,6 +18,7 @@ class LinksFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
+        /** @var LinksConfig $brickConfigurator */
         $resource = $this->getItem($brickConfigurator);
 
         /** @var LinksConfig $brickConfigurator */
@@ -49,7 +50,7 @@ class LinksFactory extends AbstractBasicBrickFactory
         return $actions;
     }
 
-    private function getItem(LinksConfig $brickConfigurator)
+    private function getItem(LinksConfig $brickConfigurator): ?object
     {
         $id = $this->getRequest()->get('id');
         if ($id) {

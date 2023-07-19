@@ -16,7 +16,9 @@ use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 class FieldResolver
 {
     private FieldRegistry $fieldRegistry;
+
     private PropertyAccessorInterface $propertyAccessor;
+
     private PropertyInfoExtractorInterface $propertyInfoExtractor;
 
     public function __construct(
@@ -54,7 +56,6 @@ class FieldResolver
                             $subClass,
                         )
                     );
-                    break;
                 }
 
                 $propertyType = $types[0];

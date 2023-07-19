@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\HistoryBrick;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Loggable\Entity\LogEntry;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
@@ -43,14 +44,14 @@ class HistoryFactory extends AbstractBasicBrickFactory
         return $view;
     }
 
-    private function getLogEntries(BrickConfigInterface $brickConfigurator)
+    private function getLogEntries(BrickConfigInterface $brickConfigurator): array
     {
         $item = $brickConfigurator
             ->getDataSource()
             ->get($this->getRequest()->get("id"));
 
         $logs = $this->em
-            ->getRepository("Gedmo\Loggable\Entity\LogEntry")
+            ->getRepository(LogEntry::class)
             ->getLogEntries($item);
 
         $metadata = $this->em->getClassMetadata(get_class($item));
