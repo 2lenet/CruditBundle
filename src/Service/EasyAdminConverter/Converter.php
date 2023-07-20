@@ -10,6 +10,12 @@ use Symfony\Bundle\MakerBundle\Generator;
 
 class Converter
 {
+    public const LIST_ACTIONS = ['new', 'export'];
+  
+    public const ITEM_ACTIONS = ['show', 'edit', 'delete'];
+  
+    public const SHOW_ACTIONS = ['edit', 'delete'];
+
     protected array $logs = [];
 
     protected Generator $generator;
@@ -30,8 +36,6 @@ class Converter
 
     public function convert(array $config): iterable
     {
-        $ignoreDuplicates = [];
-
         if (isset($config["entities"])) {
             foreach ($config["entities"] as $short => $entityConfig) {
                 if (isset($entityConfig["filter"])) {
@@ -154,6 +158,10 @@ class Converter
                 $fields[] = Field::new($property["property"]);
             }
 
+            if (isset($property["type"]) && ($property['type'] === 'sublist' || $property['type'] === 'tab')) {
+                continue;
+            }
+
             // group management
             if (isset($property["type"]) && $property["type"] === "group") {
                 $group = true;
@@ -198,12 +206,41 @@ class Converter
         $tabs = [];
         if (isset($entityConfig["show"]["fields"])) {
             $tabs = $this->getTabs($entityConfig);
+
+            foreach ($tabs['ignoredTabs'] as $ignoredTab) {
+                yield "warning" => "Tab " . http_build_query($ignoredTab, "", " ") . " ignored";
+            }
         }
 
         $sort = [];
         if (isset($entityConfig["list"]["sort"])) {
             $sort["property"] = $entityConfig["list"]["sort"][0];
             $sort["order"] = $entityConfig["list"]["sort"][1];
+        }
+
+        $disabledActions = [];
+        if (isset($entityConfig['disabled_actions']) && $entityConfig['disabled_actions']) {
+            $disabledActions['list'] = array_intersect($entityConfig['disabled_actions'], self::LIST_ACTIONS);
+            $disabledActions['item'] = array_intersect($entityConfig['disabled_actions'], self::ITEM_ACTIONS);
+            $disabledActions['show'] = array_intersect($entityConfig['disabled_actions'], self::SHOW_ACTIONS);
+        }
+
+        $listAndItemActions = [];
+        if (isset($entityConfig['list']['actions'])) {
+            $listAndItemActions = $this->getListAndItemActions($entityConfig);
+
+            foreach ($listAndItemActions['ignoredActions'] as $ignoredAction) {
+                yield "warning" => "Action " . http_build_query($ignoredAction, "", " ") . " ignored";
+            }
+        }
+
+        $showActions = [];
+        if (isset($entityConfig['show']['actions'])) {
+            $showActions = $this->getShowActions($entityConfig);
+
+            foreach ($showActions['ignoredActions'] as $ignoredAction) {
+                yield "warning" => "Action " . http_build_query($ignoredAction, "", " ") . " ignored";
+            }
         }
 
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
@@ -224,11 +261,16 @@ class Converter
                 "fullEntityClass" => $entityClass,
                 "strictType" => true,
                 "forms" => $forms,
-                "tabs" => $tabs,
+                "tabs" => array_key_exists('tabs', $tabs) ? $tabs['tabs'] : [],
                 "sort" => $sort,
                 "controllerRoute" => "crudit_" . $shortEntity,
+                'disabledActions' => $disabledActions,
+                'listActions' => array_key_exists('listActions', $listAndItemActions) ? $listAndItemActions['listActions'] : [],
+                'itemActions' => array_key_exists('itemActions', $listAndItemActions) ? $listAndItemActions['itemActions'] : [],
+                'showActions' => array_key_exists('showActions', $showActions) ? $showActions['showActions'] : [],
             ]
         );
+
         $this->generator->writeChanges();
 
         yield;
@@ -375,7 +417,9 @@ class Converter
     {
         $fields = [];
         foreach ($properties as $property) {
-            $fields[] = Field::new($property["property"]);
+            if (array_key_exists('property', $property)) {
+                $fields[] = Field::new($property["property"]);
+            }
         }
 
         $formTypeClassNameDetails = $this->generator->createClassNameDetails(
@@ -398,6 +442,8 @@ class Converter
     protected function getTabs(array $entityConfig): array
     {
         $tabs = [];
+        $ignoredTabs = [];
+
         foreach ($entityConfig["show"]["fields"] as $field) {
             if (is_array($field) && isset($field["type"])) {
                 if ($field["type"] === "sublist") {
@@ -413,8 +459,10 @@ class Converter
                                 break;
                             }
                         }
-                    } else {
+                    } elseif (isset($metadata->getAssociationMappings()[$field["property"]])) {
                         $association = $metadata->getAssociationMapping($field["property"]);
+                    } else {
+                        $ignoredTabs[] = $field;
                     }
 
                     if ($association) {
@@ -436,11 +484,57 @@ class Converter
             }
         }
 
-        return $tabs;
+        return ['tabs' => $tabs, 'ignoredTabs' => $ignoredTabs];
     }
 
     protected function getShortEntityName(string $class): string
     {
         return basename(str_replace("\\", "/", $class));
+    }
+
+    protected function getListAndItemActions(array $entityConfig): array
+    {
+        $listActions = [];
+        $itemActions = [];
+        $ignoredActions = [];
+
+        foreach ($entityConfig['list']['actions'] as $action) {
+            if (is_array($action) && isset($action['global']) && $action['global'] === 'true' && isset($action['type']) && $action['type'] === 'route') {
+                $listActions[] = $this->getPropertyAction($action);
+            } elseif (is_array($action) && (!isset($action['global']) || (isset($action['global']) && $action['global'] === 'false')) && isset($action['type']) && $action['type'] === 'route') {
+                $itemActions[] = $this->getPropertyAction($action);
+            } else {
+                $ignoredActions[] = $action;
+            }
+        }
+
+        return ['listActions' => $listActions, 'itemActions' => $itemActions, 'ignoredActions' => $ignoredActions];
+    }
+
+    protected function getShowActions(array $entityConfig): array
+    {
+        $showActions = [];
+        $ignoredActions = [];
+
+        foreach ($entityConfig['show']['actions'] as $action) {
+            if (is_array($action) && isset($action['type']) && $action['type'] === 'route') {
+                $showActions[] = $this->getPropertyAction($action);
+            } else {
+                $ignoredActions[] = $action;
+            }
+        }
+
+        return ['showActions' => $showActions, 'ignoredActions' => $ignoredActions];
+    }
+
+    protected function getPropertyAction(array $action): array
+    {
+        return [
+            'label' => isset($action['label']) ? str_replace('label', 'action', $action['label']) : null,
+            'path' => isset($action['name']) ? $action['name'] : null,
+            'icon' => isset($action['icon']) ? $action['icon'] : null,
+            'cssClass' => isset($action['css_class']) ? $action['css_class'] : null,
+            'target' => isset($action['target']) ? $action['target'] : null,
+        ];
     }
 }
