@@ -14,9 +14,9 @@ use Lle\CruditBundle\Provider\BrickProvider;
 class BrickBuilder
 {
     /** @var BrickView[] */
-    private $bricks = [];
-    /** @var BrickProvider */
-    private $brickProvider;
+    private array $bricks = [];
+
+    private BrickProvider $brickProvider;
 
     public function __construct(
         BrickProvider $brickProvider

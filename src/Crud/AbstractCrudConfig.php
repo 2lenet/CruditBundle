@@ -24,15 +24,16 @@ use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Exporter\ExportParams;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
     protected DatasourceInterface $datasource;
 
-    abstract public function getFields($key): array;
+    abstract public function getFields(string $key): array;
 
-    public function autoFields($fieldnames): array
+    public function autoFields(array $fieldnames): array
     {
         $fields = [];
         foreach ($fieldnames as $field) {
@@ -276,7 +277,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return [];
     }
 
-    public function getForm($resource)
+    public function getForm(mixed $resource): ?FormInterface
     {
         return null;
     }
@@ -317,5 +318,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getTranslationDomain(): string
     {
         return 'messages';
+    }
+
+    public function fieldsToUpdate(int|string $id): array
+    {
+        return [];
     }
 }

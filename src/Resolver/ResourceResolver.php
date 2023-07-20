@@ -9,12 +9,12 @@ use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class ResourceResolver
 {
-    /** @var FieldResolver */
-    private $fieldResolver;
+    private FieldResolver $fieldResolver;
+
     private Security $security;
 
     public function __construct(
@@ -54,7 +54,7 @@ class ResourceResolver
         foreach ($fields as $key => $field) {
             if (is_array($field)) {
                 foreach ($field as $cardField) {
-                    if ($cardField->getRole() == null || $this->security->isGranted($cardField->getRole())) {
+                    if ($cardField->getRole() === null || $this->security->isGranted($cardField->getRole())) {
                         $fieldViews[$key][] = $this->fieldResolver->resolveView(
                             $cardField,
                             $resource,
@@ -64,7 +64,7 @@ class ResourceResolver
                     }
                 }
             } else {
-                if ($field->getRole() == null || $this->security->isGranted($field->getRole())) {
+                if ($field->getRole() === null || $this->security->isGranted($field->getRole())) {
                     $fieldViews[] = $this->fieldResolver->resolveView($field, $resource, $datasource, $crudConfig);
                 }
             }

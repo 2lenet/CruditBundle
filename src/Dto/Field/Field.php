@@ -8,31 +8,26 @@ use Lle\CruditBundle\Dto\Path;
 
 class Field
 {
-    /**
-     * @var string
-     */
-    private $label;
-    /**
-     * @var string
-     */
-    private $name;
-    /**
-     * @var bool
-     */
-    private $sort;
-    /** @var ?Path */
-    private $path;
-    /** @var string */
+    private string $label;
+
+    private string $name;
+
+    private bool $sort;
+
+    private ?Path $path;
+
     private string $linkId = 'id';
-    /** @var array */
-    private $options;
-    /** @var ?string */
-    private $type;
-    /** @var ?string */
-    private $template;
-    /** @var ?string */
-    private $ruptGroup = 0;
+
+    private array $options;
+
+    private ?string $type;
+
+    private ?string $template;
+
+    private ?int $ruptGroup = 0;
+
     private ?string $role = null;
+
     private bool $editInPlace = false;
 
     public function __construct(string $name, ?string $type = null, array $options = [])
@@ -100,7 +95,7 @@ class Field
         return $this;
     }
 
-    public function setCssClass($cssClass): self
+    public function setCssClass(?string $cssClass): self
     {
         $this->options["cssClass"] = $cssClass;
 
@@ -196,18 +191,11 @@ class Field
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getRole(): ?string
     {
         return $this->role;
     }
 
-    /**
-     * @param string|null $role
-     * @return self
-     */
     public function setRole(?string $role): self
     {
         $this->role = $role;

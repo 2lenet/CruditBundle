@@ -9,8 +9,7 @@ use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 
 class DoctrineQueryAdapter implements QueryAdapterInterface
 {
-    /** @var QueryBuilder */
-    private $queryBuilder;
+    private QueryBuilder $queryBuilder;
 
     public function __construct(QueryBuilder $queryBuilder)
     {

@@ -11,6 +11,7 @@ use Twig\TwigFunction;
 class RouteFilteredLinkExtension extends AbstractExtension
 {
     private RouterInterface $router;
+
     private EntityManagerInterface $em;
 
     public function __construct(RouterInterface $router, EntityManagerInterface $em)
@@ -44,11 +45,14 @@ class RouteFilteredLinkExtension extends AbstractExtension
             }
         }
 
+        $parameters[$entity . '_offset'] = 0;
+
         return $this->router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
     public function getEntityIdToTomselect(int $id, string $class): array
     {
+        /** @var class-string $class */
         $item = $this->em->find($class, $id);
 
         return [

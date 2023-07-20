@@ -21,12 +21,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FormFactory extends AbstractBasicBrickFactory
 {
-    /** @var FormFactoryInterface */
-    private $formFactory;
-    /** @var BrickResponseCollector */
-    private $brickResponseCollector;
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
+    private FormFactoryInterface $formFactory;
+
+    private BrickResponseCollector $brickResponseCollector;
+
+    private UrlGeneratorInterface $urlGenerator;
+
     protected PropertyAccessorInterface $propertyAccessor;
 
     public function __construct(
@@ -158,7 +158,7 @@ class FormFactory extends AbstractBasicBrickFactory
         return $resource;
     }
 
-    private function addFlash(string $type, string $message)
+    private function addFlash(string $type, string $message): void
     {
         $request = $this->getRequest();
 

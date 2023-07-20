@@ -13,8 +13,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class TabFactory extends AbstractBasicBrickFactory
 {
-    /** @var BrickBuilder */
-    private $brickBuilder;
+    private BrickBuilder $brickBuilder;
 
     public function __construct(
         ResourceResolver $resourceResolver,

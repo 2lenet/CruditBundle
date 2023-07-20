@@ -9,21 +9,21 @@ use Lle\CruditBundle\Dto\Field\Field;
 
 class FieldView
 {
-    /** @var Field */
-    private $field;
-    /** @var mixed */
-    private $value;
-    /** @var ?string */
-    private $stringValue;
-    private $options;
-    /** @var ?object */
-    private $resource = null;
-    /** @var ?object */
-    private $parentResource = null;
+    private Field $field;
+
+    private mixed $value;
+
+    private ?string $stringValue;
+
+    private mixed $options;
+
+    private ?object $resource = null;
+
+    private ?object $parentResource = null;
+
     private ?CrudConfigInterface $config = null;
 
-    /** @param mixed $value */
-    public function __construct(Field $field, $value)
+    public function __construct(Field $field, mixed $value)
     {
         $this->field = $field;
         $this->value = $value;
@@ -65,8 +65,7 @@ class FieldView
         return $this->stringValue;
     }
 
-    /** @return mixed */
-    public function getRawValue()
+    public function getRawValue(): mixed
     {
         return $this->value;
     }
@@ -76,19 +75,12 @@ class FieldView
         return $this->field;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getOptions()
+    public function getOptions(): mixed
     {
         return $this->options;
     }
 
-    /**
-     * @param mixed $options
-     * @return FieldView
-     */
-    public function setOptions($options)
+    public function setOptions(mixed $options): self
     {
         $this->options = $options;
 

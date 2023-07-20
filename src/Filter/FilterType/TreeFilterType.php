@@ -14,7 +14,6 @@ class TreeFilterType extends EntityFilterType
     public function apply(QueryBuilder $queryBuilder): void
     {
         /**
-         * TODO : make this work for trees
          *
          * We either need entity manager injection (then we can use Gedmo's children() method)
          * or a nice querybuilder that can handle multiple entities without duplicates

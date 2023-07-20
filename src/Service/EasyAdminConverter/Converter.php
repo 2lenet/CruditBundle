@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Service\EasyAdminConverter;
 
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Maker\MakeCrudit;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -10,12 +11,17 @@ use Symfony\Bundle\MakerBundle\Generator;
 class Converter
 {
     public const LIST_ACTIONS = ['new', 'export'];
+  
     public const ITEM_ACTIONS = ['show', 'edit', 'delete'];
+  
     public const SHOW_ACTIONS = ['edit', 'delete'];
 
-    protected $logs = [];
+    protected array $logs = [];
+
     protected Generator $generator;
+
     protected MakeCrudit $cruditMaker;
+
     protected DoctrineHelper $doctrineHelper;
 
     public function __construct(
@@ -54,6 +60,7 @@ class Converter
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $filters = [];
+        /** @var ClassMetadataInfo $metadata */
         $metadata = $this->doctrineHelper->getMetadata($entityClass);
         foreach ($entityConfig["filter"]["fields"] as $filter) {
             $filters[] = $this->cruditMaker->getFilterType($metadata, $filter["property"]);
@@ -358,7 +365,7 @@ class Converter
         yield;
     }
 
-    protected function getMenuItem(array $config, $menu): ?array
+    protected function getMenuItem(array $config, mixed $menu): ?array
     {
         $item = null;
         if (is_string($menu)) {
@@ -440,6 +447,7 @@ class Converter
         foreach ($entityConfig["show"]["fields"] as $field) {
             if (is_array($field) && isset($field["type"])) {
                 if ($field["type"] === "sublist") {
+                    /** @var ClassMetadataInfo $metadata */
                     $metadata = $this->doctrineHelper->getMetadata($entityConfig["class"]);
                     // "No mapping found for field ..." => your sublist property does not exist
 

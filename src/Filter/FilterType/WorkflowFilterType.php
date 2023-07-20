@@ -41,7 +41,7 @@ class WorkflowFilterType extends AbstractFilterType
         }
     }
 
-    private function getPattern($op, $id, $alias, $col, $paramname)
+    private function getPattern(string $op, string $id, string $alias, string $col, string $paramname): ?string
     {
         $pattern = null;
         switch ($op) {
@@ -83,7 +83,7 @@ class WorkflowFilterType extends AbstractFilterType
         return $choices;
     }
 
-    public function isSelected($data, $value)
+    public function isSelected(array $data, string $value): bool
     {
         if (is_array($data["value"])) {
             return in_array($value, $data["value"]);
@@ -104,7 +104,7 @@ class WorkflowFilterType extends AbstractFilterType
         return $this;
     }
 
-    public function setData($data): void
+    public function setData(?array $data): self
     {
         parent::setData($data);
 
@@ -116,5 +116,7 @@ class WorkflowFilterType extends AbstractFilterType
         }
 
         $this->data["items"] = json_encode($items);
+
+        return $this;
     }
 }
