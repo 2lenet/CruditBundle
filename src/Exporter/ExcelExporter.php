@@ -4,6 +4,10 @@ namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
+use Lle\CruditBundle\Field\BooleanField;
+use Lle\CruditBundle\Field\CurrencyField;
+use Lle\CruditBundle\Field\IntegerField;
+use Lle\CruditBundle\Field\NumberField;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -95,20 +99,11 @@ class ExcelExporter extends AbstractExporter
             return DataType::TYPE_NULL;
         }
 
-        switch ($field->getField()->getType()) {
-            case "bigint":
-            case "smallint":
-            case "float":
-            case "integer":
-                $result = DataType::TYPE_NUMERIC;
-                break;
-            case "boolean":
-                $result = DataType::TYPE_BOOL;
-                break;
-            default:
-                $result = DataType::TYPE_STRING;
-        }
-
-        return $result;
+        return match ($field->getField()->getType()) {
+            "bigint", "smallint", "float", "integer", NumberField::class, CurrencyField::class, IntegerField::class
+            => DataType::TYPE_NUMERIC,
+            "boolean", BooleanField::class => DataType::TYPE_BOOL,
+            default => DataType::TYPE_STRING,
+        };
     }
 }
