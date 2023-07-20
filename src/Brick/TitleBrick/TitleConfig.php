@@ -11,8 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TitleConfig extends AbstractBrickConfig
 {
-    /** @var DatasourceInterface */
-    private $dataSource;
+    private ?DatasourceInterface $dataSource;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
@@ -20,6 +19,7 @@ class TitleConfig extends AbstractBrickConfig
         if ($this->dataSource === null) {
             $this->setDataSource($crudConfig->getDatasource());
         }
+
         return $this;
     }
 
@@ -36,6 +36,7 @@ class TitleConfig extends AbstractBrickConfig
     public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
+
         return $this;
     }
 
@@ -48,7 +49,7 @@ class TitleConfig extends AbstractBrickConfig
     {
         return [
             'title' => $this->getCrudConfig()->getTitle('show'),
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 }

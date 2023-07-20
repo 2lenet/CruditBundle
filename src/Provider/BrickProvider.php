@@ -9,8 +9,7 @@ use Lle\CruditBundle\Contracts\BrickInterface;
 
 class BrickProvider
 {
-    /** @var iterable */
-    private $bricks;
+    private iterable $bricks;
 
     public function __construct(iterable $bricks)
     {
@@ -24,6 +23,7 @@ class BrickProvider
                 return $brick;
             }
         }
+
         return null;
     }
 }

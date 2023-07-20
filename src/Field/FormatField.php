@@ -21,12 +21,15 @@ class FormatField extends AbstractField
         $this->configureOptions($optionResolver);
         $options = $optionResolver->resolve($fieldView->getField()->getOptions());
         $template = $this->twig->createTemplate($options['format']);
-        return $fieldView->setStringValue($template->render([
-            'value' => $value,
-            'view' => $fieldView,
-            'resource' => $fieldView->getResource(),
-            'options' => $options
-        ]));
+
+        return $fieldView->setStringValue(
+            $template->render([
+                'value' => $value,
+                'view' => $fieldView,
+                'resource' => $fieldView->getResource(),
+                'options' => $options,
+            ])
+        );
     }
 
     public function configureOptions(OptionsResolver $optionsResolver): void
@@ -34,8 +37,8 @@ class FormatField extends AbstractField
         parent::configureOptions($optionsResolver);
         $optionsResolver
             ->setRequired([
-            'format'
-        ])->setAllowedTypes('format', 'string');
+                'format',
+            ])->setAllowedTypes('format', 'string');
     }
 
     public function getDefaultTemplate(): ?string

@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 
 class EntityFilterTypeTest extends TestCase
 {
-
     public function testDataRoute(): void
     {
         $filterType = EntityFilterType::new('test', 'App\\Entity\\Test');

@@ -44,7 +44,7 @@ You can add these parameters inside MapConfig::new():
 - poly_field
 
 Here is an example of a MapConfig with its options:
-    
+
     MapConfig::new([
             "with_marker" => 0,
             "cssClass" => "col-8",
@@ -66,10 +66,10 @@ Here is an example of a MapConfig with its options:
             ]
         ]);
 
-
 **3. Customise your Leaflet popup**
 
-If you want to apply the style of the app to the Leaflet popup, just add this to your template (the path placed into "popup_url" in MapConfig)
+If you want to apply the style of the app to the Leaflet popup, just add this to your template (the path placed into "
+popup_url" in MapConfig)
 
     {{ encore_entry_link_tags('app') }}
     <div>

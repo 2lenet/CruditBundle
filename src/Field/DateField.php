@@ -17,11 +17,12 @@ class DateField extends AbstractField
     {
         return '@LleCrudit/field/date.html.twig';
     }
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'format' => 'd/m/Y'
+            'format' => 'd/m/Y',
         ])->setAllowedTypes('format', 'string');
     }
 }

@@ -17,6 +17,7 @@ The operator is not required, default is "eq".
 To filter with an entity, just set the id of the resource into the Twig function.
 
 Example :
+
 ```twig
 {{ crudit_route_filtered_link('user', {
     'status': {'value': 'generated', 'op': 'neq'},

@@ -38,7 +38,7 @@ class StringFilterType extends AbstractFilterType
         $op = $this->data["op"];
 
         // ADD JOIN IF NEEDED
-        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
 
@@ -71,13 +71,7 @@ class StringFilterType extends AbstractFilterType
         }
     }
 
-
-    /**
-     * @param string op the op to use
-     * @param string parameter the query parameter to set
-     * @return string
-     */
-    private function getPattern($op, $id, $alias, $col, $paramname)
+    private function getPattern(string $op, string $id, string $alias, string $col, string $paramname): ?string
     {
         $pattern = null;
         switch ($op) {

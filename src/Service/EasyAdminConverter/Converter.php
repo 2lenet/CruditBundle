@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Service\EasyAdminConverter;
 
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Maker\MakeCrudit;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -9,7 +10,7 @@ use Symfony\Bundle\MakerBundle\Generator;
 
 class Converter
 {
-    protected $logs = [];
+    protected array $logs = [];
 
     protected Generator $generator;
 
@@ -21,8 +22,7 @@ class Converter
         Generator $generator,
         MakeCrudit $cruditMaker,
         DoctrineHelper $doctrineHelper
-    )
-    {
+    ) {
         $this->generator = $generator;
         $this->cruditMaker = $cruditMaker;
         $this->doctrineHelper = $doctrineHelper;
@@ -56,6 +56,7 @@ class Converter
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $filters = [];
+        /** @var ClassMetadataInfo $metadata */
         $metadata = $this->doctrineHelper->getMetadata($entityClass);
         foreach ($entityConfig["filter"]["fields"] as $filter) {
             $filters[] = $this->cruditMaker->getFilterType($metadata, $filter["property"]);
@@ -250,7 +251,7 @@ class Converter
                 "namespace" => "App",
                 "fullEntityClass" => $entityClass,
                 "prefixFilename" => $prefixFilename,
-                "strictType" => true
+                "strictType" => true,
             ]
         );
         $this->generator->writeChanges();
@@ -322,7 +323,7 @@ class Converter
         yield;
     }
 
-    protected function getMenuItem(array $config, $menu): ?array
+    protected function getMenuItem(array $config, mixed $menu): ?array
     {
         $item = null;
         if (is_string($menu)) {
@@ -389,7 +390,7 @@ class Converter
                 "namespace" => "App",
                 "prefixFilename" => $prefix . $prefixFilename,
                 "fields" => $fields,
-                "strictType" => true
+                "strictType" => true,
             ]
         );
     }
@@ -400,6 +401,7 @@ class Converter
         foreach ($entityConfig["show"]["fields"] as $field) {
             if (is_array($field) && isset($field["type"])) {
                 if ($field["type"] === "sublist") {
+                    /** @var ClassMetadataInfo $metadata */
                     $metadata = $this->doctrineHelper->getMetadata($entityConfig["class"]);
                     // "No mapping found for field ..." => your sublist property does not exist
 

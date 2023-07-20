@@ -8,28 +8,21 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 
 class BrickView
 {
-    /** @var string|null  */
-    private $template;
+    private ?string $template;
 
-    /** @var array  */
-    private $data;
+    private array $data;
 
-    /** @var array */
-    private $config = [];
+    private array $config = [];
 
-    /** @var bool  */
-    private $movable;
+    private bool $movable;
 
-    /** @var string  */
-    private $id;
+    private string $id;
 
-    /** @var array  */
-    protected $options;
+    protected array $options;
 
-    /** @var ?Path */
-    private $path;
+    private ?Path $path;
 
-    private $role = null;
+    private ?string $role = null;
 
     public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])
     {
@@ -39,21 +32,11 @@ class BrickView
         $this->role = $brickConfig->getRole();
         $this->id = $brickConfig->getId();
         $this->options = $brickConfig->getOptions();
-        $this->setPath($brickConfig->getCrudConfig()->getPath('brickdata', [
-            'idBrick' => $brickConfig->getId()
-        ]));
-    }
-
-    public function setTemplate(string $template): self
-    {
-        $this->template = $template;
-        return $this;
-    }
-
-    public function setData(array $data): self
-    {
-        $this->data = $data;
-        return $this;
+        $this->setPath(
+            $brickConfig->getCrudConfig()->getPath('brickdata', [
+                'idBrick' => $brickConfig->getId(),
+            ])
+        );
     }
 
     public function getTemplate(): ?string
@@ -61,19 +44,40 @@ class BrickView
         return $this->template;
     }
 
-    public function getIndexTemplate(): string
+    public function setTemplate(string $template): self
     {
-        return $this->template . '/index.html.twig';
-    }
+        $this->template = $template;
 
-    public function getPartial(string $name): string
-    {
-        return $this->template . '/' . $name . '.html.twig';
+        return $this;
     }
 
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function setData(array $data): self
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    public function setConfig(array $config): self
+    {
+        $this->config = $config;
+
+        return $this;
+    }
+
+    public function isMovable(): bool
+    {
+        return $this->movable;
     }
 
     public function gid(string $name): string
@@ -84,47 +88,6 @@ class BrickView
     public function getId(): string
     {
         return $this->id;
-    }
-
-    public function isMovable(): bool
-    {
-        return $this->movable;
-    }
-
-    public function getCssClass(): ?string
-    {
-        if (array_key_exists('cssClass', $this->options)) {
-            return $this->options["cssClass"];
-        } else {
-            return null;
-        }
-    }
-
-    public function setConfig(array $config): self
-    {
-        $this->config = $config;
-        return $this;
-    }
-
-    public function getConfig(): array
-    {
-        return $this->config;
-    }
-
-    public function getUrl(array $params): string
-    {
-        return '';
-    }
-
-    public function getPath(): ?Path
-    {
-        return $this->path;
-    }
-
-    public function setPath(?Path $path): self
-    {
-        $this->path = $path;
-        return $this;
     }
 
     /**
@@ -142,6 +105,19 @@ class BrickView
     public function setOptions(array $options): BrickView
     {
         $this->options = $options;
+
+        return $this;
+    }
+
+    public function getPath(): ?Path
+    {
+        return $this->path;
+    }
+
+    public function setPath(?Path $path): self
+    {
+        $this->path = $path;
+
         return $this;
     }
 
@@ -149,9 +125,35 @@ class BrickView
     {
         return $this->role;
     }
+
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
         return $this;
+    }
+
+    public function getIndexTemplate(): string
+    {
+        return $this->template . '/index.html.twig';
+    }
+
+    public function getPartial(string $name): string
+    {
+        return $this->template . '/' . $name . '.html.twig';
+    }
+
+    public function getCssClass(): ?string
+    {
+        if (array_key_exists('cssClass', $this->options)) {
+            return $this->options["cssClass"];
+        } else {
+            return null;
+        }
+    }
+
+    public function getUrl(array $params): string
+    {
+        return '';
     }
 }

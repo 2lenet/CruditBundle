@@ -12,8 +12,7 @@ use Twig\Environment;
 
 abstract class AbstractField implements FieldInterface
 {
-    /** @var Environment  */
-    protected $twig;
+    protected Environment $twig;
 
     public function __construct(Environment $twig)
     {
@@ -27,6 +26,7 @@ abstract class AbstractField implements FieldInterface
         $this->configureOptions($optionResolver);
         $options = $optionResolver->resolve($fieldView->getField()->getOptions());
         $fieldView->setOptions($options);
+
         return $fieldView->setStringValue($this->render($fieldView, $value, $options));
     }
 
@@ -39,7 +39,7 @@ abstract class AbstractField implements FieldInterface
                 'value' => $value,
                 'view' => $fieldView,
                 'options' => $options,
-                'resource' => $fieldView->getResource()
+                'resource' => $fieldView->getResource(),
             ]);
         } else {
             throw new CruditException('Template field ' . static::class . ' is not defined');

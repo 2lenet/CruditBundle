@@ -11,28 +11,24 @@ use Lle\CruditBundle\Dto\Path;
 class LinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
+
     public const TYPE_BODY = 'body';
 
-    /** @var string */
-    protected $type;
+    protected string $type;
 
-    /** @var string */
-    protected $libelle;
+    protected string $libelle;
 
-    /** @var ?Icon */
-    protected $icon;
+    protected ?Icon $icon = null;
 
-    /** @var Path  */
-    protected $path;
+    protected ?Path $path = null;
 
-    /** @var Badge[]  */
-    protected $badges;
+    /** @var Badge[] */
+    protected array $badges = [];
 
-    /** @var string */
-    protected $cssClass;
+    protected ?string $cssClass = null;
 
     /** @var LinkElement[] */
-    protected $children;
+    protected array $children = [];
 
     public static function new(string $libelle, ?Path $path, ?Icon $icon = null, ?string $role = null): self
     {
@@ -65,6 +61,7 @@ class LinkElement extends AbstractLayoutElement
     public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -76,6 +73,7 @@ class LinkElement extends AbstractLayoutElement
     public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
+
         return $this;
     }
 
@@ -87,6 +85,7 @@ class LinkElement extends AbstractLayoutElement
     public function setIcon(Icon $icon): self
     {
         $this->icon = $icon;
+
         return $this;
     }
 
@@ -98,6 +97,7 @@ class LinkElement extends AbstractLayoutElement
     public function setPath(Path $path): self
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -112,6 +112,7 @@ class LinkElement extends AbstractLayoutElement
     public function addBadge(Badge $badge): self
     {
         $this->badges[] = $badge;
+
         return $this;
     }
 

@@ -22,14 +22,14 @@ class NumberRangeFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
+            "interval" => ["icon" => "fas fa-arrows-alt-h"],
             "isnull" => ["icon" => "far fa-square"],
-            "interval" => ["icon" => "fas fa-arrows-alt-h"]
         ];
     }
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        list($column, $alias, $paramname) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {

@@ -2,7 +2,6 @@
 
 namespace Lle\CruditBundle\Test;
 
-use App\Repository\UserRepository;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -46,7 +45,7 @@ trait TestHelperTrait
 
         $code = $client->getResponse()->getStatusCode();
         if ($code != '200') {
-            dump($client->getResponse()->getContent());
+            echo($client->getResponse()->getContent());
         }
 
         $this->assertEquals(
@@ -63,6 +62,9 @@ trait TestHelperTrait
 
         $showElements = $crawler->filter('span.btn-wrapper > a > i.fa-search');
         $this->checkAction($showElements, $client);
+
+        $exportElements = $crawler->filter('span.btn-wrapper > a > i.fa-file-export');
+        $this->checkAction($editElements, $client);
     }
 
     protected function checkAction(Crawler $elements, KernelBrowser $client): void
@@ -74,7 +76,7 @@ trait TestHelperTrait
                     $code = $client->getResponse()->getStatusCode();
 
                     if ($code != '200') {
-                        dump($client->getResponse()->getStatusCode());
+                        echo($client->getResponse()->getStatusCode());
                     }
 
                     $this->assertEquals(

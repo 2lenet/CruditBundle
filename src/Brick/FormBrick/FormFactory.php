@@ -21,14 +21,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FormFactory extends AbstractBasicBrickFactory
 {
-    /** @var FormFactoryInterface */
-    private $formFactory;
+    private FormFactoryInterface $formFactory;
 
-    /** @var BrickResponseCollector  */
-    private $brickResponseCollector;
+    private BrickResponseCollector $brickResponseCollector;
 
-    /** @var UrlGeneratorInterface  */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
     protected PropertyAccessorInterface $propertyAccessor;
 
@@ -89,12 +86,17 @@ class FormFactory extends AbstractBasicBrickFactory
                     $resource = $this->propertyAccessor->getValue($resource, $brickConfig->getAssocProperty());
                 }
 
-                $this->brickResponseCollector->add(new RedirectBrickResponse(
-                    $this->urlGenerator->generate(
-                        $brickConfig->getSuccessRedirectPath()->getRoute(),
-                        array_merge($brickConfig->getSuccessRedirectPath()->getParams(), ['id' => $resource->getId()])
+                $this->brickResponseCollector->add(
+                    new RedirectBrickResponse(
+                        $this->urlGenerator->generate(
+                            $brickConfig->getSuccessRedirectPath()->getRoute(),
+                            array_merge(
+                                $brickConfig->getSuccessRedirectPath()->getParams(),
+                                ['id' => $resource->getId()]
+                            )
+                        )
                     )
-                ));
+                );
             } else {
                 $this->addFlash(FlashBrickResponse::ERROR, $brickConfig->getMessageError());
             }
@@ -112,12 +114,14 @@ class FormFactory extends AbstractBasicBrickFactory
             foreach ($brickConfigurator->getFields() as $field) {
                 $formBuilder->add($field->getName(), $field->getType(), $field->getOptions());
             }
+
             return $formBuilder->getForm();
         } else {
             $form = $brickConfigurator->getCrudConfig()->getForm($resource);
             if ($form) {
                 return $form;
             }
+
             return $this->formFactory->create($brickConfigurator->getForm(), $resource);
         }
     }
@@ -154,7 +158,7 @@ class FormFactory extends AbstractBasicBrickFactory
         return $resource;
     }
 
-    private function addFlash(string $type, string $message)
+    private function addFlash(string $type, string $message): void
     {
         $request = $this->getRequest();
 

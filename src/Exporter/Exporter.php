@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class Exporter
 {
     public const CSV = "csv";
+
     public const EXCEL = "excel";
 
     protected iterable $exporters;

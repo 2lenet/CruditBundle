@@ -78,17 +78,20 @@ class EntityToIdTransformer implements DataTransformerInterface
             return $this->multiple ? [] : null;
         }
 
+        /** @var class-string $class */
+        $class = $this->class;
+
         // Multiple input
         if ($this->isMultiple()) {
             $ids = explode(",", $id);
 
             $entities = $this->em
-                ->getRepository($this->class)
+                ->getRepository($class)
                 ->findBy(["id" => $ids]);
 
             if (count($entities) !== count($ids)) {
                 throw new TransformationFailedException(
-                    // An identifier from the input wasn't found in database
+                // An identifier from the input wasn't found in database
                     "Number of found entities does not equal the number of input values"
                 );
             }
@@ -98,15 +101,17 @@ class EntityToIdTransformer implements DataTransformerInterface
 
         // Single input
         $entity = $this->em
-            ->getRepository($this->class)
+            ->getRepository($class)
             ->find($id);
 
         if (!$entity) {
-            throw new TransformationFailedException(sprintf(
-                "Entity of class %s with id '%s' does not exist!",
-                $this->class,
-                $id
-            ));
+            throw new TransformationFailedException(
+                sprintf(
+                    "Entity of class %s with id '%s' does not exist!",
+                    $this->class,
+                    $id
+                )
+            );
         }
 
         return $entity;

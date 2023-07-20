@@ -11,13 +11,12 @@ use Symfony\Component\HttpFoundation\Response;
 class FlashBrickResponse implements BrickResponseInterface
 {
     public const SUCCESS = 'success';
+
     public const ERROR = 'danger';
 
-    /** @var string  */
-    private $type;
+    private string $type;
 
-    /** @var string  */
-    private $message;
+    private string $message;
 
     public function __construct(string $type, string $message)
     {
@@ -35,6 +34,7 @@ class FlashBrickResponse implements BrickResponseInterface
         if (method_exists($request->getSession(), 'getFlashBag')) {
             $request->getSession()->getFlashBag()->add($this->type, $this->message);
         }
+
         return $response;
     }
 }

@@ -2,12 +2,13 @@
 input[type="file"] {
     height: $form-floating-height;
     color: transparent !important;
+
     &:valid {
         color: $body-color !important;
     }
 
     &::file-selector-button,
-    &::-webkit-file-upload-button{
+    &::-webkit-file-upload-button {
         position: absolute;
         top: 0.375rem;
         right: -0.75rem;
@@ -22,7 +23,7 @@ input[type="file"] {
     .vich-file {
         position: relative;
 
-        ~  .col-form-label {
+        ~ .col-form-label {
             top: -10px;
             left: -25%;
             @include media('<tablet') {
@@ -31,7 +32,7 @@ input[type="file"] {
         }
 
         &.vich-file-full {
-            ~  .col-form-label {
+            ~ .col-form-label {
                 left: calc(-50% + 10px);
             }
         }
@@ -41,7 +42,7 @@ input[type="file"] {
 .vich-image {
     input[type="file"] {
         &::file-selector-button,
-        &::-webkit-file-upload-button{
+        &::-webkit-file-upload-button {
             height: calc(#{$form-floating-height} + 5px);
         }
     }
@@ -52,9 +53,11 @@ input[type="file"] {
 
     .form-check {
         padding-left: 0;
+
         input[type="checkbox"] {
             margin-left: 0;
         }
+
         label {
             margin-left: $input-file-checkbox-margin;
         }
@@ -70,6 +73,7 @@ input[type="file"] {
 
     a {
         text-decoration: none;
+
         & + a {
             &::before {
                 content: '\f019';

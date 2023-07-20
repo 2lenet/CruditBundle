@@ -3,6 +3,7 @@
 How to make filters on lists
 
 **1. In the DataSource.php file linked to your entity**
+
 ```php
 /**
  * @required
@@ -18,7 +19,7 @@ public function setFilterset(CollecteFilterset $filterset)
 **2. Then, create the file CollecteFilterset.php that you declared as a parameter above**
 
 In the getFilters() method, you can declare the desired filters
-            
+
       <?php
 
       namespace App\Crudit\Datasource\Filterset;
@@ -38,9 +39,10 @@ In the getFilters() method, you can declare the desired filters
           }
       }
 
-**3. (Optional) Changing the amount displayed**  
+**3. (Optional) Changing the amount displayed**
 
 By default, 4 filters are displayed. If you want to show more or less, override getNumberDisplayed in your FilterSet :
+
 ```php
 public function getNumberDisplayed(): int
 {
@@ -48,7 +50,8 @@ public function getNumberDisplayed(): int
 }
 ```
 
-**Available filter types :** 
+**Available filter types :**
+
 - StringFilterType : simple string search
 - BooleanFilterType : true/false/both values
 - ChoiceFilterType : a select

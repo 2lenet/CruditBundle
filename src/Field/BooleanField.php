@@ -22,8 +22,8 @@ class BooleanField extends AbstractField
     {
         parent::configureOptions($optionResolver);
         $optionResolver->setDefaults([
-           'nullToFalse' => false,
-           'edit_route' => null,
+            'nullToFalse' => false,
+            'edit_route' => null,
         ]);
     }
 }

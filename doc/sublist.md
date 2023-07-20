@@ -1,7 +1,8 @@
 # How to add sub-lists in your show page
 
-In your src/Crudit/Config/EntityCrudConfig.php, add the getTabs() method allowing you to easily add as many 
+In your src/Crudit/Config/EntityCrudConfig.php, add the getTabs() method allowing you to easily add as many
 tabs as you want.
+
 ```php
     public function getTabs(): array
     {
@@ -17,13 +18,16 @@ tabs as you want.
 ```
 
 The name you specify in the SublistConfig::new() is the mappedBy annotation of your relation.
-_Example :_ here, we add all the contacts linked to a societe. In our entity Societe, we have an attribute $contacts with 
-the annotation: @ORM\OneToMany(targetEntity=Contact::class, **mappedBy="societe"**). Hence the 
+_Example :_ here, we add all the contacts linked to a societe. In our entity Societe, we have an attribute $contacts
+with
+the annotation: @ORM\OneToMany(targetEntity=Contact::class, **mappedBy="societe"**). Hence the
 **SublistConfig::new('societe', ...)**
 
 > :warning: **Don't forget to declare your CrudConfigs in the construct**
 
-Then, for each tab, declare a getEntityFields() method allowing you to list all the fields you want to see in the sub-list.
+Then, for each tab, declare a getEntityFields() method allowing you to list all the fields you want to see in the
+sub-list.
+
 ```php
     public function getContactsFields(): array
     {
@@ -60,6 +64,7 @@ To enable striped tables in the sublists, you must add this scss :
 ```
 
 ## Sub-lists forms
+
 You can add a form to your sub-list to allow the user to expand it.
 Simply add a FormConfig to your tab (tabs allow multiple elements, by passing an array) and configure it.
 
@@ -75,7 +80,9 @@ Simply add a FormConfig to your tab (tabs allow multiple elements, by passing an
         ->setSuccessRedirectPath($this->getPath(CrudConfigInterface::SHOW))
 ]
 ```
+
 You have to :
+
 * set the form type with setForm()
 * set the datasource that will create the new resource with setDataSource()
 * use setSublist()

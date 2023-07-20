@@ -37,17 +37,17 @@
 
      {% if geojsons %}data-geojsons="{{ geojsons|json_encode|replace({'%id%':app.request.attributes.get('id','')}) }}"{% endif %}
 
-        {% if item %}
-            {% if editable %}
-                data-editable="{{ editable }}"
-                data-edit_url="{{ edit_url }}"
-            {% endif %}
-            {% if polylinefield is not null %}
-                data-polyline="{{ polyline }}"
-                data-polyline_field="{{ polylinefield }}"
-            {% endif %}
-            data-lat_field="{{ centrefield_lat }}"
-            data-lng_field="{{ centrefield_lng }}"
+    {% if item %}
+        {% if editable %}
+            data-editable="{{ editable }}"
+            data-edit_url="{{ edit_url }}"
         {% endif %}
+        {% if polylinefield is not null %}
+            data-polyline="{{ polyline }}"
+            data-polyline_field="{{ polylinefield }}"
+        {% endif %}
+        data-lat_field="{{ centrefield_lat }}"
+        data-lng_field="{{ centrefield_lng }}"
+    {% endif %}
 >
 </div>

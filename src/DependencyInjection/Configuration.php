@@ -9,12 +9,13 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('lle_crudit');
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->children();
+
         return $treeBuilder;
     }
 }

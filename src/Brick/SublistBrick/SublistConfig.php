@@ -15,24 +15,22 @@ use Symfony\Component\HttpFoundation\Request;
 class SublistConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
-    private $fields = [];
+    private array $fields = [];
 
     /** @var ItemAction[] */
-    private $actions = [];
+    private array $actions = [];
 
-    /** @var DatasourceInterface */
-    private $datasource;
+    private ?DatasourceInterface $datasource = null;
 
-    /** @var DatasourceParams */
-    private $datasourceParams;
+    private DatasourceParams $datasourceParams;
 
-    /** @var string */
-    private $className;
-    private $fieldname;
+    private string $className;
+
+    private string $fieldname;
 
     protected CrudConfigInterface $subCrudConfig;
 
-    public function __construct($fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
+    public function __construct(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
     {
         $this->fieldname = $fieldname;
         $this->options = $options;
@@ -63,6 +61,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setDatasource(DatasourceInterface $datasource): self
     {
         $this->datasource = $datasource;
+
         return $this;
     }
 
@@ -92,7 +91,7 @@ class SublistConfig extends AbstractBrickConfig
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
             'canModifyNbEntityPerPage' => false,
             'choices_nb_items' => $this->subCrudConfig->getChoicesNbItems(),
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 
@@ -105,6 +104,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setFields(array $fields): self
     {
         $this->fields = $fields;
+
         return $this;
     }
 
@@ -113,7 +113,7 @@ class SublistConfig extends AbstractBrickConfig
         return $this->actions;
     }
 
-    public function setActions($actions): self
+    public function setActions(array $actions): self
     {
         $this->actions = $actions;
 
@@ -128,6 +128,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setDatasourceParams(DatasourceParams $datasourceParams): self
     {
         $this->datasourceParams = $datasourceParams;
+
         return $this;
     }
 
@@ -170,6 +171,7 @@ class SublistConfig extends AbstractBrickConfig
     public function setFieldname($fieldname)
     {
         $this->fieldname = $fieldname;
+
         return $this;
     }
 

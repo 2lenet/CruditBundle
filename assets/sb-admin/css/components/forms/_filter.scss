@@ -52,11 +52,13 @@ $input-group-prepend-length: 60px;
                     font-size: 13px;
                     overflow: hidden;
                     text-overflow: ellipsis;
+
                     &.active {
                         background: $gray-200;
                     }
                 }
             }
+
             &.ts-dropdown {
                 left: -#{$input-group-prepend-length};
                 min-width: min(400px, 75vw);
@@ -74,7 +76,6 @@ $input-group-prepend-length: 60px;
     }
 }
 
-
 #collapse-filters {
     .btn {
         .less-filter {
@@ -85,6 +86,7 @@ $input-group-prepend-length: 60px;
             .more-filter {
                 display: none;
             }
+
             .less-filter {
                 display: initial;
             }

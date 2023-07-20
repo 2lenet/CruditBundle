@@ -31,7 +31,7 @@ class AutocompleteType extends AbstractType
         $this->em = $em;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($class = $options["class"]) {
             $transformer = new EntityToIdTransformer($this->em);
@@ -41,7 +41,7 @@ class AutocompleteType extends AbstractType
         }
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $classFqcn = $options["class"];
 
@@ -52,10 +52,12 @@ class AutocompleteType extends AbstractType
             $url = $options["url"];
         } else {
             if (!$classFqcn) {
-                throw new CruditException(sprintf(
-                    "You must set the 'class' option in %s",
-                    self::class
-                ));
+                throw new CruditException(
+                    sprintf(
+                        "You must set the 'class' option in %s",
+                        self::class
+                    )
+                );
             }
 
             $class = strtolower(str_replace("App\\Entity\\", "", $classFqcn));
@@ -68,14 +70,17 @@ class AutocompleteType extends AbstractType
 
         // Gestion valeur déjà existante
         if ($id = $view->vars["value"]) {
+            /** @var class-string $classFqcn */
             if ($options["multiple"]) {
                 $entities = $this->em
                     ->getRepository($classFqcn)
                     ->findBy(["id" => explode(",", $id)]);
             } else {
-                $entities = [$this->em
-                    ->getRepository($classFqcn)
-                    ->find($id)];
+                $entities = [
+                    $this->em
+                        ->getRepository($classFqcn)
+                        ->find($id),
+                ];
             }
 
             $items = [];
@@ -93,7 +98,7 @@ class AutocompleteType extends AbstractType
         $view->vars["multiple"] = $options["multiple"];
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             "class" => null,

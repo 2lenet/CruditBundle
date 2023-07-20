@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class TabFactory extends AbstractBasicBrickFactory
 {
-    /** @var BrickBuilder  */
-    private $brickBuilder;
+    private BrickBuilder $brickBuilder;
+
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
@@ -50,8 +50,11 @@ class TabFactory extends AbstractBasicBrickFactory
         $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate('@LleCrudit/brick/tab')
-            ->setConfig(['tabs' => $tabs, 'translation_domain' => $brickConfigurator->getCrudConfig()->getTranslationDomain()])
+            ->setConfig(
+                ['tabs' => $tabs, 'translation_domain' => $brickConfigurator->getCrudConfig()->getTranslationDomain()]
+            )
             ->setData([]);
+
         return $view;
     }
 }

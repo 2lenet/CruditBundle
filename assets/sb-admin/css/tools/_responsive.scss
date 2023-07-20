@@ -2,7 +2,6 @@
 @use 'sass:list';
 @use 'sass:map';
 
-
 @mixin media($media) {
     $operator: string.slice($media, 1, 1);
     $breakpoint: string.slice($media, 2);
@@ -11,24 +10,19 @@
         @media (checkOperator($operator): map.get($breakpoints, $breakpoint)) {
             @content;
         }
-    }
-    @else if $breakpoint != '' {
+    } @else if $breakpoint != '' {
         @error '#{$breakpoint} is not a valid breakpoint value for this function';
-    }
-    @else {
+    } @else {
         @error 'The breakpoint can\'t be empty';
     }
 }
 
-
 @function checkOperator($operator) {
     @if $operator == '>' {
         @return 'min-width';
-    }
-    @else if $operator == '<' {
+    } @else if $operator == '<' {
         @return 'max-width';
-    }
-    @else {
+    } @else {
         @error '#{$operator} is not a valid operator for this function, only `<` or `>` are allowed';
     }
 }

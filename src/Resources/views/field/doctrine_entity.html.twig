@@ -3,19 +3,20 @@
 
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
-            <input type="hidden" id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}_items" name="{{ view.field.id }}_items"
+            <input type="hidden" id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}_items"
+                   name="{{ view.field.id }}_items"
                    value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
             <div class="control-group form-group d-flex justify-content-around align-items-center">
                 <input
-                        type="text"
-                        id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}"
-                        class="form-control form-control-sm entity-select crudit-eip-input"
-                        style="min-width: 150px;"
-                        autocomplete="off"
-                        value="{{ value }}"
-                        data-url="{{ view.field.url }}"
-                        data-options="[]"
-                        data-maxItems="{{ view.field.maxItems }}"
+                    type="text"
+                    id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}"
+                    class="form-control form-control-sm entity-select crudit-eip-input"
+                    style="min-width: 150px;"
+                    autocomplete="off"
+                    value="{{ value }}"
+                    data-url="{{ view.field.url }}"
+                    data-options="[]"
+                    data-maxItems="{{ view.field.maxItems }}"
                 >
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">

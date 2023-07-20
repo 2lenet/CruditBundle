@@ -19,7 +19,7 @@ _If you want to learn how to create filters and your FilterSet, please read the 
 
 **2. Then, in your method, create your initial queryBuilder**
 
-In the method: 
+In the method:
 
       $qb = $this->siteCollecteRepository->findSiteCollecteWithGeoQb();
 
@@ -43,4 +43,5 @@ In the repository:
 
     $sitesCollectes = $qb->getQuery()->execute();
 
-Tadaaaa, the sitesCollectes take into account both your query in the repository and what you have passed in your filters.
+Tadaaaa, the sitesCollectes take into account both your query in the repository and what you have passed in your
+filters.

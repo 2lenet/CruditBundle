@@ -2,10 +2,12 @@
 
 {% block input %}
     <div class="form-floating">
-        <input id="input_{{ id }}_value" class="form-control" type="date" name="{{ id }}_value" {% if data.value is defined %}value="{{ data.value }}"{% endif %} autocomplete="new-password" />
+        <input id="input_{{ id }}_value" class="form-control" type="date" name="{{ id }}_value"
+               {% if data.value is defined %}value="{{ data.value }}"{% endif %} autocomplete="new-password"/>
         <label for="input_{{ id }}_value">
             {{ filter.label|trans(domain=view.config.translation_domain) }}
         </label>
-        <input id="input_{{ id }}_to" class="form-control" type="date" name="{{ id }}_to" {% if data.to is defined %}value="{{ data.to }}"{% endif %} autocomplete="new-password" />
+        <input id="input_{{ id }}_to" class="form-control" type="date" name="{{ id }}_to"
+               {% if data.to is defined %}value="{{ data.to }}"{% endif %} autocomplete="new-password"/>
     </div>
 {% endblock %}

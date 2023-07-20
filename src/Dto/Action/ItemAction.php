@@ -10,37 +10,27 @@ use Lle\CruditBundle\Exception\CruditException;
 
 class ItemAction
 {
-    /** @var string  */
-    protected $label;
+    protected string $label;
 
-    /** @var Path  */
-    protected $path;
+    protected Path $path;
 
-    /** @var ?Icon */
-    protected $icon;
+    protected ?Icon $icon;
 
-    /** @var ?string */
-    protected $url;
+    protected ?string $url;
 
-    /** @var ?string */
-    protected $cssClass;
+    protected ?string $cssClass;
 
-    /** @var bool */
-    protected $hideLabel = false;
+    protected bool $hideLabel = false;
 
-    /** @var ?object */
-    protected $resource = null;
+    protected ?object $resource = null;
 
     protected ?string $modal = null;
 
-    /** @var bool */
-    protected $dropdown = false;
+    protected bool $dropdown = false;
 
-    /** @var string */
-    protected $title = null;
+    protected ?string $title = null;
 
-    /** @var bool */
-    protected $disabled = false;
+    protected bool $disabled = false;
 
     protected bool $hasVoter = false;
 
@@ -60,25 +50,14 @@ class ItemAction
         $this->url = null;
     }
 
-    public function getPath(): Path
-    {
-        return $this->path;
-    }
-
     public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function setUrl(string $url): self
+    public function getPath(): Path
     {
-        $this->url = $url;
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
+        return $this->path;
     }
 
     public function getIcon(): ?Icon
@@ -89,6 +68,19 @@ class ItemAction
     public function setIcon(?Icon $icon): self
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
+
         return $this;
     }
 
@@ -100,6 +92,7 @@ class ItemAction
     public function setCssClass(?string $cssClass): self
     {
         $this->cssClass = $cssClass;
+
         return $this;
     }
 
@@ -111,21 +104,6 @@ class ItemAction
     public function setHideLabel(bool $hideLabel): self
     {
         $this->hideLabel = $hideLabel;
-        return $this;
-    }
-
-    public function getTitle(): string
-    {
-        if ($this->title !== null) {
-            return $this->title;
-        }
-
-        return $this->getLabel();
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
 
         return $this;
     }
@@ -139,18 +117,6 @@ class ItemAction
     public function setResource(?object $resource): self
     {
         $this->resource = $resource;
-
-        return $this;
-    }
-
-    public function isDisabled(): bool
-    {
-        return $this->disabled;
-    }
-
-    public function setDisabled(bool $disabled): self
-    {
-        $this->disabled = $disabled;
 
         return $this;
     }
@@ -179,14 +145,32 @@ class ItemAction
         return $this;
     }
 
-    public function getId(): string
+    public function getTitle(): string
     {
-        return md5("crudit_action_" . spl_object_id($this));
+        if ($this->title !== null) {
+            return $this->title;
+        }
+
+        return $this->getLabel();
     }
 
-    public function isBatch()
+    public function setTitle(string $title): self
     {
-        return false;
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    public function setDisabled(bool $disabled): self
+    {
+        $this->disabled = $disabled;
+
+        return $this;
     }
 
     public function getHasVoter(): bool
@@ -231,5 +215,15 @@ class ItemAction
         $this->target = $target;
 
         return $this;
+    }
+
+    public function getId(): string
+    {
+        return md5("crudit_action_" . spl_object_id($this));
+    }
+
+    public function isBatch(): bool
+    {
+        return false;
     }
 }

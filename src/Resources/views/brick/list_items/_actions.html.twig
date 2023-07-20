@@ -21,15 +21,15 @@
                             {% if action.target %}
                                 target="{{ action.target }}"
                             {% endif %}
-                            {% if action.modal %}
-                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                            {% elseif not action.disabled %}
-                                {% if action.url %}
-                                    href="{{ absolute_url(action.url) }}"
-                                {% else %}
-                                    href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                {% endif %}
+                        {% if action.modal %}
+                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
+                        {% elseif not action.disabled %}
+                            {% if action.url %}
+                                href="{{ absolute_url(action.url) }}"
+                            {% else %}
+                                href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                             {% endif %}
+                        {% endif %}
                     >
                         {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
                         {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
@@ -53,11 +53,11 @@
                                 (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
                             <li>
                                 <a class="dropdown-item {% if disabled %}disabled{% endif %}"
-                                        {% if action.modal %}
-                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                                        {% elseif not action.disabled %}
-                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                        {% endif %}
+                                    {% if action.modal %}
+                                        data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
+                                    {% elseif not action.disabled %}
+                                        href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
+                                    {% endif %}
                                 >
                                     {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
                                     {{ action.label|trans(domain=view.config.translation_domain) }}

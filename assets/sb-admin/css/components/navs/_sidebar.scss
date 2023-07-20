@@ -10,6 +10,7 @@ $icon-width: 32px;
     @include media('>mobile') {
         width: $sidebar-base-width !important;
     }
+
     &.toggled {
         width: $sidebar-collapsed-width !important;
     }
@@ -23,8 +24,10 @@ $icon-width: 32px;
 
     .nav-item {
         position: relative;
+
         &.active, &:hover {
             background-color: lighten($primary, 10%);
+
             .nav-link {
                 img {
                     filter: grayscale(0);
@@ -105,9 +108,11 @@ $icon-width: 32px;
                 @include media('>mobile') {
                     color: $white;
                 }
+
                 &:hover, &:active {
                     color: $white;
                     background-color: lighten($primary, 20%);
+
                     img {
                         filter: grayscale(0);
                     }
@@ -163,9 +168,11 @@ $icon-width: 32px;
         text-transform: uppercase;
         letter-spacing: 0.05rem;
         z-index: 1;
+
         img {
             height: $topbar-base-height;
         }
+
         .sidebar-brand-icon i {
             font-size: 2rem;
         }
@@ -223,6 +230,7 @@ $icon-width: 32px;
                 width: $sidebar-collapsed-width;
                 padding: 0.75rem 1rem;
                 text-align: center;
+
                 &[data-bs-toggle='collapse']::after {
                     display: none;
                 }
@@ -239,12 +247,15 @@ $icon-width: 32px;
                 left: calc(#{$sidebar-collapsed-width} + #{$grid-gutter-width} / 2);
                 margin: 0;
                 z-index: 3;
+
                 &-inner {
                     background-color: $white;
                     border: 1px solid rgba(0, 0, 0, 0.125);
                 }
+
                 &-item {
                     color: $primary;
+
                     &.active {
                         color: $white;
                     }
@@ -270,7 +281,6 @@ $icon-width: 32px;
     }
 }
 
-
 #sidebarToggle {
     width: 2.5rem;
     height: 2.5rem;
@@ -279,10 +289,12 @@ $icon-width: 32px;
     text-align: center;
     outline: none;
     cursor: pointer;
+
     &:hover {
         background-color: fade-out($white, 0.75);
         text-decoration: none;
     }
+
     &::after {
         content: '\f104';
         margin-right: 0.1rem;

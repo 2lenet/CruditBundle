@@ -3,11 +3,13 @@ To create a crud, simply type this command in the console of your project:
 ```php bin/console make:crudit```
 
 You will then be asked a series of questions :
+
 - the name of your Entity
 - the namespace of your Controller
 - if the command should also create filters related to your entity's fields
-  
+
 That's it! Several files have been created:
+
 - ```src/Crudit/Config/EntityCrudConfig.php```
 - ```src/Controller/Crudit/EntityController.php```
 - ```src/Form/EntityType.php```
@@ -90,7 +92,8 @@ When we declare a new action in our page, we indicate the path of our method. Th
 
 ## Configure the form to be displayed in the new and edit screens
 
-In ```src/Form/EntityType.php```. The form is a basic Symfony form. Several formtypes are available. See : [Form types](form_types.md)
+In ```src/Form/EntityType.php```. The form is a basic Symfony form. Several formtypes are available.
+See : [Form types](form_types.md)
 
 ![](img/form.png)
 

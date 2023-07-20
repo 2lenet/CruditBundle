@@ -10,22 +10,20 @@ use Twig\TwigFilter;
  */
 class CruditTelephoneCallFilterExtension extends AbstractExtension
 {
-    /**
-     * @return array
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
-            new TwigFilter('telephoneCall', [$this, 'formatTelephone'])
+            new TwigFilter('telephoneCall', [$this, 'formatTelephone']),
         ];
     }
 
-    public function formatTelephone($telephone)
+    public function formatTelephone(?string $telephone): string
     {
         $telephone = str_replace(' ', '', $telephone);
 
-        if (strlen($telephone) == 10 && substr($telephone, 0, 1) == '0') {
+        if (strlen($telephone) === 10 && $telephone[0] === '0') {
             $substr = substr($telephone, 1);
+
             return str_replace(' ', '', '+33' . $substr);
         }
 

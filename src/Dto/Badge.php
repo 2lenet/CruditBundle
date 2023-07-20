@@ -6,11 +6,9 @@ namespace Lle\CruditBundle\Dto;
 
 class Badge
 {
-    /** @var string */
-    private $libelle;
+    private string $libelle;
 
-    /** @var string */
-    private $cssClass;
+    private string $cssClass;
 
     public static function new(string $libelle, string $cssClass = 'badge-success'): self
     {

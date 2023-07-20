@@ -30,8 +30,7 @@ class ConvertEasyAdmin extends Command
         KernelInterface $kernel,
         Converter $converter,
         Filesystem $filesystem
-    )
-    {
+    ) {
         parent::__construct(null);
 
         $this->kernel = $kernel;

@@ -12,23 +12,18 @@ use Lle\CruditBundle\Dto\Path;
 
 class FormConfig extends AbstractBrickConfig
 {
-    /** @var DatasourceInterface */
-    private $dataSource;
+    private ?DatasourceInterface $dataSource = null;
 
-    /** @var ?string */
-    private $form = null;
+    private ?string $form = null;
 
     /** @var FormField[] */
-    private $fields = [];
+    private array $fields = [];
 
-    /** @var ?Path */
-    private $successRedirectPath;
+    private ?Path $successRedirectPath = null;
 
-    /** @var string */
-    private $messageSuccess;
+    private string $messageSuccess;
 
-    /** @var string */
-    private $messageError;
+    private string $messageError;
 
     protected ?Path $cancelPath = null;
 
@@ -56,6 +51,7 @@ class FormConfig extends AbstractBrickConfig
     public function setSuccessRedirectPath(Path $path): self
     {
         $this->successRedirectPath = $path;
+
         return $this;
     }
 
@@ -67,12 +63,14 @@ class FormConfig extends AbstractBrickConfig
     public function setFlashMessageSuccess(string $message): self
     {
         $this->messageSuccess = $message;
+
         return $this;
     }
 
     public function setFlashMessageError(string $message): self
     {
         $this->messageError = $message;
+
         return $this;
     }
 
@@ -86,7 +84,7 @@ class FormConfig extends AbstractBrickConfig
         return $this->messageSuccess ?? 'crudit.message.success';
     }
 
-    public function getForm($resource=null): ?string
+    public function getForm(?object $resource = null): ?string
     {
         return $this->form;
     }
@@ -94,6 +92,7 @@ class FormConfig extends AbstractBrickConfig
     public function setForm(?string $form): self
     {
         $this->form = $form;
+
         return $this;
     }
 
@@ -118,6 +117,7 @@ class FormConfig extends AbstractBrickConfig
     public function add(FormField $field): self
     {
         $this->fields[] = $field;
+
         return $this;
     }
 
@@ -126,6 +126,7 @@ class FormConfig extends AbstractBrickConfig
         foreach ($fields as $field) {
             $this->fields[] = FormField::new($field);
         }
+
         return $this;
     }
 
@@ -151,6 +152,7 @@ class FormConfig extends AbstractBrickConfig
     public function setDataSource(DatasourceInterface $dataSource): self
     {
         $this->dataSource = $dataSource;
+
         return $this;
     }
 
@@ -159,18 +161,11 @@ class FormConfig extends AbstractBrickConfig
         return $this->dataSource;
     }
 
-    /**
-     * @return Path
-     */
     public function getCancelPath(): ?Path
     {
         return $this->cancelPath;
     }
 
-    /**
-     * @param Path $cancelPath
-     * @return FormConfig
-     */
     public function setCancelPath(?Path $cancelPath): FormConfig
     {
         $this->cancelPath = $cancelPath;

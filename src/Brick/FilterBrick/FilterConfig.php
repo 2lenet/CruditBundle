@@ -12,11 +12,13 @@ use Symfony\Component\HttpFoundation\Request;
 class FilterConfig extends AbstractBrickConfig
 {
     private ?FilterSetInterface $filterset = null;
+
     private string $className;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
+
         return $this;
     }
 
@@ -36,19 +38,21 @@ class FilterConfig extends AbstractBrickConfig
             'filterset' => $this->getFilterset(),
             'name' => $this->getCrudConfig()->getName(),
             'title' => $this->getCrudConfig()->getTitle('list'),
-            'translation_domain' => $this->getCrudConfig()->getTranslationDomain()
+            'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
     }
 
     public function setFilterset(?FilterSetInterface $filterset): self
     {
         $this->filterset = $filterset;
+
         return $this;
     }
 
     public function setClassName(string $className): self
     {
         $this->className = $className;
+
         return $this;
     }
 

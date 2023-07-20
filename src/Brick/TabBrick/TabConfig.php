@@ -10,7 +10,7 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 class TabConfig extends AbstractBrickConfig
 {
     /** @var Tab[] */
-    private $tabs = [];
+    private array $tabs = [];
 
     public static function new(array $options = []): self
     {
@@ -28,9 +28,10 @@ class TabConfig extends AbstractBrickConfig
         return $this->tabs;
     }
 
-    public function add(string $label, BrickConfigInterface $brickConfig, $role = null): self
+    public function add(string $label, BrickConfigInterface $brickConfig, ?string $role = null): self
     {
         $this->addTab(Tab::new($label, [$brickConfig])->setRole($role));
+
         return $this;
     }
 
@@ -38,12 +39,14 @@ class TabConfig extends AbstractBrickConfig
     public function adds(string $label, array $bricksConfig, ?string $role = null): self
     {
         $this->addTab(Tab::new($label, $bricksConfig)->setRole($role));
+
         return $this;
     }
 
     public function addTab(Tab $tab): self
     {
         $this->tabs[] = $tab;
+
         return $this;
     }
 
@@ -58,6 +61,7 @@ class TabConfig extends AbstractBrickConfig
                 }
             }
         }
+
         return $brickConfigs;
     }
 }

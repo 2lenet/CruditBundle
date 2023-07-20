@@ -5,16 +5,19 @@ $eip-icon-size: 16px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
+
     &-submit:not(input[type="checkbox"]) {
         border-top-left-radius: 0 !important;
         border-bottom-left-radius: 0 !important;
     }
+
     &-value {
         position: relative;
         min-height: 24px;
         padding-right: $eip-icon-size + 4px;
-        border-bottom: dotted 1px #0b2e13;
+        border-bottom: dotted 1px #0B2E13;
         cursor: pointer;
+
         &::after {
             content: '\f044';
             position: absolute;

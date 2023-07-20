@@ -19,7 +19,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             "10" => "## (###) ###-####",
         ],
         "+212" => [
-            "9" => "#### # ## ## ## ##"
+            "9" => "#### # ## ## ## ##",
         ],
         "+213" => [
             "8" => "#### (##) ### ###",
@@ -27,43 +27,43 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             "10" => "#### (##) ### #####",
         ],
         "+216" => [
-            "9" => "#### ## ### ###"
+            "9" => "#### ## ### ###",
         ],
         "+225" => [
-            "10" => "(####) ##.##.##.##.##"
+            "10" => "(####) ##.##.##.##.##",
         ],
         "+228" => [
-            "9" => "#### ## ## ## ##"
+            "9" => "#### ## ## ## ##",
         ],
         "+237" => [
-            "9" => "#### ### ## ## ##"
+            "9" => "#### ### ## ## ##",
         ],
         "+242" => [
-            "9" => "#### ## ### ####"
+            "9" => "#### ## ### ####",
         ],
         "+262" => [
-            "9" => "#### ### ## ## ##"
+            "9" => "#### ### ## ## ##",
         ],
         "+32" => [
-            "8" => "### ## ## ## ##"
+            "8" => "### ## ## ## ##",
         ],
         "+33" => [
-            "9" => "### # ## ## ## ##"
+            "9" => "### # ## ## ## ##",
         ],
         "+34" => [
-            "9" => "### ###.##.##.##"
+            "9" => "### ###.##.##.##",
         ],
         "+352" => [
             "5" => "#### # ####",
             "6" => "#### ## ####",
             "8" => "#### #### ####",
-            "9" => "#### ### ### ###"
+            "9" => "#### ### ### ###",
         ],
         "+353" => [
-            "8" => "#### # ### ####"
+            "8" => "#### # ### ####",
         ],
         "+41" => [
-            "9" => "### ## ### ## ##"
+            "9" => "### ## ### ## ##",
         ],
         "+49" => [
             "9" => "### # ## ## ## ##",
@@ -72,33 +72,30 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             "12" => "### ## #### ######",
         ],
         "+509" => [
-            "8" => "#### #### ####"
+            "8" => "#### #### ####",
         ],
         "+590" => [
-            "9" => "#### ### ## ## ##"
+            "9" => "#### ### ## ## ##",
         ],
         "+596" => [
-            "9" => "#### ### ## ## ##"
+            "9" => "#### ### ## ## ##",
         ],
         "+687" => [
-            "9" => "#### ### ## ## ##"
+            "9" => "#### ### ## ## ##",
         ],
         "+689" => [
-            "8" => "#### ## ### ###"
+            "8" => "#### ## ### ###",
         ],
     ];
 
-    /**
-     * @return array
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
-            new TwigFilter('telephone', [$this, 'formatTelephone'])
+            new TwigFilter('telephone', [$this, 'formatTelephone']),
         ];
     }
 
-    public function formatTelephone($telephone)
+    public function formatTelephone(?string $telephone): string
     {
         $telephone = str_replace(' ', '', $telephone);
 
@@ -117,10 +114,11 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         } elseif (strlen($telephone) == 10) {
             $mask = "## ## ## ## ##";
         }
+
         return ($mask != null ? $this->applyMask($mask, $telephone) : $telephone);
     }
 
-    private function applyMask(string $mask, string $value)
+    private function applyMask(string $mask, string $value): string
     {
         $result = "";
         $i = 0;
@@ -132,6 +130,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             $result .= ($char === '#') ? $value[$counter++] : $char;
             $i++;
         }
+
         return $result;
     }
 }

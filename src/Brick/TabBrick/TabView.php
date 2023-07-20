@@ -9,13 +9,11 @@ use Lle\CruditBundle\Dto\BrickView;
 class TabView
 {
     /** @var BrickView[] */
-    private $bricks;
+    private array $bricks;
 
-    /** @var string */
-    private $label;
+    private string $label;
 
-    /** @var string */
-    private $role;
+    private string $role;
 
     public function __construct(string $label)
     {
@@ -26,6 +24,7 @@ class TabView
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -37,6 +36,7 @@ class TabView
     public function add(BrickView $brickView): self
     {
         $this->bricks[] = $brickView;
+
         return $this;
     }
 
@@ -59,6 +59,7 @@ class TabView
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
         return $this;
     }
 }

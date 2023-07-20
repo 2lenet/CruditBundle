@@ -24,7 +24,7 @@ class RouteFilteredLinkExtension extends AbstractExtension
     {
         return [
             new TwigFunction('crudit_route_filtered_link', [$this, 'getRouteFilteredLink']),
-            new TwigFunction('entity_id_to_tomselect', [$this, 'getEntityIdToTomselect'])
+            new TwigFunction('entity_id_to_tomselect', [$this, 'getEntityIdToTomselect']),
         ];
     }
 
@@ -45,16 +45,19 @@ class RouteFilteredLinkExtension extends AbstractExtension
             }
         }
 
+        $parameters[$entity . '_offset'] = 0;
+
         return $this->router->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
     public function getEntityIdToTomselect(int $id, string $class): array
     {
+        /** @var class-string $class */
         $item = $this->em->find($class, $id);
 
         return [
             'id' => $id,
-            'text' => (string)$item
+            'text' => (string)$item,
         ];
     }
 }

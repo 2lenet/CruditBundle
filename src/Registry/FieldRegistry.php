@@ -9,8 +9,7 @@ use Lle\CruditBundle\Exception\CruditException;
 
 class FieldRegistry
 {
-    /** @var iterable */
-    private $fields;
+    private iterable $fields;
 
     public function __construct(iterable $fields)
     {

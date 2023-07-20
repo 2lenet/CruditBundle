@@ -9,30 +9,27 @@ use Lle\CruditBundle\Dto\Path;
 
 class ListAction
 {
-    /** @var string  */
-    protected $label;
+    protected string $label;
 
-    /** @var Path  */
-    protected $path;
+    protected Path $path;
 
-    /** @var ?Icon */
-    protected $icon;
+    protected ?Icon $icon;
 
-    /** @var ?string */
-    protected $url;
+    protected ?string $url;
 
-    /** @var ?string */
-    protected $cssClass;
+    protected ?string $cssClass = null;
 
-    /** @var bool */
-    protected $hideLabel = false;
+    protected bool $hideLabel = false;
 
     protected ?string $modal = null;
 
     protected array $config = [];
+
     protected bool $batch = false;
 
     protected ?string $form = "";
+
+    protected ?string $target = null;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): self
     {
@@ -48,25 +45,14 @@ class ListAction
         $this->url = null;
     }
 
-    public function getPath(): Path
-    {
-        return $this->path;
-    }
-
     public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function setUrl(string $url): self
+    public function getPath(): Path
     {
-        $this->url = $url;
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
+        return $this->path;
     }
 
     public function getIcon(): ?Icon
@@ -77,6 +63,19 @@ class ListAction
     public function setIcon(?Icon $icon): self
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
+
         return $this;
     }
 
@@ -88,6 +87,7 @@ class ListAction
     public function setCssClass(?string $cssClass): self
     {
         $this->cssClass = $cssClass;
+
         return $this;
     }
 
@@ -99,6 +99,7 @@ class ListAction
     public function setHideLabel(bool $hideLabel): self
     {
         $this->hideLabel = $hideLabel;
+
         return $this;
     }
 
@@ -114,11 +115,6 @@ class ListAction
         return $this;
     }
 
-    public function getId(): string
-    {
-        return md5("crudit_action_" . spl_object_id($this));
-    }
-
     public function getConfig(): array
     {
         return $this->config;
@@ -131,15 +127,45 @@ class ListAction
         return $this;
     }
 
-    public function setIsBatch()
+    public function isBatch(): bool
+    {
+        return $this->batch;
+    }
+
+    public function setIsBatch(): self
     {
         $this->batch = true;
+
         return $this;
     }
 
-    public function isBatch()
+    public function getForm(): ?string
     {
-        return $this->batch;
+        return $this->form;
+    }
+
+    public function setForm(?string $form): self
+    {
+        $this->form = $form;
+
+        return $this;
+    }
+
+    public function getTarget(): ?string
+    {
+        return $this->target;
+    }
+
+    public function setTarget(string $target): self
+    {
+        $this->target = $target;
+
+        return $this;
+    }
+
+    public function getId(): string
+    {
+        return md5("crudit_action_" . spl_object_id($this));
     }
 
     public function getTitle(): string
@@ -155,18 +181,6 @@ class ListAction
     public function setResource(?object $resource): self
     {
         /** do nothing */
-        return $this;
-    }
-
-    public function getForm(): ?string
-    {
-        return $this->form;
-    }
-
-    public function setForm(?string $form): self
-    {
-        $this->form = $form;
-
         return $this;
     }
 }

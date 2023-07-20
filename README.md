@@ -37,6 +37,7 @@ import '../styles/app.scss';
 ```
 
 And in your assets/styles/app.scss, add this :
+
 ```scss
 @import '../../vendor/2lenet/crudit-bundle/assets/sb-admin/css/app.scss';
 ```
@@ -63,6 +64,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 ## Principle
 
 A crud is composed by
+
 - an independent controller
 - a crud config class
 - a datasource
@@ -73,34 +75,42 @@ The layout and menu are independant from the crud. You can integrate easily you 
 ## Feature
 
 ### List view
+
 ![](doc/img/list.png)
 The list view has the following features :
+
 - Pagination
 - Sorting
 - Item Actions ( Show, Edit and Delete as standard )
 - List Actions ( Add and Export csv and excel as standard )
 - List grouping ( to save place in repeating values )
 - Batch Action ( see [Batch actions](doc/batch_action.md) )
-- Possibility to color the lines according to a class passed to the entity ( see [Coloring the rows in a list](doc/color_list.md) )
+- Possibility to color the lines according to a class passed to the entity (
+  see [Coloring the rows in a list](doc/color_list.md) )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 The list view need a Datasource but is not bounded to Doctrine or any ORM.
 
 ### Show view
+
 ![](doc/img/show.png)
 The show view has the following feature :
+
 - Show all fields
 - Title can use the entity to title the object by its name
 - Tabs (see [Tabs](doc/tabs.md))
 - Sublists to show related data ( see [Sublist](doc/sublist.md) )
-- Possibility to color the main card and the title of the show view ( the principle is the same as for the list view: [Coloring the rows in a list](doc/color_list.md)  )
+- Possibility to color the main card and the title of the show view ( the principle is the same as for the list
+  view: [Coloring the rows in a list](doc/color_list.md)  )
 - Layout customisation is possible ( doc TODO / Block principle )
 
 ### Form view
+
 ![](doc/img/edit.png)
 The edit view is a classical Symfony Form. You write your own FormType
 
 Crudit provides some help to be nicely integrated :
+
 - Many FormType ( Datetime, Entity, etc ...)
 - Entity Dropdown based on TomSelect with autocomplete
 - DoctrineFormGuesser to automatically use Crudit FormType.
@@ -110,25 +120,29 @@ Crudit provides some help to be nicely integrated :
 ## JS Format input helper
 
 Some help to check the input validity ( upper, email, ip, etc... )
+
 - [inputFormat](doc/input_format.md)
 
 ## Dependencies
 
 Crudit wants to minimise dependencies on not really popular bundles or components
-in order to be able to maintain this bundle for many years and to follow the Symfony Stack development without dependency problems.
+in order to be able to maintain this bundle for many years and to follow the Symfony Stack development without
+dependency problems.
 
-The layout is inspired by [SB Admin 2](https://startbootstrap.com/theme/sb-admin-2) but partially rewritten. Many of the features of SB Admin wasn't useful for this project.
+The layout is inspired by [SB Admin 2](https://startbootstrap.com/theme/sb-admin-2) but partially rewritten. Many of the
+features of SB Admin wasn't useful for this project.
 
 The CSS framework used is [Bootstrap 5](https://getbootstrap.com/docs/5.1/getting-started/introduction/).
 
 Excel export uses phpoffice/phpspreadsheet.
 
-Doctrine is needed for the pre-version but the project is designed to work without it. Feel free to contact us if you want to use other dataprovider.
-
+Doctrine is needed for the pre-version but the project is designed to work without it. Feel free to contact us if you
+want to use other dataprovider.
 
 # Development
 
 TO COMPLETE
+
 - [Design principle](doc/design.md)
 
 ## JS / CSS Developpement

@@ -10,117 +10,118 @@
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 {% if not view.options.noHeader|default(false) %}
                     <thead class="thead-light">
-                        <tr>
-                            {% if has_batch %}
-                                <th>
+                    <tr>
+                        {% if has_batch %}
+                            <th>
                                     <span>
                                         <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
                                     </span>
-                                </th>
-                            {% endif %}
-                            {% for field in view.config.fields %}
-                                {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                                    <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
-                                        {{ field.label|trans(domain=view.config.translation_domain) }}
-                                        {% if field.sortable %}
-                                            {% set name = view.config.name|lower %}
-                                            {% set merge_params = {
-                                                (name ~ '_sort'): field.options.sortProperty ?? field.name,
-                                                (name ~ '_sort_order'): 'asc'
-                                            } %}
-                                            {% set params = app.request.session.get('crudit_datasourceparams_' ~ name) %}
-                                            {% set sorts = params.sorts ?? [
-                                                [app.request.query.get(name ~ '_sort_order'), app.request.query.get(name ~ '_sort')]
-                                            ] %}
+                            </th>
+                        {% endif %}
+                        {% for field in view.config.fields %}
+                            {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
+                                <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
+                                    {{ field.label|trans(domain=view.config.translation_domain) }}
+                                    {% if field.sortable %}
+                                        {% set name = view.config.name|lower %}
+                                        {% set merge_params = {
+                                            (name ~ '_sort'): field.options.sortProperty ?? field.name,
+                                            (name ~ '_sort_order'): 'asc'
+                                        } %}
+                                        {% set params = app.request.session.get('crudit_datasourceparams_' ~ name) %}
+                                        {% set sorts = params.sorts ?? [
+                                            [app.request.query.get(name ~ '_sort_order'), app.request.query.get(name ~ '_sort')]
+                                        ] %}
 
-                                            {% set order = sorts|first|last %}
-                                            {% set sorted = (sorts|first|first == field.options.sortProperty ?? field.name) %}
+                                        {% set order = sorts|first|last %}
+                                        {% set sorted = (sorts|first|first == field.options.sortProperty ?? field.name) %}
 
-                                            {% set icon = 'fa-sort' %}
-                                            {% if sorted %}
-                                                {% set icon = 'fa-sort-up' %}
-                                            {% endif %}
-                                            {% if sorted and order|lower == 'asc' %}
-                                                {% set icon = 'fa-sort-down' %}
-                                                {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                            {% endif %}
-                                            {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                            {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
-                                            <span>
+                                        {% set icon = 'fa-sort' %}
+                                        {% if sorted %}
+                                            {% set icon = 'fa-sort-up' %}
+                                        {% endif %}
+                                        {% if sorted and order|lower == 'asc' %}
+                                            {% set icon = 'fa-sort-down' %}
+                                            {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
+                                        {% endif %}
+                                        {% set parameters = app.request.query.all()|merge(merge_params) %}
+                                        {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
+                                        <span>
                                                 <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
                                                     <i class="fas {{ icon }}"></i>
                                                 </a>
                                             </span>
-                                        {% endif %}
-                                    </th>
+                                    {% endif %}
+                                </th>
+                            {% endif %}
+                        {% endfor %}
+                        {% if view.config.actions|length %}
+                            {% set hasActions = false %}
+                            {% for action in view.config.actions %}
+                                {% if action.path.role is null or is_granted(action.path.role) %}
+                                    {% set hasActions = true %}
                                 {% endif %}
                             {% endfor %}
-                            {% if view.config.actions|length %}
-                                {% set hasActions = false %}
-                                {% for action in view.config.actions %}
-                                    {% if action.path.role is null or is_granted(action.path.role) %}
-                                        {% set hasActions = true %}
-                                    {% endif %}
-                                {% endfor %}
-                                {% if hasActions %}
-                                    <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
-                                {% endif %}
+                            {% if hasActions %}
+                                <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
                             {% endif %}
-                        </tr>
+                        {% endif %}
+                    </tr>
                     </thead>
                 {% endif %}
 
                 <tbody>
-                    {% set ruptval1 = '' %}
-                    {% set ruptval2 = '' %}
-                    {% for line in view.data.lines %}
-                        {% set line_opened = 0 %}
-                        {% for column in line.fields %}
-                            {# RUPTURE NIVEAU 1 #}
-                            {% if column.field.ruptGroup == 1 %}
-                                {% if ruptval1 != column.value %}
-                                    <tr>
-                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
-                                    </tr>
-                                    {% set ruptval2 = '' %}
-                                {% endif %}
-                                {% set ruptval1 = column.value %}
+                {% set ruptval1 = '' %}
+                {% set ruptval2 = '' %}
+                {% for line in view.data.lines %}
+                    {% set line_opened = 0 %}
+                    {% for column in line.fields %}
+                        {# RUPTURE NIVEAU 1 #}
+                        {% if column.field.ruptGroup == 1 %}
+                            {% if ruptval1 != column.value %}
+                                <tr>
+                                    <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
+                                </tr>
+                                {% set ruptval2 = '' %}
                             {% endif %}
-
-                            {# RUPTURE NIVEAU 2 #}
-                            {% if column.field.ruptGroup == 2 %}
-                                {% if ruptval2 != column.value %}
-                                    <tr>
-                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
-                                    </tr>
-                                {% endif %}
-                                {% set ruptval2 = column.value %}
-                            {% endif %}
-
-                            {% if column.field.ruptGroup == 0 %}
-                                {% if line_opened == 0 %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
-                                    {% set line_opened = 1 %}
-                                    {% if has_batch %}
-                                        <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" autocomplete="off" /></td>
-                                    {% endif %}
-                                {% endif %}
-                                <td>
-                                {% if column.field.path %}
-                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
-                                {% endif %}
-                                    {{ column.value|raw }}
-                                {% if column.field.path %}
-                                    </a>
-                                {% endif %}
-                                </td>
-                            {% endif %}
-                        {% endfor %}
-                        {% if view.config.actions|length %}
-                            {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
+                            {% set ruptval1 = column.value %}
                         {% endif %}
-                        </tr>
+
+                        {# RUPTURE NIVEAU 2 #}
+                        {% if column.field.ruptGroup == 2 %}
+                            {% if ruptval2 != column.value %}
+                                <tr>
+                                    <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
+                                </tr>
+                            {% endif %}
+                            {% set ruptval2 = column.value %}
+                        {% endif %}
+
+                        {% if column.field.ruptGroup == 0 %}
+                            {% if line_opened == 0 %}
+                                <tr id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                                {% set line_opened = 1 %}
+                                {% if has_batch %}
+                                    <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox"
+                                               autocomplete="off"/></td>
+                                {% endif %}
+                            {% endif %}
+                            <td id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower }}">
+                                {% if column.field.path %}
+                                <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
+                                    {% endif %}
+                                    {{ column.value|raw }}
+                                    {% if column.field.path %}
+                                </a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
                     {% endfor %}
+                    {% if view.config.actions|length %}
+                        {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
+                    {% endif %}
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>

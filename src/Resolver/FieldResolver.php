@@ -21,8 +21,11 @@ class FieldResolver
 
     private PropertyInfoExtractorInterface $propertyInfoExtractor;
 
-    public function __construct(FieldRegistry $fieldRegistry, PropertyAccessorInterface $propertyAccessor, PropertyInfoExtractorInterface $propertyInfoExtractor)
-    {
+    public function __construct(
+        FieldRegistry $fieldRegistry,
+        PropertyAccessorInterface $propertyAccessor,
+        PropertyInfoExtractorInterface $propertyInfoExtractor
+    ) {
         $this->propertyAccessor = $propertyAccessor;
         $this->fieldRegistry = $fieldRegistry;
         $this->propertyInfoExtractor = $propertyInfoExtractor;
@@ -33,8 +36,7 @@ class FieldResolver
         object $resource,
         DatasourceInterface $datasource,
         ?CrudConfigInterface $crudConfig = null
-    ): FieldView
-    {
+    ): FieldView {
         $subResource = $resource;
         $name = $field->getName();
 
@@ -47,12 +49,13 @@ class FieldResolver
                 $types = $this->propertyInfoExtractor->getTypes($subClass, $name);
 
                 if (!$types) {
-                    throw new CruditException(sprintf(
-                        "Could not determine type for property '%s' of class '%s'.",
-                        $name,
-                        $subClass,
-                    ));
-                    break;
+                    throw new CruditException(
+                        sprintf(
+                            "Could not determine type for property '%s' of class '%s'.",
+                            $name,
+                            $subClass,
+                        )
+                    );
                 }
 
                 $propertyType = $types[0];
@@ -95,6 +98,7 @@ class FieldResolver
         if ($capitaliseFirstChar) {
             $str[0] = strtoupper($str[0]);
         }
+
         return preg_replace_callback('/_([a-z])/', function ($c) {
             return "_" . strtolower($c[1]);
         }, $str);

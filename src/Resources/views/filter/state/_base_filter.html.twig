@@ -4,7 +4,8 @@
 
         {% set options = filter.operators[data.op]|default(null) %}
         {% if options %}
-            <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operator.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
+            <i class="{{ options['icon'] }}"
+               title="{{ ('crudit.filter.operator.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
         {% endif %}
     </button>
 {% elseif data and data.value is defined and data.value %}
@@ -14,7 +15,8 @@
         {% if data.op is defined %}
             {% set options = filter.operators[data.op]|default(null) %}
             {% if options %}
-                <i class="{{ options['icon'] }}" title="{{ ('crudit.filter.operator.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
+                <i class="{{ options['icon'] }}"
+                   title="{{ ('crudit.filter.operator.'~data.op)|trans({}, 'LleCruditBundle') }}"></i>
             {% endif %}
         {% endif %}
 

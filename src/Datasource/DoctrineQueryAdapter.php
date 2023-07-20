@@ -9,8 +9,7 @@ use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 
 class DoctrineQueryAdapter implements QueryAdapterInterface
 {
-    /** @var QueryBuilder  */
-    private $queryBuilder;
+    private QueryBuilder $queryBuilder;
 
     public function __construct(QueryBuilder $queryBuilder)
     {
@@ -20,6 +19,7 @@ class DoctrineQueryAdapter implements QueryAdapterInterface
     public function where(string $string): self
     {
         $this->queryBuilder->where($string);
+
         return $this;
     }
 
@@ -27,6 +27,7 @@ class DoctrineQueryAdapter implements QueryAdapterInterface
     public function setParameter(string $parameter, $value): self
     {
         $this->queryBuilder->setParameter($parameter, $value);
+
         return $this;
     }
 
@@ -36,6 +37,7 @@ class DoctrineQueryAdapter implements QueryAdapterInterface
         if (is_array($return)) {
             return $return;
         }
+
         return [];
     }
 }

@@ -4,7 +4,7 @@ namespace Lle\CruditBundle\Datasource;
 
 class DatasourceParams
 {
-    protected $count = 100;
+    protected int $count = 100;
 
     protected int $limit;
 
@@ -24,14 +24,16 @@ class DatasourceParams
         $this->filters = $filters;
     }
 
-    public function setCount(int $count)
-    {
-        $this->count = $count;
-    }
-
     public function getCount(): int
     {
         return $this->count;
+    }
+
+    public function setCount(int $count): self
+    {
+        $this->count = $count;
+
+        return $this;
     }
 
     public function getFrom(): int
@@ -57,6 +59,7 @@ class DatasourceParams
     public function getNbPages(): int
     {
         $rest = $this->count % $this->limit ? 1 : 0;
+
         return intdiv($this->count, $this->limit) + $rest;
     }
 
@@ -87,81 +90,53 @@ class DatasourceParams
         return $pages;
     }
 
-    public function isCurrent($page): bool
+    public function isCurrent(int $page): bool
     {
         return (intdiv($this->offset, $this->limit) + 1) == $page;
     }
 
-    /**
-     * @return int
-     */
     public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @param int $limit
-     * @return DatasourceParams
-     */
-    public function setLimit(?int $limit): DatasourceParams
+    public function setLimit(?int $limit): self
     {
         $this->limit = $limit;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * @param int $offset
-     * @return DatasourceParams
-     */
-    public function setOffset(?int $offset): DatasourceParams
+    public function setOffset(?int $offset): self
     {
         $this->offset = $offset;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getSorts(): array
     {
         return $this->sorts;
     }
 
-    /**
-     * @param array $sorts
-     * @return DatasourceParams
-     */
-    public function setSorts(array $sorts): DatasourceParams
+    public function setSorts(array $sorts): self
     {
         $this->sorts = $sorts;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getFilters(): array
     {
         return $this->filters;
     }
 
-    /**
-     * @param array $sorts
-     * @return DatasourceParams
-     */
-    public function setFilters(array $filters): DatasourceParams
+    public function setFilters(array $filters): self
     {
         $this->filters = $filters;
 

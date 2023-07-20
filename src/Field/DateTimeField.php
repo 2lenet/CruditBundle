@@ -17,7 +17,7 @@ class DateTimeField extends DateField
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'format' => 'd/m/Y H:i'
+            'format' => 'd/m/Y H:i',
         ])->setAllowedTypes('format', 'string');
     }
 

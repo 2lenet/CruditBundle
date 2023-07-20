@@ -9,19 +9,20 @@
 {% if transitions is not empty %}
     {# There are allowed transitions #}
     <div class="dropdown crudit-wf-dropdown">
-        <span class="badge rounded-pill bg-primary text-start crudit-wf-badge crudit-wf-state-{{ value }}" data-bs-toggle="dropdown">
+        <span class="badge rounded-pill bg-primary text-start crudit-wf-badge crudit-wf-state-{{ value }}"
+              data-bs-toggle="dropdown">
             <div
-                    class="dropdown-toggle text-decoration-none align-middle"
-                    role="button">
+                class="dropdown-toggle text-decoration-none align-middle"
+                role="button">
                 {{ ('wf.state.' ~ value) | trans }}
             </div>
         </span>
         <ul class="dropdown-menu">
             {% for transition in transitions %}
                 <button
-                        class="dropdown-item crudit-wf-transition-{{ transition.name }}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#validate-action-{{ transition.name }}-{{ view.resource.id }}"
+                    class="dropdown-item crudit-wf-transition-{{ transition.name }}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#validate-action-{{ transition.name }}-{{ view.resource.id }}"
                 >
                     {{ ('wf.transition.' ~ transition.name) | trans }}
                 </button>
@@ -30,7 +31,8 @@
     </div>
 
     {% for transition in transitions %}
-        <div class="modal fade" id="validate-action-{{ transition.name }}-{{ view.resource.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="validate-action-{{ transition.name }}-{{ view.resource.id }}" tabindex="-1"
+             aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -41,12 +43,12 @@
                             {{ 'crudit.modal.cancel' | trans({}, 'LleCruditBundle') }}
                         </button>
                         <a
-                                href="{{ view.config ? path(view.config.rootRoute ~ '_workflowtransition', {
-                                    id : resource.id,
-                                    transition: transition.name,
-                                    field: view.field.name,
-                                }) : '#' }}"
-                                class="btn btn-primary">
+                            href="{{ view.config ? path(view.config.rootRoute ~ '_workflowtransition', {
+                                id : resource.id,
+                                transition: transition.name,
+                                field: view.field.name,
+                            }) : '#' }}"
+                            class="btn btn-primary">
                             {{ 'crudit.modal.transition.action'|trans({}, 'LleCruditBundle') }}
                         </a>
                     </div>

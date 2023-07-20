@@ -1,5 +1,5 @@
 services:
-  Lle\CruditBundle\EventListener\KernelFilterListener:
-    arguments: ['@Lle\CruditBundle\Filter\FilterState']
-    tags:
-      - { name: kernel.event_listener, event: kernel.controller }
+    Lle\CruditBundle\EventListener\KernelFilterListener:
+        arguments: ['@Lle\CruditBundle\Filter\FilterState']
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller }

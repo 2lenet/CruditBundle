@@ -6,15 +6,15 @@ services:
 
     Lle\CruditBundle\Controller\:
         resource: '../../Controller'
-        tags: [ 'controller.service_arguments' ]
+        tags: ['controller.service_arguments']
 
     Lle\CruditBundle\DataCollector\DataCollector:
-        arguments: [ '@doctrine.orm.entity_manager' ]
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: 'data_collector', template: "@LleCrudit//profiler/crudit.html.twig", id: "crudit", priority: 200 }
 
     Lle\CruditBundle\Registry\FieldRegistry:
-        arguments :
+        arguments:
             - !tagged_iterator crudit.field
 
     Lle\CruditBundle\Brick\BrickResponseCollector: ~
@@ -57,20 +57,20 @@ services:
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
-        tags: [ twig.extension ]
+        tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneFilterExtension:
-        tags: [ twig.extension ]
+        tags: [twig.extension]
 
     Lle\CruditBundle\Twig\RouteFilteredLinkExtension:
         arguments:
             - '@router'
             - '@doctrine.orm.entity_manager'
-        tags: [ twig.extension ]
+        tags: [twig.extension]
 
     Lle\CruditBundle\Twig\SanitizerExtension:
         autowire: true
-        tags: [ twig.extension ]
+        tags: [twig.extension]
 
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
     # And guess the good type
@@ -89,7 +89,7 @@ services:
     Lle\CruditBundle\Exporter\:
         exclude: '../../Exporter/{Exporter.php,ExportParams.php}'
         resource: '../../Exporter'
-        tags: [ 'crudit.exporter' ]
+        tags: ['crudit.exporter']
 
     Lle\CruditBundle\Exporter\CsvExporter:
         arguments:
@@ -111,4 +111,4 @@ when@dev:
                 - '@maker.doctrine_helper'
 
         Lle\CruditBundle\Command\ConvertEasyAdmin:
-            tags: [ 'console.command' ]
+            tags: ['console.command']

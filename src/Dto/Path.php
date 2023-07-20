@@ -6,11 +6,9 @@ namespace Lle\CruditBundle\Dto;
 
 class Path
 {
-    /** @var string */
-    private $route;
+    private string $route;
 
-    /** @var array  */
-    private $params;
+    private array $params;
 
     private ?string $role = null;
 

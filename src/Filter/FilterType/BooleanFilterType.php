@@ -2,6 +2,8 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * BooleanFilterType
  *
@@ -18,13 +20,13 @@ class BooleanFilterType extends AbstractFilterType
     {
         return [
             "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"]
+            "neq" => ["icon" => "fas fa-not-equal"],
         ];
     }
 
-    public function apply($queryBuilder): void
+    public function apply(QueryBuilder $queryBuilder): void
     {
-        list($column, $alias, $params) = $this->getQueryParams($queryBuilder);
+        [$column, $alias, $params] = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             if ($this->data['op'] == 'eq' && $this->data['value'] !== 'all') {
@@ -54,7 +56,7 @@ class BooleanFilterType extends AbstractFilterType
         }
     }
 
-    public function isSelected($data, $value)
+    public function isSelected(array $data, string $value): bool
     {
         if (is_array($data)) {
             if (array_key_exists('value', $data) && $data["value"] === $value) {
