@@ -4,42 +4,52 @@
         <div class="row" id="{{ view.data.resource.id }}">
             {% for key, field in view.data.resource.fields %}
                 {% if field is iterable %}
-                    <div class="col-sm-12">
-                        <div class="card box box-default mb-3">
-                            <div class="card-header">
-                                <div class="card-title">{{ key|trans }}</div>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    {% for cardField in field %}
-                                        <div class="crudit-field {{ cardField.options.cssClass }}">
-                                            <dl class="row">
-                                                <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                                                <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
-                                                    {% if cardField.field.path %}<a
-                                                        href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
-                                                        {{ cardField.value |raw }}
-                                                        {% if cardField.field.path %}</a>{% endif %}
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    {% endfor %}
+                    {% if
+                        field.field.role is not defined or field.field.role is null or
+                        (field.field.role is defined and field.field.role is not null and is_granted(field.field.role))
+                    %}
+                        <div class="col-sm-12">
+                            <div class="card box box-default mb-3">
+                                <div class="card-header">
+                                    <div class="card-title">{{ key|trans }}</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        {% for cardField in field %}
+                                            <div class="crudit-field {{ cardField.options.cssClass }}">
+                                                <dl class="row">
+                                                    <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
+                                                    <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
+                                                        {% if cardField.field.path %}<a
+                                                            href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                                            {{ cardField.value |raw }}
+                                                            {% if cardField.field.path %}</a>{% endif %}
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% else %}
-                    <div class="crudit-field {{ field.options.cssClass }}">
-                        <dl class="row">
-                            <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                            <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
-                                {% if field.field.path %}<a
-                                    href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
-                                    {{ field.value |raw }}
-                                    {% if field.field.path %}</a>{% endif %}
-                            </dd>
-                        </dl>
-                    </div>
+                    {% if
+                        field.field.role is not defined or field.field.role is null or
+                        (field.field.role is defined and field.field.role is not null and is_granted(field.field.role))
+                    %}
+                        <div class="crudit-field {{ field.options.cssClass }}">
+                            <dl class="row">
+                                <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
+                                <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
+                                    {% if field.field.path %}<a
+                                        href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                        {{ field.value |raw }}
+                                        {% if field.field.path %}</a>{% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </div>
