@@ -13,7 +13,7 @@ class TabView
 
     private string $label;
 
-    private string $role;
+    private ?string $role;
 
     public function __construct(string $label)
     {
