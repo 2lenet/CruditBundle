@@ -14,11 +14,11 @@ class ItemAction
 
     protected Path $path;
 
-    protected ?Icon $icon;
+    protected ?Icon $icon = null;
 
-    protected ?string $url;
+    protected ?string $url = null;
 
-    protected ?string $cssClass;
+    protected ?string $cssClass = null;
 
     protected bool $hideLabel = false;
 

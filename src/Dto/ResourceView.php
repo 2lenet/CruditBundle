@@ -39,7 +39,7 @@ class ResourceView
         return $this->fields;
     }
 
-    public function getLinkId(string $fieldName): null|int|string|object
+    public function getLinkId(string $fieldName): mixed
     {
         if ($fieldName === 'id') {
             return $this->getId();
@@ -62,7 +62,7 @@ class ResourceView
         return null;
     }
 
-    private function getValue(array $keys, object $value): object
+    private function getValue(array $keys, mixed $value): mixed
     {
         $key = array_key_first($keys);
         $value = $value->{'get' . ucfirst($keys[$key])}();
