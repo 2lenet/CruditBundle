@@ -324,4 +324,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return [];
     }
+
+    public function getTotalFields(): array
+    {
+        return [];
+    }
 }

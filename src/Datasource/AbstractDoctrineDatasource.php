@@ -456,4 +456,23 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         return false;
     }
+
+    public function getTotals(?DatasourceParams $requestParams, array $fields): iterable
+    {
+        $qb = $this->buildQueryBuilder($requestParams);
+
+        foreach ($fields as $field => $data) {
+            if ($field === array_key_first($fields)) {
+                $qb->select($data['type'] . '(root.' . $field . ')');
+            } else {
+                $qb->addSelect($data['type'] . '(root.' . $field . ')');
+            }
+        }
+
+        if ($this->filterset && $requestParams->isEnableFilters()) {
+            $this->applyFilters($qb);
+        }
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }
