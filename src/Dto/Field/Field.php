@@ -87,6 +87,9 @@ class Field
         return $this;
     }
 
+    /**
+     * @param string $editRoute #Route
+     */
     public function setEditable(string $editRoute): self
     {
         $this->options['edit_route'] = $editRoute;
@@ -172,6 +175,9 @@ class Field
         return $this->template;
     }
 
+    /**
+     * @param ?string $template #Template
+     */
     public function setTemplate(?string $template): self
     {
         $this->template = $template;

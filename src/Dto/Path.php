@@ -12,6 +12,9 @@ class Path
 
     private ?string $role = null;
 
+    /**
+     * @param string $route #Route
+     */
     public static function new(string $route, array $params = []): self
     {
         return new self(strtolower($route), $params);

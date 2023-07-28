@@ -108,6 +108,9 @@ class ListAction
         return $this->modal;
     }
 
+    /**
+     * @param ?string $modal #Template
+     */
     public function setModal(?string $modal): self
     {
         $this->modal = $modal;

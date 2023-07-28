@@ -44,6 +44,9 @@ class BrickView
         return $this->template;
     }
 
+    /**
+     * @param string $template #Template
+     */
     public function setTemplate(string $template): self
     {
         $this->template = $template;
