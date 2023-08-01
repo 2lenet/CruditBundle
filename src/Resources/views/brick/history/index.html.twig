@@ -16,6 +16,9 @@
                                     <div class="col-xl-2">
                                     <span class="badge me-4 bg-secondary">
                                     {{ ('crudit.history.action.' ~ entry.log.action)|trans(domain='LleCruditBundle') }}
+                                        <small>
+                                            {{ entry.entity }}
+                                        </small>
                                     </span>
                                     </div>
                                     <div class="col-xl-2">

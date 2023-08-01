@@ -49,6 +49,22 @@ public function getTabs(): array
 If you need to add custom history (such as additions/deletions in collections), you have to log it yourself by
 creating `LogEntry` entities from Gedmo, for example by implementing your own listener.
 
+If you have some 1-1 relation for an entity you can add some entities to the History tabs
+
+Just add a array with the datasource and the getter method to retrieve the entity from the main one.
+
+exemple
+```php
+            "tab.history" => [
+                HistoryConfig::new(["otherEntities"=>[
+                    ["datasource"=>$this->depistageL1Datasource, "method"=>"getDepistageL1"],
+                    ["datasource"=>$this->depistageL2Datasource, "method"=>"getDepistageL2"],
+                    ["datasource"=>$this->bdiDatasource, "method"=>"getBdi"],
+                    ["datasource"=>$this->l2IADatasource, "method"=>"getL2IA"]
+                ]]),
+```
+
+
 ## Roles
 
 If you want to limit your tab to a role you can pass a third parameter to the addTabs function like this

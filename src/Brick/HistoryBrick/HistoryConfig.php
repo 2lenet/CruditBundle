@@ -8,8 +8,13 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 
 class HistoryConfig extends AbstractBrickConfig
 {
-    public static function new(): self
+    public static function new(array $options = []): self
     {
-        return new self();
+        return new self($options);
+    }
+
+    public function __construct(array $options = [])
+    {
+        $this->options = $options;
     }
 }

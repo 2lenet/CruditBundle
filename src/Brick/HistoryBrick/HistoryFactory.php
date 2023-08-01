@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Gedmo\Loggable\Entity\LogEntry;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -43,13 +44,30 @@ class HistoryFactory extends AbstractBasicBrickFactory
 
         return $view;
     }
-
     private function getLogEntries(BrickConfigInterface $brickConfigurator): array
     {
-        $item = $brickConfigurator
-            ->getDataSource()
-            ->get($this->getRequest()->get("id"));
-
+        $mainDatasource = $brickConfigurator->getDataSource();
+        $main_id = $this->getRequest()->get("id");
+        $item = $mainDatasource->get($main_id);
+        $logs = $this->getLogEntriesDatasource($item);
+        $options = $brickConfigurator->getOptions();
+        if (array_key_exists('otherEntities', $options)) {
+            foreach ($options['otherEntities'] as $ds) {
+                $method = $ds["method"];
+                $obj = $item->$method();
+                if ($obj !== null) {
+                    $subId = (string)$obj->getId();
+                    $subitem = $ds["datasource"]->get($subId);
+                    $logs2 = $this->getLogEntriesDatasource($subitem);
+                    $logs = array_merge($logs, $logs2);
+                }
+            }
+        }
+        usort($logs,function($a, $b) { return $b['log']->getLoggedAt()->getTimestamp() <=> $a['log']->getLoggedAt()->getTimestamp(); });
+        return $logs;
+    }
+    private function getLogEntriesDatasource(object $item): array
+    {
         $logs = $this->em
             ->getRepository(LogEntry::class)
             ->getLogEntries($item);
@@ -98,6 +116,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 }
                 $history[] = [
                     "log" => $log,
+                    "entity" => basename(str_replace('\\', '/', get_class($item))),
                     "data" => $data,
                 ];
             }
