@@ -11,9 +11,9 @@ use Symfony\Bundle\MakerBundle\Generator;
 class Converter
 {
     public const LIST_ACTIONS = ['new', 'export'];
-  
+
     public const ITEM_ACTIONS = ['show', 'edit', 'delete'];
-  
+
     public const SHOW_ACTIONS = ['edit', 'delete'];
 
     protected array $logs = [];
