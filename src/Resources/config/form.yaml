@@ -13,8 +13,8 @@ services:
             - "@doctrine.orm.entity_manager"
     Lle\CruditBundle\Form\Type\GedmoTranslatableType:
         arguments:
-            - '%kernel.default_locale%'
-            - '%kernel.enabled_locales%'
+            - '%default_locale%'
+            - '%locales%'
             - '@Lle\CruditBundle\Service\GedmoTranslatableFieldManager'
             - '@Symfony\Contracts\Translation\TranslatorInterface'
         tags:
