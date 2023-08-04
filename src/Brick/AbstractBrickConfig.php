@@ -21,6 +21,8 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
 
     private ?string $role = null;
 
+    private ?string $template = null;
+
     public function getPageKey(): string
     {
         return $this->pageKey;
@@ -98,6 +100,18 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setRole(?string $role): BrickConfigInterface
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getTemplate(): ?string
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(?string $template): BrickConfigInterface
+    {
+        $this->template = $template;
 
         return $this;
     }

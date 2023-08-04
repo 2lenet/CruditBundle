@@ -20,7 +20,7 @@ class TitleFactory extends AbstractBasicBrickFactory
         $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof TitleConfig) {
             $view
-                ->setTemplate('@LleCrudit/brick/title')
+                ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/title')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData([
                     'entity' => $this->getItem($brickConfigurator),

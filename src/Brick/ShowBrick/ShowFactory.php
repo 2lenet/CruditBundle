@@ -36,7 +36,7 @@ class ShowFactory extends AbstractBasicBrickFactory
                 $data["updatedBy"] = $item->getUpdatedBy();
             }
             $view
-                ->setTemplate('@LleCrudit/brick/show_item')
+                ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/show_item')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData($data);
         }

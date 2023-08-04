@@ -35,7 +35,7 @@ class SublistFactory extends AbstractBasicBrickFactory
             $config = $brickConfigurator->getConfig($this->getRequest());
 
             $view
-                ->setTemplate('@LleCrudit/brick/sublist_items')
+                ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/sublist_items')
                 ->setConfig($config)
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([

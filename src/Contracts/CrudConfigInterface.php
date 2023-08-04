@@ -36,6 +36,12 @@ interface CrudConfigInterface
 
     public const ACTION_EXPORT = "export";
 
+    public const AVERAGE = "AVG";
+
+    public const COUNT = "COUNT";
+
+    public const SUM = "SUM";
+
     public function getFields(string $key): array;
 
     public function getFilterset(): ?FilterSetInterface;

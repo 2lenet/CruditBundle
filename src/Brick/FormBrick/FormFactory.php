@@ -60,7 +60,7 @@ class FormFactory extends AbstractBasicBrickFactory
         /** @var FormConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate('@LleCrudit/brick/form')
+            ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/form')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
                 'title' => $brickConfigurator->getTitle(),
