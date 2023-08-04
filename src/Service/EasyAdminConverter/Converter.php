@@ -501,7 +501,7 @@ class Converter
         foreach ($entityConfig['list']['actions'] as $action) {
             if (is_array($action) && isset($action['global']) && $action['global'] === 'true' && isset($action['type']) && $action['type'] === 'route') {
                 $listActions[] = $this->getPropertyAction($action);
-            } elseif (is_array($action) && (!isset($action['global']) || (isset($action['global']) && $action['global'] === 'false')) && isset($action['type']) && $action['type'] === 'route') {
+            } elseif (is_array($action) && (!isset($action['global']) || ($action['global'] === 'false')) && isset($action['type']) && $action['type'] === 'route') {
                 $itemActions[] = $this->getPropertyAction($action);
             } else {
                 $ignoredActions[] = $action;
