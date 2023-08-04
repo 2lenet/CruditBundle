@@ -41,7 +41,7 @@ class FilterFactory extends AbstractBasicBrickFactory
         if ($brickConfigurator instanceof FilterConfig) {
             $filterset = $brickConfigurator->getCrudConfig()->getFilterset();
             $view
-                ->setTemplate('@LleCrudit/brick/filter')
+                ->setTemplate($brickConfigurator->getTemplate() ??'@LleCrudit/brick/filter')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setData([
                     'filters' => $this->buildFilterMap($filterset),

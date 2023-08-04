@@ -36,7 +36,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
     {
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate("@LleCrudit/brick/history")
+            ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
             ->setData([
                 "history" => $this->getLogEntries($brickConfigurator),
             ])

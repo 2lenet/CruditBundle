@@ -49,7 +49,7 @@ class TabFactory extends AbstractBasicBrickFactory
         }
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate('@LleCrudit/brick/tab')
+            ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/tab')
             ->setConfig(
                 ['tabs' => $tabs, 'translation_domain' => $brickConfigurator->getCrudConfig()->getTranslationDomain()]
             )
