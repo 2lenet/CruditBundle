@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * NumberFilterType
@@ -19,14 +20,14 @@ class NumberFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"],
-            "lt" => ["icon" => "fas fa-less-than"],
-            "lte" => ["icon" => "fas fa-less-than-equal"],
-            "gt" => ["icon" => "fas fa-greater-than"],
-            "gte" => ["icon" => "fas fa-greater-than-equal"],
-            "isnull" => ["icon" => "far fa-square"],
-            "isnotnull" => ["icon" => "fas fa-square"],
+            FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ["icon" => "fas fa-not-equal"],
+            FilterTypeInterface::OPERATOR_LESS_THAN => ["icon" => "fas fa-less-than"],
+            FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL => ["icon" => "fas fa-less-than-equal"],
+            FilterTypeInterface::OPERATOR_GREATER_THAN => ["icon" => "fas fa-greater-than"],
+            FilterTypeInterface::OPERATOR_GREATER_THAN_EQUAL => ["icon" => "fas fa-greater-than-equal"],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
         ];
     }
 
@@ -34,33 +35,33 @@ class NumberFilterType extends AbstractFilterType
     {
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
-        if (isset($this->data["op"]) && in_array($this->data["op"], ["isnull", "isnotnull"])) {
+        if (isset($this->data["op"]) && in_array($this->data["op"], [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
             switch ($this->data['op']) {
-                case 'isnotnull':
+                case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($alias . $column));
                     break;
-                case 'isnull':
+                case FilterTypeInterface::OPERATOR_IS_NULL:
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
             }
         } elseif (isset($this->data['value']) && $this->data['value']) {
             switch ($this->data['op']) {
-                case 'neq':
+                case FilterTypeInterface::OPERATOR_NOT_EQUAL:
                     $queryBuilder->andWhere($queryBuilder->expr()->neq($alias . $column, ':' . $paramname));
                     break;
-                case 'lt':
+                case FilterTypeInterface::OPERATOR_LESS_THAN:
                     $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $column, ':' . $paramname));
                     break;
-                case 'lte':
+                case FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL:
                     $queryBuilder->andWhere($queryBuilder->expr()->lte($alias . $column, ':' . $paramname));
                     break;
-                case 'gt':
+                case FilterTypeInterface::OPERATOR_GREATER_THAN:
                     $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $column, ':' . $paramname));
                     break;
-                case 'gte':
+                case FilterTypeInterface::OPERATOR_GREATER_THAN_EQUAL:
                     $queryBuilder->andWhere($queryBuilder->expr()->gte($alias . $column, ':' . $paramname));
                     break;
-                case 'eq':
+                case FilterTypeInterface::OPERATOR_EQUAL:
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, ':' . $paramname));
             }

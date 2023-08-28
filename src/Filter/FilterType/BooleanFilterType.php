@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * BooleanFilterType
@@ -19,8 +20,8 @@ class BooleanFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"],
+            FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ["icon" => "fas fa-not-equal"],
         ];
     }
 
@@ -29,7 +30,7 @@ class BooleanFilterType extends AbstractFilterType
         [$column, $alias, $params] = $this->getQueryParams($queryBuilder);
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
-            if ($this->data['op'] == 'eq' && $this->data['value'] !== 'all') {
+            if ($this->data['op'] === FilterTypeInterface::OPERATOR_EQUAL && $this->data['value'] !== 'all') {
                 switch ($this->data['value']) {
                     case 'true':
                         $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, 'true'));
@@ -39,7 +40,7 @@ class BooleanFilterType extends AbstractFilterType
                             ->andWhere($queryBuilder->expr()->isNotNull($alias . $column));
                         break;
                 }
-            } elseif ($this->data['op'] == 'neq') {
+            } elseif ($this->data['op'] === FilterTypeInterface::OPERATOR_NOT_EQUAL) {
                 switch ($this->data['value']) {
                     case 'true':
                         $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, 'false'))
