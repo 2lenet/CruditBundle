@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class WorkflowFilterType extends AbstractFilterType
@@ -28,7 +29,7 @@ class WorkflowFilterType extends AbstractFilterType
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
 
-        if (in_array($op, ["isnull", "isnotnull"])) {
+        if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
             $queryBuilder->andWhere($query);
         } elseif (
             isset($this->data["value"])
@@ -45,16 +46,16 @@ class WorkflowFilterType extends AbstractFilterType
     {
         $pattern = null;
         switch ($op) {
-            case "isnull":
+            case FilterTypeInterface::OPERATOR_IS_NULL:
                 $pattern = $alias . $col . " IS NULL OR " . $alias . $col . " = '' ";
                 break;
-            case "isnotnull":
+            case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
                 $pattern = $alias . $col . " IS NOT NULL AND " . $alias . $col . " <> '' ";
                 break;
-            case "eq":
+            case FilterTypeInterface::OPERATOR_EQUAL:
                 $pattern = $alias . $col . " IN (:" . $paramname . ")";
                 break;
-            case "neq":
+            case FilterTypeInterface::OPERATOR_NOT_EQUAL:
                 $pattern = $alias . $col . " NOT IN (:" . $paramname . ")";
                 break;
         }
@@ -65,10 +66,10 @@ class WorkflowFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"],
-            "isnull" => ["icon" => "far fa-square"],
-            "isnotnull" => ["icon" => "fas fa-square"],
+            FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ["icon" => "fas fa-not-equal"],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
         ];
     }
 

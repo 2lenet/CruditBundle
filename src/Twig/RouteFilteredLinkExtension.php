@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
@@ -37,7 +38,7 @@ class RouteFilteredLinkExtension extends AbstractExtension
             $filterName = 'filter_' . $entity . '_' . $field;
 
             if (!array_key_exists('op', $filter)) {
-                $parameters[$filterName . '_op'] = 'eq';
+                $parameters[$filterName . '_op'] = FilterTypeInterface::OPERATOR_EQUAL;
             }
 
             foreach ($filter as $key => $value) {
