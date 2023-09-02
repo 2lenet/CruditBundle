@@ -43787,7 +43787,6 @@ Typo.prototype = {
 				} else if (a_val > b_val) {
 					return 1;
 				}
-				// @todo If a and b are equally weighted, add our own weight based on something like the key locations on this language's default keyboard.
 				return b[0].localeCompare(a[0]);
 			}
 
