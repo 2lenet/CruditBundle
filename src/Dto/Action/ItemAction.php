@@ -11,29 +11,17 @@ use Lle\CruditBundle\Exception\CruditException;
 class ItemAction
 {
     protected string $label;
-
     protected Path $path;
-
     protected ?Icon $icon = null;
-
     protected ?string $url = null;
-
     protected ?string $cssClass = null;
-
     protected bool $hideLabel = false;
-
     protected ?object $resource = null;
-
     protected ?string $modal = null;
-
     protected bool $dropdown = false;
-
     protected ?string $title = null;
-
     protected bool $disabled = false;
-
     protected bool $hasVoter = false;
-
     protected ?string $target = null;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction

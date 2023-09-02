@@ -18,7 +18,7 @@ class TabFactory extends AbstractBasicBrickFactory
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
-        BrickBuilder $brickBuilder
+        BrickBuilder $brickBuilder,
     ) {
         $this->brickBuilder = $brickBuilder;
         parent::__construct($resourceResolver, $requestStack);

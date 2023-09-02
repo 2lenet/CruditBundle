@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\ControllerBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
-use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\ResourceView;
 
 class ControllerFactory extends AbstractBasicBrickFactory

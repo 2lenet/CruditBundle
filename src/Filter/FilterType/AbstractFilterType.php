@@ -13,21 +13,13 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
 abstract class AbstractFilterType implements FilterTypeInterface
 {
     protected string $columnName;
-
     protected bool $hidden = false;
-
     protected array $additionnalKeys = [];
-
     protected string $alias = 'root.';
-
     protected string $id;
-
     protected string $label = "";
-
     protected ?array $data = null;
-
     protected array $default = [];
-
     protected ?string $role = null;
 
     public function __construct(string $fieldname)

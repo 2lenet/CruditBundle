@@ -11,7 +11,6 @@ use Twig\TwigFilter;
 class CruditTelephoneFilterExtension extends AbstractExtension
 {
     private const INDICATOR_MAX_LENGTH = 3;
-
     // [indicator => [ length => format]]
     // source: https://fr.wikipedia.org/wiki/Num%C3%A9ro_de_t%C3%A9l%C3%A9phone
     private const FORMATS = [

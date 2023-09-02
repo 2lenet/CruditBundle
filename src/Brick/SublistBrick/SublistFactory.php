@@ -18,7 +18,7 @@ class SublistFactory extends AbstractBasicBrickFactory
 {
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack
+        RequestStack $requestStack,
     ) {
         parent::__construct($resourceResolver, $requestStack);
     }

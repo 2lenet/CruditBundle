@@ -7,9 +7,7 @@ namespace Lle\CruditBundle\Dto;
 class ResourceView
 {
     private int|string $id;
-
     private object $resource;
-
     /** @var FieldView[] */
     private array $fields;
 

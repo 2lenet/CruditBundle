@@ -13,7 +13,6 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
 class EntityFilterType extends AbstractFilterType
 {
     protected string $entityClass;
-
     protected ?string $dataRoute;
 
     public function __construct(string $fieldname, string $entityClass, ?string $dataRoute = null)

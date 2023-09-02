@@ -16,15 +16,13 @@ use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 class FieldResolver
 {
     private FieldRegistry $fieldRegistry;
-
     private PropertyAccessorInterface $propertyAccessor;
-
     private PropertyInfoExtractorInterface $propertyInfoExtractor;
 
     public function __construct(
         FieldRegistry $fieldRegistry,
         PropertyAccessorInterface $propertyAccessor,
-        PropertyInfoExtractorInterface $propertyInfoExtractor
+        PropertyInfoExtractorInterface $propertyInfoExtractor,
     ) {
         $this->propertyAccessor = $propertyAccessor;
         $this->fieldRegistry = $fieldRegistry;
@@ -35,7 +33,7 @@ class FieldResolver
         Field $field,
         object $resource,
         DatasourceInterface $datasource,
-        ?CrudConfigInterface $crudConfig = null
+        ?CrudConfigInterface $crudConfig = null,
     ): FieldView {
         $subResource = $resource;
         $name = $field->getName();

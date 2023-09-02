@@ -22,11 +22,8 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 abstract class AbstractDoctrineDatasource implements DatasourceInterface
 {
     protected EntityManagerInterface $entityManager;
-
     protected ?FilterSetInterface $filterset;
-
     protected FilterState $filterState;
-
     protected array $searchFields = [];
 
     public function __construct(EntityManagerInterface $entityManager, FilterState $filterState)
@@ -213,8 +210,11 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->searchFields;
     }
 
-    public function autocompleteQuery(string $queryTerm, array $sorts, ?DatasourceParams $requestParams = null): iterable
-    {
+    public function autocompleteQuery(
+        string $queryTerm,
+        array $sorts,
+        ?DatasourceParams $requestParams = null,
+    ): iterable {
         $qb = $this->buildQueryBuilder($requestParams);
 
         $qb = $this->initializeAutocompleteQueryBuilder($qb, $queryTerm);

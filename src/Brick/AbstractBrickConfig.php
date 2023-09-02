@@ -12,15 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class AbstractBrickConfig implements BrickConfigInterface
 {
     protected CrudConfigInterface $crudConfig;
-
     protected string $pageKey;
-
     protected string $id;
-
     protected array $options = [];
-
     private ?string $role = null;
-
     private ?string $template = null;
 
     public function getPageKey(): string

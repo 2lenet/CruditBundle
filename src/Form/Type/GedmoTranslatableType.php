@@ -11,27 +11,24 @@
 
 namespace Lle\CruditBundle\Form\Type;
 
+use Lle\CruditBundle\Service\GedmoTranslatableFieldManager;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormView;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\Extension\Core\Type\FormType as ParentType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Lle\CruditBundle\Service\GedmoTranslatableFieldManager;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GedmoTranslatableType extends AbstractType
 {
     protected GedmoTranslatableFieldManager $translatablefieldmanager;
-
     private array $locales;
-
     private string $defaultLocale;
-
     private string $currentLocale;
 
     //the 2eme argument is best if $locales
@@ -39,7 +36,7 @@ class GedmoTranslatableType extends AbstractType
         string $defaultLocale,
         array $locales,
         GedmoTranslatableFieldManager $translatableFieldManager,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ) {
         $this->defaultLocale = $defaultLocale;
         $this->locales = (\count($locales) <= 1) ? ['fr', 'en', 'de'] : $locales;

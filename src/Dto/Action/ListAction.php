@@ -10,25 +10,15 @@ use Lle\CruditBundle\Dto\Path;
 class ListAction
 {
     protected string $label;
-
     protected Path $path;
-
     protected ?Icon $icon;
-
     protected ?string $url;
-
     protected ?string $cssClass = null;
-
     protected bool $hideLabel = false;
-
     protected ?string $modal = null;
-
     protected array $config = [];
-
     protected bool $batch = false;
-
     protected ?string $form = "";
-
     protected ?string $target = null;
 
     public static function new(string $label, Path $path, ?Icon $icon = null): self

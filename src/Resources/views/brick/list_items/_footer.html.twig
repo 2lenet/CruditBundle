@@ -1,55 +1,55 @@
 <tfoot>
-    <tr class="d-none">
-        {% if has_batch %}
-            <th>
+<tr class="d-none">
+    {% if has_batch %}
+        <th>
                 <span>
                     <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
                 </span>
+        </th>
+    {% endif %}
+    {% for field in view.config.fields %}
+        {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
+            <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
+                {{ field.label|trans(domain=view.config.translation_domain) }}
             </th>
         {% endif %}
-        {% for field in view.config.fields %}
-            {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
-                    {{ field.label|trans(domain=view.config.translation_domain) }}
-                </th>
+    {% endfor %}
+    {% if view.config.actions|length %}
+        {% set hasActions = false %}
+        {% for action in view.config.actions %}
+            {% if action.path.role is null or is_granted(action.path.role) %}
+                {% set hasActions = true %}
             {% endif %}
         {% endfor %}
-        {% if view.config.actions|length %}
-            {% set hasActions = false %}
-            {% for action in view.config.actions %}
-                {% if action.path.role is null or is_granted(action.path.role) %}
-                    {% set hasActions = true %}
-                {% endif %}
-            {% endfor %}
-            {% if hasActions %}
-                <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
-            {% endif %}
+        {% if hasActions %}
+            <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
         {% endif %}
-    </tr>
-    <tr>
-        {% if has_batch %}
-            <td><input class="crudit-batch-check" type="checkbox"
-                       autocomplete="off"/></td>
-        {% endif %}
-        {% for field in view.config.fields %}
-            {% set match = false %}
-            {% for total in view.data.totals %}
-                {% if field.id == total.field.id %}
-                    {% set match = true %}
-                    <td>
-                        {% if total.field.path %}
-                        <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
-                            {% endif %}
-                            {{ total.value|raw }}
-                            {% if total.field.path %}
-                        </a>
+    {% endif %}
+</tr>
+<tr>
+    {% if has_batch %}
+        <td><input class="crudit-batch-check" type="checkbox"
+                   autocomplete="off"/></td>
+    {% endif %}
+    {% for field in view.config.fields %}
+        {% set match = false %}
+        {% for total in view.data.totals %}
+            {% if field.id == total.field.id %}
+                {% set match = true %}
+                <td>
+                    {% if total.field.path %}
+                    <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
                         {% endif %}
-                    </td>
-                {% endif %}
-            {% endfor %}
-            {% if not match %}
-                <td></td>
+                        {{ total.value|raw }}
+                        {% if total.field.path %}
+                    </a>
+                    {% endif %}
+                </td>
             {% endif %}
         {% endfor %}
-    </tr>
+        {% if not match %}
+            <td></td>
+        {% endif %}
+    {% endfor %}
+</tr>
 </tfoot>

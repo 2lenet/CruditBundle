@@ -13,12 +13,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
 abstract class AbstractBasicBrickFactory implements BrickInterface
 {
     protected ResourceResolver $resourceResolver;
-
     protected RequestStack $requestStack;
 
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack
+        RequestStack $requestStack,
     ) {
         $this->requestStack = $requestStack;
         $this->resourceResolver = $resourceResolver;
