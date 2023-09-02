@@ -314,7 +314,7 @@ function contains(parent, child) {
       do {
         if (next && parent.isSameNode(next)) {
           return true;
-        } // $FlowFixMe[prop-missing]: need a better way to handle this...
+        }
 
 
         next = next.parentNode || next.host;
@@ -421,7 +421,7 @@ function getClippingParents(element) {
 
   if (!(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_4__.isElement)(clipperElement)) {
     return [];
-  } // $FlowFixMe[incompatible-return]: https://github.com/facebook/flow/issues/1414
+  }
 
 
   return clippingParents.filter(function (clippingParent) {
@@ -554,7 +554,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
 
 function getDocumentElement(element) {
-  // $FlowFixMe[incompatible-return]: assume body is always available
   return (((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isElement)(element) ? element.ownerDocument : // $FlowFixMe[prop-missing]
   element.document) || window.document).documentElement;
 }
@@ -822,12 +821,10 @@ function getParentNode(element) {
   }
 
   return (// this is a quicker (but less type safe) way to save quite some bytes from the bundle
-    // $FlowFixMe[incompatible-return]
-    // $FlowFixMe[prop-missing]
+
     element.assignedSlot || // step into the shadow DOM of the parent of a slotted node
     element.parentNode || ( // DOM Element detected
     (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isShadowRoot)(element) ? element.host : null) || // ShadowRoot detected
-    // $FlowFixMe[incompatible-call]: HTMLElement is a Node
     (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_2__.default)(element) // fallback
 
   );
@@ -1129,7 +1126,7 @@ function listScrollParents(element, list) {
   var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_1__.default)(scrollParent);
   var target = isBody ? [win].concat(win.visualViewport || [], (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_2__.default)(scrollParent) ? scrollParent : []) : scrollParent;
   var updatedList = list.concat(target);
-  return isBody ? updatedList : // $FlowFixMe[incompatible-call]: isBody tells us target will be an HTMLElement here
+  return isBody ? updatedList :
   updatedList.concat(listScrollParents((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_3__.default)(target)));
 }
 
@@ -17525,7 +17522,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     option("specialCharPlaceholder", defaultSpecialCharPlaceholder, function (cm) { return cm.refresh(); }, true);
     option("electricChars", true);
     option("inputStyle", mobile ? "contenteditable" : "textarea", function () {
-      throw new Error("inputStyle can not (yet) be changed in a running editor") // FIXME
+      throw new Error("inputStyle can not (yet) be changed in a running editor")
     }, true);
     option("spellcheck", false, function (cm, val) { return cm.getInputField().spellcheck = val; }, true);
     option("autocorrect", false, function (cm, val) { return cm.getInputField().autocorrect = val; }, true);
@@ -19081,7 +19078,6 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     var found = find(textNode, topNode, offset);
     if (found) { return badPos(found, bad) }
 
-    // FIXME this is all really shaky. might handle the few cases it needs to handle, but likely to cause problems
     for (var after = topNode.nextSibling, dist = textNode ? textNode.nodeValue.length - offset : 0; after; after = after.nextSibling) {
       found = find(after, after.firstChild, 0);
       if (found)
@@ -22097,7 +22093,7 @@ function toggleCodeBlock(editor) {
         }
 
         for (var i = block_start; i <= block_end; i++) {
-            cm.indentLine(i, 'subtract'); // TODO: this doesn't get tracked in the history, so can't be undone :(
+            cm.indentLine(i, 'subtract');
         }
         cm.focus();
     } else {
@@ -22231,7 +22227,6 @@ function drawImage(editor) {
  * @param editor {EasyMDE} The EasyMDE object
  */
 function drawUploadedImage(editor) {
-    // TODO: Draw the image template with a fake url? ie: '![](importing foo.png...)'
     editor.openBrowseFileWindow();
 }
 
@@ -22978,7 +22973,6 @@ var insertTexts = {
     link: ['[', '](#url#)'],
     image: ['![](', '#url#)'],
     uploadedImage: ['![](#url#)', ''],
-    // uploadedImage: ['![](#url#)\n', ''], // TODO: New line insertion doesn't work here.
     table: ['', '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n\n'],
     horizontalRule: ['', '\n\n-----\n\n'],
 };
@@ -25110,7 +25104,6 @@ function Sizzle( selector, context, results, seed ) {
 						if ( ( elem = context.getElementById( m ) ) ) {
 
 							// Support: IE, Opera, Webkit
-							// TODO: identify versions
 							// getElementById can match elements by name instead of ID
 							if ( elem.id === m ) {
 								results.push( elem );
@@ -25124,7 +25117,6 @@ function Sizzle( selector, context, results, seed ) {
 					} else {
 
 						// Support: IE, Opera, Webkit
-						// TODO: identify versions
 						// getElementById can match elements by name instead of ID
 						if ( newContext && ( elem = newContext.getElementById( m ) ) &&
 							contains( context, elem ) &&
@@ -28782,8 +28774,6 @@ jQuery.extend( {
 		dataUser.remove( elem, name );
 	},
 
-	// TODO: Now that all calls to _data and _removeData have been replaced
-	// with direct calls to dataPriv methods, these can be deprecated.
 	_data: function( elem, name, data ) {
 		return dataPriv.access( elem, name, data );
 	},
@@ -37579,7 +37569,6 @@ var Parser = /*#__PURE__*/function () {
 
         case 'html':
           {
-            // TODO parse inline content if parameter markdown=1
             out += this.renderer.html(token.text);
             continue;
           }
@@ -42839,7 +42828,7 @@ exports.walkTokens = walkTokens;
 	return TomSelect;
 
 })));
-var tomSelect=function(el,opts){return new TomSelect(el,opts);} 
+var tomSelect=function(el,opts){return new TomSelect(el,opts);}
 //# sourceMappingURL=tom-select.complete.js.map
 
 
@@ -42859,7 +42848,7 @@ var __dirname = "/";
 /* globals module: false */
 
 /**
- * Typo is a JavaScript implementation of a spellchecker using hunspell-style 
+ * Typo is a JavaScript implementation of a spellchecker using hunspell-style
  * dictionaries.
  */
 
@@ -42902,31 +42891,31 @@ Typo = function (dictionary, affData, wordsData, settings) {
 	settings = settings || {};
 
 	this.dictionary = null;
-	
+
 	this.rules = {};
 	this.dictionaryTable = {};
-	
+
 	this.compoundRules = [];
 	this.compoundRuleCodes = {};
-	
+
 	this.replacementTable = [];
-	
-	this.flags = settings.flags || {}; 
-	
+
+	this.flags = settings.flags || {};
+
 	this.memoized = {};
 
 	this.loaded = false;
-	
+
 	var self = this;
-	
+
 	var path;
-	
+
 	// Loop-control variables.
 	var i, j, _len, _jlen;
-	
+
 	if (dictionary) {
 		self.dictionary = dictionary;
-		
+
 		// If the data is preloaded, just setup the Typo object.
 		if (affData && wordsData) {
 			setup();
@@ -42939,7 +42928,7 @@ Typo = function (dictionary, affData, wordsData, settings) {
 			else {
 				path = "typo/dictionaries";
 			}
-			
+
 			if (!affData) readDataFile(chrome.extension.getURL(path + "/" + dictionary + "/" + dictionary + ".aff"), setAffData);
 			if (!wordsData) readDataFile(chrome.extension.getURL(path + "/" + dictionary + "/" + dictionary + ".dic"), setWordsData);
 		}
@@ -42951,15 +42940,15 @@ Typo = function (dictionary, affData, wordsData, settings) {
 				path = __dirname + '/dictionaries';
 			}
 			else {}
-			
+
 			if (!affData) readDataFile(path + "/" + dictionary + "/" + dictionary + ".aff", setAffData);
 			if (!wordsData) readDataFile(path + "/" + dictionary + "/" + dictionary + ".dic", setWordsData);
 		}
 	}
-	
+
 	function readDataFile(url, setFunc) {
 		var response = self._readFile(url, null, settings.asyncLoad);
-		
+
 		if (settings.asyncLoad) {
 			response.then(function(data) {
 				setFunc(data);
@@ -42988,45 +42977,45 @@ Typo = function (dictionary, affData, wordsData, settings) {
 
 	function setup() {
 		self.rules = self._parseAFF(affData);
-		
+
 		// Save the rule codes that are used in compound rules.
 		self.compoundRuleCodes = {};
-		
+
 		for (i = 0, _len = self.compoundRules.length; i < _len; i++) {
 			var rule = self.compoundRules[i];
-			
+
 			for (j = 0, _jlen = rule.length; j < _jlen; j++) {
 				self.compoundRuleCodes[rule[j]] = [];
 			}
 		}
-		
+
 		// If we add this ONLYINCOMPOUND flag to self.compoundRuleCodes, then _parseDIC
 		// will do the work of saving the list of words that are compound-only.
 		if ("ONLYINCOMPOUND" in self.flags) {
 			self.compoundRuleCodes[self.flags.ONLYINCOMPOUND] = [];
 		}
-		
+
 		self.dictionaryTable = self._parseDIC(wordsData);
-		
-		// Get rid of any codes from the compound rule codes that are never used 
-		// (or that were special regex characters).  Not especially necessary... 
+
+		// Get rid of any codes from the compound rule codes that are never used
+		// (or that were special regex characters).  Not especially necessary...
 		for (i in self.compoundRuleCodes) {
 			if (self.compoundRuleCodes[i].length === 0) {
 				delete self.compoundRuleCodes[i];
 			}
 		}
-		
+
 		// Build the full regular expressions for each compound rule.
-		// I have a feeling (but no confirmation yet) that this method of 
+		// I have a feeling (but no confirmation yet) that this method of
 		// testing for compound words is probably slow.
 		for (i = 0, _len = self.compoundRules.length; i < _len; i++) {
 			var ruleText = self.compoundRules[i];
-			
+
 			var expressionText = "";
-			
+
 			for (j = 0, _jlen = ruleText.length; j < _jlen; j++) {
 				var character = ruleText[j];
-				
+
 				if (character in self.compoundRuleCodes) {
 					expressionText += "(" + self.compoundRuleCodes[character].join("|") + ")";
 				}
@@ -43034,17 +43023,17 @@ Typo = function (dictionary, affData, wordsData, settings) {
 					expressionText += character;
 				}
 			}
-			
+
 			self.compoundRules[i] = new RegExp(expressionText, "i");
 		}
-		
+
 		self.loaded = true;
-		
+
 		if (settings.asyncLoad && settings.loadedCallback) {
 			settings.loadedCallback(self);
 		}
 	}
-	
+
 	return this;
 };
 
@@ -43054,20 +43043,20 @@ Typo.prototype = {
 	 *
 	 * @param object obj A hash of Typo properties, probably gotten from a JSON.parse(JSON.stringify(typo_instance)).
 	 */
-	
+
 	load : function (obj) {
 		for (var i in obj) {
 			if (obj.hasOwnProperty(i)) {
 				this[i] = obj[i];
 			}
 		}
-		
+
 		return this;
 	},
-	
+
 	/**
 	 * Read the contents of a file.
-	 * 
+	 *
 	 * @param {String} path The path (relative) to the file.
 	 * @param {String} [charset="ISO8859-1"] The expected charset of the file
 	 * @param {Boolean} async If true, the file will be read asynchronously. For node.js this does nothing, all
@@ -43075,15 +43064,15 @@ Typo.prototype = {
 	 * @returns {String} The file data if async is false, otherwise a promise object. If running node.js, the data is
 	 *          always returned.
 	 */
-	
+
 	_readFile : function (path, charset, async) {
 		charset = charset || "utf8";
-		
+
 		if (typeof XMLHttpRequest !== 'undefined') {
 			var promise;
 			var req = new XMLHttpRequest();
 			req.open("GET", path, async);
-			
+
 			if (async) {
 				promise = new Promise(function(resolve, reject) {
 					req.onload = function() {
@@ -43094,24 +43083,24 @@ Typo.prototype = {
 							reject(req.statusText);
 						}
 					};
-					
+
 					req.onerror = function() {
 						reject(req.statusText);
 					}
 				});
 			}
-		
+
 			if (req.overrideMimeType)
 				req.overrideMimeType("text/plain; charset=" + charset);
-		
+
 			req.send(null);
-			
+
 			return async ? promise : req.responseText;
 		}
 		else if (true) {
 			// Node.js
 			var fs = __webpack_require__(/*! fs */ "?b2fd");
-			
+
 			try {
 				if (fs.existsSync(path)) {
 					return fs.readFileSync(path, charset);
@@ -43125,62 +43114,62 @@ Typo.prototype = {
 			}
 		}
 	},
-	
+
 	/**
 	 * Parse the rules out from a .aff file.
 	 *
 	 * @param {String} data The contents of the affix file.
 	 * @returns object The rules from the file.
 	 */
-	
+
 	_parseAFF : function (data) {
 		var rules = {};
-		
+
 		var line, subline, numEntries, lineParts;
 		var i, j, _len, _jlen;
-		
+
 		var lines = data.split(/\r?\n/);
-		
+
 		for (i = 0, _len = lines.length; i < _len; i++) {
 			// Remove comment lines
 			line = this._removeAffixComments(lines[i]);
 			line = line.trim();
-			
+
 			if ( ! line ) {
 				continue;
 			}
-			
+
 			var definitionParts = line.split(/\s+/);
-			
+
 			var ruleType = definitionParts[0];
-			
+
 			if (ruleType == "PFX" || ruleType == "SFX") {
 				var ruleCode = definitionParts[1];
 				var combineable = definitionParts[2];
 				numEntries = parseInt(definitionParts[3], 10);
-				
+
 				var entries = [];
-				
+
 				for (j = i + 1, _jlen = i + 1 + numEntries; j < _jlen; j++) {
 					subline = lines[j];
-					
+
 					lineParts = subline.split(/\s+/);
 					var charactersToRemove = lineParts[2];
-					
+
 					var additionParts = lineParts[3].split("/");
-					
+
 					var charactersToAdd = additionParts[0];
 					if (charactersToAdd === "0") charactersToAdd = "";
-					
+
 					var continuationClasses = this.parseRuleCodes(additionParts[1]);
-					
+
 					var regexToMatch = lineParts[4];
-					
+
 					var entry = {};
 					entry.add = charactersToAdd;
-					
+
 					if (continuationClasses.length > 0) entry.continuationClasses = continuationClasses;
-					
+
 					if (regexToMatch !== ".") {
 						if (ruleType === "SFX") {
 							entry.match = new RegExp(regexToMatch + "$");
@@ -43189,7 +43178,7 @@ Typo.prototype = {
 							entry.match = new RegExp("^" + regexToMatch);
 						}
 					}
-					
+
 					if (charactersToRemove != "0") {
 						if (ruleType === "SFX") {
 							entry.remove = new RegExp(charactersToRemove  + "$");
@@ -43198,29 +43187,29 @@ Typo.prototype = {
 							entry.remove = charactersToRemove;
 						}
 					}
-					
+
 					entries.push(entry);
 				}
-				
+
 				rules[ruleCode] = { "type" : ruleType, "combineable" : (combineable == "Y"), "entries" : entries };
-				
+
 				i += numEntries;
 			}
 			else if (ruleType === "COMPOUNDRULE") {
 				numEntries = parseInt(definitionParts[1], 10);
-				
+
 				for (j = i + 1, _jlen = i + 1 + numEntries; j < _jlen; j++) {
 					line = lines[j];
-					
+
 					lineParts = line.split(/\s+/);
 					this.compoundRules.push(lineParts[1]);
 				}
-				
+
 				i += numEntries;
 			}
 			else if (ruleType === "REP") {
 				lineParts = line.split(/\s+/);
-				
+
 				if (lineParts.length === 3) {
 					this.replacementTable.push([ lineParts[1], lineParts[2] ]);
 				}
@@ -43231,21 +43220,21 @@ Typo.prototype = {
 				// FLAG
 				// KEEPCASE
 				// NEEDAFFIX
-				
+
 				this.flags[ruleType] = definitionParts[1];
 			}
 		}
-		
+
 		return rules;
 	},
-	
+
 	/**
 	 * Removes comments.
 	 *
 	 * @param {String} data A line from an affix file.
 	 * @return {String} The cleaned-up line.
 	 */
-	
+
 	_removeAffixComments : function (line) {
 		// This used to remove any string starting with '#' up to the end of the line,
 		// but some COMPOUNDRULE definitions include '#' as part of the rule.
@@ -43253,10 +43242,10 @@ Typo.prototype = {
 		if ( line.match( /^\s*#/, "" ) ) {
 			return '';
 		}
-		
+
 		return line;
 	},
-	
+
 	/**
 	 * Parses the words out from the .dic file.
 	 *
@@ -43264,19 +43253,19 @@ Typo.prototype = {
 	 * @returns object The lookup table containing all of the words and
 	 *                 word forms from the dictionary.
 	 */
-	
+
 	_parseDIC : function (data) {
 		data = this._removeDicComments(data);
-		
+
 		var lines = data.split(/\r?\n/);
 		var dictionaryTable = {};
-		
+
 		function addWord(word, rules) {
 			// Some dictionaries will list the same word multiple times with different rule sets.
 			if (!dictionaryTable.hasOwnProperty(word)) {
 				dictionaryTable[word] = null;
 			}
-			
+
 			if (rules.length > 0) {
 				if (dictionaryTable[word] === null) {
 					dictionaryTable[word] = [];
@@ -43285,52 +43274,52 @@ Typo.prototype = {
 				dictionaryTable[word].push(rules);
 			}
 		}
-		
+
 		// The first line is the number of words in the dictionary.
 		for (var i = 1, _len = lines.length; i < _len; i++) {
 			var line = lines[i];
-			
+
 			if (!line) {
 				// Ignore empty lines.
 				continue;
 			}
 
 			var parts = line.split("/", 2);
-			
+
 			var word = parts[0];
 
 			// Now for each affix rule, generate that form of the word.
 			if (parts.length > 1) {
 				var ruleCodesArray = this.parseRuleCodes(parts[1]);
-				
+
 				// Save the ruleCodes for compound word situations.
 				if (!("NEEDAFFIX" in this.flags) || ruleCodesArray.indexOf(this.flags.NEEDAFFIX) == -1) {
 					addWord(word, ruleCodesArray);
 				}
-				
+
 				for (var j = 0, _jlen = ruleCodesArray.length; j < _jlen; j++) {
 					var code = ruleCodesArray[j];
-					
+
 					var rule = this.rules[code];
-					
+
 					if (rule) {
 						var newWords = this._applyRule(word, rule);
-						
+
 						for (var ii = 0, _iilen = newWords.length; ii < _iilen; ii++) {
 							var newWord = newWords[ii];
-							
+
 							addWord(newWord, []);
-							
+
 							if (rule.combineable) {
 								for (var k = j + 1; k < _jlen; k++) {
 									var combineCode = ruleCodesArray[k];
-									
+
 									var combineRule = this.rules[combineCode];
-									
+
 									if (combineRule) {
 										if (combineRule.combineable && (rule.type != combineRule.type)) {
 											var otherNewWords = this._applyRule(newWord, combineRule);
-											
+
 											for (var iii = 0, _iiilen = otherNewWords.length; iii < _iiilen; iii++) {
 												var otherNewWord = otherNewWords[iii];
 												addWord(otherNewWord, []);
@@ -43341,7 +43330,7 @@ Typo.prototype = {
 							}
 						}
 					}
-					
+
 					if (code in this.compoundRuleCodes) {
 						this.compoundRuleCodes[code].push(word);
 					}
@@ -43351,28 +43340,28 @@ Typo.prototype = {
 				addWord(word.trim(), []);
 			}
 		}
-		
+
 		return dictionaryTable;
 	},
-	
-	
+
+
 	/**
 	 * Removes comment lines and then cleans up blank lines and trailing whitespace.
 	 *
 	 * @param {String} data The data from a .dic file.
 	 * @return {String} The cleaned-up data.
 	 */
-	
+
 	_removeDicComments : function (data) {
 		// I can't find any official documentation on it, but at least the de_DE
 		// dictionary uses tab-indented lines as comments.
-		
+
 		// Remove comments
 		data = data.replace(/^\t.*$/mg, "");
-		
+
 		return data;
 	},
-	
+
 	parseRuleCodes : function (textCodes) {
 		if (!textCodes) {
 			return [];
@@ -43382,18 +43371,18 @@ Typo.prototype = {
 		}
 		else if (this.flags.FLAG === "long") {
 			var flags = [];
-			
+
 			for (var i = 0, _len = textCodes.length; i < _len; i += 2) {
 				flags.push(textCodes.substr(i, 2));
 			}
-			
+
 			return flags;
 		}
 		else if (this.flags.FLAG === "num") {
 			return textCodes.split(",");
 		}
 	},
-	
+
 	/**
 	 * Applies an affix rule to a word.
 	 *
@@ -43401,41 +43390,41 @@ Typo.prototype = {
 	 * @param {Object} rule The affix rule.
 	 * @returns {String[]} The new words generated by the rule.
 	 */
-	
+
 	_applyRule : function (word, rule) {
 		var entries = rule.entries;
 		var newWords = [];
-		
+
 		for (var i = 0, _len = entries.length; i < _len; i++) {
 			var entry = entries[i];
-			
+
 			if (!entry.match || word.match(entry.match)) {
 				var newWord = word;
-				
+
 				if (entry.remove) {
 					newWord = newWord.replace(entry.remove, "");
 				}
-				
+
 				if (rule.type === "SFX") {
 					newWord = newWord + entry.add;
 				}
 				else {
 					newWord = entry.add + newWord;
 				}
-				
+
 				newWords.push(newWord);
-				
+
 				if ("continuationClasses" in entry) {
 					for (var j = 0, _jlen = entry.continuationClasses.length; j < _jlen; j++) {
 						var continuationRule = this.rules[entry.continuationClasses[j]];
-						
+
 						if (continuationRule) {
 							newWords = newWords.concat(this._applyRule(newWord, continuationRule));
 						}
 						/*
 						else {
 							// This shouldn't happen, but it does, at least in the de_DE dictionary.
-							// I think the author mistakenly supplied lower-case rule codes instead 
+							// I think the author mistakenly supplied lower-case rule codes instead
 							// of upper-case.
 						}
 						*/
@@ -43443,10 +43432,10 @@ Typo.prototype = {
 				}
 			}
 		}
-		
+
 		return newWords;
 	},
-	
+
 	/**
 	 * Checks whether a word or a capitalization variant exists in the current dictionary.
 	 * The word is trimmed and several variations of capitalizations are checked.
@@ -43457,30 +43446,30 @@ Typo.prototype = {
 	 * @param {String} aWord The word to check.
 	 * @returns {Boolean}
 	 */
-	
+
 	check : function (aWord) {
 		if (!this.loaded) {
 			throw "Dictionary not loaded.";
 		}
-		
+
 		// Remove leading and trailing whitespace
 		var trimmedWord = aWord.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-		
+
 		if (this.checkExact(trimmedWord)) {
 			return true;
 		}
-		
+
 		// The exact word is not in the dictionary.
 		if (trimmedWord.toUpperCase() === trimmedWord) {
 			// The word was supplied in all uppercase.
 			// Check for a capitalized form of the word.
 			var capitalizedWord = trimmedWord[0] + trimmedWord.substring(1).toLowerCase();
-			
+
 			if (this.hasFlag(capitalizedWord, "KEEPCASE")) {
 				// Capitalization variants are not allowed for this word.
 				return false;
 			}
-			
+
 			if (this.checkExact(capitalizedWord)) {
 				// The all-caps word is a capitalized word spelled correctly.
 				return true;
@@ -43491,41 +43480,41 @@ Typo.prototype = {
 				return true;
 			}
 		}
-		
+
 		var uncapitalizedWord = trimmedWord[0].toLowerCase() + trimmedWord.substring(1);
-		
+
 		if (uncapitalizedWord !== trimmedWord) {
 			if (this.hasFlag(uncapitalizedWord, "KEEPCASE")) {
 				// Capitalization variants are not allowed for this word.
 				return false;
 			}
-			
+
 			// Check for an uncapitalized form
 			if (this.checkExact(uncapitalizedWord)) {
 				// The word is spelled correctly but with the first letter capitalized.
 				return true;
 			}
 		}
-		
+
 		return false;
 	},
-	
+
 	/**
 	 * Checks whether a word exists in the current dictionary.
 	 *
 	 * @param {String} word The word to check.
 	 * @returns {Boolean}
 	 */
-	
+
 	checkExact : function (word) {
 		if (!this.loaded) {
 			throw "Dictionary not loaded.";
 		}
 
 		var ruleCodes = this.dictionaryTable[word];
-		
+
 		var i, _len;
-		
+
 		if (typeof ruleCodes === 'undefined') {
 			// Check if this might be a compound word.
 			if ("COMPOUNDMIN" in this.flags && word.length >= this.flags.COMPOUNDMIN) {
@@ -43551,7 +43540,7 @@ Typo.prototype = {
 
 		return false;
 	},
-	
+
 	/**
 	 * Looks up whether a given word is flagged with a given flag.
 	 *
@@ -43559,7 +43548,7 @@ Typo.prototype = {
 	 * @param {String} flag The flag in question.
 	 * @return {Boolean}
 	 */
-	 
+
 	hasFlag : function (word, flag, wordFlags) {
 		if (!this.loaded) {
 			throw "Dictionary not loaded.";
@@ -43569,15 +43558,15 @@ Typo.prototype = {
 			if (typeof wordFlags === 'undefined') {
 				wordFlags = Array.prototype.concat.apply([], this.dictionaryTable[word]);
 			}
-			
+
 			if (wordFlags && wordFlags.indexOf(this.flags[flag]) !== -1) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	},
-	
+
 	/**
 	 * Returns a list of suggestions for a misspelled word.
 	 *
@@ -43588,9 +43577,9 @@ Typo.prototype = {
 	 * @param {Number} [limit=5] The maximum number of suggestions to return.
 	 * @returns {String[]} The array of suggestions.
 	 */
-	
+
 	alphabet : "",
-	
+
 	suggest : function (word, limit) {
 		if (!this.loaded) {
 			throw "Dictionary not loaded.";
@@ -43607,46 +43596,46 @@ Typo.prototype = {
 				return this.memoized[word]['suggestions'].slice(0, limit);
 			}
 		}
-		
+
 		if (this.check(word)) return [];
-		
+
 		// Check the replacement table.
 		for (var i = 0, _len = this.replacementTable.length; i < _len; i++) {
 			var replacementEntry = this.replacementTable[i];
-			
+
 			if (word.indexOf(replacementEntry[0]) !== -1) {
 				var correctedWord = word.replace(replacementEntry[0], replacementEntry[1]);
-				
+
 				if (this.check(correctedWord)) {
 					return [ correctedWord ];
 				}
 			}
 		}
-		
+
 		var self = this;
 		self.alphabet = "abcdefghijklmnopqrstuvwxyz";
-		
+
 		/*
 		if (!self.alphabet) {
 			// Use the alphabet as implicitly defined by the words in the dictionary.
 			var alphaHash = {};
-			
+
 			for (var i in self.dictionaryTable) {
 				for (var j = 0, _len = i.length; j < _len; j++) {
 					alphaHash[i[j]] = true;
 				}
 			}
-			
+
 			for (var i in alphaHash) {
 				self.alphabet += i;
 			}
-			
+
 			var alphaArray = self.alphabet.split("");
 			alphaArray.sort();
 			self.alphabet = alphaArray.join("");
 		}
 		*/
-		
+
 		/**
 		 * Returns a hash keyed by all of the strings that can be made by making a single edit to the word (or words in) `words`
 		 * The value of each entry is the number of unique ways that the resulting word can be made.
@@ -43656,11 +43645,11 @@ Typo.prototype = {
 		 */
 		function edits1(words, known_only) {
 			var rv = {};
-			
+
 			var i, j, _iilen, _len, _jlen, _edit;
 
 			var alphabetLength = self.alphabet.length;
-			
+
 			if (typeof words == 'string') {
 				var word = words;
 				words = {};
@@ -43670,7 +43659,7 @@ Typo.prototype = {
 			for (var word in words) {
 				for (i = 0, _len = word.length + 1; i < _len; i++) {
 					var s = [ word.substring(0, i), word.substring(i) ];
-				
+
 					// Remove a letter.
 					if (s[1]) {
 						_edit = s[0] + s[1].substring(1);
@@ -43684,7 +43673,7 @@ Typo.prototype = {
 							}
 						}
 					}
-					
+
 					// Transpose letters
 					// Eliminate transpositions of identical letters
 					if (s[1].length > 1 && s[1][1] !== s[1][0]) {
@@ -43755,7 +43744,7 @@ Typo.prototype = {
 					}
 				}
 			}
-			
+
 			return rv;
 		}
 
@@ -43763,10 +43752,10 @@ Typo.prototype = {
 			// Get the edit-distance-1 and edit-distance-2 forms of this word.
 			var ed1 = edits1(word);
 			var ed2 = edits1(ed1, true);
-			
+
 			// Sort the edits based on how many different ways they were created.
 			var weighted_corrections = ed2;
-			
+
 			for (var ed1word in ed1) {
 				if (!self.check(ed1word)) {
 					continue;
@@ -43779,11 +43768,11 @@ Typo.prototype = {
 					weighted_corrections[ed1word] = ed1[ed1word];
 				}
 			}
-			
+
 			var i, _len;
 
 			var sorted_corrections = [];
-			
+
 			for (i in weighted_corrections) {
 				if (weighted_corrections.hasOwnProperty(i)) {
 					sorted_corrections.push([ i, weighted_corrections[i] ]);
@@ -43801,20 +43790,20 @@ Typo.prototype = {
 				// @todo If a and b are equally weighted, add our own weight based on something like the key locations on this language's default keyboard.
 				return b[0].localeCompare(a[0]);
 			}
-			
+
 			sorted_corrections.sort(sorter).reverse();
 
 			var rv = [];
 
 			var capitalization_scheme = "lowercase";
-			
+
 			if (word.toUpperCase() === word) {
 				capitalization_scheme = "uppercase";
 			}
 			else if (word.substr(0, 1).toUpperCase() + word.substr(1).toLowerCase() === word) {
 				capitalization_scheme = "capitalized";
 			}
-			
+
 			var working_limit = limit;
 
 			for (i = 0; i < Math.min(working_limit, sorted_corrections.length); i++) {
@@ -43824,7 +43813,7 @@ Typo.prototype = {
 				else if ("capitalized" === capitalization_scheme) {
 					sorted_corrections[i][0] = sorted_corrections[i][0].substr(0, 1).toUpperCase() + sorted_corrections[i][0].substr(1);
 				}
-				
+
 				if (!self.hasFlag(sorted_corrections[i][0], "NOSUGGEST") && rv.indexOf(sorted_corrections[i][0]) == -1) {
 					rv.push(sorted_corrections[i][0]);
 				}
@@ -43836,7 +43825,7 @@ Typo.prototype = {
 
 			return rv;
 		}
-		
+
 		this.memoized[word] = {
 			'suggestions': correct(word),
 			'limit': limit
@@ -43869,7 +43858,7 @@ if (true) {
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -43883,14 +43872,14 @@ if (true) {
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -43903,7 +43892,7 @@ if (true) {
 /******/ 			return getter;
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -43915,12 +43904,12 @@ if (true) {
 /******/ 			}
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -43931,7 +43920,7 @@ if (true) {
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
