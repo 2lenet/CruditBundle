@@ -54,6 +54,7 @@ If you have some 1-1 relation for an entity you can add some entities to the His
 Just add a array with the datasource and the getter method to retrieve the entity from the main one.
 
 exemple
+
 ```php
             "tab.history" => [
                 HistoryConfig::new(["otherEntities"=>[
@@ -63,7 +64,6 @@ exemple
                     ["datasource"=>$this->l2IADatasource, "method"=>"getL2IA"]
                 ]]),
 ```
-
 
 ## Roles
 
