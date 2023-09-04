@@ -22,12 +22,12 @@ trait TestHelperTrait
         $client->loginUser($userRepository->findOneByEmail(self::LOGIN_USER));
 
         foreach ($menuRegistry->getElements('') as $elem) {
-            if ($elem instanceof LinkElement && $elem->getPath() != null) {
+            if ($elem instanceof LinkElement && $elem->getPath() !== null) {
                 $this->checkRoute($router, $elem, $client);
             }
 
             foreach ($elem->getChildren() as $child) {
-                if ($child instanceof LinkElement && $child->getPath() != null) {
+                if ($child instanceof LinkElement && $child->getPath() !== null) {
                     $this->checkRoute($router, $child, $client);
                 }
             }

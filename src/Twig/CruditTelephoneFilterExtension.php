@@ -102,7 +102,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         if (strpos($telephone, '+') === 0) {
             $lenTel = strlen($telephone);
             $i = self::INDICATOR_MAX_LENGTH + 1;
-            while ($mask == null && $i > 0) {
+            while ($mask === null && $i > 0) {
                 $indicator = substr($telephone, 0, $i);
                 $currentLen = (string)($lenTel - $i);
                 if (key_exists($indicator, self::FORMATS) && key_exists($currentLen, self::FORMATS[$indicator])) {
@@ -114,7 +114,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             $mask = "## ## ## ## ##";
         }
 
-        return ($mask != null ? $this->applyMask($mask, $telephone) : $telephone);
+        return ($mask !== null ? $this->applyMask($mask, $telephone) : $telephone);
     }
 
     private function applyMask(string $mask, string $value): string
