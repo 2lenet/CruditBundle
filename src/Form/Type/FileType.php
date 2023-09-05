@@ -55,9 +55,9 @@ class FileType extends VichFileType
 
             $filename = substr($filePath, strrpos($filePath, '/') + 1);
             $filename = substr($filename, 0, strrpos($filename, '-')) . '.' . substr(
-                    $filename,
-                    strrpos($filename, '.') + 1
-                );
+                $filename,
+                strrpos($filename, '.') + 1
+            );
             $view->vars['filename'] = $filename;
         }
     }

@@ -50,7 +50,7 @@ class LinksConfig extends AbstractBrickConfig
 
     public function setActions(array $actions): self
     {
-        $this->actions = array_filter($actions, function ($a) {
+        $this->actions = array_filter($actions, function (ListAction $a) {
             return !$a->isBatch();
         });
 
