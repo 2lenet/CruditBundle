@@ -38,7 +38,7 @@ class ItemAction
 
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
-        return (new static($label, $path))
+        return (new self($label, $path))
             ->setIcon($icon)
             ->setHideLabel(false);
     }
