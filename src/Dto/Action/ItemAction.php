@@ -16,9 +16,9 @@ class ItemAction extends BaseAction
     protected bool $disabled = false;
     protected bool $hasVoter = false;
 
-    public static function new(string $label, Path $path, ?Icon $icon = null): self
+    public static function new(string $label, Path $path, ?Icon $icon = null): BaseAction
     {
-        return (new self($label, $path))
+        return (new static($label, $path))
             ->setIcon($icon)
             ->setHideLabel(false);
     }
