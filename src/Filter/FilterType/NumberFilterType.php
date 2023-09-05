@@ -45,7 +45,7 @@ class NumberFilterType extends AbstractFilterType
             switch ($this->data['op']) {
                 case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNotNull($alias . $column));
-                        break;
+                    break;
                 case FilterTypeInterface::OPERATOR_IS_NULL:
                 default:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
