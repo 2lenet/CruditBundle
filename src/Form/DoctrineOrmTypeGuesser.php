@@ -72,7 +72,10 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                 UploadableField::class
             )
         ) {
-            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE
+            return new TypeGuess(
+                'Lle\CruditBundle\Form\Type\FileType',
+                ['label' => $label],
+                Guess::VERY_HIGH_CONFIDENCE
             );
         }
 

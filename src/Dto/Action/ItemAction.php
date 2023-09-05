@@ -18,7 +18,7 @@ class ItemAction extends BaseAction
 
     public static function new(string $label, Path $path, ?Icon $icon = null): ItemAction
     {
-        return (new self($label, $path))
+        return (new static($label, $path))
             ->setIcon($icon)
             ->setHideLabel(false);
     }
