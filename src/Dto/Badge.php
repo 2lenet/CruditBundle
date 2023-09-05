@@ -7,7 +7,6 @@ namespace Lle\CruditBundle\Dto;
 class Badge
 {
     private string $libelle;
-
     private string $cssClass;
 
     public static function new(string $libelle, string $cssClass = 'badge-success'): self

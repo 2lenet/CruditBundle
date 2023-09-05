@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Gedmo\Loggable\Entity\LogEntry;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,7 +19,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ) {
         parent::__construct($resourceResolver, $requestStack);
 
@@ -36,7 +35,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
     {
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate("@LleCrudit/brick/history")
+            ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
             ->setData([
                 "history" => $this->getLogEntries($brickConfigurator),
             ])
@@ -44,11 +43,12 @@ class HistoryFactory extends AbstractBasicBrickFactory
 
         return $view;
     }
+
     private function getLogEntries(BrickConfigInterface $brickConfigurator): array
     {
         $mainDatasource = $brickConfigurator->getDataSource();
-        $main_id = $this->getRequest()->get("id");
-        $item = $mainDatasource->get($main_id);
+        $mainId = $this->getRequest()->get("id");
+        $item = $mainDatasource->get($mainId);
         $logs = $this->getLogEntriesDatasource($item);
         $options = $brickConfigurator->getOptions();
         if (array_key_exists('otherEntities', $options)) {
@@ -63,9 +63,14 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 }
             }
         }
-        usort($logs,function($a, $b) { return $b['log']->getLoggedAt()->getTimestamp() <=> $a['log']->getLoggedAt()->getTimestamp(); });
+
+        usort($logs, function ($a, $b) {
+            return $b['log']->getLoggedAt()->getTimestamp() <=> $a['log']->getLoggedAt()->getTimestamp();
+        });
+
         return $logs;
     }
+
     private function getLogEntriesDatasource(object $item): array
     {
         $logs = $this->em

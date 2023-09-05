@@ -7,9 +7,7 @@ namespace Lle\CruditBundle\Dto;
 class Path
 {
     private string $route;
-
     private array $params;
-
     private ?string $role = null;
 
     /**

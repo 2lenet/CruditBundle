@@ -36,7 +36,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 final class MakeCrudit extends AbstractMaker
 {
     private DoctrineHelper $entityHelper;
-
     private string $projectDir;
 
     public function __construct(

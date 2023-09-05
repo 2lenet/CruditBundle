@@ -9,19 +9,12 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 class BrickView
 {
     private ?string $template;
-
     private array $data;
-
     private array $config = [];
-
     private bool $movable;
-
     private string $id;
-
     protected array $options;
-
     private ?Path $path;
-
     private ?string $role = null;
 
     public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])

@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * StringFilterType
@@ -19,13 +20,13 @@ class StringFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "startswith" => ["icon" => "far fa-caret-square-right"],
-            "contains" => ["icon" => "fa fa-text-width"],
-            "endswith" => ["icon" => "far fa-caret-square-left"],
-            "eq" => ["icon" => "fas fa-equals"],
-            "neq" => ["icon" => "fas fa-not-equal"],
-            "isnull" => ["icon" => "far fa-square"],
-            "isnotnull" => ["icon" => "fas fa-square"],
+            FilterTypeInterface::OPERATOR_STARTS_WITH => ["icon" => "far fa-caret-square-right"],
+            FilterTypeInterface::OPERATOR_CONTAINS => ["icon" => "fa fa-text-width"],
+            FilterTypeInterface::OPERATOR_ENDS_WITH => ["icon" => "far fa-caret-square-left"],
+            FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ["icon" => "fas fa-not-equal"],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
         ];
     }
 
@@ -42,7 +43,7 @@ class StringFilterType extends AbstractFilterType
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
 
-        if (in_array($op, ["isnull", "isnotnull"])) {
+        if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
             $queryBuilder->andWhere($query);
         } elseif (
             isset($this->data['value'])
@@ -52,18 +53,18 @@ class StringFilterType extends AbstractFilterType
 
             // SET QUERY PARAMETERS
             switch ($op) {
-                case 'contains':
-                case 'doesnotcontain':
+                case FilterTypeInterface::OPERATOR_CONTAINS:
+                case FilterTypeInterface::OPERATOR_DOES_NOT_CONTAIN:
                     $queryBuilder->setParameter($paramname, "%" . $value . "%");
                     break;
-                case 'startswith':
+                case FilterTypeInterface::OPERATOR_STARTS_WITH:
                     $queryBuilder->setParameter($paramname, $value . "%");
                     break;
-                case 'endswith':
+                case FilterTypeInterface::OPERATOR_ENDS_WITH:
                     $queryBuilder->setParameter($paramname, "%" . $value);
                     break;
-                case 'eq':
-                case 'neq':
+                case FilterTypeInterface::OPERATOR_EQUAL:
+                case FilterTypeInterface::OPERATOR_NOT_EQUAL:
                     $queryBuilder->setParameter($paramname, $value);
             }
 
@@ -75,24 +76,24 @@ class StringFilterType extends AbstractFilterType
     {
         $pattern = null;
         switch ($op) {
-            case "isnull":
+            case FilterTypeInterface::OPERATOR_IS_NULL:
                 $pattern = $alias . $col . ' IS NULL OR ' . $alias . $col . " = '' ";
                 break;
-            case "isnotnull":
+            case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
                 $pattern = $alias . $col . ' IS NOT NULL AND ' . $alias . $col . " <> '' ";
                 break;
-            case "eq":
+            case FilterTypeInterface::OPERATOR_EQUAL:
                 $pattern = $alias . $col . ' = :' . $paramname;
                 break;
-            case "neq":
+            case FilterTypeInterface::OPERATOR_NOT_EQUAL:
                 $pattern = $alias . $col . ' != :' . $paramname;
                 break;
-            case "contains":
-            case "endswith":
-            case "startswith":
+            case FilterTypeInterface::OPERATOR_CONTAINS:
+            case FilterTypeInterface::OPERATOR_ENDS_WITH:
+            case FilterTypeInterface::OPERATOR_STARTS_WITH:
                 $pattern = $alias . $col . ' LIKE :' . $paramname;
                 break;
-            case "doesnotcontain":
+            case FilterTypeInterface::OPERATOR_DOES_NOT_CONTAIN:
                 $pattern = $alias . $col . ' NOT LIKE :' . $paramname;
         }
 

@@ -18,9 +18,7 @@ use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
     protected ManagerRegistry $registry;
-
     protected Reader $annotationReader;
-
     private array $cache = [];
 
     public function __construct(ManagerRegistry $registry, Reader $annotationReader)
@@ -74,7 +72,8 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                 UploadableField::class
             )
         ) {
-            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE);
+            return new TypeGuess('Lle\CruditBundle\Form\Type\FileType', ['label' => $label], Guess::VERY_HIGH_CONFIDENCE
+            );
         }
 
         switch ($metadata->getTypeOfField($property)) {

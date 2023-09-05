@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * DateTimeFilterType
@@ -22,9 +23,9 @@ class DateTimeFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "eq" => ["icon" => "fas fa-equals"],
-            "before" => ["icon" => "fas fa-less-than"],
-            "after" => ["icon" => "fas fa-greater-than"],
+            FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
+            FilterTypeInterface::OPERATOR_BEFORE => ["icon" => "fas fa-less-than"],
+            FilterTypeInterface::OPERATOR_AFTER => ["icon" => "fas fa-greater-than"],
         ];
     }
 
@@ -41,13 +42,13 @@ class DateTimeFilterType extends AbstractFilterType
             }
 
             switch ($this->data['op']) {
-                case 'eq':
+                case FilterTypeInterface::OPERATOR_EQUAL:
                     $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, ':' . $paramname));
                     break;
-                case 'before':
+                case FilterTypeInterface::OPERATOR_BEFORE:
                     $queryBuilder->andWhere($queryBuilder->expr()->lt($alias . $column, ':' . $paramname));
                     break;
-                case 'after':
+                case FilterTypeInterface::OPERATOR_AFTER:
                     $queryBuilder->andWhere($queryBuilder->expr()->gt($alias . $column, ':' . $paramname));
                     break;
             }

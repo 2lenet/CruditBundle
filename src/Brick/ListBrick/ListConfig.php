@@ -17,17 +17,12 @@ class ListConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private array $fields = [];
-
     /** @var ItemAction[] */
     private array $actions = [];
-
     /** @var ListAction[] */
     private array $batch_actions = [];
-
     private ?DatasourceInterface $datasource = null;
-
     private DatasourceParams $datasourceParams;
-
     private string $className;
 
     public function __construct(array $options = [])

@@ -9,19 +9,12 @@ use Lle\CruditBundle\Dto\Icon;
 class ExternalLinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
-
     public const TYPE_BODY = 'body';
-
     protected string $type;
-
     protected string $libelle;
-
     protected ?Icon $icon = null;
-
     protected string $url;
-
     protected string $target;
-
     protected ?string $cssClass = null;
 
     public static function new(
@@ -29,7 +22,7 @@ class ExternalLinkElement extends AbstractLayoutElement
         ?string $url,
         ?Icon $icon = null,
         ?string $target = '_blank',
-        ?string $role = null
+        ?string $role = null,
     ): self {
         $item = new self($libelle, $url, $target, $icon, $role);
         $item->setId(str_replace('menu.', '', $libelle));
@@ -47,7 +40,7 @@ class ExternalLinkElement extends AbstractLayoutElement
         ?string $url,
         ?string $target,
         ?Icon $icon = null,
-        ?string $role = null
+        ?string $role = null,
     ) {
         $this->libelle = $libelle;
         $this->icon = $icon;

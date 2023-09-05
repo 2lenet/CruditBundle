@@ -15,7 +15,11 @@ interface DatasourceInterface
 
     public function list(?DatasourceParams $requestParams): iterable;
 
-    public function autocompleteQuery(string $queryTerm, array $sorts, ?DatasourceParams $requestParams = null): iterable;
+    public function autocompleteQuery(
+        string $queryTerm,
+        array $sorts,
+        ?DatasourceParams $requestParams = null,
+    ): iterable;
 
     public function autocompleteCountQuery(string $queryTerm): int;
 

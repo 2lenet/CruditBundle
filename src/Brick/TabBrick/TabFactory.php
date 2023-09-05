@@ -18,7 +18,7 @@ class TabFactory extends AbstractBasicBrickFactory
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
-        BrickBuilder $brickBuilder
+        BrickBuilder $brickBuilder,
     ) {
         $this->brickBuilder = $brickBuilder;
         parent::__construct($resourceResolver, $requestStack);
@@ -49,7 +49,7 @@ class TabFactory extends AbstractBasicBrickFactory
         }
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate('@LleCrudit/brick/tab')
+            ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/tab')
             ->setConfig(
                 ['tabs' => $tabs, 'translation_domain' => $brickConfigurator->getCrudConfig()->getTranslationDomain()]
             )

@@ -18,7 +18,7 @@ class SublistFactory extends AbstractBasicBrickFactory
 {
     public function __construct(
         ResourceResolver $resourceResolver,
-        RequestStack $requestStack
+        RequestStack $requestStack,
     ) {
         parent::__construct($resourceResolver, $requestStack);
     }
@@ -35,7 +35,7 @@ class SublistFactory extends AbstractBasicBrickFactory
             $config = $brickConfigurator->getConfig($this->getRequest());
 
             $view
-                ->setTemplate('@LleCrudit/brick/sublist_items')
+                ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/sublist_items')
                 ->setConfig($config)
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([

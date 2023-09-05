@@ -19,14 +19,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ListFactory extends AbstractBasicBrickFactory
 {
     private FormFactoryInterface $formFactory;
-
     private FieldRegistry $fieldRegistry;
 
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FormFactoryInterface $formFactory,
-        FieldRegistry $fieldRegistry
+        FieldRegistry $fieldRegistry,
     ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->formFactory = $formFactory;
@@ -55,7 +54,7 @@ class ListFactory extends AbstractBasicBrickFactory
             }
 
             $view
-                ->setTemplate('@LleCrudit/brick/list_items')
+                ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/list_items')
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()))
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
@@ -113,7 +112,10 @@ class ListFactory extends AbstractBasicBrickFactory
                 $i++;
 
                 $fieldView = new FieldView($field['field'], $totalByField[$i]);
-                $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView($fieldView, $totalByField[$i]);
+                $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
+                    $fieldView,
+                    $totalByField[$i]
+                );
             }
 
             return $fieldViews;

@@ -24,7 +24,7 @@ class LinksFactory extends AbstractBasicBrickFactory
         /** @var LinksConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate('@LleCrudit/brick/links')
+            ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/links')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
                 'actions' => $this->getActions($brickConfigurator),

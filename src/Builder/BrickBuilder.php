@@ -8,18 +8,17 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\UnsupportedBrickConfigurationException;
-use Symfony\Component\HttpFoundation\Request;
 use Lle\CruditBundle\Provider\BrickProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 class BrickBuilder
 {
     /** @var BrickView[] */
     private array $bricks = [];
-
     private BrickProvider $brickProvider;
 
     public function __construct(
-        BrickProvider $brickProvider
+        BrickProvider $brickProvider,
     ) {
         $this->brickProvider = $brickProvider;
     }
@@ -28,7 +27,7 @@ class BrickBuilder
         CrudConfigInterface $crudConfig,
         string $pageKey,
         int $position,
-        BrickConfigInterface $brickConfig
+        BrickConfigInterface $brickConfig,
     ): void {
         foreach (array_merge([$brickConfig], $brickConfig->getChildren()) as $k => $brick) {
             $brick->setCrudConfig($crudConfig);
@@ -52,7 +51,7 @@ class BrickBuilder
     public function buildBrick(
         CrudConfigInterface $crudConfig,
         string $pageKey,
-        BrickConfigInterface $brickConfig
+        BrickConfigInterface $brickConfig,
     ): BrickView {
         $brickFactory = $this->brickProvider->getBrick($brickConfig);
         if ($brickFactory) {

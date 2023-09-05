@@ -15,7 +15,6 @@ use Twig\TwigFunction;
 class CruditExtension extends AbstractExtension
 {
     private MenuRegistry $menuRegistry;
-
     private RouterInterface $router;
 
     public function __construct(MenuRegistry $menuRegistry, RouterInterface $router)

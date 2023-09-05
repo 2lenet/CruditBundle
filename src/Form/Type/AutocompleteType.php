@@ -18,14 +18,12 @@ use Symfony\Component\Routing\RouterInterface;
 class AutocompleteType extends AbstractType
 {
     public const DEFAULT_AUTOCOMPLETE_ROUTE = "app_crudit_%s_autocomplete";
-
     private RouterInterface $router;
-
     private EntityManagerInterface $em;
 
     public function __construct(
         RouterInterface $router,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ) {
         $this->router = $router;
         $this->em = $em;

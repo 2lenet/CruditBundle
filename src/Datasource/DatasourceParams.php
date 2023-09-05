@@ -5,15 +5,10 @@ namespace Lle\CruditBundle\Datasource;
 class DatasourceParams
 {
     protected int $count = 100;
-
     protected int $limit;
-
     protected int $offset;
-
     protected array $sorts;
-
     protected array $filters;
-
     protected bool $enableFilters = true;
 
     public function __construct(int $limit, int $offset, array $sorts, array $filters = [])

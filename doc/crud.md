@@ -126,3 +126,28 @@ LinkElement::new(
     "ROLE_CONTACT_INDEX"
 )
 ```
+
+## How to add totals on your list:
+
+It is possible to add totals to your list by adding the `getTotalsFields` method to the CrudConfig file.
+
+```php
+public function getTotalFields(): array
+{
+    return [
+        'montantHt' => [
+            'type' => CrudConfigInterface::SUM,
+            'field' => Field::new('montantHt', 'currency'),
+        ],
+        'montantTtc' => [
+            'type' => CrudConfigInterface::SUM,
+            'field' => Field::new('montantTtc', 'currency'),
+        ],
+    ];
+}
+```
+
+You can choose between 3 types of totals, `AVERAGE`, `SUM` and `COUNT`.
+To use them, use the constants defined in the `CrudConfigInterface` file.
+
+> :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**

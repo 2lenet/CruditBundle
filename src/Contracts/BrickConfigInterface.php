@@ -35,4 +35,8 @@ interface BrickConfigInterface
     public function getRole(): ?string;
 
     public function setRole(?string $role): self;
+
+    public function getTemplate(): ?string;
+
+    public function setTemplate(?string $template): self;
 }

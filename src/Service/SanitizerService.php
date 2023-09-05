@@ -2,9 +2,9 @@
 
 namespace Lle\CruditBundle\Service;
 
-use Lle\CruditBundle\Contracts\SanitizerInterface;
 use HTMLPurifier;
 use HTMLPurifier_Config;
+use Lle\CruditBundle\Contracts\SanitizerInterface;
 
 class SanitizerService implements SanitizerInterface
 {

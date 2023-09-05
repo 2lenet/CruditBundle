@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 class LinksConfig extends AbstractBrickConfig
 {
     protected array $actions = [];
-
     protected bool $back = false;
 
     public static function new(array $options = []): self

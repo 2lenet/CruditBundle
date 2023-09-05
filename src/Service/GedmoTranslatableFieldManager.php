@@ -14,23 +14,19 @@ namespace Lle\CruditBundle\Service;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query as Query;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
+use Gedmo\Translatable\TranslatableListener as TranslatableListener;
 use Symfony\Component\Form\Form as Form;
 use Symfony\Component\PropertyAccess\PropertyAccess as PropertyAccess;
-use Doctrine\ORM\Query as Query;
-use Gedmo\Translatable\TranslatableListener as TranslatableListener;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 class GedmoTranslatableFieldManager
 {
     public const GEDMO_TRANSLATION = 'Gedmo\\Translatable\\Entity\\Translation';
-
     public const GEDMO_TRANSLATION_WALKER = 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker';
-
     public const GEDMO_PERSONAL_TRANSLATIONS_GET = 'getTranslations';
-
     public const GEDMO_PERSONAL_TRANSLATIONS_SET = 'addTranslation';
-
     protected EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $em)

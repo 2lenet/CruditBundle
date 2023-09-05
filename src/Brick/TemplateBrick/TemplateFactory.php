@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\TemplateBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
-use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\ResourceView;
 
 class TemplateFactory extends AbstractBasicBrickFactory
@@ -21,7 +21,7 @@ class TemplateFactory extends AbstractBasicBrickFactory
         /** @var TemplateConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
-            ->setTemplate('@LleCrudit/brick/template')
+            ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/template')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData(['resource' => $this->getResourceView($brickConfigurator)]);
 

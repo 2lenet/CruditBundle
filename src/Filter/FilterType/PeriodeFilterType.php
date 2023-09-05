@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * PeriodeFilterType
@@ -22,8 +23,8 @@ class PeriodeFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            "interval" => ["icon" => "fas fa-arrows-alt-h"],
-            "isnull" => ["icon" => "far fa-square"],
+            FilterTypeInterface::OPERATOR_INTERVAL => ["icon" => "fas fa-arrows-alt-h"],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
         ];
     }
 
@@ -33,10 +34,10 @@ class PeriodeFilterType extends AbstractFilterType
 
         if (isset($this->data['value']) && $this->data['value'] && isset($this->data['op'])) {
             switch ($this->data['op']) {
-                case 'isnull':
+                case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
-                case 'interval':
+                case FilterTypeInterface::OPERATOR_INTERVAL:
                     $queryBuilder->andWhere($alias . $column . ' >= :min_' . $paramname);
                     $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
                     break;
@@ -45,10 +46,10 @@ class PeriodeFilterType extends AbstractFilterType
 
         if (isset($this->data['to']) && $this->data['to']) {
             switch ($this->data['op']) {
-                case 'isnull':
+                case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
-                case 'interval':
+                case FilterTypeInterface::OPERATOR_INTERVAL:
                     $queryBuilder->andWhere($alias . $column . ' <= :max_' . $paramname);
                     $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
                     break;

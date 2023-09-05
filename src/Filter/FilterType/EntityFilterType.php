@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * EntityFilterType
@@ -12,7 +13,6 @@ use Doctrine\ORM\QueryBuilder;
 class EntityFilterType extends AbstractFilterType
 {
     protected string $entityClass;
-
     protected ?string $dataRoute;
 
     public function __construct(string $fieldname, string $entityClass, ?string $dataRoute = null)
@@ -40,10 +40,10 @@ class EntityFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            'eq' => ['icon' => 'fas fa-equals'],
-            'neq' => ['icon' => 'fas fa-not-equal'],
-            "isnull" => ["icon" => "far fa-square"],
-            "isnotnull" => ["icon" => "fas fa-square"],
+            FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ['icon' => 'fas fa-not-equal'],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
         ];
     }
 
@@ -58,19 +58,19 @@ class EntityFilterType extends AbstractFilterType
 
         if (isset($this->data["op"])) {
             switch ($this->data['op']) {
-                case 'isnull':
+                case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($alias . $column . ' IS NULL OR ' . $alias . $column . " = '' ");
                     break;
-                case 'isnotnull':
+                case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
                     $queryBuilder->andWhere($alias . $column . ' IS NOT NULL OR ' . $alias . $column . " = '' ");
                     break;
-                case 'neq':
+                case FilterTypeInterface::OPERATOR_NOT_EQUAL:
                     if (!empty($ids)) {
                         $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $column, ':' . $paramname));
                         $queryBuilder->setParameter($paramname, $ids);
                     }
                     break;
-                case 'eq':
+                case FilterTypeInterface::OPERATOR_EQUAL:
                 default:
                     if (!empty($ids)) {
                         $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));

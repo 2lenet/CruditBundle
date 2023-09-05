@@ -16,18 +16,12 @@ class SublistConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private array $fields = [];
-
     /** @var ItemAction[] */
     private array $actions = [];
-
     private ?DatasourceInterface $datasource = null;
-
     private DatasourceParams $datasourceParams;
-
     private string $className;
-
     private string $fieldname;
-
     protected CrudConfigInterface $subCrudConfig;
 
     public function __construct(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
