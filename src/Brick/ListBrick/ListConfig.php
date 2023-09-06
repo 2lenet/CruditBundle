@@ -111,7 +111,7 @@ class ListConfig extends AbstractBrickConfig
 
     public function setBatchActions(array $actions): self
     {
-        $this->batch_actions = array_filter($actions, function (BaseAction $a) {
+        $this->batch_actions = array_filter($actions, function (ItemAction|ListAction $a) {
             return $a->isBatch();
         });
 
