@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
+use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,7 +51,7 @@ class LinksConfig extends AbstractBrickConfig
 
     public function setActions(array $actions): self
     {
-        $this->actions = array_filter($actions, function (ListAction $a) {
+        $this->actions = array_filter($actions, function (ItemAction|ListAction $a) {
             return !$a->isBatch();
         });
 
