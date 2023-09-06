@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
-use Lle\CruditBundle\Dto\Action\BaseAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Symfony\Component\HttpFoundation\Request;

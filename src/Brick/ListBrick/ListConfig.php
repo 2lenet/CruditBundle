@@ -8,7 +8,6 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Dto\Action\BaseAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
