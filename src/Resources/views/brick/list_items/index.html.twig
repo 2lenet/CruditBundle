@@ -46,6 +46,15 @@
                                         {% endif %}
                                         {% set parameters = app.request.query.all()|merge(merge_params) %}
                                         {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
+                                        {% if field.info is defined and field.info %}
+                                            <i
+                                                class="fas fa-info-circle"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom"
+                                                data-bs-custom-class="custom-tooltip"
+                                                data-bs-title="{{ field.info|trans }}"
+                                            ></i>
+                                        {% endif %}
                                         <span>
                                                 <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
                                                     <i class="fas {{ icon }}"></i>
