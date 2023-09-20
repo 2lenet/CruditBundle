@@ -136,6 +136,7 @@ trait TraitCrudController
                 return new JsonResponse([
                     "status" => "ok",
                     "fieldsToUpdate" => $this->config->fieldsToUpdate($id),
+                    'eipToUpdate' => $this->config->eipToUpdate($id),
                 ]);
             }
 

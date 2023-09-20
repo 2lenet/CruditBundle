@@ -87,6 +87,8 @@ interface CrudConfigInterface
 
     public function fieldsToUpdate(int|string $id): array;
 
+    public function eipToUpdate(int|string $id): array;
+
     public function getTotalFields(): array;
 
     public function getRootRoute(): ?string;
