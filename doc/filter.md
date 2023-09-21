@@ -50,6 +50,19 @@ public function getNumberDisplayed(): int
 }
 ```
 
+**4. (Optional) Add a default value**
+
+You can set a default value for your filter. To do this, simply add the setDefault method to your filter :
+
+```php
+public function getFilters(): array
+{
+    return [
+        BooleanFilterType::new('actif')->setDefault(true)
+    ];
+}
+```
+
 **Available filter types :**
 
 - StringFilterType : simple string search
