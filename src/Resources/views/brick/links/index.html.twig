@@ -5,7 +5,7 @@
     <div>
         {% for action in view.data.actions %}
             {% set params = action.path.params %}
-            {% if view.data.resource %}
+            {% if view.data.resource and action.setResource is defined%}
                 {% do action.setResource(view.data.resource) %}
             {% endif %}
             {% set id = app.request.attributes.get('id') %}
