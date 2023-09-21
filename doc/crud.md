@@ -151,3 +151,52 @@ You can choose between 3 types of totals, `AVERAGE`, `SUM` and `COUNT`.
 To use them, use the constants defined in the `CrudConfigInterface` file.
 
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**
+
+## How to refresh field on your list after using editInPlace:
+
+It is possible to refresh the value of a field in a list/show/sublist after modifying one using the `fieldsToUpdate` method.
+To do this, you need to return an array containing each id of the element you want to refresh and the HTML code contained in that element.
+
+```php
+public function fieldsToUpdate(int|string $id): array
+{
+    $result = $this->em->getRepository(YourEntity::class)->find($id);
+
+    if (!$result) {
+        return [];
+    }
+
+    return [
+        'sublist-yourentity-' . $result->getId() . '-yourfield' => $this->twig->render('the/template.html.twig', [
+            'view' => [
+                'field' => Field::new('yourfield')->setEditable('app_crudit_your_entity_editdata')
+            ],
+            'resource' => $result,
+            'value' => $result->getYourField(),
+            'options' => [
+                "tableCssClass" => "text-end",
+                'decimals' => '2',
+                'decimal_separator' => ',',
+                'thousands_separator' => ' ',
+            ],
+        ]),
+    ];
+}
+```
+
+> :warning: **If you refresh a field which is also an editInPlace, you need to configure the `eipToUpdate` method to re-enable the edit capability.**
+
+```php
+public function eipToUpdate(int|string $id): array
+{
+    $result = $this->em->getRepository(YourEntity::class)->find($id);
+
+    if (!$result) {
+        return [];
+    }
+
+    return [
+        'sublist-yourentity-' . $result->getId() . '-yourfield',
+    ];
+}
+```

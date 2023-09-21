@@ -8,12 +8,12 @@ window.addEventListener('DOMContentLoaded', function () {
             //save the initial disabled value
             eip_checkbox.setAttribute('initial-disabled', eip_checkbox.getAttribute('disabled'));
         }
+
         eip_checkbox.disabled = true;
     });
 });
 
 window.addEventListener('load', function () {
-
     document.querySelectorAll('.crudit-eip').forEach(eip_elem => {
         createEipField(eip_elem);
     });
@@ -81,6 +81,7 @@ function submitEIP(eip_elem, eip_input, eip_val) {
     let data = {
         [eip_elem.dataset.field]: value,
     };
+
     formData.append('data', JSON.stringify(data));
     fetch(url,
         {
@@ -90,15 +91,17 @@ function submitEIP(eip_elem, eip_input, eip_val) {
     ).then((response) => {
         if (response.status === 200) {
             response.json().then((json) => {
-                Object.entries(json.fieldsToUpdate).forEach(field => {
-                    document.getElementById(field[0]).innerHTML = field[1];
+                Object.entries(json.fieldsToUpdate).forEach(([key, html]) => {
+                    document.getElementById(key).innerHTML = html;
                 });
 
-                Object.entries(json.eipToUpdate).forEach(field => {
-                    let eip_elem = document.getElementById(field[1]);
+                if ('eipToUpdate' in json) {
+                    json.eipToUpdate.forEach(field => {
+                        let eip_elem = document.getElementById(field);
 
-                    createEipField(eip_elem.querySelector('.crudit-eip'));
-                });
+                        createEipField(eip_elem.querySelector('.crudit-eip'));
+                    });
+                }
             });
         } else if (response.status >= 400) {
             // error, tell the user
@@ -116,6 +119,7 @@ function submitEIP(eip_elem, eip_input, eip_val) {
         } else if (eip_input.tomselect !== undefined) {
             let entityId = eip_input.tomselect.getValue();
             let entity = eip_input.tomselect.options[entityId];
+
             eip_val.textContent = entity.text;
             eip_input.tomselect.clear();
         } else {
