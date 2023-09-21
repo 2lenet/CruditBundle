@@ -51,7 +51,7 @@ trait TestHelperTrait
         $this->assertEquals(
             '200',
             $code,
-            'Erreur ' . $elem->getPath()->getRoute()
+            'Erreur ' . $elem->getPath()->getRoute() . ' : ' . $client->getCrawler()->filter('title')->first()->text()
         );
 
         $content = $client->getResponse()->getContent();
@@ -82,7 +82,7 @@ trait TestHelperTrait
                     $this->assertEquals(
                         '200',
                         $code,
-                        'Erreur ' . $attribute->value,
+                        'Erreur ' . $attribute->value . ' : ' . $client->getCrawler()->filter('title')->first()->text(),
                     );
 
                     break 2;
