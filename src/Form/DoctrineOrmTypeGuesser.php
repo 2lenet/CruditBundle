@@ -139,6 +139,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                     Guess::HIGH_CONFIDENCE
                 );
             case Types::FLOAT:
+            case Types::DECIMAL:
                 return new TypeGuess(
                     'Symfony\Component\Form\Extension\Core\Type\NumberType',
                     ["label" => $label],
