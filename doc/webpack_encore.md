@@ -49,7 +49,7 @@ With that, you can now :
   This is the list of all responsive breakpoints used :
 
   | Name | Value |
-      | --- | --- |
+        | --- | --- |
   | mobile | 768px |
   | tablet | 992px |
   | laptop | 1200px |

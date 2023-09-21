@@ -5,11 +5,8 @@ namespace Lle\CruditBundle\Datasource;
 class DatasourceFilter
 {
     private mixed $fieldname;
-
     private mixed $fieldvalue;
-
     private string $alias;
-
     private string $operator;
 
     public function __construct(mixed $fieldname, mixed $fieldvalue, string $alias = "root", string $operator = "=")

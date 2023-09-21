@@ -10,9 +10,7 @@ class Tab
 {
     /** @var BrickConfigInterface[] */
     private array $bricks;
-
     private string $label;
-
     private ?string $role = null;
 
     private function __construct(array $bricks)

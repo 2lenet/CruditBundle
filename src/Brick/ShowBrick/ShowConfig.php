@@ -14,7 +14,6 @@ class ShowConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private array $fields = [];
-
     private ?DatasourceInterface $dataSource = null;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self

@@ -6,8 +6,8 @@ namespace Lle\CruditBundle\Brick\BrickResponse;
 
 use Lle\CruditBundle\Contracts\BrickResponseInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RedirectBrickResponse implements BrickResponseInterface
 {

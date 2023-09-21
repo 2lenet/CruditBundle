@@ -11,23 +11,17 @@ use Symfony\Bundle\MakerBundle\Generator;
 class Converter
 {
     public const LIST_ACTIONS = ['new', 'export'];
-
     public const ITEM_ACTIONS = ['show', 'edit', 'delete'];
-
     public const SHOW_ACTIONS = ['edit', 'delete'];
-
     protected array $logs = [];
-
     protected Generator $generator;
-
     protected MakeCrudit $cruditMaker;
-
     protected DoctrineHelper $doctrineHelper;
 
     public function __construct(
         Generator $generator,
         MakeCrudit $cruditMaker,
-        DoctrineHelper $doctrineHelper
+        DoctrineHelper $doctrineHelper,
     ) {
         $this->generator = $generator;
         $this->cruditMaker = $cruditMaker;
@@ -265,8 +259,14 @@ class Converter
                 "sort" => $sort,
                 "controllerRoute" => "crudit_" . $shortEntity,
                 'disabledActions' => $disabledActions,
-                'listActions' => array_key_exists('listActions', $listAndItemActions) ? $listAndItemActions['listActions'] : [],
-                'itemActions' => array_key_exists('itemActions', $listAndItemActions) ? $listAndItemActions['itemActions'] : [],
+                'listActions' => array_key_exists(
+                    'listActions',
+                    $listAndItemActions
+                ) ? $listAndItemActions['listActions'] : [],
+                'itemActions' => array_key_exists(
+                    'itemActions',
+                    $listAndItemActions
+                ) ? $listAndItemActions['itemActions'] : [],
                 'showActions' => array_key_exists('showActions', $showActions) ? $showActions['showActions'] : [],
             ]
         );
@@ -499,9 +499,20 @@ class Converter
         $ignoredActions = [];
 
         foreach ($entityConfig['list']['actions'] as $action) {
-            if (is_array($action) && isset($action['global']) && $action['global'] === 'true' && isset($action['type']) && $action['type'] === 'route') {
+            if (
+                is_array($action) &&
+                isset($action['global']) &&
+                $action['global'] === 'true' &&
+                isset($action['type']) &&
+                $action['type'] === 'route'
+            ) {
                 $listActions[] = $this->getPropertyAction($action);
-            } elseif (is_array($action) && (!isset($action['global']) || ($action['global'] === 'false')) && isset($action['type']) && $action['type'] === 'route') {
+            } elseif (
+                is_array($action) &&
+                (!isset($action['global']) || ($action['global'] === 'false')) &&
+                isset($action['type']) &&
+                $action['type'] === 'route'
+            ) {
                 $itemActions[] = $this->getPropertyAction($action);
             } else {
                 $ignoredActions[] = $action;

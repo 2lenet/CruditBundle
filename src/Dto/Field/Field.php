@@ -9,25 +9,15 @@ use Lle\CruditBundle\Dto\Path;
 class Field
 {
     private string $label;
-
     private string $name;
-
     private bool $sort;
-
     private ?Path $path;
-
     private string $linkId = 'id';
-
     private array $options;
-
     private ?string $type;
-
     private ?string $template;
-
     private ?int $ruptGroup = 0;
-
     private ?string $role = null;
-
     private bool $editInPlace = false;
 
     private ?string $info = null;

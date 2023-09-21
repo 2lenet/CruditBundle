@@ -10,9 +10,7 @@ class TabView
 {
     /** @var BrickView[] */
     private array $bricks;
-
     private string $label;
-
     private ?string $role = null;
 
     public function __construct(string $label)

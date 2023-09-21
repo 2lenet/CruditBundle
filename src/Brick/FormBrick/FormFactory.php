@@ -22,11 +22,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class FormFactory extends AbstractBasicBrickFactory
 {
     private FormFactoryInterface $formFactory;
-
     private BrickResponseCollector $brickResponseCollector;
-
     private UrlGeneratorInterface $urlGenerator;
-
     protected PropertyAccessorInterface $propertyAccessor;
 
     public function __construct(
@@ -35,7 +32,7 @@ class FormFactory extends AbstractBasicBrickFactory
         FormFactoryInterface $formFactory,
         BrickResponseCollector $brickResponseCollector,
         UrlGeneratorInterface $urlGenerator,
-        PropertyAccessorInterface $propertyAccessor
+        PropertyAccessorInterface $propertyAccessor,
     ) {
         parent::__construct($resourceResolver, $requestStack);
 
@@ -74,7 +71,7 @@ class FormFactory extends AbstractBasicBrickFactory
     private function bindRequest(FormInterface $form, FormConfig $brickConfig, object $resource): void
     {
         $form->handleRequest($this->getRequest());
-        if ($this->getRequest()->getMethod() === 'POST' and $form->isSubmitted()) {
+        if ($this->getRequest()->getMethod() === 'POST' && $form->isSubmitted()) {
             if ($form->isValid()) {
                 $brickConfig->getDataSource()->save($resource);
                 $this->brickResponseCollector->add(

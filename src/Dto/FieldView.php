@@ -10,17 +10,11 @@ use Lle\CruditBundle\Dto\Field\Field;
 class FieldView
 {
     private Field $field;
-
     private mixed $value;
-
     private ?string $stringValue;
-
     private mixed $options;
-
     private ?object $resource = null;
-
     private ?object $parentResource = null;
-
     private ?CrudConfigInterface $config = null;
 
     public function __construct(Field $field, mixed $value)

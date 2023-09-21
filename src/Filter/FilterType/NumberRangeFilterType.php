@@ -20,14 +20,6 @@ class NumberRangeFilterType extends AbstractFilterType
         return $f;
     }
 
-    public function getOperators(): array
-    {
-        return [
-            FilterTypeInterface::OPERATOR_INTERVAL => ["icon" => "fas fa-arrows-alt-h"],
-            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
-        ];
-    }
-
     public function apply(QueryBuilder $queryBuilder): void
     {
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
@@ -55,5 +47,13 @@ class NumberRangeFilterType extends AbstractFilterType
                     break;
             }
         }
+    }
+
+    public function getOperators(): array
+    {
+        return [
+            FilterTypeInterface::OPERATOR_INTERVAL => ["icon" => "fas fa-arrows-alt-h"],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
+        ];
     }
 }

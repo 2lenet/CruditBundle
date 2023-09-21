@@ -10,20 +10,19 @@ use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class FilterFactory extends AbstractBasicBrickFactory
 {
     private FilterState $filterState;
-
     private Security $security;
 
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FilterState $filterState,
-        Security $security
+        Security $security,
     ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->filterState = $filterState;

@@ -128,7 +128,9 @@ LinkElement::new(
 ```
 
 ## How to add totals on your list:
+
 It is possible to add totals to your list by adding the `getTotalsFields` method to the CrudConfig file.
+
 ```php
 public function getTotalFields(): array
 {
@@ -146,6 +148,6 @@ public function getTotalFields(): array
 ```
 
 You can choose between 3 types of totals, `AVERAGE`, `SUM` and `COUNT`.
-To use them, use the  constants defined in the `CrudConfigInterface` file.
+To use them, use the constants defined in the `CrudConfigInterface` file.
 
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**

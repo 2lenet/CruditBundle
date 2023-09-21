@@ -11,22 +11,14 @@ use Lle\CruditBundle\Dto\Path;
 class LinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
-
     public const TYPE_BODY = 'body';
-
     protected string $type;
-
     protected string $libelle;
-
     protected ?Icon $icon = null;
-
     protected ?Path $path = null;
-
     /** @var Badge[] */
     protected array $badges = [];
-
     protected ?string $cssClass = null;
-
     /** @var LinkElement[] */
     protected array $children = [];
 

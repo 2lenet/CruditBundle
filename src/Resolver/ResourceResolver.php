@@ -14,12 +14,11 @@ use Symfony\Bundle\SecurityBundle\Security;
 class ResourceResolver
 {
     private FieldResolver $fieldResolver;
-
     private Security $security;
 
     public function __construct(
         FieldResolver $fieldResolver,
-        Security $security
+        Security $security,
     ) {
         $this->fieldResolver = $fieldResolver;
         $this->security = $security;
@@ -32,7 +31,7 @@ class ResourceResolver
         object $resource,
         array $fields,
         DatasourceInterface $datasource,
-        ?CrudConfigInterface $crudConfig = null
+        ?CrudConfigInterface $crudConfig = null,
     ): ResourceView {
         return new ResourceView(
             $datasource->getIdentifier($resource),
@@ -48,7 +47,7 @@ class ResourceResolver
         array $fields,
         object $resource,
         DatasourceInterface $datasource,
-        ?CrudConfigInterface $crudConfig = null
+        ?CrudConfigInterface $crudConfig = null,
     ): array {
         $fieldViews = [];
         foreach ($fields as $key => $field) {

@@ -162,7 +162,7 @@ trait TraitCrudController
         Request $request,
         FilterState $filterState,
         Exporter $exporter,
-        ResourceResolver $resolver
+        ResourceResolver $resolver,
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EXPORT');
 

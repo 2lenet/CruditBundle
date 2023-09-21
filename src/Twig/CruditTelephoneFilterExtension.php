@@ -11,7 +11,6 @@ use Twig\TwigFilter;
 class CruditTelephoneFilterExtension extends AbstractExtension
 {
     private const INDICATOR_MAX_LENGTH = 3;
-
     // [indicator => [ length => format]]
     // source: https://fr.wikipedia.org/wiki/Num%C3%A9ro_de_t%C3%A9l%C3%A9phone
     private const FORMATS = [
@@ -103,7 +102,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
         if (strpos($telephone, '+') === 0) {
             $lenTel = strlen($telephone);
             $i = self::INDICATOR_MAX_LENGTH + 1;
-            while ($mask == null && $i > 0) {
+            while ($mask === null && $i > 0) {
                 $indicator = substr($telephone, 0, $i);
                 $currentLen = (string)($lenTel - $i);
                 if (key_exists($indicator, self::FORMATS) && key_exists($currentLen, self::FORMATS[$indicator])) {
@@ -115,7 +114,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
             $mask = "## ## ## ## ##";
         }
 
-        return ($mask != null ? $this->applyMask($mask, $telephone) : $telephone);
+        return ($mask !== null ? $this->applyMask($mask, $telephone) : $telephone);
     }
 
     private function applyMask(string $mask, string $value): string

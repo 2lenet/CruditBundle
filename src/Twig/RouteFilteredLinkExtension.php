@@ -4,15 +4,14 @@ namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class RouteFilteredLinkExtension extends AbstractExtension
 {
     private RouterInterface $router;
-
     private EntityManagerInterface $em;
 
     public function __construct(RouterInterface $router, EntityManagerInterface $em)

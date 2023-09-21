@@ -17,17 +17,12 @@ class ListConfig extends AbstractBrickConfig
 {
     /** @var Field[] */
     private array $fields = [];
-
     /** @var ItemAction[] */
     private array $actions = [];
-
     /** @var ListAction[] */
     private array $batch_actions = [];
-
     private ?DatasourceInterface $datasource = null;
-
     private DatasourceParams $datasourceParams;
-
     private string $className;
 
     public function __construct(array $options = [])
@@ -115,7 +110,7 @@ class ListConfig extends AbstractBrickConfig
 
     public function setBatchActions(array $actions): self
     {
-        $this->batch_actions = array_filter($actions, function ($a) {
+        $this->batch_actions = array_filter($actions, function (ItemAction|ListAction $a) {
             return $a->isBatch();
         });
 

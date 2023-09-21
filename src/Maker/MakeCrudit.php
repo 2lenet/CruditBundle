@@ -36,7 +36,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 final class MakeCrudit extends AbstractMaker
 {
     private DoctrineHelper $entityHelper;
-
     private string $projectDir;
 
     public function __construct(
@@ -270,13 +269,14 @@ final class MakeCrudit extends AbstractMaker
     {
         $fields = explode(".", $property);
         $multiLevelProperty = str_replace(".", ":", $property);
+        $numberOfFields = count($fields);
 
-        if (count($fields) > 1) {
+        if ($numberOfFields > 1) {
             // multi level
-            for ($i = 0; $i < count($fields); $i++) {
+            for ($i = 0; $i < $numberOfFields; $i++) {
                 $field = $fields[$i];
 
-                if ($i === count($fields) - 1) {
+                if ($i === $numberOfFields - 1) {
                     // it's the property
                     $property = $field;
                     break;
