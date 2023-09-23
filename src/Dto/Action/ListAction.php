@@ -12,7 +12,7 @@ class ListAction extends BaseAction
     protected bool $batch = false;
     protected ?string $form = "";
 
-    public static function new(string $label, Path $path, ?Icon $icon = null): BaseAction
+    public static function new(string $label, Path $path, ?Icon $icon = null): ListAction
     {
         return (new self($label, $path))
             ->setIcon($icon)
