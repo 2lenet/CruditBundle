@@ -151,3 +151,29 @@ You can choose between 3 types of totals, `AVERAGE`, `SUM` and `COUNT`.
 To use them, use the constants defined in the `CrudConfigInterface` file.
 
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**
+
+## Configure route for DoctrineEntityField
+
+To configure route for DoctrineEntityField, you must set the `route` options:
+
+```php
+Field::new('yourdoctrinentityfield', null, ['route' => 'your_route']);
+```
+
+Or:
+
+```php
+Field::new('yourdoctrinentityfield')->setOptions(['route' => 'your_route']);
+```
+
+If you want to add a role for your DoctrineEntityField:
+
+```php
+Field::new('yourdoctrinentityfield', null, ['route' => 'your_route', 'routeRole' => 'YOUR_ROLE']);
+```
+
+Or:
+
+```php
+Field::new('yourdoctrinentityfield')->setOptions(['route' => 'your_route', 'routeRole' => 'YOUR_ROLE']);
+```
