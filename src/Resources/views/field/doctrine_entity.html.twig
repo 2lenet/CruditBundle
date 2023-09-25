@@ -38,10 +38,21 @@
     {% elseif not view.options.link %}
         {{ value }}
     {% elseif view.options.route %}
-        <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
+        {% if view.options.routeRole is defined and view.options.routeRole is not null and is_granted(view.options.routeRole) %}
+            <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
+        {% else %}
+            {{ value }}
+        {% endif %}
     {% elseif value|get_crudit_routename is null %}
         {{ value }}
     {% else %}
-        <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
+        {% set route = value|get_crudit_routename %}
+        {% set role = route|replace({'app_crudit': 'role'})|upper %}
+
+        {% if is_granted(role) %}
+            <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
+        {% else %}
+            {{ value }}
+        {% endif %}
     {% endif %}
 {% endif %}
