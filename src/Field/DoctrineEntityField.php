@@ -26,6 +26,7 @@ class DoctrineEntityField extends AbstractField
         $optionsResolver->setDefaults([
             'link' => true,
             'route' => null,
+            'routeRole' => null,
         ]);
     }
 }
