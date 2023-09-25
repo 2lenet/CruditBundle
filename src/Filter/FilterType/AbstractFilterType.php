@@ -6,8 +6,6 @@ use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
- * AbstractFilterType
- *
  * Abstract base class for all admin list filters
  */
 abstract class AbstractFilterType implements FilterTypeInterface
@@ -53,14 +51,14 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->label;
     }
 
-    public function setLabel(string $label): self
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    public function setDefault(array $defaultData): self
+    public function setDefault(array $defaultData): static
     {
         $this->default = $defaultData;
 
@@ -85,7 +83,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->hidden;
     }
 
-    public function setHidden(bool $hidden): self
+    public function setHidden(bool $hidden): static
     {
         $this->hidden = $hidden;
 
@@ -97,7 +95,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->data;
     }
 
-    public function setData(?array $data): self
+    public function setData(?array $data): static
     {
         $this->data = $data;
 
@@ -179,7 +177,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->role;
     }
 
-    public function setRole(?string $role): self
+    public function setRole(?string $role): static
     {
         $this->role = $role;
 

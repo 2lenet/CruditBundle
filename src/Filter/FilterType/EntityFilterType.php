@@ -13,28 +13,33 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
 class EntityFilterType extends AbstractFilterType
 {
     protected string $entityClass;
+
     protected ?string $dataRoute;
 
-    public function __construct(string $fieldname, string $entityClass, ?string $dataRoute = null)
+    public static function new(string $fieldname, string $entityClass, ?string $dataRoute = null): static
     {
-        parent::__construct($fieldname);
-        $this->entityClass = $entityClass;
-        $this->setDataRoute($dataRoute);
-        $this->setAdditionnalKeys(['items']);
+        return (new static($fieldname))
+            ->setEntityClass($entityClass)
+            ->setDataRoute($dataRoute)
+            ->setAdditionnalKeys(['items']);
     }
 
-    private function setDataRoute(?string $dataRoute): void
+    public function setEntityClass(string $entityClass): static
+    {
+        $this->entityClass = $entityClass;
+
+        return $this;
+    }
+
+    private function setDataRoute(?string $dataRoute): static
     {
         if (null === $dataRoute) {
             $route = str_replace('App\\Entity\\', '', $this->entityClass);
             $dataRoute = sprintf('app_crudit_%s_autocomplete', strtolower($route));
         }
         $this->dataRoute = $dataRoute;
-    }
 
-    public static function new(string $fieldname, string $entityClass, ?string $customRoute = null): self
-    {
-        return new self($fieldname, $entityClass, $customRoute);
+        return $this;
     }
 
     public function getOperators(): array

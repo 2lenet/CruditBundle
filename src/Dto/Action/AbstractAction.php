@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Action;
 
+use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 
-class BaseAction
+abstract class AbstractAction implements ActionInterface
 {
     protected string $label;
     protected Path $path;
@@ -18,6 +19,23 @@ class BaseAction
     protected ?string $modal = null;
     protected array $config = [];
     protected ?string $target = null;
+
+    public function __construct(string $label, Path $path)
+    {
+        $this->label = $label;
+        $this->path = $path;
+        $this->url = null;
+    }
+
+    public function getId(): string
+    {
+        return md5('crudit_action_' . spl_object_id($this));
+    }
+
+    public function getTitle(): string
+    {
+        return $this->getLabel();
+    }
 
     public function getLabel(): string
     {
@@ -34,7 +52,7 @@ class BaseAction
         return $this->icon;
     }
 
-    public function setIcon(?Icon $icon): self
+    public function setIcon(?Icon $icon): static
     {
         $this->icon = $icon;
 
@@ -46,7 +64,7 @@ class BaseAction
         return $this->url;
     }
 
-    public function setUrl(string $url): self
+    public function setUrl(string $url): static
     {
         $this->url = $url;
 
@@ -58,7 +76,7 @@ class BaseAction
         return $this->cssClass;
     }
 
-    public function setCssClass(?string $cssClass): self
+    public function setCssClass(?string $cssClass): static
     {
         $this->cssClass = $cssClass;
 
@@ -70,7 +88,7 @@ class BaseAction
         return $this->hideLabel;
     }
 
-    public function setHideLabel(bool $hideLabel): self
+    public function setHideLabel(bool $hideLabel): static
     {
         $this->hideLabel = $hideLabel;
 
@@ -85,7 +103,7 @@ class BaseAction
     /**
      * @param ?string $modal #Template
      */
-    public function setModal(?string $modal): self
+    public function setModal(?string $modal): static
     {
         $this->modal = $modal;
 
@@ -97,7 +115,7 @@ class BaseAction
         return $this->config;
     }
 
-    public function setConfig(array $config): self
+    public function setConfig(array $config): static
     {
         $this->config = $config;
 
@@ -109,21 +127,11 @@ class BaseAction
         return $this->target;
     }
 
-    public function setTarget(string $target): self
+    public function setTarget(string $target): static
     {
         $this->target = $target;
 
         return $this;
-    }
-
-    public function getId(): string
-    {
-        return md5("crudit_action_" . spl_object_id($this));
-    }
-
-    public function getTitle(): string
-    {
-        return $this->getLabel();
     }
 
     public function isDisabled(): bool

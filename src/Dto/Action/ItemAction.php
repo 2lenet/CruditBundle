@@ -8,7 +8,7 @@ use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exception\CruditException;
 
-class ItemAction extends BaseAction
+class ItemAction extends AbstractAction
 {
     protected ?object $resource = null;
     protected bool $dropdown = false;
@@ -16,19 +16,13 @@ class ItemAction extends BaseAction
     protected bool $disabled = false;
     protected bool $hasVoter = false;
 
-    public static function new(string $label, Path $path, ?Icon $icon = null): BaseAction
+    public static function new(string $label, Path $path, ?Icon $icon = null): static
     {
         return (new static($label, $path))
             ->setIcon($icon)
             ->setHideLabel(false);
     }
 
-    final public function __construct(string $label, Path $path)
-    {
-        $this->label = $label;
-        $this->path = $path;
-        $this->url = null;
-    }
     /** exists only when rendering */
     public function getResource(): ?object
     {
