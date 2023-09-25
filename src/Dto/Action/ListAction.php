@@ -7,23 +7,16 @@ namespace Lle\CruditBundle\Dto\Action;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 
-class ListAction extends BaseAction
+class ListAction extends AbstractAction
 {
     protected bool $batch = false;
     protected ?string $form = "";
 
-    public static function new(string $label, Path $path, ?Icon $icon = null): ListAction
+    public static function new(string $label, Path $path, ?Icon $icon = null): static
     {
-        return (new self($label, $path))
+        return (new static($label, $path))
             ->setIcon($icon)
             ->setHideLabel(false);
-    }
-
-    public function __construct(string $label, Path $path)
-    {
-        $this->label = $label;
-        $this->path = $path;
-        $this->url = null;
     }
 
     public function isBatch(): bool

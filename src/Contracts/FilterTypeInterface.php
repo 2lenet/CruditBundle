@@ -4,9 +4,6 @@ namespace Lle\CruditBundle\Contracts;
 
 use Doctrine\ORM\QueryBuilder;
 
-/**
- * FilterTypeInterface
- */
 interface FilterTypeInterface
 {
     public const OPERATOR_EQUAL = 'eq';
@@ -24,6 +21,8 @@ interface FilterTypeInterface
     public const OPERATOR_DOES_NOT_CONTAIN = 'doesnotcontain';
     public const OPERATOR_STARTS_WITH = 'startswith';
     public const OPERATOR_ENDS_WITH = 'endswith';
+
+    public function __construct(string $fieldname);
 
     public function getOperators(): array;
 

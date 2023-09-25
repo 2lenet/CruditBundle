@@ -10,9 +10,9 @@ class WorkflowFilterType extends AbstractFilterType
 {
     protected WorkflowInterface $workflow;
 
-    public static function new(string $fieldname, WorkflowInterface $workflow): self
+    public static function new(string $fieldname, WorkflowInterface $workflow): static
     {
-        return (new self($fieldname))
+        return (new static($fieldname))
             ->setWorkflow($workflow)
             ->setAdditionnalKeys(['items']);
     }
@@ -98,14 +98,14 @@ class WorkflowFilterType extends AbstractFilterType
         return $this->workflow;
     }
 
-    public function setWorkflow(WorkflowInterface $workflow): self
+    public function setWorkflow(WorkflowInterface $workflow): static
     {
         $this->workflow = $workflow;
 
         return $this;
     }
 
-    public function setData(?array $data): self
+    public function setData(?array $data): static
     {
         parent::setData($data);
 
