@@ -51,6 +51,11 @@ final class MakeCrudit extends AbstractMaker
         return 'make:crudit';
     }
 
+    public static function getCommandDescription(): string
+    {
+        return 'Maker for Crudit, follow instructions to create a crud';
+    }
+
     public function configureCommand(Command $command, InputConfiguration $inputConfig): void
     {
         $command
