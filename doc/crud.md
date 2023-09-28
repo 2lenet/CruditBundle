@@ -166,6 +166,22 @@ Or:
 Field::new('yourdoctrinentityfield')->setOptions(['route' => 'your_route']);
 ```
 
+## Configure autocomplete route for DoctrineEntityField
+
+To configure autocomple route for DoctrineEntityField, you must set the `setAutocompleteUrl` method:
+
+```php
+Field::new('yourdoctrinentityfield')->setAutocompleteUrl('your_autocomplete_url');
+```
+
+If you want to be able to select several items, you need to add the `setMultiple` method:
+
+```php
+Field::new('yourdoctrinentityfield')->setAutocompleteUrl('your_autocomplete_url')->setMultiple(true);
+```
+
+## Configure role for DoctrineEntityField
+
 If you want to add a role for your DoctrineEntityField:
 
 ```php

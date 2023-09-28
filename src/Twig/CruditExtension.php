@@ -37,6 +37,7 @@ class CruditExtension extends AbstractExtension
         return [
             new TwigFilter('json_decode', [$this, 'jsonDecode']),
             new TwigFilter("get_crudit_routename", [$this, "getCruditRoutename"]),
+            new TwigFilter('get_crudit_routename_for_key', [$this, 'getCruditRouteNameForKey']),
         ];
     }
 
@@ -94,5 +95,20 @@ class CruditExtension extends AbstractExtension
         }
 
         return $route . '_show';
+    }
+
+    public function getCruditRouteNameForKey(object $value, string $key, array $params = []): ?string
+    {
+        $class = (new \ReflectionClass($value))->getShortName();
+
+        $route = 'app_crudit_' . strtolower($class);
+
+        try {
+            $this->router->generate($route . '_' . $key, $params);
+        } catch (RouteNotFoundException $e) {
+            return null;
+        }
+
+        return $route . '_' . $key;
     }
 }

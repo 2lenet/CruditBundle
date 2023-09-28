@@ -9,16 +9,30 @@ use Lle\CruditBundle\Dto\Path;
 class Field
 {
     private string $label;
+
     private string $name;
+
     private bool $sort;
+
     private ?Path $path;
+
     private string $linkId = 'id';
+
     private array $options;
+
     private ?string $type;
+
     private ?string $template;
+
     private ?int $ruptGroup = 0;
+
     private ?string $role = null;
+
     private bool $editInPlace = false;
+
+    private ?string $autocompleteUrl = null;
+
+    private bool $multiple = false;
 
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
@@ -78,11 +92,14 @@ class Field
     }
 
     /**
-     * @param string $editRoute #Route
+     * @param ?string $editRoute #Route
      */
-    public function setEditable(string $editRoute): self
+    public function setEditable(?string $editRoute = null): self
     {
-        $this->options['edit_route'] = $editRoute;
+        if ($editRoute) {
+            $this->options['edit_route'] = $editRoute;
+        }
+
         $this->editInPlace = true;
 
         return $this;
@@ -195,6 +212,30 @@ class Field
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getAutocompleteUrl(): ?string
+    {
+        return $this->autocompleteUrl;
+    }
+
+    public function setAutocompleteUrl(?string $autocompleteUrl): self
+    {
+        $this->autocompleteUrl = $autocompleteUrl;
+
+        return $this;
+    }
+
+    public function getMultiple(): bool
+    {
+        return $this->multiple;
+    }
+
+    public function setMultiple(bool $multiple): self
+    {
+        $this->multiple = $multiple;
 
         return $this;
     }
