@@ -53,7 +53,7 @@ class FileType extends VichFileType
             $filePath = $this->resolveUriOption(true, $form->getParent()->getData(), $form);
             $view->vars['image_uri'] = $filePath;
 
-            $filename = substr($filePath, strrpos($filePath, '/') + 1);
+            $filename = substr((string)$filePath, strrpos((string)$filePath, '/') + 1);
             $filename = substr($filename, 0, strrpos($filename, '-')) . '.' . substr(
                 $filename,
                 strrpos($filename, '.') + 1
