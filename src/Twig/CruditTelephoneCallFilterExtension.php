@@ -19,14 +19,18 @@ class CruditTelephoneCallFilterExtension extends AbstractExtension
 
     public function formatTelephone(?string $telephone): string
     {
-        $telephone = str_replace(' ', '', $telephone);
+        if ($telephone) {
+            $telephone = str_replace(' ', '', $telephone);
 
-        if (strlen($telephone) === 10 && $telephone[0] === '0') {
-            $substr = substr($telephone, 1);
+            if (strlen($telephone) === 10 && $telephone[0] === '0') {
+                $substr = substr($telephone, 1);
 
-            return str_replace(' ', '', '+33' . $substr);
+                return str_replace(' ', '', '+33' . $substr);
+            }
+
+            return $telephone;
         }
 
-        return $telephone;
+        return '';
     }
 }

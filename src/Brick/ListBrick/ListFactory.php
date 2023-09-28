@@ -104,6 +104,7 @@ class ListFactory extends AbstractBasicBrickFactory
         if (count($crudConfig->getTotalFields()) > 0) {
             $dsParams = $brickConfigurator->getDatasourceParams();
             $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+            /** @var array $totalByField */
             $totalByField = $brickConfigurator->getDatasource()->getTotals($dsParams, $crudConfig->getTotalFields());
 
             $i = 0;

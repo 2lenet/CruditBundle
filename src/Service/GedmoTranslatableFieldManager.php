@@ -121,7 +121,8 @@ class GedmoTranslatableFieldManager
     // UPDATE
     public function persistTranslations(Form $form, array $locales, string $defaultLocale): void
     {
-        $entity = $form->getParent()->getData();
+        /** @var object $entity */
+        $entity = $form->getParent()?->getData();
         $fieldName = $form->getName();
         $submittedValues = $form->getData();
         foreach ($locales as $locale) {
@@ -129,14 +130,13 @@ class GedmoTranslatableFieldManager
                 $value = $submittedValues[$locale];
                 // personal
                 if (
-                    \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) && \is_callable(
-                        [$entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET]
-                    )
+                    \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) &&
+                    \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) &&
+                    \is_callable([$entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET])
                 ) {
                     $translationClassName = $this->getPersonalTranslationClassName($entity);
                     $needAddTranslation = true;
-                    // Phpstan doesn't recognise project entity with $form->getParent()->getData(), to avoid error the only solution is to ignore the next line
-                    /** @phpstan-ignore-next-line */
+
                     foreach ($entity->getTranslations() as $translation) {
                         if ($translation->getLocale() == $locale && $translation->getField() == $fieldName) {
                             $translation->setContent($value);

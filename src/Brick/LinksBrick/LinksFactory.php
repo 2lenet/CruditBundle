@@ -19,6 +19,7 @@ class LinksFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         /** @var LinksConfig $brickConfigurator */
+        /** @var \Stringable $resource */
         $resource = $this->getItem($brickConfigurator);
 
         /** @var LinksConfig $brickConfigurator */

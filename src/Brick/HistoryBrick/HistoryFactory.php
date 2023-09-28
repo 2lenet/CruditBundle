@@ -48,6 +48,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
     {
         $mainDatasource = $brickConfigurator->getDataSource();
         $mainId = $this->getRequest()->get("id");
+        /** @var object $item */
         $item = $mainDatasource->get($mainId);
         $logs = $this->getLogEntriesDatasource($item);
         $options = $brickConfigurator->getOptions();
@@ -73,6 +74,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
 
     private function getLogEntriesDatasource(object $item): array
     {
+        /** @var LogEntry $item */
         $logs = $this->em
             ->getRepository(LogEntry::class)
             ->getLogEntries($item);
@@ -94,8 +96,10 @@ class HistoryFactory extends AbstractBasicBrickFactory
 
                         $subItem = $this->em->getRepository($association["targetEntity"])->findOneBy($value);
                         if ($subItem) {
+                            $class = get_class($subItem);
+                            /** @var \Stringable $subItem */
                             $result = (string)$subItem;
-                            $namespace = $this->em->getClassMetadata(get_class($subItem))->getName();
+                            $namespace = $this->em->getClassMetadata($class)->getName();
                             $class = explode("\\", $namespace);
                         } else {
                             $result = "?";

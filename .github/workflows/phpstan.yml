@@ -1,12 +1,15 @@
+name: PHPStan
+
 on:
     push:
-        branches: [main]
+        branches: [master]
     pull_request:
-        branches: [main]
+        branches: [master]
 
 jobs:
-    phpunit:
-        name: "PHPUnit ${{ matrix.php-version }}"
+    phpstan:
+        name: "PHPStan ${{ matrix.php-version }}"
+
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -22,12 +25,8 @@ jobs:
                     version: 2
                     args: --profile --ignore-platform-reqs
 
-            -   name: "Run PHPUnit"
-                uses: php-actions/phpunit@v2
+            -   name: 'PHPStan Static Analysis'
+                uses: php-actions/phpstan@v2
                 with:
-                    php_version: ${{ matrix.php_version }}
-                    php_extensions: xdebug
-                    version: 9.5
-                    configuration: tests/phpunit/phpunit.xml
-                    bootstrap: vendor/autoload.php
-                    args: --coverage-text=coverage.xml
+                    configuration: tests/phpstan.neon
+                    memory_limit: 256M

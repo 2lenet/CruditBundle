@@ -12,15 +12,15 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ShowConfig extends AbstractBrickConfig
 {
-    /** @var Field[] */
     private array $fields = [];
-    private ?DatasourceInterface $dataSource = null;
+
+    private ?DatasourceInterface $datasource = null;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
-        if ($this->dataSource === null) {
-            $this->setDataSource($crudConfig->getDatasource());
+        if ($this->datasource === null) {
+            $this->setDatasource($crudConfig->getDatasource());
         }
 
         return $this;
@@ -36,16 +36,19 @@ class ShowConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function setDataSource(DatasourceInterface $dataSource): self
+    public function setDatasource(DatasourceInterface $datasource): self
     {
-        $this->dataSource = $dataSource;
+        $this->datasource = $datasource;
 
         return $this;
     }
 
-    public function getDataSource(): DatasourceInterface
+    public function getDatasource(): DatasourceInterface
     {
-        return $this->dataSource;
+        /** @var DatasourceInterface $result */
+        $result = $this->datasource;
+
+        return $result;
     }
 
     public function addAction(): self
