@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Twig;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
@@ -14,13 +15,11 @@ use Twig\TwigFunction;
 
 class CruditExtension extends AbstractExtension
 {
-    private MenuRegistry $menuRegistry;
-    private RouterInterface $router;
-
-    public function __construct(MenuRegistry $menuRegistry, RouterInterface $router)
-    {
-        $this->menuRegistry = $menuRegistry;
-        $this->router = $router;
+    public function __construct(
+        private MenuRegistry $menuRegistry,
+        private RouterInterface $router,
+        private EntityManagerInterface $em,
+    ) {
     }
 
     public function getFunctions(): array
@@ -37,7 +36,8 @@ class CruditExtension extends AbstractExtension
         return [
             new TwigFilter('json_decode', [$this, 'jsonDecode']),
             new TwigFilter("get_crudit_routename", [$this, "getCruditRoutename"]),
-            new TwigFilter('get_crudit_routename_for_key', [$this, 'getCruditRouteNameForKey']),
+            new TwigFilter('get_crudit_routename_key_object', [$this, 'getCruditRouteNameForKeyByObject']),
+            new TwigFilter('get_crudit_routename_key_field', [$this, 'getCruditRouteNameForKeyByField']),
         ];
     }
 
@@ -97,7 +97,7 @@ class CruditExtension extends AbstractExtension
         return $route . '_show';
     }
 
-    public function getCruditRouteNameForKey(object $value, string $key, array $params = []): ?string
+    public function getCruditRouteNameForKeyByObject(object $value, string $key, array $params = []): ?string
     {
         $class = (new \ReflectionClass($value))->getShortName();
 
@@ -105,6 +105,27 @@ class CruditExtension extends AbstractExtension
 
         try {
             $this->router->generate($route . '_' . $key, $params);
+        } catch (RouteNotFoundException $e) {
+            return null;
+        }
+
+        return $route . '_' . $key;
+    }
+
+    public function getCruditRouteNameForKeyByField(object $item, string $field, string $key): ?string
+    {
+        $metadata = $this->em->getClassMetadata(get_class($item));
+
+        $association = $metadata->getAssociationMapping($field);
+        $targetEntity = $association['targetEntity'];
+
+        $entityParts = explode('\\', $targetEntity);
+        $entity = strtolower(end($entityParts));
+
+        $route = 'app_crudit_' . $entity;
+
+        try {
+            $this->router->generate($route . '_' . $key);
         } catch (RouteNotFoundException $e) {
             return null;
         }

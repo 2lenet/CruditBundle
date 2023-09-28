@@ -2,13 +2,13 @@
     {% if view.field.autocompleteUrl %}
         {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
     {% else %}
-        {% set autocompleteUrl = path(value|get_crudit_routename_for_key('autocomplete')) %}
+        {% set autocompleteUrl = path(resource|get_crudit_routename_key_field(view.field.id, 'autocomplete')) %}
     {% endif %}
 
     {% if view.field.options['edit_route'] is defined and view.field.options['edit_route'] %}
         {% set editUrl = path(view.field.options['edit_route'], {'id': resource.id}) %}
     {% else %}
-        {% set editUrl = path(resource|get_crudit_routename_for_key('editdata', {'id': resource.id}), {'id': resource.id}) %}
+        {% set editUrl = path(resource|get_crudit_routename_key_object('editdata', {'id': resource.id}), {'id': resource.id}) %}
     {% endif %}
 
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ editUrl }}">
