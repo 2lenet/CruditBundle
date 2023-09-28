@@ -33,4 +33,3 @@ jobs:
                     version: 10.3
                     configuration: tests/phpunit/phpunit.xml
                     bootstrap: vendor/autoload.php
-                    args: --coverage-text=coverage.xml
