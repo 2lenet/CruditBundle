@@ -1,7 +1,17 @@
 {% if view.field.editInPlace %}
-    {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
+    {% if view.field.autocompleteUrl %}
+        {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
+    {% else %}
+        {% set autocompleteUrl = path(value|get_crudit_routename_for_key('autocomplete')) %}
+    {% endif %}
 
-    <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
+    {% if view.field.options['edit_route'] is defined and view.field.options['edit_route'] %}
+        {% set editUrl = path(view.field.options['edit_route'], {'id': resource.id}) %}
+    {% else %}
+        {% set editUrl = path(resource|get_crudit_routename_for_key('editdata', {'id': resource.id}), {'id': resource.id}) %}
+    {% endif %}
+
+    <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ editUrl }}">
         <form class="form-inline d-none">
             <input type="hidden" id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}_items"
                    name="{{ view.field.id }}_items"
@@ -14,9 +24,9 @@
                     style="min-width: 150px;"
                     autocomplete="off"
                     value="{{ value }}"
-                    data-url="{{ view.field.url }}"
+                    data-url="{{ autocompleteUrl }}"
                     data-options="[]"
-                    data-maxItems="{{ view.field.maxItems }}"
+                    data-maxItems="{{ view.field.multiple ? 'null' : '1' }}"
                 >
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">
