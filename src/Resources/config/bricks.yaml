@@ -5,7 +5,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\FilterBrick\FilterFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState', '@security.helper']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Filter\FilterState', '@Symfony\Component\Security\Core\Security']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
