@@ -24,7 +24,7 @@ To make the multiple search work, you must include the following template :
 
 Full example :
 
-```text
+```twig
 {% set urls = [
     {
         entity: "client",

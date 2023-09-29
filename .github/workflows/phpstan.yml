@@ -16,7 +16,7 @@ jobs:
                 php_version: [8.1]
 
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v2
 
             -   name: "Install dependencies with Composer"
                 uses: php-actions/composer@v6
