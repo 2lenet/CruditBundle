@@ -160,6 +160,10 @@ class Converter
             if (isset($property["type"]) && $property["type"] === "group") {
                 $group = true;
 
+                if (!array_key_exists('CrudConfigInterface::SHOW', $cruds)) {
+                    $cruds['CrudConfigInterface::SHOW'] = [];
+                }
+
                 if (isset($property["label"])) {
                     $groupName = $property["label"];
                     $cruds["CrudConfigInterface::SHOW"][$groupName] = [];
@@ -171,7 +175,7 @@ class Converter
                 if ($group) {
                     $cruds["CrudConfigInterface::SHOW"][$groupName][] = Field::new($property["property"]);
                 } else {
-                    $cruds["CrudConfigInterface::SHOW"][] = Field::new($property["property"]);
+                    $cruds["CrudConfigInterface::SHOW"][$groupName][] = Field::new($property["property"]);
                 }
             }
         }

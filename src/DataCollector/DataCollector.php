@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector as BaseDataCollector;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * Collects information about the requests related to Crudit and displays
@@ -41,7 +42,7 @@ class DataCollector extends BaseDataCollector
         $this->data = $entities;
     }
 
-    public function getData(): array
+    public function getData(): array|Data
     {
         return $this->data;
     }

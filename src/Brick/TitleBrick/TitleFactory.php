@@ -32,6 +32,7 @@ class TitleFactory extends AbstractBasicBrickFactory
 
     private function getItem(TitleConfig $brickConfigurator): string
     {
+        /** @var \Stringable $resource */
         $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
 
         return (string)$resource;

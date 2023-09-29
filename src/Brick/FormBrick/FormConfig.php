@@ -12,7 +12,7 @@ use Lle\CruditBundle\Dto\Path;
 
 class FormConfig extends AbstractBrickConfig
 {
-    private ?DatasourceInterface $dataSource = null;
+    private ?DatasourceInterface $datasource = null;
     private ?string $form = null;
     /** @var FormField[] */
     private array $fields = [];
@@ -130,8 +130,8 @@ class FormConfig extends AbstractBrickConfig
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
         parent::setCrudConfig($crudConfig);
-        if ($this->dataSource === null) {
-            $this->setDataSource($crudConfig->getDatasource());
+        if ($this->datasource === null) {
+            $this->setDatasource($crudConfig->getDatasource());
         }
         if (!$this->successRedirectPath) {
             $this->setSuccessRedirectPath($crudConfig->getAfterEditPath());
@@ -140,16 +140,19 @@ class FormConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function setDataSource(DatasourceInterface $dataSource): self
+    public function setDatasource(DatasourceInterface $datasource): self
     {
-        $this->dataSource = $dataSource;
+        $this->datasource = $datasource;
 
         return $this;
     }
 
-    public function getDataSource(): DatasourceInterface
+    public function getDatasource(): DatasourceInterface
     {
-        return $this->dataSource;
+        /** @var DatasourceInterface $result */
+        $result = $this->datasource;
+
+        return $result;
     }
 
     public function getCancelPath(): ?Path

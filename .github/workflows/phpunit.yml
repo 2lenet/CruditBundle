@@ -1,3 +1,5 @@
+name: PHPUnit
+
 on:
     push:
         branches: [main]
@@ -7,6 +9,7 @@ on:
 jobs:
     phpunit:
         name: "PHPUnit ${{ matrix.php-version }}"
+
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -27,7 +30,6 @@ jobs:
                 with:
                     php_version: ${{ matrix.php_version }}
                     php_extensions: xdebug
-                    version: 9.5
+                    version: 10.3
                     configuration: tests/phpunit/phpunit.xml
                     bootstrap: vendor/autoload.php
-                    args: --coverage-text=coverage.xml

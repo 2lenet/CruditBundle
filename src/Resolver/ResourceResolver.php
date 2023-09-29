@@ -7,7 +7,6 @@ namespace Lle\CruditBundle\Resolver;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -40,9 +39,6 @@ class ResourceResolver
         );
     }
 
-    /**
-     * @return FieldView[]
-     */
     private function getFieldViews(
         array $fields,
         object $resource,
@@ -52,8 +48,15 @@ class ResourceResolver
         $fieldViews = [];
         foreach ($fields as $key => $field) {
             if (is_array($field)) {
+                if (!array_key_exists($key, $fieldViews)) {
+                    $fieldViews[$key] = [];
+                }
+
                 foreach ($field as $cardField) {
-                    if ($cardField->getRole() === null || $this->security->isGranted($cardField->getRole())) {
+                    if (
+                        is_array($fieldViews[$key]) &&
+                        ($cardField->getRole() === null || $this->security->isGranted($cardField->getRole()))
+                    ) {
                         $fieldViews[$key][] = $this->fieldResolver->resolveView(
                             $cardField,
                             $resource,

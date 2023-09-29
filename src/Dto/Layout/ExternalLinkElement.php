@@ -13,8 +13,8 @@ class ExternalLinkElement extends AbstractLayoutElement
     protected string $type;
     protected string $libelle;
     protected ?Icon $icon = null;
-    protected string $url;
-    protected string $target;
+    protected ?string $url;
+    protected ?string $target;
     protected ?string $cssClass = null;
 
     public static function new(
