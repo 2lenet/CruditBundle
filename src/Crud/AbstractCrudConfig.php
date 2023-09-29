@@ -330,6 +330,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return [];
     }
 
+    public function eipToUpdate(int|string $id): array
+    {
+        return [];
+    }
+
     public function getTotalFields(): array
     {
         return [];
