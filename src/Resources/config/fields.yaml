@@ -47,3 +47,6 @@ services:
     Lle\CruditBundle\Field\ColorField:
         arguments: ['@twig']
         tags: ['crudit.field']
+    Lle\CruditBundle\Field\HtmlField:
+        arguments: [ '@twig' ]
+        tags: [ 'crudit.field' ]

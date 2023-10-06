@@ -82,3 +82,9 @@
         </div>
     {% endif %}
 {% endblock %}
+
+{% block html_editor_widget %}
+    <div id="html_editor" class="ckeditor">
+        {{ data }}
+    </div>
+{% endblock %}
