@@ -25,10 +25,7 @@ return <?= $entityClass ?>::class;
 <?php
 if ($hasFilterset) { ?>
 
-    /**
-    * @required
-    * @param <?= $prefixFilename ?>FilterSet $filterSet
-    */
+    #[Required]
     public function setFilterset(<?= $prefixFilename ?>FilterSet $filterSet): void
     {
     $this->filterset = $filterSet;

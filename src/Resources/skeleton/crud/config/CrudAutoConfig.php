@@ -65,10 +65,9 @@ $this->datasource = $datasource;
 }
 
 /**
-* @param string $key
 * @return Field[]
 */
-public function getFields($key): array
+public function getFields(string $key): array
 {
 <?php
 foreach ($fields as $field) { ?>
