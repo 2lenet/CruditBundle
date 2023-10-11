@@ -50,6 +50,51 @@ public function getNumberDisplayed(): int
 }
 ```
 
+**4. (Optional) Add default values**
+
+You can set a default value for your filter. To do this, simply add the setDefault method to your filter :
+
+```php
+public function getFilters(): array
+{
+    return [
+        BooleanFilterType::new('actif')->setDefault(['op' => 'eq', 'value' => 'true']),
+    ];
+}
+```
+
+To configure the default values for an `EntityFilterType`, you must first create 2 tables.
+One containing the id and text (toString) of each of your default values and the other with the id of each of your default values.
+Then, in the `setDefault` method, you need to configure 3 pieces of data:
+    - op
+    - items (json)
+    - value
+
+```php
+public function getFilters(): array
+{
+    $result = $this->em->getRepository(YourEntity::class)->findBy(['code' => ['A', 'B']]);
+
+    $items = [];
+    $idItems = [];
+    foreach ($results as $result) {
+        $items[] = [
+            'id' => $result->getId(),
+            'text' => $result->getCode() . ' - ' . $result->getLibelle(),
+        ];
+        $idItems[] = $result->getId();
+    }
+
+    return [
+        EntityFilterType::new('yourField', YourEntity::class)->setDefault([
+            'op' => 'eq',
+            'items' => json_encode($items),
+            'value' => implode(',', $idItems),
+        ]),
+    ];
+}
+```
+
 **Available filter types :**
 
 - StringFilterType : simple string search
