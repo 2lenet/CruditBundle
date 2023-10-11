@@ -34,6 +34,8 @@ class Field
 
     private bool $multiple = false;
 
+    private ?string $info = null;
+
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
         $this->name = $name;
@@ -236,6 +238,18 @@ class Field
     public function setMultiple(bool $multiple): self
     {
         $this->multiple = $multiple;
+
+        return $this;
+    }
+
+    public function getInfo(): ?string
+    {
+        return $this->info;
+    }
+
+    public function setInfo(?string $info): self
+    {
+        $this->info = $info;
 
         return $this;
     }
