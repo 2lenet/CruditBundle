@@ -96,10 +96,14 @@ class Field
     /**
      * @param ?string $editRoute #Route
      */
-    public function setEditable(?string $editRoute = null): self
+    public function setEditable(?string $editRoute = null, ?string $role = null): self
     {
         if ($editRoute) {
             $this->options['edit_route'] = $editRoute;
+        }
+
+        if ($role) {
+            $this->options['editRole'] = $role;
         }
 
         $this->editInPlace = true;
