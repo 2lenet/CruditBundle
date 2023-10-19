@@ -36,6 +36,7 @@
 
     <file>src/</file>
     <exclude-pattern>src/Resources/skeleton/**/*$</exclude-pattern>
+    <exclude-pattern>src/Resources/public/ckeditor/*</exclude-pattern>
 
 
 </ruleset>
