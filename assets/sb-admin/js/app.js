@@ -8,6 +8,7 @@ import './form';
 import './multisearch';
 import './scroll-to-top';
 import './sidebar';
+import './html_editor';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {
