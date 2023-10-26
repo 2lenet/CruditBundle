@@ -1,6 +1,6 @@
 {% if
     (view.field.editInPlace and view.field.options['editRole'] is not defined)
-    or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole']))
+    or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
     {% if view.field.autocompleteUrl is defined and view.field.autocompleteUrl %}
         {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
