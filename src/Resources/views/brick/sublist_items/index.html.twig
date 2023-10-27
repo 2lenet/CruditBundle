@@ -3,6 +3,12 @@
         <div class="card-header py-1">
             {% if tab is defined %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab } %}
+                <script>
+                    window.addEventListener('load', function () {
+                        var badge = document.getElementById("{{ tab.id }}-badge");
+                        badge.textContent ="{{ view.config.datasource_params.count }}";
+                    });
+                </script>
             {% else %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
             {% endif %}

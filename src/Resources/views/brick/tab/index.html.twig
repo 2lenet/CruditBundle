@@ -17,10 +17,12 @@
                             ) %}
                             {% set active = true %}
                             active
-                            {% endif %}"
+                            {% endif %} position-relative"
                         data-bs-toggle="tab"
                         href="#{{ tab.id }}"
-                        role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}</a>
+                        role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}
+                      <span id="{{ tab.id }}-badge" class="position-absolute top-0 start-200 translate-middle badge rounded-pill bg-primary"></span>
+                    </a>
                 </li>
             {% endif %}
         {% endfor %}
