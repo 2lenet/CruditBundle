@@ -20,8 +20,10 @@
                             {% endif %} position-relative"
                         data-bs-toggle="tab"
                         href="#{{ tab.id }}"
-                        role="tab" type="button">{{ tab.label|trans(domain=view.config.translation_domain) }}
-                      <span id="{{ tab.id }}-badge" class="position-absolute top-0 start-200 translate-middle badge rounded-pill bg-primary"></span>
+                        role="tab" type="button">
+                        <span id="{{ tab.id }}-badge" class="badge rounded-pill bg-primary"></span>
+                        {{ tab.label|trans(domain=view.config.translation_domain) }}
+
                     </a>
                 </li>
             {% endif %}
