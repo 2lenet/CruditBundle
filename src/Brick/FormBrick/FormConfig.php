@@ -9,11 +9,10 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\FormField;
 use Lle\CruditBundle\Dto\Path;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class FormConfig extends AbstractBrickConfig
 {
-    private ?DatasourceInterface $dataSource = null;
+    private ?DatasourceInterface $datasource = null;
 
     private ?string $form = null;
 
