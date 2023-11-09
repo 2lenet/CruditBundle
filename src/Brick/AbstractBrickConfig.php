@@ -92,7 +92,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /**
      * @param ?string $role
      */
-    public function setRole(?string $role): BrickConfigInterface
+    public function setRole(?string $role): AbstractBrickConfig
     {
         $this->role = $role;
 

@@ -22,8 +22,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class FormFactory extends AbstractBasicBrickFactory
 {
     private FormFactoryInterface $formFactory;
+
     private BrickResponseCollector $brickResponseCollector;
+
     private UrlGeneratorInterface $urlGenerator;
+
     protected PropertyAccessorInterface $propertyAccessor;
 
     public function __construct(
@@ -49,6 +52,9 @@ class FormFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
+        $request = $this->requestStack->getMainRequest();
+        $referer = $request?->headers->get('referer');
+
         /** @var FormConfig $brickConfigurator */
         $resource = $this->getResource($brickConfigurator);
 
@@ -63,6 +69,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'title' => $brickConfigurator->getTitle(),
                 'form' => $form->createView(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
+                'referer' => $referer,
             ]);
 
         return $view;
@@ -85,7 +92,8 @@ class FormFactory extends AbstractBasicBrickFactory
 
                 $this->brickResponseCollector->add(
                     new RedirectBrickResponse(
-                        $this->urlGenerator->generate(
+                        $this->getRequest()->request->get('referer')
+                        ?? $this->urlGenerator->generate(
                             $brickConfig->getSuccessRedirectPath()->getRoute(),
                             array_merge(
                                 $brickConfig->getSuccessRedirectPath()->getParams(),

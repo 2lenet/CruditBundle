@@ -9,23 +9,33 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Dto\Field\FormField;
 use Lle\CruditBundle\Dto\Path;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class FormConfig extends AbstractBrickConfig
 {
     private ?DatasourceInterface $dataSource = null;
+
     private ?string $form = null;
+
     /** @var FormField[] */
     private array $fields = [];
+
     private ?Path $successRedirectPath = null;
+
     private string $messageSuccess;
+
     private string $messageError;
+
     protected ?Path $cancelPath = null;
+
     /**
      * For sublist forms.
      * assocField contains the name of the parent property
      */
     protected ?string $assocProperty = null;
+
     protected bool $sublist = false;
+
     protected ?string $title = null;
 
     public static function new(array $options = []): self

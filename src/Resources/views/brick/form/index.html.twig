@@ -20,6 +20,9 @@
 
     {{ form_start(form, {'attr': form_attributes}) }}
     {{ form_errors(form) }}
+    {% if view.data.referer is defined and view.data.referer %}
+        <input type="hidden" name="referer" value="{{ view.data.referer }}">
+    {% endif %}
     {% for field in form.getIterator() %}
         {% if field.vars.isGroup is defined and field.vars.isGroup %}
             {% do field.setRendered %} {# To avoid rendering at the end of the form, fields that have already been rendered in groups #}
