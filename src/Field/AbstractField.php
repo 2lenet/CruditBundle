@@ -53,6 +53,7 @@ abstract class AbstractField implements FieldInterface
             "tableCssClass" => "text-nowrap",
             "edit_route" => null,
             "sortProperty" => null,
+            'editRole' => null,
         ]);
     }
 

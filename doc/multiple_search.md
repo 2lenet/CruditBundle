@@ -20,11 +20,11 @@ You need to create a template `_search.html.twig` for example, in `templates/lay
 
 To make the multiple search work, you must include the following template :
 
-`{% include '@LleCrudit/layout/sb_admin/elements/_multisearch.html.twig' with { 'urls': urls } %}`
+`@LleCrudit/layout/sb_admin/elements/_multisearch.html.twig`
 
 Full example :
 
-```php
+```twig
 {% set urls = [
     {
         entity: "client",

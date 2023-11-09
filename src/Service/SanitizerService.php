@@ -10,10 +10,14 @@ class SanitizerService implements SanitizerInterface
 {
     public function sanitize(?string $dirtyHtml = ""): string
     {
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('Cache.DefinitionImpl', null);
-        $sanitizer = new HTMLPurifier($config);
+        if ($dirtyHtml) {
+            $config = HTMLPurifier_Config::createDefault();
+            $config->set('Cache.DefinitionImpl', null);
+            $sanitizer = new HTMLPurifier($config);
 
-        return $sanitizer->purify($dirtyHtml);
+            return $sanitizer->purify($dirtyHtml);
+        }
+
+        return '';
     }
 }

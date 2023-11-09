@@ -1,12 +1,5 @@
 <tfoot>
 <tr class="d-none">
-    {% if has_batch %}
-        <th>
-                <span>
-                    <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
-                </span>
-        </th>
-    {% endif %}
     {% for field in view.config.fields %}
         {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
             <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
@@ -27,10 +20,6 @@
     {% endif %}
 </tr>
 <tr>
-    {% if has_batch %}
-        <td><input class="crudit-batch-check" type="checkbox"
-                   autocomplete="off"/></td>
-    {% endif %}
     {% for field in view.config.fields %}
         {% set match = false %}
         {% for total in view.data.totals %}

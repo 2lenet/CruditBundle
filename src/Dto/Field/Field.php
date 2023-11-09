@@ -34,6 +34,8 @@ class Field
 
     private bool $multiple = false;
 
+    private ?string $info = null;
+
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
         $this->name = $name;
@@ -94,10 +96,14 @@ class Field
     /**
      * @param ?string $editRoute #Route
      */
-    public function setEditable(?string $editRoute = null): self
+    public function setEditable(?string $editRoute = null, ?string $role = null): self
     {
         if ($editRoute) {
             $this->options['edit_route'] = $editRoute;
+        }
+
+        if ($role) {
+            $this->options['editRole'] = $role;
         }
 
         $this->editInPlace = true;
@@ -236,6 +242,18 @@ class Field
     public function setMultiple(bool $multiple): self
     {
         $this->multiple = $multiple;
+
+        return $this;
+    }
+
+    public function getInfo(): ?string
+    {
+        return $this->info;
+    }
+
+    public function setInfo(?string $info): self
+    {
+        $this->info = $info;
 
         return $this;
     }

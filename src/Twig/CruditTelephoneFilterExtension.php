@@ -96,25 +96,29 @@ class CruditTelephoneFilterExtension extends AbstractExtension
 
     public function formatTelephone(?string $telephone): string
     {
-        $telephone = str_replace(' ', '', $telephone);
+        if ($telephone) {
+            $telephone = str_replace(' ', '', $telephone);
 
-        $mask = null;
-        if (strpos($telephone, '+') === 0) {
-            $lenTel = strlen($telephone);
-            $i = self::INDICATOR_MAX_LENGTH + 1;
-            while ($mask === null && $i > 0) {
-                $indicator = substr($telephone, 0, $i);
-                $currentLen = (string)($lenTel - $i);
-                if (key_exists($indicator, self::FORMATS) && key_exists($currentLen, self::FORMATS[$indicator])) {
-                    $mask = self::FORMATS[$indicator][$currentLen];
+            $mask = null;
+            if (str_starts_with($telephone, '+')) {
+                $lenTel = strlen($telephone);
+                $i = self::INDICATOR_MAX_LENGTH + 1;
+                while ($mask === null && $i > 0) {
+                    $indicator = substr($telephone, 0, $i);
+                    $currentLen = (string)($lenTel - $i);
+                    if (key_exists($indicator, self::FORMATS) && key_exists($currentLen, self::FORMATS[$indicator])) {
+                        $mask = self::FORMATS[$indicator][$currentLen];
+                    }
+                    $i--;
                 }
-                $i--;
+            } elseif (strlen($telephone) == 10) {
+                $mask = "## ## ## ## ##";
             }
-        } elseif (strlen($telephone) == 10) {
-            $mask = "## ## ## ## ##";
+
+            return ($mask !== null ? $this->applyMask($mask, $telephone) : $telephone);
         }
 
-        return ($mask !== null ? $this->applyMask($mask, $telephone) : $telephone);
+        return '';
     }
 
     private function applyMask(string $mask, string $value): string

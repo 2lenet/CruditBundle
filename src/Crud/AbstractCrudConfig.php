@@ -161,18 +161,20 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             "sorts" => $this->getDefaultSort(),
         ]);
 
-        $limit = $request->query->get(strtolower($this->getName()) . "_limit");
+        /** @var string $name */
+        $name = $this->getName();
+        $limit = $request->query->get(strtolower($name) . "_limit");
         if ($limit !== null) {
             $params["limit"] = max((int)$limit, 1);
         }
 
-        $offset = $request->query->get(strtolower($this->getName()) . "_offset");
+        $offset = $request->query->get(strtolower($name) . "_offset");
         if ($offset !== null) {
             $params["offset"] = max((int)$offset, 0);
         }
 
-        $sortField = $request->query->get(strtolower($this->getName()) . "_sort", null);
-        $sortOrder = $request->query->get(strtolower($this->getName()) . "_sort_order", null);
+        $sortField = $request->query->get(strtolower($name) . "_sort", null);
+        $sortOrder = $request->query->get(strtolower($name) . "_sort_order", null);
         if ($sortField !== null) {
             $params["sorts"] = [[$sortField, $sortOrder]];
         }
@@ -201,7 +203,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getTitle(string $key): ?string
     {
-        return "crud.title." . strtolower($key) . "." . strtolower($this->getName());
+        /** @var string $name */
+        $name = $this->getName();
+
+        return "crud.title." . strtolower($key) . "." . strtolower($name);
     }
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
@@ -321,6 +326,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     }
 
     public function fieldsToUpdate(int|string $id): array
+    {
+        return [];
+    }
+
+    public function eipToUpdate(int|string $id): array
     {
         return [];
     }

@@ -15,6 +15,7 @@ use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -68,6 +69,7 @@ class FormFactory extends AbstractBasicBrickFactory
             ->setData([
                 'title' => $brickConfigurator->getTitle(),
                 'form' => $form->createView(),
+                'options' => $brickConfigurator->getOptions(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'referer' => $referer,
             ]);
@@ -127,7 +129,9 @@ class FormFactory extends AbstractBasicBrickFactory
                 return $form;
             }
 
-            return $this->formFactory->create($brickConfigurator->getForm(), $resource);
+            /** @var class-string<FormTypeInterface<object>> $formu */
+            $formu = $brickConfigurator->getForm();
+            return $this->formFactory->create($formu, $resource);
         }
     }
 
