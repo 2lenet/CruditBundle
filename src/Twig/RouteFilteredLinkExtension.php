@@ -53,6 +53,7 @@ class RouteFilteredLinkExtension extends AbstractExtension
     public function getEntityIdToTomselect(int $id, string $class): array
     {
         /** @var class-string $class */
+        /** @var \Stringable $item */
         $item = $this->em->find($class, $id);
 
         return [

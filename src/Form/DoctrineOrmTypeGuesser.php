@@ -256,6 +256,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessMaxLength(string $class, string $property): ?ValueGuess
     {
+        /** @var array $ret */
         $ret = $this->getMetadata($class);
 
         /** @var ClassMetadataInfo $classMetadata */
@@ -281,6 +282,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessPattern(string $class, string $property): ?ValueGuess
     {
+        /** @var array $ret */
         $ret = $this->getMetadata($class);
 
         /** @var ClassMetadataInfo $classMetadata */

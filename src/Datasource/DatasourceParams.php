@@ -95,7 +95,7 @@ class DatasourceParams
         return $this->limit;
     }
 
-    public function setLimit(?int $limit): self
+    public function setLimit(int $limit): self
     {
         $this->limit = $limit;
 
@@ -107,7 +107,7 @@ class DatasourceParams
         return $this->offset;
     }
 
-    public function setOffset(?int $offset): self
+    public function setOffset(int $offset): self
     {
         $this->offset = $offset;
 

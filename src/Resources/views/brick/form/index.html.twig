@@ -1,7 +1,13 @@
 {% if view.role is not defined or not view.role or is_granted(view.role) %}
     {% set form = view.data.form %}
     {% set currentGroup = 'FIRST' %}
-    <div class="card mb-4">
+    {% set displayClass = "" %}
+    {%  set formClass="" %}
+    {% if view.data.options.horizontalForm is defined %}
+        {% set displayClass ="d-inline-block" %}
+        {%  set formClass="crudit-horizontal" %}
+    {% endif %}
+    <div class="card mb-4 {{ formClass }}">
     {% if view.data.title is defined and view.data.title != '' %}
         {% block form_title %}
             <div class="card-header">
@@ -40,7 +46,7 @@
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                <div class="position-relative {{ field.vars.attr.class|default('') }}">
+                <div class="{{ displayClass }} position-relative {{ field.vars.attr.class|default('') }}">
                     <div
                         class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row flex-row-reverse align-items-start{% endif %}"
                         {% if

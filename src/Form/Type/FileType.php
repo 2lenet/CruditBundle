@@ -19,7 +19,7 @@ class FileType extends VichFileType
 {
     protected SanitizerInterface $sanitizer;
     protected UrlGeneratorInterface $urlGenerator;
-    protected Request $request;
+    protected ?Request $request;
 
     public function __construct(
         SanitizerInterface $sanitizer,
@@ -41,7 +41,7 @@ class FileType extends VichFileType
     {
         parent::buildView($view, $form, $options);
 
-        if ($form->getParent() && $form->getParent()->getData() && $this->request->attributes->has("id")) {
+        if ($form->getParent() && $form->getParent()->getData() && $this->request && $this->request->attributes->has("id")) {
             if ($options['download_route']) {
                 $url = $this->urlGenerator->generate(
                     $options['download_route'],
@@ -50,11 +50,16 @@ class FileType extends VichFileType
                 $view->vars['download_uri'] = $url;
             }
 
+            /** @var string $filePath */
             $filePath = $this->resolveUriOption(true, $form->getParent()->getData(), $form);
             $view->vars['image_uri'] = $filePath;
 
             $filename = substr((string)$filePath, strrpos((string)$filePath, '/') + 1);
-            $filename = substr($filename, 0, strrpos($filename, '-')) . '.' . substr(
+
+            /** @var int $pos */
+            $pos = strrpos($filename, '-');
+
+            $filename = substr($filename, 0, $pos) . '.' . substr(
                 $filename,
                 strrpos($filename, '.') + 1
             );

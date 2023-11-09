@@ -18,7 +18,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
 
-            -   name: 'Validate composer.json and composer.lock'
+            -   name: 'Validate composer.json'
                 run: composer validate
 
             -   name: 'Cache Composer packages'
@@ -39,6 +39,3 @@ jobs:
 
             -   name: 'PHP CodeSniffer Validations'
                 run: vendor/bin/phpcs
-
-            -   name: 'PHPStan Static Analysis'
-                run: vendor/bin/phpstan analyse -c tests/phpstan.neon

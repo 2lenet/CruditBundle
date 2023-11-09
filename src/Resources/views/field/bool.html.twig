@@ -1,4 +1,7 @@
-{% if view.field.editInPlace %}
+{% if
+    (view.field.editInPlace and view.field.options['editRole'] is not defined)
+    or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
+%}
     {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <div class="form-check form-switch">

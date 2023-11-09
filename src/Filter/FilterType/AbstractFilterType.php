@@ -113,13 +113,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getStateTemplate(): string
     {
         $fqcn = get_class($this);
-        $name = strtolower(
-            preg_replace(
-                "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
-                '${1}',
-                $fqcn
-            )
+        /** @var string $filterType */
+        $filterType = preg_replace(
+            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+            '${1}',
+            $fqcn
         );
+        $name = strtolower($filterType);
 
         return "@LleCrudit/filter/state/{$name}_filter.html.twig";
     }
@@ -127,13 +127,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
     public function getTemplate(): string
     {
         $fqcn = get_class($this);
-        $name = strtolower(
-            preg_replace(
-                "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
-                '${1}',
-                $fqcn
-            )
+        /** @var string $filterType */
+        $filterType = preg_replace(
+            "/Lle\\\\CruditBundle\\\\Filter\\\\FilterType\\\\(\w+)FilterType/",
+            '${1}',
+            $fqcn
         );
+        $name = strtolower($filterType);
 
         return "@LleCrudit/filter/type/{$name}_filter.html.twig";
     }

@@ -41,11 +41,14 @@ class LleCruditExtension extends Extension implements ExtensionInterface
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {
+            /** @var array $parameter */
+            $parameter = $container->getParameter('twig.form.resources');
+
             $container->setParameter(
                 'twig.form.resources',
                 array_merge(
                     ['@LleCrudit/form/custom_types.html.twig'],
-                    $container->getParameter('twig.form.resources')
+                    $parameter
                 )
             );
         }

@@ -1,5 +1,8 @@
-{% if view.field.editInPlace %}
-    {% if view.field.autocompleteUrl %}
+{% if
+    (view.field.editInPlace and view.field.options['editRole'] is not defined)
+    or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
+%}
+    {% if view.field.autocompleteUrl is defined and view.field.autocompleteUrl %}
         {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
     {% else %}
         {% set autocompleteUrl = path(resource|get_crudit_routename_key_field(view.field.id, 'autocomplete')) %}
@@ -26,7 +29,7 @@
                     value="{{ value }}"
                     data-url="{{ autocompleteUrl }}"
                     data-options="[]"
-                    data-maxItems="{{ view.field.multiple ? 'null' : '1' }}"
+                    data-maxItems="{% if view.field.multiple is defined %} {{ view.field.multiple ? 'null' : '1' }} {% else %} 1 {% endif %}"
                 >
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">

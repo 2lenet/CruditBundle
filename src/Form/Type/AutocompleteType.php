@@ -82,9 +82,17 @@ class AutocompleteType extends AbstractType
             }
 
             $items = [];
+            /** @var object $entity */
             foreach ($entities as $entity) {
+                $id = null;
+
+                if (\method_exists($entity, 'getId')) {
+                    $id = $entity->getId();
+                }
+
+                /** @var \Stringable $entity */
                 $items[] = [
-                    "id" => $entity->getId(),
+                    "id" => $id,
                     "text" => (string)$entity,
                 ];
             }

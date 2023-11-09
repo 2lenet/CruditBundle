@@ -1,3 +1,5 @@
+name: PHPStan
+
 on:
     push:
         branches: [main]
@@ -5,8 +7,9 @@ on:
         branches: [main]
 
 jobs:
-    phpunit:
-        name: "PHPUnit ${{ matrix.php-version }}"
+    phpstan:
+        name: "PHPStan ${{ matrix.php-version }}"
+
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -16,18 +19,14 @@ jobs:
             -   uses: actions/checkout@v2
 
             -   name: "Install dependencies with Composer"
-                uses: php-actions/composer@v5
+                uses: php-actions/composer@v6
                 with:
                     php_version: ${{ matrix.php_version }}
                     version: 2
                     args: --profile --ignore-platform-reqs
 
-            -   name: "Run PHPUnit"
-                uses: php-actions/phpunit@v2
+            -   name: 'PHPStan Static Analysis'
+                uses: php-actions/phpstan@v3
                 with:
-                    php_version: ${{ matrix.php_version }}
-                    php_extensions: xdebug
-                    version: 9.5
-                    configuration: tests/phpunit/phpunit.xml
-                    bootstrap: vendor/autoload.php
-                    args: --coverage-text=coverage.xml
+                    configuration: tests/phpstan.neon
+                    memory_limit: 256M

@@ -44,6 +44,7 @@ class FieldResolver
             $subClass = get_class($subResource);
 
             foreach ($cascade as $k => $name) {
+                /** @var string $subClass */
                 $types = $this->propertyInfoExtractor->getTypes($subClass, $name);
 
                 if (!$types) {

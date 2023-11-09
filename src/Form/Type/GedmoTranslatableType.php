@@ -72,7 +72,7 @@ class GedmoTranslatableType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $translatedFieldValues = $this->translatablefieldmanager->getTranslatedFields(
-            $form->getParent()->getData(),
+            $form->getParent()?->getData(),
             $form->getName(),
             $this->defaultLocale
         );

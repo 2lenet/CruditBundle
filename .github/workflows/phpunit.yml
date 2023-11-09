@@ -1,0 +1,35 @@
+name: PHPUnit
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    phpunit:
+        name: "PHPUnit ${{ matrix.php-version }}"
+
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php_version: [8.1]
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: "Install dependencies with Composer"
+                uses: php-actions/composer@v5
+                with:
+                    php_version: ${{ matrix.php_version }}
+                    version: 2
+                    args: --profile --ignore-platform-reqs
+
+            -   name: "Run PHPUnit"
+                uses: php-actions/phpunit@v2
+                with:
+                    php_version: ${{ matrix.php_version }}
+                    php_extensions: xdebug
+                    version: 10.3
+                    configuration: tests/phpunit/phpunit.xml
+                    bootstrap: vendor/autoload.php

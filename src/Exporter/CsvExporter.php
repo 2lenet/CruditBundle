@@ -36,22 +36,24 @@ class CsvExporter extends AbstractExporter
         $file = fopen($path, "w");
         $headersAdded = false;
 
-        /** @var ResourceView $resource */
-        foreach ($resources as $resource) {
-            if ($params->getIncludeHeaders() && !$headersAdded) {
-                $headers = $this->getHeaders($resource->getFields());
-                fputcsv($file, $headers, $params->getSeparator());
-                $headersAdded = true;
+        if ($file) {
+            /** @var ResourceView $resource */
+            foreach ($resources as $resource) {
+                if ($params->getIncludeHeaders() && !$headersAdded) {
+                    $headers = $this->getHeaders($resource->getFields());
+                    fputcsv($file, $headers, $params->getSeparator());
+                    $headersAdded = true;
+                }
+
+                $line = [];
+
+                /** @var FieldView $field */
+                foreach ($resource->getFields() as $field) {
+                    $line[] = $this->getValue($field);
+                }
+
+                fputcsv($file, $line, $params->getSeparator());
             }
-
-            $line = [];
-
-            /** @var FieldView $field */
-            foreach ($resource->getFields() as $field) {
-                $line[] = $this->getValue($field);
-            }
-
-            fputcsv($file, $line, $params->getSeparator());
         }
 
         $response = new BinaryFileResponse($path);
