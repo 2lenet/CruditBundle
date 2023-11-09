@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class FormConfig extends AbstractBrickConfig
 {
-    private ?DatasourceInterface $dataSource = null;
+    private ?DatasourceInterface $datasource = null;
 
     private ?string $form = null;
 
