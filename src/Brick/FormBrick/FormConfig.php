@@ -13,19 +13,28 @@ use Lle\CruditBundle\Dto\Path;
 class FormConfig extends AbstractBrickConfig
 {
     private ?DatasourceInterface $datasource = null;
+
     private ?string $form = null;
+
     /** @var FormField[] */
     private array $fields = [];
+
     private ?Path $successRedirectPath = null;
+
     private string $messageSuccess;
+
     private string $messageError;
+
     protected ?Path $cancelPath = null;
+
     /**
      * For sublist forms.
      * assocField contains the name of the parent property
      */
     protected ?string $assocProperty = null;
+
     protected bool $sublist = false;
+
     protected ?string $title = null;
 
     public static function new(array $options = []): self
