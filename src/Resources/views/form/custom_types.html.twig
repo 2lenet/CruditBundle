@@ -82,3 +82,7 @@
         </div>
     {% endif %}
 {% endblock %}
+
+{% block crudit_ckeditor_widget %}
+    <textarea name="{{ full_name }}" class="ck-editor">{{ value }}</textarea>
+{% endblock %}
