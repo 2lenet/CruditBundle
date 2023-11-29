@@ -1,11 +1,18 @@
 window.addEventListener('load', function () {
 
-    document.getElementById('sidebarToggle').addEventListener('click', function () {
-        collapseSidebar();
-    });
-    document.getElementById('sidebar-collapser').addEventListener('click', function () {
-        collapseSidebar();
-    });
+    let sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            collapseSidebar();
+        });
+    }
+
+    let sidebarCollapser = document.getElementById('sidebar-collapser');
+    if (sidebarCollapser) {
+        sidebarCollapser.addEventListener('click', function () {
+            collapseSidebar();
+        });
+    }
 
     function collapseSidebar() {
         document.querySelector('body').classList.toggle('sidebar-toggled');
