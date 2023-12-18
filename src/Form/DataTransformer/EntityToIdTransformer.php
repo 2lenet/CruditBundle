@@ -72,7 +72,7 @@ class EntityToIdTransformer implements DataTransformerInterface
      */
     public function reverseTransform(mixed $value): mixed
     {
-        if (!$id) {
+        if (!$value) {
             return $this->multiple ? [] : null;
         }
 
@@ -81,7 +81,7 @@ class EntityToIdTransformer implements DataTransformerInterface
 
         // Multiple input
         if ($this->isMultiple()) {
-            $ids = explode(",", $id);
+            $ids = explode(",", $value);
 
             $entities = $this->em
                 ->getRepository($class)
@@ -100,14 +100,14 @@ class EntityToIdTransformer implements DataTransformerInterface
         // Single input
         $entity = $this->em
             ->getRepository($class)
-            ->find($id);
+            ->find($value);
 
         if (!$entity) {
             throw new TransformationFailedException(
                 sprintf(
                     "Entity of class %s with id '%s' does not exist!",
                     $this->class,
-                    $id
+                    $value
                 )
             );
         }
