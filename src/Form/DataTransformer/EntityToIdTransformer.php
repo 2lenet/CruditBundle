@@ -42,20 +42,20 @@ class EntityToIdTransformer implements DataTransformerInterface
     }
 
     /**
-     * @param mixed $entity entity to transform
-     * @return mixed|null the identifier of the entity
+     * @param mixed $value entity to transform
+     * @return mixed the identifier of the entity
      */
-    public function transform($entity)
+    public function transform(mixed $value): mixed
     {
         // Multiple input
         if ($this->isMultiple()) {
             $result = [];
 
-            if ($entity === null) {
+            if ($value === null) {
                 return $result;
             }
 
-            foreach ($entity as $e) {
+            foreach ($value as $e) {
                 $result[] = $e->getId();
             }
 
@@ -63,7 +63,7 @@ class EntityToIdTransformer implements DataTransformerInterface
         }
 
         // Single input
-        return $entity !== null ? $entity->getId() : null;
+        return $value?->getId();
     }
 
     /**
