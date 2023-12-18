@@ -33,7 +33,7 @@ class ConvertEasyAdmin extends Command
         $this->filesystem = $filesystem;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $path = $this->kernel->getProjectDir() . self::EASYADMIN_PATH;
