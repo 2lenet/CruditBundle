@@ -67,10 +67,10 @@ class EntityToIdTransformer implements DataTransformerInterface
     }
 
     /**
-     * @param mixed $id the identifier
-     * @return mixed|void entity or null
+     * @param mixed $value the identifier
+     * @return mixed entity
      */
-    public function reverseTransform($id)
+    public function reverseTransform(mixed $value): mixed
     {
         if (!$id) {
             return $this->multiple ? [] : null;
