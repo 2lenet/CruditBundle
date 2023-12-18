@@ -96,6 +96,7 @@ crudit:
                 generic: "Il valore non può essere cambiato."
                 access_denied: "Non ti è permesso cambiare questo valore."
                 bad_request: "Stai cercando di cambiare un valore inesistente."
+            delete: "Impossibile eliminare questo oggetto."
 
     error:
         generic:

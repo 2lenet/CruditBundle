@@ -97,6 +97,7 @@ crudit:
                 generic: "Value couldn't be edited."
                 access_denied: "You are not allowed to change this value."
                 bad_request: "You are trying to edit a non-existing value."
+            delete: "Impossible to delete this object."
 
     error:
         generic:
