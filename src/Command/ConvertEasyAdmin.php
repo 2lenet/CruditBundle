@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Command;
 
 use Lle\CruditBundle\Service\EasyAdminConverter\Converter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,13 +13,15 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
+#[AsCommand(name: 'lle:crudit:convert-easyadmin', description: 'Convert an EasyAdmin project to a Crudit Project.')]
 class ConvertEasyAdmin extends Command
 {
     public const EASYADMIN_PATH = "/config/packages/easy_admin";
-    protected static $defaultName = "lle:crudit:convert-easyadmin";
-    protected static $defaultDescription = "Convert an EasyAdmin project to a Crudit Project.";
+
     private KernelInterface $kernel;
+
     private Converter $converter;
+
     private Filesystem $filesystem;
 
     public function __construct(
@@ -26,7 +29,7 @@ class ConvertEasyAdmin extends Command
         Converter $converter,
         Filesystem $filesystem,
     ) {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->kernel = $kernel;
         $this->converter = $converter;
