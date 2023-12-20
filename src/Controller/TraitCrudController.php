@@ -75,10 +75,14 @@ trait TraitCrudController
     public function delete(Request $request): Response
     {
         $resource = $this->getResource($request, false);
-        if (method_exists($resource, 'canDelete') && !$resource->canDelete()) {
-            $this->addFlash('danger', 'crudit.flash.error.delete');
+        if (method_exists($resource, 'canDelete')) {
+            $check = $resource->canDelete();
 
-            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+            if ($check === false || is_string($check)) {
+                $this->addFlash('danger', 'crudit.flash.error.delete');
+
+                return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+            }
         }
 
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_DELETE', $resource);
