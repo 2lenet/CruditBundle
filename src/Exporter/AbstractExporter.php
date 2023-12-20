@@ -4,16 +4,11 @@ namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
-use Lle\CruditBundle\Field\DoctrineEntityField;
 
 abstract class AbstractExporter implements ExporterInterface
 {
     protected function getValue(FieldView $field): string
     {
-        if ($field->getField()->getType() == DoctrineEntityField::class) {
-            $field->getField()->setType("string");
-        }
-
         if ($field->getField()->getTemplate()) {
             $result = $field->getValue();
         } else {
@@ -28,7 +23,6 @@ abstract class AbstractExporter implements ExporterInterface
                     }
                     break;
                 case "decimal":
-                case DoctrineEntityField::class:
                     $result = $field->getValue();
                     break;
                 default:
