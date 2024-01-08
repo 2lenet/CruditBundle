@@ -1,5 +1,18 @@
 .crudit-flash {
-    position: sticky;
+    position: relative;
     top: 1rem; /* same as the alert's margin-bottom */
+    right: 0;
+    width: 100%;
+    margin-left: 0;
     z-index: 1000;
+    padding-bottom: 1rem;
+    transition: all 0.4s;
+
+    &--fixed {
+        position: fixed;
+        right: 1rem;
+        width: 40vw;
+        margin-left: 60vw;
+        transition: all 0.4s;
+    }
 }
