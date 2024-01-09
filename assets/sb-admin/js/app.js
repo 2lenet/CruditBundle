@@ -4,6 +4,7 @@ import './input_date';
 import './input_format';
 import './markdown_textarea';
 import './filters';
+import './flash';
 import './form';
 import './multisearch';
 import './scroll-to-top';
