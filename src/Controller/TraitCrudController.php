@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -147,7 +148,7 @@ trait TraitCrudController
     }
 
     #[Route('/editdata/{id}')]
-    public function editdata(string $id, Request $request, TranslatorInterface $translator): Response
+    public function editdata(string $id, Request $request, TranslatorInterface $translator, ValidatorInterface $validator): Response
     {
         try {
             $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
@@ -156,18 +157,37 @@ trait TraitCrudController
 
             $data = json_decode($request->request->get("data", "{}"), true);
 
-            if ($dataSource->editData($id, $data)) {
+            $item = $this->getResource($request);
+
+            if (!$item) {
                 return new JsonResponse([
-                    "status" => "ok",
-                    "fieldsToUpdate" => $this->config->fieldsToUpdate($id),
-                    'eipToUpdate' => $this->config->eipToUpdate($id),
-                ]);
+                    "status" => "ko",
+                    "message" => $translator->trans("crudit.flash.error.eip.bad_request", [], "LleCruditBundle"),
+                ], Response::HTTP_BAD_REQUEST);
             }
 
+            $dataSource->fillFromData($item, $data);
+            $errors = $validator->validate($item);
+
+            if (count($errors) > 0) {
+                $message = '';
+                foreach ($errors as $error) {
+                    $message .= $error->getMessage() . ' ';
+                }
+
+                return new JsonResponse([
+                    "status" => "ko",
+                    "message" => $message,
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $dataSource->save($item);
+
             return new JsonResponse([
-                "status" => "ko",
-                "message" => $translator->trans("crudit.flash.error.eip.bad_request", [], "LleCruditBundle"),
-            ], Response::HTTP_BAD_REQUEST);
+                "status" => "ok",
+                "fieldsToUpdate" => $this->config->fieldsToUpdate($id),
+                'eipToUpdate' => $this->config->eipToUpdate($id),
+            ]);
         } catch (AccessDeniedException $e) {
             return new JsonResponse([
                 "status" => "ko",

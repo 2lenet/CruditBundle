@@ -401,59 +401,62 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
+    public function fillFromData(object $item, array $data): void
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+            ->getPropertyAccessor();
+
+        foreach ($data as $field => $value) {
+            if ($field === "id") {
+                continue;
+            }
+
+            if ($value === "") {
+                $value = null;
+            } else {
+                /** @var class-string $className */
+                $className = $this->getClassName();
+
+                if ($this->isEntity($field)) {
+                    $associations = $this->entityManager->getClassMetadata(
+                        $className
+                    )->associationMappings;
+
+                    $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
+                } else {
+                    $fields = $this->entityManager->getClassMetadata($className);
+                    $type = $fields->fieldMappings[$field]['type'];
+
+                    switch ($type) {
+                        case "date":
+                        case "datetime":
+                            $value = new \DateTime($value);
+                            break;
+                        case "integer":
+                        case "smallint":
+                            $value = (int)$value;
+                            break;
+                        case "float":
+                            $value = (float)$value;
+                            break;
+                        case "string":
+                        case "text":
+                        case "decimal":
+                        default:
+                            // do nothing
+                    }
+                }
+            }
+            $propertyAccessor->setValue($item, $field, $value);
+        }
+    }
+
     public function editData(string $id, array $data): bool
     {
         $item = $this->get($id);
 
         if ($item) {
-            $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-                ->getPropertyAccessor();
-
-            foreach ($data as $field => $value) {
-                if ($field === "id") {
-                    continue;
-                }
-
-                if ($value === "") {
-                    $value = null;
-                } else {
-                    /** @var class-string $className */
-                    $className = $this->getClassName();
-
-                    if ($this->isEntity($field)) {
-                        $associations = $this->entityManager->getClassMetadata(
-                            $className
-                        )->associationMappings;
-
-                        $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
-                    } else {
-                        $fields = $this->entityManager->getClassMetadata($className);
-                        $type = $fields->fieldMappings[$field]['type'];
-
-                        switch ($type) {
-                            case "date":
-                            case "datetime":
-                                $value = new \DateTime($value);
-                                break;
-                            case "integer":
-                            case "smallint":
-                                $value = (int)$value;
-                                break;
-                            case "float":
-                                $value = (float)$value;
-                                break;
-                            case "string":
-                            case "text":
-                            case "decimal":
-                            default:
-                                // do nothing
-                        }
-                    }
-                }
-
-                $propertyAccessor->setValue($item, $field, $value);
-            }
-
+            $this->fillFromData($item, $data);
             $this->save($item);
 
             return true;
