@@ -22,7 +22,7 @@ class Field
 
     private ?string $type;
 
-    private ?string $template;
+    private ?string $template = null;
 
     private ?int $ruptGroup = 0;
 
@@ -59,7 +59,7 @@ class Field
         $this->label = $options['label'] ?? $this->label;
         $this->sort = $options['sort'] ?? $this->sort;
         $this->path = $options['path'] ?? $options['link_to'] ?? null;
-        $this->template = (isset($options['template'])) ? $options['template'] : null;
+        $this->template = (isset($options['template'])) ? $options['template'] : $this->template;
         unset($options['label']);
         unset($options['sort']);
         unset($options['path']);
