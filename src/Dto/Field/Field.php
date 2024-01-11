@@ -12,7 +12,7 @@ class Field
 
     private string $name;
 
-    private bool $sort;
+    private bool $sort = true;
 
     private ?Path $path;
 
@@ -57,7 +57,7 @@ class Field
     public function setOptions(array $options): self
     {
         $this->label = $options['label'] ?? $this->label;
-        $this->sort = $options['sort'] ?? true;
+        $this->sort = $options['sort'] ?? $this->sort;
         $this->path = $options['path'] ?? $options['link_to'] ?? null;
         $this->template = (isset($options['template'])) ? $options['template'] : null;
         unset($options['label']);
