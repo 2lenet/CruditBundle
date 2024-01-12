@@ -41,6 +41,7 @@ class Field
         $this->name = $name;
         $this->label = 'field.' . strtolower(str_replace('.', '_', $name));
         $this->type = $type;
+        $this->options = $options;
         $this->setOptions($options);
     }
 
@@ -64,7 +65,7 @@ class Field
         unset($options['sort']);
         unset($options['path']);
         unset($options['template']);
-        $this->options = $options;
+        $this->options = array_merge($this->options, $options);
 
         return $this;
     }
