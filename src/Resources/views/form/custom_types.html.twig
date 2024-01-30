@@ -86,3 +86,10 @@
 {% block crudit_ckeditor_widget %}
     <textarea name="{{ full_name }}" class="ck-editor">{{ value }}</textarea>
 {% endblock %}
+
+{% block crudit_cron_expression_widget %}
+    <link rel="stylesheet" href="https://unpkg.com/cron-expression-input@1.2.7/lib/cron-expression-input.min.css">
+    <script src="https://unpkg.com/cron-expression-input@1.2.7/lib/cron-expression-input.min.js"></script>
+
+    <cron-expression-input class="cron-expression-input" color="4E73DF"></cron-expression-input>
+{% endblock %}

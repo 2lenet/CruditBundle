@@ -79,6 +79,14 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             );
         }
 
+        if (in_array($property, ['cron', 'cronExpression'])) {
+            return new TypeGuess(
+                'Lle\CruditBundle\Form\Type\CronExpressionType',
+                ['label' => false],
+                Guess::VERY_HIGH_CONFIDENCE,
+            );
+        }
+
         switch ($metadata->getTypeOfField($property)) {
             case Types::JSON:
             case Types::SIMPLE_ARRAY:
