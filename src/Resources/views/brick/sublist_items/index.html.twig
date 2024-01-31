@@ -107,7 +107,7 @@
                                     {% if loop.first %}
                                         <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                     {% endif %}
-                                    <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
+                                    <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
                                         {% if column.field.path %}
                                         <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
                                             {% endif %}
