@@ -92,7 +92,9 @@ function submitEIP(eip_elem, eip_input, eip_val) {
         if (response.status === 200) {
             response.json().then((json) => {
                 Object.entries(json.fieldsToUpdate).forEach(([key, html]) => {
-                    document.getElementById(key).innerHTML = html;
+                    if (document.getElementById(key)) {
+                        document.getElementById(key).innerHTML = html;
+                    }
                 });
 
                 if ('eipToUpdate' in json) {
