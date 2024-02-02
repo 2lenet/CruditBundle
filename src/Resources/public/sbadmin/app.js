@@ -3356,8 +3356,9 @@ function submitEIP(eip_elem, eip_input, eip_val) {
           var _ref2 = _slicedToArray(_ref, 2),
             key = _ref2[0],
             html = _ref2[1];
-          if (document.getElementById(key)) {
-            document.getElementById(key).innerHTML = html;
+          var eipElement = document.getElementById(key);
+          if (eipElement) {
+            eipElement.innerHTML = html;
           }
         });
         if ('eipToUpdate' in json) {
