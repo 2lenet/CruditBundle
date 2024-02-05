@@ -3364,7 +3364,12 @@ function submitEIP(eip_elem, eip_input, eip_val) {
         if ('eipToUpdate' in json) {
           json.eipToUpdate.forEach(function (field) {
             var eip_elem = document.getElementById(field);
-            createEipField(eip_elem.querySelector('.crudit-eip'));
+            if (eip_elem) {
+              var cruditEipElem = eip_elem.querySelector('.crudit-eip');
+              if (cruditEipElem) {
+                createEipField(cruditEipElem);
+              }
+            }
           });
         }
       });
