@@ -72,7 +72,10 @@
                         {% if view.config.actions|length %}
                             {% set hasActions = false %}
                             {% for action in view.config.actions %}
-                                {% if action.path.role is null or is_granted(action.path.role) %}
+                                {% if
+                                    (action.path.role is null or is_granted(action.path.role))
+                                    or (action.role is null or is_granted(action.role))
+                                %}
                                     {% set hasActions = true %}
                                 {% endif %}
                             {% endfor %}
