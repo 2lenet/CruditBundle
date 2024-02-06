@@ -1,4 +1,4 @@
-{% set allowed_actions = view.data.batch_actions|filter(a => (a.action.path.role is null or is_granted(a.action.path.role)) or (a.action.role is null or is_granted(a.action.role))) %}
+{% set allowed_actions = view.data.batch_actions|filter(a => a.action.path.role is null or is_granted(a.action.path.role)) %}
 {% if allowed_actions is not empty %}
     <div class="row mt-2 crudit-batch-list d-none">
         <div class="col-md-2 dropdown">
@@ -13,10 +13,7 @@
                     {% if batch_action.form is not null %}
                         {% set form = batch_action.form %}
                     {% endif %}
-                    {% if
-                        (action.path.role is null or is_granted(action.path.role))
-                        or (action.role is null or is_granted(action.role))
-                    %}
+                    {% if action.path.role is null or is_granted(action.path.role) %}
                         <a
                             class="{{ action.cssClass ?? 'btn btn-sm crudit-batch-dropdown-item dropdown-item' }}"
                             {% if action.modal %}
@@ -47,10 +44,7 @@
                 {% set form = batch_action.form %}
             {% endif %}
 
-            {% if
-                (action.path.role is null or is_granted(action.path.role))
-                or (action.role is null or is_granted(action.role))
-            %}
+            {% if action.path.role is null or is_granted(action.path.role) %}
                 {% if action.modal %}
                     {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
                 {% endif %}

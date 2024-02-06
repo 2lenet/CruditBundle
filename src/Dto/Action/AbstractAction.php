@@ -19,7 +19,6 @@ abstract class AbstractAction implements ActionInterface
     protected ?string $modal = null;
     protected array $config = [];
     protected ?string $target = null;
-    protected ?string $role = null;
 
     public function __construct(string $label, Path $path)
     {
@@ -138,17 +137,5 @@ abstract class AbstractAction implements ActionInterface
     public function isDisabled(): bool
     {
         return false;
-    }
-
-    public function getRole(): ?string
-    {
-        return $this->role;
-    }
-
-    public function setRole(string $role): static
-    {
-        $this->role = $role;
-
-        return $this;
     }
 }
