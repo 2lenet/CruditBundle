@@ -46,4 +46,8 @@ interface ActionInterface
     public function setTarget(string $target): static;
 
     public function isDisabled(): bool;
+
+    public function getRole(): ?string;
+
+    public function setRole(string $role): static;
 }

@@ -72,22 +72,24 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             'action.add',
             $this->getPath(CrudConfigInterface::NEW),
             Icon::new('plus')
-        );
+        )
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::NEW));
 
         /**
          * Export filtered list action
          */
         $actions[CrudConfigInterface::ACTION_EXPORT] = ListAction::new(
-            "action.export",
+            'action.export',
             $this->getPath(CrudConfigInterface::EXPORT),
-            Icon::new("file-export")
+            Icon::new('file-export')
         )
-            ->setModal("@LleCrudit/modal/_export.html.twig")
+            ->setModal('@LleCrudit/modal/_export.html.twig')
             ->setConfig(
                 [
-                    "export" => [Exporter::EXCEL, Exporter::CSV],
+                    'export' => [Exporter::EXCEL, Exporter::CSV],
                 ]
-            );
+            )
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EXPORT));
 
         return $actions;
     }
@@ -100,13 +102,17 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             'action.show',
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
-        )->setCssClass('btn btn-primary btn-sm mr-1');
+        )
+            ->setCssClass('btn btn-primary btn-sm mr-1')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
-        )->setCssClass('btn btn-secondary btn-sm mr-1');
+        )
+            ->setCssClass('btn btn-secondary btn-sm mr-1')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
 
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
@@ -114,7 +120,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('trash-alt')
         )
             ->setCssClass('btn btn-danger btn-sm mr-1')
-            ->setModal("@LleCrudit/modal/_confirm_delete.html.twig");
+            ->setModal('@LleCrudit/modal/_confirm_delete.html.twig')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
         return $actions;
     }
@@ -127,13 +134,17 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             'action.list',
             $this->getPath(CrudConfigInterface::INDEX),
             Icon::new('list')
-        )->setCssClass('btn btn-secondary btn-sm mr-1');
+        )
+            ->setCssClass('btn btn-secondary btn-sm mr-1')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
-        )->setCssClass('btn btn-secondary btn-sm mr-1');
+        )
+            ->setCssClass('btn btn-secondary btn-sm mr-1')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
 
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
@@ -141,7 +152,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('trash-alt')
         )
             ->setCssClass('btn btn-danger btn-sm mr-1')
-            ->setModal("@LleCrudit/modal/_confirm_delete.html.twig");
+            ->setModal('@LleCrudit/modal/_confirm_delete.html.twig')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
         return $actions;
     }
@@ -211,16 +223,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
     {
-        $path = Path::new($this->getRootRoute() . '_' . $context, $params);
-        $path->setRole(
-            sprintf(
-                "ROLE_%s_%s",
-                $this->getName(),
-                $context
-            )
-        );
-
-        return $path;
+        return Path::new($this->getRootRoute() . '_' . $context, $params);
     }
 
     public function getBrickConfigs(): array

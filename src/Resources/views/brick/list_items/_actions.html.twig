@@ -8,8 +8,12 @@
                 {% if action.modal %}
                     {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                 {% endif %}
-                {% set disabled = action.disabled or
-                    (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
+                {% set disabled = action.disabled
+                    or (
+                        (action.path.role is not null and not is_granted(action.path.role, line.resource))
+                        and (action.role is not null and not is_granted(action.role, line.resource))
+                    )
+                %}
 
                 {# if action uses a voter, check it #}
                 {% set disabled = disabled or (
@@ -49,8 +53,12 @@
                 <ul class="dropdown-menu" aria-labelledby="#actions_{{ line.resource.id }}">
                     {% for action in view.config.actions %}
                         {% if action.dropdown %}
-                            {% set disabled = action.disabled or
-                                (action.path.role is not null and not is_granted(action.path.role, line.resource)) %}
+                            {% set disabled = action.disabled
+                                or (
+                                    (action.path.role is not null and not is_granted(action.path.role, line.resource))
+                                    and (action.role is not null and not is_granted(action.role, line.resource))
+                                )
+                            %}
                             <li>
                                 <a class="dropdown-item {% if disabled %}disabled{% endif %}"
                                     {% if action.modal %}
