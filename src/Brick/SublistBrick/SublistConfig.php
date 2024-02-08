@@ -23,6 +23,8 @@ class SublistConfig extends AbstractBrickConfig
     private string $className;
     private string $fieldname;
     protected CrudConfigInterface $subCrudConfig;
+    private ?string $datasourceMethod = null;
+    private ?string $countDatasourceMethod = null;
 
     public function __construct(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
     {
@@ -172,5 +174,29 @@ class SublistConfig extends AbstractBrickConfig
     public function getSubCrudConfig(): CrudConfigInterface
     {
         return $this->subCrudConfig;
+    }
+
+    public function getDatasourceMethod(): ?string
+    {
+        return $this->datasourceMethod;
+    }
+
+    public function setDatasourceMethod(string $datasourceMethod): self
+    {
+        $this->datasourceMethod = $datasourceMethod;
+
+        return $this;
+    }
+
+    public function getCountDatasourceMethod(): ?string
+    {
+        return $this->countDatasourceMethod;
+    }
+
+    public function setCountDatasourceMethod(string $countDatasourceMethod): self
+    {
+        $this->countDatasourceMethod = $countDatasourceMethod;
+
+        return $this;
     }
 }

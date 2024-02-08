@@ -147,4 +147,9 @@ class DatasourceParams
     {
         $this->enableFilters = $enableFilters;
     }
+
+    public function addFilter(DatasourceFilter $filter): void
+    {
+        $this->filters[] = $filter;
+    }
 }
