@@ -19,12 +19,10 @@ class SublistConfig extends AbstractBrickConfig
     /** @var ItemAction[] */
     private array $actions = [];
     private ?DatasourceInterface $datasource = null;
-    private DatasourceParams $datasourceParams;
+    private ?DatasourceParams $datasourceParams = null;
     private string $className;
     private string $fieldname;
     protected CrudConfigInterface $subCrudConfig;
-    private ?string $datasourceMethod = null;
-    private ?string $countDatasourceMethod = null;
 
     public function __construct(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
     {
@@ -72,7 +70,15 @@ class SublistConfig extends AbstractBrickConfig
     {
         $sessionKey = $this->crudConfig->getDatasourceParamsKey()
             . "_sublist_" . $this->subCrudConfig->getName() . $request->get("id");
-        $this->setDatasourceParams($this->subCrudConfig->getDatasourceParams($request, $sessionKey));
+
+        $subDatasourceParams = $this->subCrudConfig->getDatasourceParams($request, $sessionKey);
+        $datasourceParamsListKey = $this->getDatasourceParams()?->getListKey();
+
+        if ($datasourceParamsListKey) {
+            $this->setDatasourceParams($subDatasourceParams->setListKey($datasourceParamsListKey));
+        } else {
+            $this->setDatasourceParams($subDatasourceParams);
+        }
 
         return [
             'fields' => $this->getFields(),
@@ -116,7 +122,7 @@ class SublistConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getDatasourceParams(): DatasourceParams
+    public function getDatasourceParams(): ?DatasourceParams
     {
         return $this->datasourceParams;
     }
@@ -174,29 +180,5 @@ class SublistConfig extends AbstractBrickConfig
     public function getSubCrudConfig(): CrudConfigInterface
     {
         return $this->subCrudConfig;
-    }
-
-    public function getDatasourceMethod(): ?string
-    {
-        return $this->datasourceMethod;
-    }
-
-    public function setDatasourceMethod(string $datasourceMethod): self
-    {
-        $this->datasourceMethod = $datasourceMethod;
-
-        return $this;
-    }
-
-    public function getCountDatasourceMethod(): ?string
-    {
-        return $this->countDatasourceMethod;
-    }
-
-    public function setCountDatasourceMethod(string $countDatasourceMethod): self
-    {
-        $this->countDatasourceMethod = $countDatasourceMethod;
-
-        return $this;
     }
 }

@@ -10,13 +10,15 @@ class DatasourceParams
     protected array $sorts;
     protected array $filters;
     protected bool $enableFilters = true;
+    protected string $listKey = 'list';
 
-    public function __construct(int $limit, int $offset, array $sorts, array $filters = [])
+    public function __construct(int $limit, int $offset, array $sorts, array $filters = [], string $listKey = 'list')
     {
         $this->limit = $limit;
         $this->offset = $offset;
         $this->sorts = $sorts;
         $this->filters = $filters;
+        $this->listKey = $listKey;
     }
 
     public function getCount(): int
@@ -146,6 +148,18 @@ class DatasourceParams
     public function setEnableFilters(bool $enableFilters): void
     {
         $this->enableFilters = $enableFilters;
+    }
+
+    public function getListKey(): string
+    {
+        return $this->listKey;
+    }
+
+    public function setListKey(string $listKey): self
+    {
+        $this->listKey = $listKey;
+
+        return $this;
     }
 
     public function addFilter(DatasourceFilter $filter): void
