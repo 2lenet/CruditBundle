@@ -53,7 +53,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 dataUrl.forEach(url => {
                     let entity = url['entity'];
                     let params = new URLSearchParams({
-                        q: encodeURIComponent(query),
+                        q: query,
                         limit: url['limit'],
                         offset: 0,
                     });
