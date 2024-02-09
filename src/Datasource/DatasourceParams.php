@@ -5,18 +5,20 @@ namespace Lle\CruditBundle\Datasource;
 class DatasourceParams
 {
     protected int $count = 100;
-    protected int $limit;
-    protected int $offset;
-    protected array $sorts;
-    protected array $filters;
+    protected int $limit = 30;
+    protected int $offset = 0;
+    protected array $sorts = [];
+    protected array $filters = [];
     protected bool $enableFilters = true;
+    protected string $listKey = 'list';
 
-    public function __construct(int $limit, int $offset, array $sorts, array $filters = [])
+    public function __construct(int $limit = 30, int $offset = 0, array $sorts = [], array $filters = [], string $listKey = 'list')
     {
         $this->limit = $limit;
         $this->offset = $offset;
         $this->sorts = $sorts;
         $this->filters = $filters;
+        $this->listKey = $listKey;
     }
 
     public function getCount(): int
@@ -146,5 +148,48 @@ class DatasourceParams
     public function setEnableFilters(bool $enableFilters): void
     {
         $this->enableFilters = $enableFilters;
+    }
+
+    public function getListKey(): string
+    {
+        return $this->listKey;
+    }
+
+    public function setListKey(string $listKey): self
+    {
+        $this->listKey = $listKey;
+
+        return $this;
+    }
+
+    public function addFilter(DatasourceFilter $filter): void
+    {
+        $this->filters[] = $filter;
+    }
+
+    public function setNonDefaultValuesOnSubDatasourceParams(DatasourceParams $datasourceParams): self
+    {
+        $defaultDatasourceParams = new DatasourceParams();
+        if ($datasourceParams->getLimit() !== $defaultDatasourceParams->getLimit()) {
+            $this->setLimit($datasourceParams->getLimit());
+        }
+
+        if ($datasourceParams->getOffset() !== $defaultDatasourceParams->getOffset()) {
+            $this->setOffset($datasourceParams->getOffset());
+        }
+
+        if ($datasourceParams->getSorts() !== $defaultDatasourceParams->getSorts()) {
+            $this->setSorts($datasourceParams->getSorts());
+        }
+
+        if ($datasourceParams->getFilters() !== $defaultDatasourceParams->getFilters()) {
+            $this->setFilters($datasourceParams->getFilters());
+        }
+
+        if ($datasourceParams->getListKey() !== $defaultDatasourceParams->getListKey()) {
+            $this->setListKey($datasourceParams->getListKey());
+        }
+
+        return $this;
     }
 }
