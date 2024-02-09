@@ -37,16 +37,6 @@ class SublistConfig extends AbstractBrickConfig
         return new self($fieldname, $subCrudConfig, $options);
     }
 
-    public function setCrudConfig(CrudConfigInterface $crudConfig): self
-    {
-        parent::setCrudConfig($crudConfig);
-        if ($this->datasource === null) {
-            $this->setDatasource($crudConfig->getDatasource());
-        }
-
-        return $this;
-    }
-
     public function getDatasource(): DatasourceInterface
     {
         return $this->datasource ?? $this->getCrudConfig()->getDatasource();
