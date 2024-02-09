@@ -72,13 +72,12 @@ class SublistConfig extends AbstractBrickConfig
             . "_sublist_" . $this->subCrudConfig->getName() . $request->get("id");
 
         $subDatasourceParams = $this->subCrudConfig->getDatasourceParams($request, $sessionKey);
-        $datasourceParamsListKey = $this->getDatasourceParams()?->getListKey();
 
-        if ($datasourceParamsListKey) {
-            $this->setDatasourceParams($subDatasourceParams->setListKey($datasourceParamsListKey));
-        } else {
-            $this->setDatasourceParams($subDatasourceParams);
+        if ($this->getDatasourceParams()) {
+            $subDatasourceParams->setNonDefaultValuesOnSubDatasourceParams($this->getDatasourceParams());
         }
+
+        $this->setDatasourceParams($subDatasourceParams);
 
         return [
             'fields' => $this->getFields(),
