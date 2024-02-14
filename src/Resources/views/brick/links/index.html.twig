@@ -16,11 +16,9 @@
             {% if action.modal %}
                 {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
             {% endif %}
-            {% set disabled = action.disabled
-                or (
-                    (action.path.role is not null and not is_granted(action.path.role, view.data.resource))
-                    and (action.role is not null and not is_granted(action.role, view.data.resource))
-                )
+            {% set disabled = action.disabled or not
+                ((action.path.role is null or is_granted(action.path.role, view.data.resource))
+                and (action.role is null or is_granted(action.role, view.data.resource)))
             %}
             <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                 <a
