@@ -20,7 +20,9 @@
                 ((action.path.role is null or is_granted(action.path.role, view.data.resource))
                 and (action.role is null or is_granted(action.role, view.data.resource)))
             %}
-            <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
+
+            {% if not (disabled and action.hideIfDisable) %}
+                <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                 <a
                     class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }} {% if disabled %}disabled{% endif %}"
                         {% if action.modal %}
@@ -37,6 +39,7 @@
                     {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
                 </a>
             </span>
+            {% endif %}
         {% endfor %}
     </div>
 </nav>

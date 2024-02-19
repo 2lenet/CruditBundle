@@ -20,6 +20,7 @@ abstract class AbstractAction implements ActionInterface
     protected array $config = [];
     protected ?string $target = null;
     protected ?string $role = null;
+    protected bool $hideIfDisable = false;
 
     public function __construct(string $label, Path $path)
     {
@@ -148,6 +149,18 @@ abstract class AbstractAction implements ActionInterface
     public function setRole(string $role): static
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getHideIfDisable(): bool
+    {
+        return $this->hideIfDisable;
+    }
+
+    public function setHideIfDisable(bool $hideIfDisable): static
+    {
+        $this->hideIfDisable = $hideIfDisable;
 
         return $this;
     }
