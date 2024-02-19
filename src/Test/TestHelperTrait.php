@@ -45,7 +45,7 @@ trait TestHelperTrait
 
         $code = $client->getResponse()->getStatusCode();
         if ($code != '200') {
-            echo($client->getResponse()->getContent());
+            echo($client->getResponse()->getStatusCode());
         }
 
         $this->assertEquals(
