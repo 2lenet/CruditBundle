@@ -25,7 +25,7 @@
                name="{{ id }}_value"
                value="{{ data['value']|default('') }}"
                placeholder=""
-               autocomplete="new-password"
+               autocomplete="off"
                data-options="{{ items|default("[]")|escape('html_attr') }}"
         />
         <label>{{ filter.label|trans(domain=view.config.translation_domain) }}</label>
