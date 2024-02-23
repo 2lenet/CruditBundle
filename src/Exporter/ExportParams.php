@@ -7,6 +7,7 @@ class ExportParams
     protected ?string $filename = null;
     protected string $separator = ";";
     protected bool $includeHeaders = true;
+    protected array $pdfParameters = [];
 
     public static function new(): self
     {

@@ -10,6 +10,7 @@ class Exporter
 {
     public const CSV = "csv";
     public const EXCEL = "excel";
+    public const PDF = "pdf";
     protected iterable $exporters;
 
     public function __construct(iterable $exporters)
