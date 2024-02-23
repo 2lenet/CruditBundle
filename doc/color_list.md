@@ -29,4 +29,8 @@ All you have to do next is go to the CSS of your project and apply a background 
 
 ![](img/color_list.png)
 
+> :warning: **With Bootstrap ^5.2, you need to override the css variable to transparent.**
 
+```scss
+$table-bg: transparent;
+```
