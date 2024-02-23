@@ -74,7 +74,7 @@ class ExcelExporter extends AbstractExporter
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.xls"
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.xls'
         );
         $response->headers->set("Content-Disposition", $disposition);
 
