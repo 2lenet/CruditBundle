@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Twig\Environment;
 
 class CurrencyField extends AbstractField
 {
-    private RequestStack $requestStack;
-
-    public function __construct(Environment $twig, RequestStack $requestStack)
-    {
+    public function __construct(
+        Environment $twig,
+        private RequestStack $requestStack,
+        protected ParameterBagInterface $parameterBag,
+    ) {
         parent::__construct($twig);
-        $this->requestStack = $requestStack;
     }
 
     public function support(string $type): bool
@@ -32,12 +33,12 @@ class CurrencyField extends AbstractField
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "tableCssClass" => "text-end",
-            "locale" => $this->requestStack->getMainRequest()?->getLocale(),
-            "currency" => "EUR",
-            "property" => null,
-            "removeHtml" => false,
-            "params" => [],
+            'tableCssClass' => $this->getTableCssClass($this->parameterBag->get('lle_crudit.default_currency_alignment')),
+            'locale' => $this->requestStack->getMainRequest()?->getLocale(),
+            'currency' => 'EUR',
+            'property' => null,
+            'removeHtml' => false,
+            'params' => [],
         ]);
     }
 }

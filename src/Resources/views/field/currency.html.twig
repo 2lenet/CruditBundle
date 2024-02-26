@@ -34,7 +34,12 @@
     {% if options.removeHtml %}
         {{ result }}
     {% else %}
-        <div class="{{ view.field.options['tableCssClass']|default('text-end') }} me-3">
+        {% set tableCssClass = options.tableCssClass %}
+        {% if view.field.options and view.field.options['tableCssClass'] %}
+            {% set tableCssClass = view.field.options['tableCssClass'] %}
+        {% endif %}
+
+        <div class="{{ tableCssClass|default('text-end') }} me-3">
             {{ result }}
         </div>
     {% endif %}

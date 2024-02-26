@@ -29,7 +29,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $loader->load('form.yaml');
 
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $processedConfig = $this->processConfiguration($configuration, $configs);
 
         $container->registerForAutoconfiguration(MenuProviderInterface::class)->addTag('crudit.menu');
         $container->registerForAutoconfiguration(CrudConfigInterface::class)->addTag('crudit.config');
@@ -38,6 +38,11 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->registerForAutoconfiguration(FieldInterface::class)->addTag('crudit.field');
         $container->registerForAutoconfiguration(FilterSetInterface::class)->addTag('crudit.filterset');
         $container->registerForAutoconfiguration(ExporterInterface::class)->addTag("crudit.exporter");
+
+        $container->setParameter('lle_crudit.default_currency_alignment', $processedConfig['default_currency_alignment']);
+        $container->setParameter('lle_crudit.default_integer_alignment', $processedConfig['default_integer_alignment']);
+        $container->setParameter('lle_crudit.default_number_alignment', $processedConfig['default_number_alignment']);
+        $container->setParameter('lle_crudit.hide_if_disable', $processedConfig['hide_if_disable']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {
