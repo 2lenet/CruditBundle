@@ -143,7 +143,7 @@ class CruditExtension extends AbstractExtension
         if ($action->getHideIfDisabled() !== null) {
             $hideIfDisabled = $action->getHideIfDisabled();
         } else {
-            $hideIfDisabled = $this->parameterBag->get('lle_crudit.hide_if_disabled');
+            $hideIfDisabled = (string)$this->parameterBag->get('lle_crudit.hide_if_disabled');
         }
 
         return $hideIfDisabled;

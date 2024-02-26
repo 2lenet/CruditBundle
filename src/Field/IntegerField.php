@@ -29,9 +29,12 @@ class IntegerField extends AbstractField
 
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
+        /** @var string $defaultIntegerAlignment */
+        $defaultIntegerAlignment = $this->parameterBag->get('lle_crudit.default_integer_alignment');
+
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'tableCssClass' => $this->getTableCssClass($this->parameterBag->get('lle_crudit.default_integer_alignment')),
+            'tableCssClass' => $this->getTableCssClass($defaultIntegerAlignment),
             'thousands_separator' => ' ',
         ]);
     }

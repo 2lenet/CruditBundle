@@ -31,9 +31,12 @@ class CurrencyField extends AbstractField
 
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
+        /** @var string $defaultAlignment */
+        $defaultCurrencyAlignment = $this->parameterBag->get('lle_crudit.default_currency_alignment');
+
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'tableCssClass' => $this->getTableCssClass($this->parameterBag->get('lle_crudit.default_currency_alignment')),
+            'tableCssClass' => $this->getTableCssClass($defaultCurrencyAlignment),
             'locale' => $this->requestStack->getMainRequest()?->getLocale(),
             'currency' => 'EUR',
             'property' => null,

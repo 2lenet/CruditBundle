@@ -29,9 +29,12 @@ class NumberField extends AbstractField
 
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
+        /** @var string $defaultNumberAlignment */
+        $defaultNumberAlignment = $this->parameterBag->get('lle_crudit.default_number_alignment');
+
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'tableCssClass' => $this->getTableCssClass($this->parameterBag->get('lle_crudit.default_number_alignment')),
+            'tableCssClass' => $this->getTableCssClass($defaultNumberAlignment),
             'decimals' => '2',
             'decimal_separator' => ',',
             'thousands_separator' => ' ',
