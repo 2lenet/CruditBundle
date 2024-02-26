@@ -49,7 +49,7 @@ class Configuration implements ConfigurationInterface
                 ->thenInvalid('Invalid alignment value %s')
             ->end();
         $children
-            ->scalarNode('hide_if_disable')
+            ->scalarNode('hide_if_disabled')
             ->defaultValue(false)
             ->validate()
                 ->ifNotInArray([

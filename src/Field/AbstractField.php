@@ -65,18 +65,22 @@ abstract class AbstractField implements FieldInterface
 
     public function getTableCssClass(string $defaultAlignment): string
     {
+        $alignment = 'text-end';
+
         switch ($defaultAlignment) {
             case self::ALIGN_LEFT:
-                return 'text-start';
+                $alignment = 'text-start';
                 break;
             case self::ALIGN_CENTER:
-                return 'text-center';
+                $alignment = 'text-center';
                 break;
             case self::ALIGN_RIGHT:
             default:
-                return 'text-end';
+                $alignment = 'text-end';
                 break;
         }
+
+        return $alignment;
     }
 
     abstract protected function getDefaultTemplate(): ?string;

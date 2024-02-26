@@ -42,7 +42,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->setParameter('lle_crudit.default_currency_alignment', $processedConfig['default_currency_alignment']);
         $container->setParameter('lle_crudit.default_integer_alignment', $processedConfig['default_integer_alignment']);
         $container->setParameter('lle_crudit.default_number_alignment', $processedConfig['default_number_alignment']);
-        $container->setParameter('lle_crudit.hide_if_disable', $processedConfig['hide_if_disable']);
+        $container->setParameter('lle_crudit.hide_if_disabled', $processedConfig['hide_if_disabled']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {
