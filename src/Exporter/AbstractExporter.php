@@ -4,6 +4,8 @@ namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Field\CurrencyField;
+
 
 abstract class AbstractExporter implements ExporterInterface
 {

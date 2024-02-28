@@ -7,7 +7,15 @@ class ExportParams
     protected ?string $filename = null;
     protected string $separator = ";";
     protected bool $includeHeaders = true;
-    protected array $pdfParameters = [];
+    protected array $pdfParams = [
+        'title' => 'Export',
+        'paper_size' => 9, //A4
+        'orientation' => 'landscape',
+        'decimal_separator' => ',',
+        'thousands_separator' => '.',
+        'locale' => 'fr',
+        'header-footer' => [],
+    ];
 
     public static function new(): self
     {
@@ -55,6 +63,18 @@ class ExportParams
     public function setIncludeHeaders(bool $includeHeaders): self
     {
         $this->includeHeaders = $includeHeaders;
+
+        return $this;
+    }
+
+    public function getPdfParams(): array
+    {
+        return $this->pdfParams;
+    }
+
+    public function setPdfParams(array $pdfParams)
+    {
+        $this->pdfParams = $pdfParams;
 
         return $this;
     }
