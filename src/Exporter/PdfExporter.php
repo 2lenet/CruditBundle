@@ -68,6 +68,15 @@ class PdfExporter extends AbstractExporter
                             'bottom' => [
                                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                             ],
+                            'left' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            ],
+                            'right' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            ],
+                            'top' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            ],
                         ],
                         'alignment' => [
                             'wrapText' => true,
@@ -101,8 +110,27 @@ class PdfExporter extends AbstractExporter
                                 'argb' => 'E8E8E8',
                             ],
                         ],
+                        'borders' => [
+
+                        ],
                     ]);
                 }
+                $sheet->getStyle($cell)->applyFromArray([
+                    'borders' => [
+    //                        'bottom' => [
+    //                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+    //                        ],
+                        'left' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'right' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+//                        'top' => [
+//                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+//                        ],
+                    ],
+                ]);
             }
 
             $row++;
@@ -279,6 +307,9 @@ class PdfExporter extends AbstractExporter
             $result = numfmt_format_currency($formatter,  (float)trim($field->getValue()), $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
+        }
+        if($sheet->getStyle($cell)->getAlignment()->getHorizontal() === 'general') {
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal('left')->setIndent(1);
         }
     }
 }
