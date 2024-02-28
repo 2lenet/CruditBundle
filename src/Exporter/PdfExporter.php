@@ -12,17 +12,9 @@ use Lle\CruditBundle\Field\NumberField;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpWord\Style\Fill;
-use PhpOffice\PhpWord\Writer\WriterInterface;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -117,18 +109,12 @@ class PdfExporter extends AbstractExporter
                 }
                 $sheet->getStyle($cell)->applyFromArray([
                     'borders' => [
-    //                        'bottom' => [
-    //                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-    //                        ],
                         'left' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                         ],
                         'right' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                         ],
-//                        'top' => [
-//                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-//                        ],
                     ],
                 ]);
             }
@@ -283,8 +269,8 @@ class PdfExporter extends AbstractExporter
             } elseif ($field->getOptions()['currency'] ) {
                 $currency = $field->getOptions()['currency'];
             }
-            $formatter = \NumberFormatter::create('ch',  \NumberFormatter::CURRENCY);
-            $result = numfmt_format_currency($formatter, $field->getRawValue() , $currency);
+            $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
+            $result = numfmt_format_currency($formatter, $field->getRawValue(), $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
         }
@@ -303,12 +289,12 @@ class PdfExporter extends AbstractExporter
             } elseif ($field->getOptions()['currency'] ) {
                 $currency = $field->getOptions()['currency'];
             }
-            $formatter = \NumberFormatter::create('ch',  \NumberFormatter::CURRENCY);
-            $result = numfmt_format_currency($formatter,  (float)trim($field->getValue()), $currency);
+            $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
+            $result = numfmt_format_currency($formatter, (float)trim($field->getValue() ?? ''), $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
         }
-        if($sheet->getStyle($cell)->getAlignment()->getHorizontal() === 'general') {
+        if ($sheet->getStyle($cell)->getAlignment()->getHorizontal() === 'general') {
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('left')->setIndent(1);
         }
     }
