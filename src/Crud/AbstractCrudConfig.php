@@ -86,7 +86,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setModal('@LleCrudit/modal/_export.html.twig')
             ->setConfig(
                 [
-                    'export' => [Exporter::EXCEL, Exporter::CSV],
+                    'export' => [Exporter::EXCEL, Exporter::CSV, Exporter::PDF],
                 ]
             )
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EXPORT));
