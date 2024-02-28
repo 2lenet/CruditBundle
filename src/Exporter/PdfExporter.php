@@ -114,21 +114,17 @@ class PdfExporter extends AbstractExporter
 
         $writer = new Mpdf($spreadsheet);
         $pdfParmas = $params->getPdfParams();
-       if ($pdfParmas['header-footer']) {
+        if ($pdfParmas['header-footer']) {
             $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParmas['header-footer']));
         }
         $response = new StreamedResponse(function () use ($writer) {
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: attachment; filename="' . urlencode('data.pdf') . '"');
             $writer->save('php://output');
         });
-
-        $response->headers->set("Content-Type", "application/vnd.ms-excel");
-
+        $response->headers->set('Content-Type', 'application/pdf');
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.xls"
+            "$filename.pdf"
         );
         $response->headers->set("Content-Disposition", $disposition);
 
@@ -157,12 +153,11 @@ class PdfExporter extends AbstractExporter
             "bigint", "smallint", "float", "integer", "decimal", NumberField::class, IntegerField::class,
             => DataType::TYPE_NUMERIC,
             "boolean", BooleanField::class => DataType::TYPE_BOOL,
-//            'date' => DataType::TYPE_ISO_DATE,
             default => DataType::TYPE_STRING,
         };
     }
 
-    public function pageSetup(Spreadsheet &$spreadsheet, ExportParams $exportParams)
+    public function pageSetup(Spreadsheet &$spreadsheet, ExportParams $exportParams): void
     {
         $params = $exportParams->getPdfParams();
         $spreadsheet->getProperties()->setTitle($params['title']);
@@ -192,7 +187,7 @@ class PdfExporter extends AbstractExporter
                     odd-footer-name: html_myFooter2;
                     even-footer-name: html_myFooter2;                   
                 EOF;
-                $html = preg_replace('/@page page0 {/', $pagerepl, $html);
+                $html = preg_replace('/@page page0 {/', $pagerepl, $html) ?? '';
                 $bodystring = '/<body>/';
                 $topLeft = $params['header-left'] ?? '';
                 $topCenter = $params['header-center'] ?? '';
@@ -225,7 +220,7 @@ class PdfExporter extends AbstractExporter
                     
                     EOF;
 
-                return preg_replace($bodystring, $bodyrepl, $html);
+                return preg_replace($bodystring, $bodyrepl, $html) ?? '';
             };
     }
 
@@ -281,7 +276,7 @@ class PdfExporter extends AbstractExporter
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create('ch',  \NumberFormatter::CURRENCY);
-            $result = numfmt_format_currency($formatter,  trim($field->getValue()), $currency);
+            $result = numfmt_format_currency($formatter,  (float)trim($field->getValue()), $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
         }

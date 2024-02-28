@@ -72,7 +72,7 @@ class ExportParams
         return $this->pdfParams;
     }
 
-    public function setPdfParams(array $pdfParams)
+    public function setPdfParams(array $pdfParams): self
     {
         $this->pdfParams = $pdfParams;
 
