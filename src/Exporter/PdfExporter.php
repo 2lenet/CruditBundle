@@ -14,7 +14,6 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
-use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -266,7 +265,7 @@ class PdfExporter extends AbstractExporter
                     $object = $propertyAccessor->getValue($object, $property);
                 }
                 $currency = $object;
-            } elseif ($field->getOptions()['currency'] ) {
+            } elseif ($field->getOptions()['currency']) {
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
@@ -286,7 +285,7 @@ class PdfExporter extends AbstractExporter
                     $object = $propertyAccessor->getValue($object, $property);
                 }
                 $currency = $object;
-            } elseif ($field->getOptions()['currency'] ) {
+            } elseif ($field->getOptions()['currency']) {
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
