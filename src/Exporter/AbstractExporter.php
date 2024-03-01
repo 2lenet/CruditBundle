@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Field\DoctrineEntityField;
 
 abstract class AbstractExporter implements ExporterInterface
 {
@@ -24,6 +25,10 @@ abstract class AbstractExporter implements ExporterInterface
                     break;
                 case "decimal":
                     $result = $field->getValue();
+                    break;
+                case DoctrineEntityField::class:
+                    $result = method_exists($field->getRawValue() ?? '', 'count')
+                        ? $field->getRawValue()->count() : (string)$field->getRawValue() ;
                     break;
                 default:
                     $result = $field->getRawValue();
