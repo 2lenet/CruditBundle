@@ -62,7 +62,7 @@ class CsvExporter extends AbstractExporter
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            "$filename.csv"
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.csv'
         );
         $response->headers->set("Content-Disposition", $disposition);
         $response->headers->set("Content-Type", "text/csv");
