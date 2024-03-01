@@ -139,9 +139,9 @@ class PdfExporter extends AbstractExporter
                 $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
                 $row -= 2;
                 foreach ($totals as $total) {
-                    if ($headers[$column] === $this->translator->trans($total[0]->getField()->getLabel())) {
-                        $sheet->setCellValue($cell, $total[1]);
-                        $this->formatParticularFieldType($sheet, $cell, $total[0]);
+                    if ($headers[$column] === $this->translator->trans($total['field']->getField()->getLabel())) {
+                        $sheet->setCellValue($cell, $total['total']);
+                        $this->formatParticularFieldType($sheet, $cell, $total['field']);
 
                     }
                 }
@@ -307,7 +307,7 @@ class PdfExporter extends AbstractExporter
             $sheet->getStyle($cell)->getNumberFormat()
                 ->setFormatCode($this->getNumberDecimalFormat($field->getField()));
         }
-        if ($field->getField()->getType() === CurrencyField::class) {
+        if ($field->getField()->getType() === CurrencyField::class || $field->getField()->getType() === 'currency') {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
             $currency = '';
@@ -326,34 +326,12 @@ class PdfExporter extends AbstractExporter
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
-            $result = $formatter->formatCurrency($field->getRawValue(), $currency);
+            $value = $field->getField()->getType() === CurrencyField::class ? $field->getRawValue() : (float)trim($field->getValue());
+            $result = $formatter->formatCurrency($value, $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
         }
 
-        if ($field->getField()->getType() === 'currency') {
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
-
-            $currency = '';
-            if (
-                array_key_exists('property', $field->getOptions())
-                && $field->getOptions()['property']
-                && $field->getResource()
-            ) {
-                $path = explode('.', $field->getOptions()['property']);
-                $object = $field->getResource();
-                foreach ($path as $property) {
-                    $object = $propertyAccessor->getValue($object, $property);
-                }
-                $currency = $object;
-            } elseif ($field->getOptions()['currency']) {
-                $currency = $field->getOptions()['currency'];
-            }
-            $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
-            $result = numfmt_format_currency($formatter, (float)trim($field->getValue() ?? ''), $currency);
-            $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
-            $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
-        }
         if ($sheet->getStyle($cell)->getAlignment()->getHorizontal() === 'general') {
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('left')->setIndent(1);
         }

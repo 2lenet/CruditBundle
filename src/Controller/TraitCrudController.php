@@ -241,7 +241,6 @@ trait TraitCrudController
 
             $i = 0;
             $fieldViews = [];
-            $fieldRegistry = new FieldRegistry($fields);
             foreach ($this->config->getTotalFields() as $field) {
                 $i++;
 
@@ -249,8 +248,8 @@ trait TraitCrudController
                 $fieldView->setOptions($field['field']->getOptions());
 
                 $totals[] = [
-                    $fieldView,
-                    $totalByField[$i]
+                    'field' => $fieldView,
+                    'total' => $totalByField[$i]
                 ];
             }
         }
