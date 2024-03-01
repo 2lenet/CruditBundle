@@ -2,6 +2,8 @@
 
 namespace Lle\CruditBundle\Exporter;
 
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+
 class ExportParams
 {
     protected ?string $filename = null;
@@ -9,8 +11,8 @@ class ExportParams
     protected bool $includeHeaders = true;
     protected array $pdfParams = [
         'title' => 'Export',
-        'paper_size' => 9, //A4
-        'orientation' => 'landscape',
+        'paper_size' => PageSetup::PAPERSIZE_A4,
+        'orientation' => PageSetup::ORIENTATION_LANDSCAPE,
         'decimal_separator' => ',',
         'thousands_separator' => '.',
         'locale' => 'fr',

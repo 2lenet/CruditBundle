@@ -22,11 +22,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporter extends AbstractExporter
 {
-    protected TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function getSupportedFormat(): string
@@ -34,46 +31,19 @@ class PdfExporter extends AbstractExporter
         return Exporter::PDF;
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params, array $totals = []): Response
     {
         $spreadsheet = new Spreadsheet();
         $this->pageSetup($spreadsheet, $params);
         $sheet = $spreadsheet->getActiveSheet();
         $headersAdded = false;
         $row = 1;
+        $headerRow = $row;
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
             if ($params->getIncludeHeaders() && !$headersAdded) {
                 $headers = $this->getHeaders($resource->getFields());
-                foreach ($headers as $j => $header) {
-                    $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-                    $sheet->setCellValue($cell, ' ' . $header);
-                    $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle($cell)->getAlignment()->setVertical('center');
-                    $sheet->getStyle($cell)->applyFromArray([
-                        'font' => [
-                            'bold' => true,
-                        ],
-                        'borders' => [
-                            'bottom' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            ],
-                            'left' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            ],
-                            'right' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            ],
-                            'top' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            ],
-                        ],
-                        'alignment' => [
-                            'wrapText' => true,
-                        ],
-                    ]);
-                }
                 $sheet->getRowDimension($row)->setRowHeight(22);
                 $row++;
                 $headersAdded = true;
@@ -82,11 +52,10 @@ class PdfExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-
                 $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
                 $sheet->getStyle($cell)->getAlignment()->setVertical('center');
 
-                $this->formatParticualarFieldType($sheet, $cell, $field);
+                $this->formatParticularFieldType($sheet, $cell, $field);
 
                 $sheet->getStyle($cell)->getAlignment()->setIndent(1);
                 if ($row & 1) {
@@ -117,7 +86,91 @@ class PdfExporter extends AbstractExporter
                     ],
                 ]);
             }
+            $row++;
+        }
 
+
+        foreach ($headers as $column => $header) {
+            $cell = Coordinate::stringFromColumnIndex($column + 1) . $headerRow;
+            $sheet->setCellValue($cell, $header);
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle($cell)->getAlignment()->setVertical('center');
+            $sheet->getStyle($cell)->applyFromArray([
+                'font' => ['bold' => true,],
+                'borders' => [
+                    'bottom' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
+                    'left' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
+                    'right' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
+                    'top' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
+                ],
+                'alignment' => ['wrapText' => true,],
+            ]);
+
+            if ($totals) {
+                $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
+                $sheet->setCellValue($cell, $header);
+                $sheet->getStyle($cell)->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                    ],
+                    'borders' => [
+                        'bottom' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'left' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'right' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'top' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'alignment' => [
+                        'wrapText' => true,
+                        'vertical' => 'center',
+                        'horizontal' => 'center'
+                    ],
+                ]);
+                $sheet->getRowDimension($row)->setRowHeight(22);
+                $row++;
+                $sheet->getRowDimension($row)->setRowHeight(22);
+                $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
+                $row -= 2;
+                foreach ($totals as $total) {
+                    if ($headers[$column] === $this->translator->trans($total[0]->getField()->getLabel())) {
+                        $sheet->setCellValue($cell, $total[1]);
+                        $this->formatParticularFieldType($sheet, $cell, $total[0]);
+
+                    }
+                }
+                $sheet->getStyle($cell)->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                    ],
+                    'borders' => [
+                        'bottom' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'left' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'right' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                        'top' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'alignment' => [
+                        'wrapText' => true,
+                        'vertical' => 'center',
+                        'horizontal' => 'right',
+                        'indent' => 1,
+                    ],
+                ]);
+            }
             $row++;
         }
 
@@ -126,9 +179,9 @@ class PdfExporter extends AbstractExporter
         }
 
         $writer = new Mpdf($spreadsheet);
-        $pdfParmas = $params->getPdfParams();
-        if ($pdfParmas['header-footer']) {
-            $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParmas['header-footer']));
+        $pdfParams = $params->getPdfParams();
+        if ($pdfParams['header-footer']) {
+            $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParams['header-footer']));
         }
         $response = new StreamedResponse(function () use ($writer) {
             $writer->save('php://output');
@@ -192,24 +245,24 @@ class PdfExporter extends AbstractExporter
 
     public function getHeaderAndFooter(array $params): callable
     {
-            return function (string $html) use ($params): string {
-                $pagerepl = <<<EOF
+        return function (string $html) use ($params): string {
+            $pagerepl = <<<EOF
                     @page page0 {
                     odd-header-name: html_myHeader1;
                     even-header-name: html_myHeader1;
                     odd-footer-name: html_myFooter2;
                     even-footer-name: html_myFooter2;                   
                 EOF;
-                $html = preg_replace('/@page page0 {/', $pagerepl, $html) ?? '';
-                $bodystring = '/<body>/';
-                $topLeft = $params['header-left'] ?? '';
-                $topCenter = $params['header-center'] ?? '';
-                $topRight = $params['header-right'] ?? '';
-                $bottomLeft = $params['footer-left'] ?? '';
-                $bottomCenter = $params['footer-center'] ?? '';
-                $bottomRight = $params['footer-right'] ?? '';
+            $html = preg_replace('/@page page0 {/', $pagerepl, $html) ?? '';
+            $bodystring = '/<body>/';
+            $topLeft = $params['header-left'] ?? '';
+            $topCenter = $params['header-center'] ?? '';
+            $topRight = $params['header-right'] ?? '';
+            $bottomLeft = $params['footer-left'] ?? '';
+            $bottomCenter = $params['footer-center'] ?? '';
+            $bottomRight = $params['footer-right'] ?? '';
 
-                $bodyrepl = <<<EOF
+            $bodyrepl = <<<EOF
                     <body style="font-family: 'Arial';">
                         <htmlpageheader name="myHeader1">
                             <table width="100%">
@@ -233,8 +286,8 @@ class PdfExporter extends AbstractExporter
                     
                     EOF;
 
-                return preg_replace($bodystring, $bodyrepl, $html) ?? '';
-            };
+            return preg_replace($bodystring, $bodyrepl, $html) ?? '';
+        };
     }
 
     public function getNumberDecimalFormat(Field $field): string
@@ -248,7 +301,7 @@ class PdfExporter extends AbstractExporter
         return '#,##0.' . str_repeat('0', $decimalNumber);
     }
 
-    protected function formatParticualarFieldType(Worksheet $sheet, string $cell, FieldView $field): void
+    protected function formatParticularFieldType(Worksheet $sheet, string $cell, FieldView $field): void
     {
         if ($this->getType($field) === DataType::TYPE_NUMERIC) {
             $sheet->getStyle($cell)->getNumberFormat()
@@ -258,7 +311,11 @@ class PdfExporter extends AbstractExporter
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
             $currency = '';
-            if ($field->getOptions()['property'] && $field->getResource()) {
+            if (
+                array_key_exists('property', $field->getOptions())
+                && $field->getOptions()['property']
+                && $field->getResource()
+            ) {
                 $path = explode('.', $field->getOptions()['property']);
                 $object = $field->getResource();
                 foreach ($path as $property) {
@@ -269,7 +326,7 @@ class PdfExporter extends AbstractExporter
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
-            $result = numfmt_format_currency($formatter, $field->getRawValue(), $currency);
+            $result = $formatter->formatCurrency($field->getRawValue(), $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
         }
@@ -278,7 +335,11 @@ class PdfExporter extends AbstractExporter
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
             $currency = '';
-            if ($field->getOptions()['property'] && $field->getResource()) {
+            if (
+                array_key_exists('property', $field->getOptions())
+                && $field->getOptions()['property']
+                && $field->getResource()
+            ) {
                 $path = explode('.', $field->getOptions()['property']);
                 $object = $field->getResource();
                 foreach ($path as $property) {
