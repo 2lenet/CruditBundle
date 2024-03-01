@@ -1,7 +1,6 @@
 {% if field.vars.tooltip is defined and field.vars.tooltip %}
     <i
-        class="fas fa-info-circle"
-        style="position: absolute; top: 50%; right: 10px; transform: translate(0, -50%)"
+        class="form-tooltip fas fa-info-circle"
         data-bs-toggle="tooltip"
         data-bs-placement="{% if field.vars.tooltip_position is defined and field.vars.tooltip_position %}{{ field.vars.tooltip_position }}{% else %}bottom{% endif %}"
         data-bs-custom-class="custom-tooltip"
@@ -10,8 +9,7 @@
     </i>
 {% elseif field.vars.tooltip_html is defined and field.vars.tooltip_html %}
     <i
-        class="fas fa-info-circle"
-        style="position: absolute; top: 50%; right: 10px; transform: translate(0, -50%)"
+        class="form-tooltip fas fa-info-circle"
         data-bs-toggle="tooltip"
         data-bs-placement="{% if field.vars.tooltip_position is defined and field.vars.tooltip_position %}{{ field.vars.tooltip_position }}{% else %}bottom{% endif %}"
         data-bs-custom-class="custom-tooltip"
@@ -21,8 +19,7 @@
     </i>
 {% elseif field.vars.tooltip_template is defined and field.vars.tooltip_template %}
     <i
-        class="fas fa-info-circle"
-        style="position: absolute; top: 50%; right: 10px; transform: translate(0, -50%)"
+        class="form-tooltip fas fa-info-circle"
         data-bs-toggle="tooltip"
         data-bs-placement="{% if field.vars.tooltip_position is defined and field.vars.tooltip_position %}{{ field.vars.tooltip_position }}{% else %}bottom{% endif %}"
         data-bs-custom-class="custom-tooltip"
