@@ -55,6 +55,7 @@ services:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
             - '@router'
             - '@doctrine.orm.entity_manager'
+            - '@parameter_bag'
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
