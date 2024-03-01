@@ -12,6 +12,12 @@ use Twig\Environment;
 
 abstract class AbstractField implements FieldInterface
 {
+    public const ALIGN_LEFT = 'left';
+
+    public const ALIGN_CENTER = 'center';
+
+    public const ALIGN_RIGHT = 'right';
+
     protected Environment $twig;
 
     public function __construct(Environment $twig)
@@ -55,6 +61,26 @@ abstract class AbstractField implements FieldInterface
             "sortProperty" => null,
             'editRole' => null,
         ]);
+    }
+
+    public function getTableCssClass(string $defaultAlignment): string
+    {
+        $alignment = 'text-end';
+
+        switch ($defaultAlignment) {
+            case self::ALIGN_LEFT:
+                $alignment = 'text-start';
+                break;
+            case self::ALIGN_CENTER:
+                $alignment = 'text-center';
+                break;
+            case self::ALIGN_RIGHT:
+            default:
+                $alignment = 'text-end';
+                break;
+        }
+
+        return $alignment;
     }
 
     abstract protected function getDefaultTemplate(): ?string;

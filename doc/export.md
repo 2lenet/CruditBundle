@@ -44,6 +44,7 @@ Crudit already comes with some exporters:
 
 - CsvExporter for csv files
 - ExcelExporter for xls files
+- PdfExporter for pdf files
 
 ### Configuration
 
@@ -104,3 +105,47 @@ ListAction::new()
 ```
 
 Crudit will automatically detect the exporters and complete the export form.
+
+### Pdf exporter
+
+The PDF exporter can be personalized in the crud config: 
+
+```php
+
+public function getExportParams(string $format): ExportParams
+    {
+        $exportParams = parent::getExportParams($format);
+        $params = $exportParams->getPdfParams();
+        $params['locale'] = 'fr'
+        $params['header-footer'] = [
+                'header-left' => 'I am the page header',
+                'footer-center' => 'Made with Crudit',
+        ];
+        $exportParams->setPdfParams($params);
+
+        return $exportParams;
+    }
+```
+
+The default values are:
+
+```php
+[
+    'title' => 'Export',
+    'paper_size' => 9, //A4
+    'orientation' => 'landscape',
+    'decimal_separator' => ',',
+    'thousands_separator' => '.',
+    'locale' => 'fr',
+    'header-footer' => [
+        'header-left' => '',
+        'header-center' => '',
+        'header-right' => '',
+        'footer-left' => '',
+        'footer-center' => '',
+        'footer-right' => '',
+    ],
+];
+```
+
+To customize the values, check the [PhpSpreadsheet documentation](https://phpspreadsheet.readthedocs.io/en/latest/), 

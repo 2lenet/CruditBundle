@@ -74,7 +74,7 @@ class ExcelExporter extends AbstractExporter
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.xls"
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.xls'
         );
         $response->headers->set("Content-Disposition", $disposition);
 
@@ -100,7 +100,7 @@ class ExcelExporter extends AbstractExporter
         }
 
         return match ($field->getField()->getType()) {
-            "bigint", "smallint", "float", "integer", NumberField::class, CurrencyField::class, IntegerField::class
+            "bigint", "smallint", "float", "integer", "decimal", "currency", NumberField::class, CurrencyField::class, IntegerField::class
             => DataType::TYPE_NUMERIC,
             "boolean", BooleanField::class => DataType::TYPE_BOOL,
             default => DataType::TYPE_STRING,
