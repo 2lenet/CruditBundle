@@ -35,7 +35,7 @@
         {{ result }}
     {% else %}
         {% set tableCssClass = options.tableCssClass %}
-        {% if view.field.options and view.field.options['tableCssClass'] %}
+        {% if view.field.options is defined and view.field.options and view.field.options['tableCssClass'] is defined %}
             {% set tableCssClass = view.field.options['tableCssClass'] %}
         {% endif %}
 
