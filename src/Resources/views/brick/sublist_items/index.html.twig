@@ -6,7 +6,9 @@
                 <script>
                     window.addEventListener('load', function () {
                         var badge = document.getElementById("{{ tab.id }}-badge");
-                        badge.textContent ="{{ view.config.datasource_params.count }}";
+                        if (!badge.textContent) {
+                            badge.textContent = "{{ view.config.datasource_params.count }}";
+                        }
                     });
                 </script>
             {% else %}
