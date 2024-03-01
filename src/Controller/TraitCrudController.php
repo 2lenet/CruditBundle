@@ -6,9 +6,11 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
+use Lle\CruditBundle\Registry\FieldRegistry;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -230,12 +232,35 @@ trait TraitCrudController
             }
         };
 
+        $totals = [];
+        if (count($this->config->getTotalFields()) > 0) {
+            $dsParams = $this->config->getDatasourceParams($request);
+            $dsParams->setCount($this->config->getDatasource()->count($dsParams));
+            /** @var array $totalByField */
+            $totalByField = $this->config->getDatasource()->getTotals($dsParams, $this->config->getTotalFields());
+
+            $i = 0;
+            $fieldViews = [];
+            foreach ($this->config->getTotalFields() as $field) {
+                $i++;
+
+                $fieldView = new FieldView($field['field'], $totalByField[$i]);
+                $fieldView->setOptions($field['field']->getOptions());
+
+                $totals[] = [
+                    'field' => $fieldView,
+                    'total' => $totalByField[$i]
+                ];
+            }
+        }
+
         $format = $request->get("format", "csv");
 
         return $exporter->export(
             $generator(),
             $format,
-            $this->config->getExportParams($format)
+            $this->config->getExportParams($format),
+            $totals
         );
     }
 
