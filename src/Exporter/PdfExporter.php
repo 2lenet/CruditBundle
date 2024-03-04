@@ -142,7 +142,6 @@ class PdfExporter extends AbstractExporter
                     if ($headers[$column] === $this->translator->trans($total['field']->getField()->getLabel())) {
                         $sheet->setCellValue($cell, $total['total']);
                         $this->formatParticularFieldType($sheet, $cell, $total['field']);
-
                     }
                 }
                 $sheet->getStyle($cell)->applyFromArray([
