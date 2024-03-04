@@ -13,7 +13,6 @@ class DeleteAction extends ItemAction
     public function __construct(string $label, Path $path)
     {
         parent::__construct($label, $path);
-        $this->hideIfDisabled = false;
     }
 
     public function getTitle(): string
