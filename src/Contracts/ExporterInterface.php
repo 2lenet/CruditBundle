@@ -17,5 +17,5 @@ interface ExporterInterface
      * @param ExportParams $params the parameters of the export
      * @return Response the file
      */
-    public function export(iterable $resources, ExportParams $params): Response;
+    public function export(iterable $resources, ExportParams $params, array $totals = []): Response;
 }

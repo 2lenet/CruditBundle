@@ -39,6 +39,7 @@ class PdfExporter extends AbstractExporter
         $headersAdded = false;
         $row = 1;
         $headerRow = $row;
+        $headers = [];
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
@@ -305,7 +306,7 @@ class PdfExporter extends AbstractExporter
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
-            $value = $field->getField()->getType() === CurrencyField::class ? $field->getRawValue() : (float)trim($field->getValue());
+            $value = $field->getField()->getType() === CurrencyField::class ? $field->getRawValue() : (float)trim($field->getValue() ?? '');
             $result = $formatter->formatCurrency($value, $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
