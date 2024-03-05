@@ -114,6 +114,7 @@ class PdfExporter extends AbstractExporter
                     if ($headers[$column] === $this->translator->trans($total['field']->getField()->getLabel())) {
                         $sheet->setCellValue($cell, $total['total']);
                         $this->formatParticularFieldType($sheet, $cell, $total['field']);
+                        $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
                     }
                 }
                 $sheet->getStyle($cell)->applyFromArray([
@@ -136,7 +137,6 @@ class PdfExporter extends AbstractExporter
                     ],
                     'alignment' => [
                         'vertical' => 'center',
-                        'horizontal' => 'right',
                         'indent' => 1,
                         'wrapText' => true,
                     ],
@@ -286,6 +286,9 @@ class PdfExporter extends AbstractExporter
         if ($this->getType($field) === DataType::TYPE_NUMERIC) {
             $sheet->getStyle($cell)->getNumberFormat()
                 ->setFormatCode($this->getNumberDecimalFormat($field->getField()));
+        }
+        if ($this->getType($field) === DataType::TYPE_BOOL) {
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
         }
         if ($field->getField()->getType() === CurrencyField::class || $field->getField()->getType() === 'currency') {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();

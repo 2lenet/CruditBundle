@@ -31,7 +31,7 @@ class ExcelExporter extends AbstractExporter
         return Exporter::EXCEL;
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params, array $total = []): Response
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

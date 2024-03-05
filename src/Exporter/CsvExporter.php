@@ -25,7 +25,7 @@ class CsvExporter extends AbstractExporter
         return Exporter::CSV;
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params, array $total = []): Response
     {
         $path = tempnam(sys_get_temp_dir(), Exporter::CSV);
 
