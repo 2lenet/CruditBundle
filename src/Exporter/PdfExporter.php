@@ -107,42 +107,12 @@ class PdfExporter extends AbstractExporter
             ]);
 
             if ($totals) {
-                $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
-                $sheet->setCellValue($cell, $header);
-                $sheet->getStyle($cell)->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                    ],
-                    'borders' => [
-                        'bottom' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'left' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'right' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'top' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'alignment' => [
-                        'wrapText' => true,
-                        'vertical' => 'center',
-                        'horizontal' => 'center'
-                    ],
-                ]);
-                $sheet->getRowDimension($row)->setRowHeight(22);
-                $row++;
                 $sheet->getRowDimension($row)->setRowHeight(22);
                 $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
-                $row -= 2;
                 foreach ($totals as $total) {
                     if ($headers[$column] === $this->translator->trans($total['field']->getField()->getLabel())) {
                         $sheet->setCellValue($cell, $total['total']);
                         $this->formatParticularFieldType($sheet, $cell, $total['field']);
-
                     }
                 }
                 $sheet->getStyle($cell)->applyFromArray([
@@ -171,8 +141,8 @@ class PdfExporter extends AbstractExporter
                     ],
                 ]);
             }
-            $row++;
         }
+        $row++;
 
         foreach ($sheet->getColumnIterator("A", $sheet->getHighestColumn()) as $column) {
             $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
@@ -237,6 +207,8 @@ class PdfExporter extends AbstractExporter
 
         $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation($params['orientation']);
         $spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize($params['paper_size']);
+
+        $spreadsheet->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
 
         \PhpOffice\PhpSpreadsheet\Settings::setLocale($params['locale']);
         \PhpOffice\PhpSpreadsheet\Shared\StringHelper::setDecimalSeparator($params['decimal_separator']);
