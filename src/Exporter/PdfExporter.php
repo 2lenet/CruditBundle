@@ -185,7 +185,7 @@ class PdfExporter extends AbstractExporter
             return DataType::TYPE_NULL;
         }
 
-        if ($field->getField()->getTemplate() && $field->getField()->getType() === 'boolean'){
+        if ($field->getField()->getTemplate() && $field->getField()->getType() === 'boolean') {
             $field->getField()->setType('string');
         }
 
