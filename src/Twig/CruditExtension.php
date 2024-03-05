@@ -5,6 +5,7 @@ namespace Lle\CruditBundle\Twig;
 use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
+use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -143,9 +144,15 @@ class CruditExtension extends AbstractExtension
         if ($action->getHideIfDisabled() !== null) {
             $hideIfDisabled = $action->getHideIfDisabled();
         } else {
-            /** @var bool $defaultValue */
-            $defaultValue = $this->parameterBag->get('lle_crudit.hide_if_disabled');
-            $hideIfDisabled = $defaultValue;
+            if ($action instanceof DeleteAction) {
+                /** @var bool $defaultValue */
+                $defaultValue = $this->parameterBag->get('lle_crudit.delete_hide_if_disabled');
+                $hideIfDisabled = $defaultValue;
+            } else {
+                /** @var bool $defaultValue */
+                $defaultValue = $this->parameterBag->get('lle_crudit.hide_if_disabled');
+                $hideIfDisabled = $defaultValue;
+            }
         }
 
         return $hideIfDisabled;

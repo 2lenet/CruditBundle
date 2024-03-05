@@ -58,6 +58,16 @@ class Configuration implements ConfigurationInterface
                 ])
                 ->thenInvalid('Invalid value %s')
             ->end();
+        $children
+            ->scalarNode('delete_hide_if_disabled')
+            ->defaultValue(false)
+            ->validate()
+            ->ifNotInArray([
+                true,
+                false,
+            ])
+            ->thenInvalid('Invalid value %s')
+            ->end();
 
         return $treeBuilder;
     }
