@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
@@ -455,10 +456,14 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb = $this->buildQueryBuilder($requestParams);
 
         foreach ($fields as $field => $data) {
+            $expression = $data['type'] . '(root.' . $field . ')';
+            if ($data['type'] === CrudConfigInterface::EXPRESSION) {
+                $expression = $data['expression'];
+            }
             if ($field === array_key_first($fields)) {
-                $qb->select($data['type'] . '(root.' . $field . ')');
+                $qb->select($expression);
             } else {
-                $qb->addSelect($data['type'] . '(root.' . $field . ')');
+                $qb->addSelect($expression);
             }
         }
 

@@ -89,13 +89,14 @@ class PdfExporter extends AbstractExporter
             $row++;
         }
 
-
         foreach ($headers as $column => $header) {
             $cell = Coordinate::stringFromColumnIndex($column + 1) . $headerRow;
-            $sheet->setCellValue($cell, $header);
-            $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle($cell)->getAlignment()->setVertical('center');
             $sheet->getStyle($cell)->applyFromArray([
+                'alignment' => [
+                    'horizontal' => 'center',
+                    'vertical' => 'center',
+                    'wrapText' => true,
+                ],
                 'font' => ['bold' => true,],
                 'borders' => [
                     'bottom' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
@@ -103,9 +104,8 @@ class PdfExporter extends AbstractExporter
                     'right' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
                     'top' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
                 ],
-                'alignment' => ['wrapText' => true,],
             ]);
-
+            $sheet->setCellValue($cell, $header);
             if ($totals) {
                 $sheet->getRowDimension($row)->setRowHeight(22);
                 $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
@@ -134,10 +134,10 @@ class PdfExporter extends AbstractExporter
                         ],
                     ],
                     'alignment' => [
-                        'wrapText' => true,
                         'vertical' => 'center',
                         'horizontal' => 'right',
                         'indent' => 1,
+                        'wrapText' => true,
                     ],
                 ]);
             }
@@ -183,6 +183,10 @@ class PdfExporter extends AbstractExporter
     {
         if ($field->getRawValue() === null || $field->getRawValue() === "") {
             return DataType::TYPE_NULL;
+        }
+
+        if ($field->getField()->getTemplate() && $field->getField()->getType() === 'boolean'){
+            $field->getField()->setType('string');
         }
 
         return match ($field->getField()->getType()) {
@@ -268,6 +272,9 @@ class PdfExporter extends AbstractExporter
         $decimalNumber = 2;
         if (array_key_exists('decimals', $options)) {
             $decimalNumber = $options['decimals'];
+        }
+        if ($field->getType() === IntegerField::class) {
+            $decimalNumber = 0;
         }
 
         return '#,##0.' . str_repeat('0', $decimalNumber);
