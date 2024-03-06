@@ -39,6 +39,7 @@ class PdfExporter extends AbstractExporter
         $headersAdded = false;
         $row = 1;
         $headerRow = $row;
+        $headers = [];
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
@@ -89,13 +90,14 @@ class PdfExporter extends AbstractExporter
             $row++;
         }
 
-
         foreach ($headers as $column => $header) {
             $cell = Coordinate::stringFromColumnIndex($column + 1) . $headerRow;
-            $sheet->setCellValue($cell, $header);
-            $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle($cell)->getAlignment()->setVertical('center');
             $sheet->getStyle($cell)->applyFromArray([
+                'alignment' => [
+                    'horizontal' => 'center',
+                    'vertical' => 'center',
+                    'wrapText' => true,
+                ],
                 'font' => ['bold' => true,],
                 'borders' => [
                     'bottom' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
@@ -103,9 +105,8 @@ class PdfExporter extends AbstractExporter
                     'right' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
                     'top' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
                 ],
-                'alignment' => ['wrapText' => true,],
             ]);
-
+            $sheet->setCellValue($cell, $header);
             if ($totals) {
                 $sheet->getRowDimension($row)->setRowHeight(22);
                 $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
@@ -113,6 +114,7 @@ class PdfExporter extends AbstractExporter
                     if ($headers[$column] === $this->translator->trans($total['field']->getField()->getLabel())) {
                         $sheet->setCellValue($cell, $total['total']);
                         $this->formatParticularFieldType($sheet, $cell, $total['field']);
+                        $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
                     }
                 }
                 $sheet->getStyle($cell)->applyFromArray([
@@ -134,10 +136,9 @@ class PdfExporter extends AbstractExporter
                         ],
                     ],
                     'alignment' => [
-                        'wrapText' => true,
                         'vertical' => 'center',
-                        'horizontal' => 'right',
                         'indent' => 1,
+                        'wrapText' => true,
                     ],
                 ]);
             }
@@ -183,6 +184,10 @@ class PdfExporter extends AbstractExporter
     {
         if ($field->getRawValue() === null || $field->getRawValue() === "") {
             return DataType::TYPE_NULL;
+        }
+
+        if ($field->getField()->getTemplate() && $field->getField()->getType() === 'boolean') {
+            $field->getField()->setType('string');
         }
 
         return match ($field->getField()->getType()) {
@@ -269,6 +274,9 @@ class PdfExporter extends AbstractExporter
         if (array_key_exists('decimals', $options)) {
             $decimalNumber = $options['decimals'];
         }
+        if ($field->getType() === IntegerField::class) {
+            $decimalNumber = 0;
+        }
 
         return '#,##0.' . str_repeat('0', $decimalNumber);
     }
@@ -278,6 +286,9 @@ class PdfExporter extends AbstractExporter
         if ($this->getType($field) === DataType::TYPE_NUMERIC) {
             $sheet->getStyle($cell)->getNumberFormat()
                 ->setFormatCode($this->getNumberDecimalFormat($field->getField()));
+        }
+        if ($this->getType($field) === DataType::TYPE_BOOL) {
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
         }
         if ($field->getField()->getType() === CurrencyField::class || $field->getField()->getType() === 'currency') {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
@@ -298,7 +309,7 @@ class PdfExporter extends AbstractExporter
                 $currency = $field->getOptions()['currency'];
             }
             $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
-            $value = $field->getField()->getType() === CurrencyField::class ? $field->getRawValue() : (float)trim($field->getValue());
+            $value = $field->getField()->getType() === CurrencyField::class ? $field->getRawValue() : (float)trim($field->getValue() ?? '');
             $result = $formatter->formatCurrency($value, $currency);
             $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
             $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
