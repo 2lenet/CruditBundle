@@ -7,7 +7,7 @@
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
                 <input type="number" class="form-control form-control-sm crudit-eip-input" style="min-width: 100px;"
-                       autocomplete="off" value="{{ value }}">
+                       autocomplete="off" value="{{ value }}" step="{{ 1 / 10 ** options.decimals }}">
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">
                         <i class="fa fa-check"></i>
