@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace <?= $namespace ?>;
 
-use App\Crudit\Datasource\<?= $prefixFilename ?>Datasource;
+use App\Crudit\Datasource\<?= $configSubdirectorie ?><?= $prefixFilename ?>Datasource;
 <?php if (count($tabs)) { ?>
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
