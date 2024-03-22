@@ -51,7 +51,7 @@ trait TestHelperTrait
 
     protected function loginUser(): void
     {
-        $userRepository = $container->get(self::USER_REPOSITORY);
+        $userRepository = static::getContainer()->get(self::USER_REPOSITORY);
 
         $this->client->loginUser($userRepository->findOneByEmail(self::LOGIN_USER));
     }
