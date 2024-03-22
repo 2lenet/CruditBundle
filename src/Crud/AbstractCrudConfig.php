@@ -120,7 +120,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('trash-alt')
         )
             ->setCssClass('btn btn-danger btn-sm mr-1')
-            ->setModal('@LleCrudit/modal/_confirm_delete.html.twig')
+            ->setConfirmModal(true)
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
         return $actions;
@@ -152,7 +152,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('trash-alt')
         )
             ->setCssClass('btn btn-danger btn-sm mr-1')
-            ->setModal('@LleCrudit/modal/_confirm_delete.html.twig')
+            ->setConfirmModal(true)
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
         return $actions;

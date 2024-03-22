@@ -27,6 +27,8 @@
                     class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }} {% if disabled %}disabled{% endif %}"
                         {% if action.modal %}
                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                        {% elseif action.confirmModal %}
+                            data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.'~action.label)|trans }}"
                         {% elseif not action.disabled %}
                             href="{{ action.url ?? path(action.path.route, params) }}"
                         {% endif %}
