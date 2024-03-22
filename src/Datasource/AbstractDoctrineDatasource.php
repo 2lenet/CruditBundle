@@ -108,6 +108,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams) {
             $i = 0;
             foreach ($requestParams->getFilters() as $filter) {
+//                dd($filter);
                 $alias = $filter->getAlias() ?? "root";
                 $field = $alias . "." . $filter->getField();
 
