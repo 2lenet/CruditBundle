@@ -1,3 +1,4 @@
+import './action';
 import './editinplace';
 import './batch_actions';
 import './input_date';

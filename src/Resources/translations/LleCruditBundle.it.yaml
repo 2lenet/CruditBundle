@@ -38,13 +38,14 @@ crudit:
     modal:
         cancel: "Annullare"
         validate: "Convalidare"
+        confirm: "Confermare"
+        confirm:
+            message: "Volete davvero confermare questa azione? Questo atto è irrevocabile."
+            action: "Confermare"
         export:
             message: "Scegliere un formato di esportazione"
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
-        delete:
-            message: "Vuoi davvero cancellare questo articolo ? Questa azione è irrevocabile."
-            action: "Cancellare"
 
     field:
         createdAt: "Creato il"
