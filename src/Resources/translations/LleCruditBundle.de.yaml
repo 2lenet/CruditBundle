@@ -38,7 +38,6 @@ crudit:
     modal:
         cancel: "Abbrechen"
         validate: "Validieren"
-        confirm: "Konfirmand"
         confirm:
             message: "Wollen Sie diese Aktion wirklich bestätigen? Diese Maßnahme ist unumkehrbar."
             action: "Konfirmand"
