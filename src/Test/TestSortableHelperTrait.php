@@ -8,7 +8,6 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Provider\ConfigProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\Routing\RouterInterface;
-use function PHPUnit\Framework\assertEquals;
 
 trait TestSortableHelperTrait
 {
