@@ -2,7 +2,7 @@
 
 namespace Lle\CruditBundle\Form;
 
-use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
@@ -21,10 +21,10 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     protected Reader $annotationReader;
     private array $cache = [];
 
-    public function __construct(ManagerRegistry $registry, Reader $annotationReader)
+    public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
-        $this->annotationReader = $annotationReader;
+        $this->annotationReader = new AnnotationReader();
     }
 
     /**
