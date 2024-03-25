@@ -7,7 +7,6 @@ use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Provider\ConfigProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\Routing\RouterInterface;
 
 trait TestSortableHelperTrait
 {
