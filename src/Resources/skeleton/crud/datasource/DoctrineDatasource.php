@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace <?= $namespace; ?>;
 
-<?php if ($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $prefixFilename ?>FilterSet;<?php echo "\n"; } ?>
+<?php if ($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $configSubdirectorie ?><?= $prefixFilename ?>FilterSet;<?php echo "\n"; } ?>
 use App\Entity\<?= $entityClass ?>;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 <?php if ($hasFilterset) { ?>

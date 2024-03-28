@@ -74,6 +74,16 @@ final class MakeCrudit extends AbstractMaker
                 sprintf('Namespace for controller App/Controller/[...]/MyController.php ?')
             )
             ->addArgument(
+                'namespace-form',
+                InputArgument::OPTIONAL,
+                sprintf('Namespace for form App/Form/[...]/MyForm.php ?')
+            )
+            ->addArgument(
+                'sub-directories',
+                InputArgument::OPTIONAL,
+                sprintf('Sub directories for Crudit files App\Crudit\Config\[subdirectories] ?')
+            )
+            ->addArgument(
                 'filter',
                 InputArgument::OPTIONAL,
                 sprintf('Do you want some filters ?')
@@ -86,6 +96,8 @@ final class MakeCrudit extends AbstractMaker
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
         $inputConfig->setArgumentAsNonInteractive('namespace-controller');
+        $inputConfig->setArgumentAsNonInteractive('namespace-form');
+        $inputConfig->setArgumentAsNonInteractive('sub-directories');
         $inputConfig->setArgumentAsNonInteractive('filter');
     }
 
@@ -113,6 +125,36 @@ final class MakeCrudit extends AbstractMaker
             $question->setAutocompleterValues($controllerNamespaces);
             $value = $io->askQuestion($question);
             $input->setArgument('namespace-controller', $value);
+        }
+
+        if (null === $input->getArgument('namespace-form')) {
+            $argument = $command->getDefinition()->getArgument('namespace-form');
+            $question = new Question($argument->getDescription(), '');
+            $finder = new Finder();
+            $finder->in($this->projectDir . '/src/Form/');
+            $formNamespaces = [null];
+            foreach ($finder->directories() as $dir) {
+                /* @var SplFileInfo $dir */
+                $formNamespaces[] = $dir->getBasename();
+            }
+            $question->setAutocompleterValues($formNamespaces);
+            $value = $io->askQuestion($question);
+            $input->setArgument('namespace-form', $value);
+        }
+
+        if (null === $input->getArgument('sub-directories')) {
+            $argument = $command->getDefinition()->getArgument('sub-directories');
+            $question = new Question($argument->getDescription(), '');
+            $finder = new Finder();
+            $finder->in($this->projectDir . '/src/Crudit/');
+            $subDirectories = [null];
+            foreach ($finder->directories() as $dir) {
+                /* @var SplFileInfo $dir */
+                $subDirectories[] = $dir->getBasename();
+            }
+            $question->setAutocompleterValues($subDirectories);
+            $value = $io->askQuestion($question);
+            $input->setArgument('sub-directories', $value);
         }
 
         if (null === $input->getArgument('filter')) {
@@ -190,7 +232,9 @@ final class MakeCrudit extends AbstractMaker
 
         $configuratorClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            'Crudit\\Config\\',
+            $this->getStringArgument('sub-directories', $input) ?
+                'Crudit\\Config\\' . $this->getStringArgument('sub-directories', $input) . '\\' :
+                'Crudit\\Config\\',
             'CrudConfig'
         );
 
@@ -210,6 +254,9 @@ final class MakeCrudit extends AbstractMaker
                     $shortEntity :
                     $shortEntity,
                 'tabs' => [],
+                'configSubdirectorie' => $this->getStringArgument('sub-directories', $input) ?
+                    $this->getStringArgument('sub-directories', $input) . '\\' :
+                    '',
             ]
         );
         $generator->writeChanges();
@@ -368,7 +415,9 @@ final class MakeCrudit extends AbstractMaker
 
         $formTypeClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            'Form\\',
+            $this->getStringArgument('namespace-form', $input) ?
+                'Form\\' . $this->getStringArgument('namespace-form', $input) . '\\' :
+                'Form\\',
             'Type'
         );
         $generator->generateClass(
@@ -414,6 +463,8 @@ final class MakeCrudit extends AbstractMaker
 
         $filtersetClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
+            $this->getStringArgument('sub-directories', $input) ?
+            'Crudit\Datasource\Filterset\\' . $this->getStringArgument('sub-directories', $input) . '\\' :
             'Crudit\Datasource\Filterset\\',
             'FilterSet'
         );
@@ -447,7 +498,9 @@ final class MakeCrudit extends AbstractMaker
 
         $datasourceClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            'Crudit\\Datasource\\',
+            $this->getStringArgument('sub-directories', $input) ?
+                'Crudit\\Datasource\\' . $this->getStringArgument('sub-directories', $input) . '\\' :
+                'Crudit\\Datasource\\',
             'Datasource'
         );
         $generator->generateClass(
@@ -460,6 +513,9 @@ final class MakeCrudit extends AbstractMaker
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'strictType' => true,
+                'configSubdirectorie' => $this->getStringArgument('sub-directories', $input) ?
+                    $this->getStringArgument('sub-directories', $input) . '\\' :
+                    '',
             ]
         );
         $generator->writeChanges();
@@ -486,6 +542,9 @@ final class MakeCrudit extends AbstractMaker
                 'entityClass' => $shortEntity,
                 'prefixFilename' => $shortEntity,
                 'strictType' => true,
+                'configSubdirectorie' => $this->getStringArgument('sub-directories', $input) ?
+                    $this->getStringArgument('sub-directories', $input) . '\\' :
+                    '',
             ]
         );
         $generator->writeChanges();
