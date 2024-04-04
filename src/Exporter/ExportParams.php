@@ -17,6 +17,10 @@ class ExportParams
         'thousands_separator' => '.',
         'locale' => 'fr',
         'header-footer' => [],
+        'margin-top' => 0.8,
+        'margin-bottom' => 0.8,
+        'margin-left' => 0.25,
+        'margin-right' => 0.25,
     ];
 
     public static function new(): self
