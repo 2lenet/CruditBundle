@@ -205,10 +205,10 @@ class PdfExporter extends AbstractExporter
         $spreadsheet->getActiveSheet()->getPageSetup()->setFitToWidth(1);
         $spreadsheet->getActiveSheet()->getPageSetup()->setFitToHeight(0);
 
-        $spreadsheet->getActiveSheet()->getPageMargins()->setTop(0.8);
-        $spreadsheet->getActiveSheet()->getPageMargins()->setRight(0.25);
-        $spreadsheet->getActiveSheet()->getPageMargins()->setLeft(0.25);
-        $spreadsheet->getActiveSheet()->getPageMargins()->setBottom(0.8);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setTop($params['margin-top']);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setRight($params['margin-right']);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setLeft($params['margin-left']);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setBottom($params['margin-bottom']);
 
         $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation($params['orientation']);
         $spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize($params['paper_size']);
@@ -238,15 +238,21 @@ class PdfExporter extends AbstractExporter
             $bottomLeft = $params['footer-left'] ?? '';
             $bottomCenter = $params['footer-center'] ?? '';
             $bottomRight = $params['footer-right'] ?? '';
+            $sizeTL = $params['size-header-left'] ?? 'medium';
+            $sizeTC = $params['size-header-center'] ?? 'medium';
+            $sizeTR = $params['size-header-right'] ?? 'medium';
+            $sizeBL = $params['size-footer-left'] ?? 'medium';
+            $sizeBC = $params['size-footer-center'] ?? 'medium';
+            $sizeBR = $params['size-footer-right'] ?? 'medium';
 
             $bodyrepl = <<<EOF
                     <body style="font-family: 'Arial';">
                         <htmlpageheader name="myHeader1">
                             <table width="100%">
                                 <tr>
-                                    <td width="33%">$topLeft</td>
-                                    <td width="33%" align="center">$topCenter</td>
-                                    <td width="33%" style="text-align: right;">$topRight</td>
+                                    <td width="33%" style="font-size: $sizeTL;">$topLeft</td>
+                                    <td width="33%" style="font-size: $sizeTC;" align="center">$topCenter</td>
+                                    <td width="33%" style="text-align: right; font-size: $sizeTR;">$topRight</td>
                                 </tr>
                             </table>
                         </htmlpageheader>
@@ -254,9 +260,9 @@ class PdfExporter extends AbstractExporter
                         <htmlpagefooter name="myFooter2">
                             <table width="100%">
                                 <tr>
-                                    <td width="33%">$bottomLeft</td>
-                                    <td width="33%" align="center">$bottomCenter</td>
-                                    <td width="33%" style="text-align: right;">$bottomRight</td>
+                                    <td width="33%" style="font-size: $sizeBL;">$bottomLeft</td>
+                                    <td width="33%" style="font-size: $sizeBC;" align="center">$bottomCenter</td>
+                                    <td width="33%" style="text-align: right; font-size: $sizeBR;">$bottomRight</td>
                                 </tr>
                             </table>
                         </htmlpagefooter>
