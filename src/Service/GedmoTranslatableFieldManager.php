@@ -1,21 +1,10 @@
 <?php
 
-/**
- *  This file is part of the Lego project.
- *
- *   (c) Joris Saenger <joris.saenger@gmail.com>
- *
- *  For the full copyright and license information, please view the LICENSE
- *  file that was distributed with this source code.
- */
-
 namespace Lle\CruditBundle\Service;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query as Query;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Gedmo\Translatable\TranslatableListener as TranslatableListener;
 use Symfony\Component\Form\Form as Form;
@@ -36,17 +25,7 @@ class GedmoTranslatableFieldManager
 
     public function getTranslationRepository(object $entity): EntityRepository
     {
-        $reflectionClass = new \ReflectionClass(get_class($entity));
-        $r = new AnnotationReader();
-        $annotation = $r->getClassAnnotation($reflectionClass, Gedmo\TranslationEntity::class);
-        if ($annotation) {
-            /** @var class-string $class */
-            $class = $annotation->class;
-
-            return $this->em->getRepository($class);
-        } else {
-            return $this->em->getRepository(self::GEDMO_TRANSLATION);
-        }
+        return $this->em->getRepository(self::GEDMO_TRANSLATION);
     }
 
     private function getTranslations(object $entity, string $fieldName): array
