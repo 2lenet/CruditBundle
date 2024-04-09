@@ -496,10 +496,6 @@ final class MakeCrudit extends AbstractMaker
 
     public function configureDependencies(DependencyBuilder $dependencies): void
     {
-        $dependencies->addClassDependency(
-            Annotation::class,
-            'annotations'
-        );
     }
 
     private function getBasename(string $class): string
