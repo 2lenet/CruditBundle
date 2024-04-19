@@ -493,7 +493,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         }
     }
 
-    public function setFilterState(array $filterState):self
+    public function setFilterState(array $filterState): self
     {
         $this->filterState->setFilterdata($filterState);
 

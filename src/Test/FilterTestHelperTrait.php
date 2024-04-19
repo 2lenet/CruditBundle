@@ -4,7 +4,6 @@ namespace Lle\CruditBundle\Test;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Filter\FilterType\AbstractFilterType;
 use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
 use Lle\CruditBundle\Filter\FilterType\ChoiceFilterType;
@@ -34,7 +33,7 @@ trait FilterTestHelperTrait
 
             /** @var AbstractFilterType $filter */
             foreach ($datasource->getFilterset()?->getFilters() ?? [] as $filter) {
-                $classKey = strtolower(array_slice(explode('\\',$datasource->getClassName()), 2, 1)[0]);
+                $classKey = strtolower(array_slice(explode('\\', $datasource->getClassName()), 2, 1)[0]);
                 $dataValue = match (get_class($filter)) {
                     BooleanFilterType::class => [
                         'value' => true,
@@ -92,7 +91,6 @@ trait FilterTestHelperTrait
                 $params->setEnableFilters(true);
                 $res = $datasource->list($params);
                 $this->assertNotNull($res);
-
             } catch (\Exception $exception) {
                 $this->assertTrue(false, 'class : ' . $classKey . ' error: ' . $exception->getMessage());
             }
