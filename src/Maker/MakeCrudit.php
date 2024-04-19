@@ -101,7 +101,7 @@ final class MakeCrudit extends AbstractMaker
 
         if (null === $input->getArgument('namespace')) {
             $argument = $command->getDefinition()->getArgument('namespace');
-            $question = new Question($argument->getDescription(), 'Crudit');
+            $question = new Question($argument->getDescription());
             $namespaces = $this->getNamespaces();
             $question->setAutocompleterValues($namespaces);
             $value = $io->askQuestion($question);
