@@ -235,7 +235,7 @@ final class MakeCrudit extends AbstractMaker
 
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
                 if (!$metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
-                    $fields[] = Field::new($fieldassoc)->setSortable($sortable);
+                    $fields[] = Field::new($fieldassoc)->setSortable(true);
                 }
             }
         }
