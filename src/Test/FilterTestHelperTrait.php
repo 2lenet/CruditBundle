@@ -2,11 +2,9 @@
 
 namespace Lle\CruditBundle\Test;
 
-
-use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Contracts\FilterTypeInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Filter\FilterType\AbstractFilterType;
 use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
 use Lle\CruditBundle\Filter\FilterType\ChoiceFilterType;
@@ -29,51 +27,74 @@ trait FilterTestHelperTrait
     {
         $container = static::getContainer();
         $configs = $container->get(ConfigProvider::class)->getConfigurators();
+        $filterState = [];
         /** @var CrudConfigInterface $config */
         foreach ($configs as $config) {
             $datasource = $config->getDatasource();
+
             /** @var AbstractFilterType $filter */
             foreach ($datasource->getFilterset()?->getFilters() ?? [] as $filter) {
-                if (in_array(get_class($filter), [
-                    BooleanFilterType::class,
-                    ChoiceFilterType::class,
-                    DateFilterType::class,
-                    DateTimeFilterType::class,
-                    EntityFilterType::class,
-                    WorkflowFilterType::class,
-                    TreeFilterType::class,
-                    StringFilterType::class,
-                    NumberFilterType::class,
-                    NumberRangeFilterType::class,
-                    PeriodeFilterType::class,
-                ])) {
-                    continue;
-                }
-//                dd($filter);
+                $classKey = strtolower(array_slice(explode('\\',$datasource->getClassName()), 2, 1)[0]);
                 $dataValue = match (get_class($filter)) {
-                    BooleanFilterType::class => 'bool',
-                    ChoiceFilterType::class => 'entity',
-                    DateFilterType::class => '2024-03-22',
-                    DateTimeFilterType::class => '2024-03-22',
-//                    EntityFilterType::class => 'entity',
-                    NumberFilterType::class => 42,
-                    NumberRangeFilterType::class => 'entity',
-                    PeriodeFilterType::class => '2024-03-22',
-                    StringFilterType::class => 'toto',
-//                    TreeFilterType::class => 'entity',
-//                    WorkflowFilterType::class => 'entity',
-                    default => 'nathan',
-                };
-                $filter->setData(['value' => $dataValue, 'op' => array_key_first($filter->getOperators())]);
-                $requestParams = new DatasourceParams(filters: [$filter]);
-                //                'value' => $dataValue, 'op' => array_key_first($filter->getOperators())
-//                $qb = $datasource->buildQueryBuilder($requestParams);
-//                $qb->distinct();
-//                $filter->apply($qb);
-                $res = $datasource->list($requestParams);
+                    BooleanFilterType::class => [
+                        'value' => true,
+                        'op' => 'eq'
+                    ],
+                    ChoiceFilterType::class => [
+                        'value' => 'success',
+                    ],
+                    DateFilterType::class => [
+                        'value' => '2024-03-22',
+                        'op' => 'eq',
+                        'time' => '19:30:25'
+                    ],
+                    DateTimeFilterType::class => [
+                        'value' => '2024-03-22',
 
+                    ],
+                    EntityFilterType::class, TreeFilterType::class => [
+                        'value' => '42',
+                        'op' => 'eq',
+                        'item' => '[{"id":"42","text":"label"}]'
+                    ],
+                    NumberFilterType::class => [
+                        'value' => 42,
+                        'op' => 'eq',
+                    ],
+                    NumberRangeFilterType::class => [
+                        'value' => 10,
+                        'op' => 'interval',
+                        'to' => '42'
+                    ],
+                    PeriodeFilterType::class => [
+                        'value' => '2024-03-22',
+                        'op' => 'interval',
+                        'to' => '2024-03-23'
+                    ],
+                    StringFilterType::class => [
+                        'value' => 'toto',
+                        'op' => 'contains'
+                    ],
+                    WorkflowFilterType::class => [
+                        'value' => 'validated',
+                        'op' => 'eq',
+                        'items' => '[{"id":"validated","text":"Validé"}]'
+                    ],
+                    default => [],
+                };
+
+
+                $filterState[$classKey][$filter->getId()] = $dataValue;
+            }
+            try {
+                $datasource->setFilterState($filterState);
+                $params = new DatasourceParams();
+                $params->setEnableFilters(true);
+                $res = $datasource->list($params);
                 $this->assertNotNull($res);
-//                $this->assertNotNull($qb->getQuery()->getResult());
+
+            } catch (\Exception $exception) {
+                $this->assertTrue(false, 'class : ' . $classKey . ' error: ' . $exception->getMessage());
             }
         }
     }
