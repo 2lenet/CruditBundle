@@ -102,23 +102,7 @@ final class MakeCrudit extends AbstractMaker
         if (null === $input->getArgument('namespace')) {
             $argument = $command->getDefinition()->getArgument('namespace');
             $question = new Question($argument->getDescription(), 'Crudit');
-            $finder = new Finder();
-            $namespaces = [];
-            $finder->in($this->projectDir . '/src/Controller/');
-            foreach ($finder->directories() as $dir) {
-                /* @var SplFileInfo $dir */
-                $namespaces[] = $dir->getBasename();
-            }
-            $finder->in($this->projectDir . '/src/Form/');
-            foreach ($finder->directories() as $dir) {
-                /* @var SplFileInfo $dir */
-                $namespaces[] = $dir->getBasename();
-            }
-            $finder->in($this->projectDir . '/src/Crudit/');
-            foreach ($finder->directories() as $dir) {
-                /* @var SplFileInfo $dir */
-                $namespaces[] = $dir->getBasename();
-            }
+            $namespaces = $this->getNamespaces();
             $question->setAutocompleterValues($namespaces);
             $value = $io->askQuestion($question);
             $input->setArgument('namespace', $value);
@@ -527,5 +511,24 @@ final class MakeCrudit extends AbstractMaker
     private function getBasename(string $class): string
     {
         return basename(str_replace('\\', '/', $class));
+    }
+
+    public function getNamespaces(): array
+    {
+        $finder = new Finder();
+        $namespaces = [];
+        $finder->in($this->projectDir . '/src/Controller/');
+        foreach ($finder->directories() as $dir) {
+            /* @var SplFileInfo $dir */
+            $namespaces[] = $dir->getBasename();
+        }
+        $finder->in($this->projectDir . '/src/Crudit/Config/');
+        foreach ($finder->directories() as $dir) {
+            /* @var SplFileInfo $dir */
+            $namespaces[] = $dir->getBasename();
+        }
+        sort($namespaces);
+
+        return $namespaces;
     }
 }
