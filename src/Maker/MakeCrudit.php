@@ -367,8 +367,8 @@ final class MakeCrudit extends AbstractMaker
         $formTypeClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
             $this->getStringArgument('namespace', $input) ?
-                'Form\\' . $this->getStringArgument('namespace', $input) . '\\' :
-                'Form\\',
+                'Form\\Crudit\\' . $this->getStringArgument('namespace', $input) . '\\' :
+                'Form\\Crudit\\',
             'Type'
         );
         $generator->generateClass(
@@ -480,8 +480,8 @@ final class MakeCrudit extends AbstractMaker
         $controllerClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
             $this->getStringArgument('namespace', $input) ?
-                'Controller\\' . $this->getStringArgument('namespace', $input) . '\\' :
-                'Controller\\',
+                'Controller\\Crudit\\' . $this->getStringArgument('namespace', $input) . '\\' :
+                'Controller\\Crudit\\',
             'Controller'
         );
         $generator->generateClass(
