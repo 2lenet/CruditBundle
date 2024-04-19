@@ -38,13 +38,13 @@ crudit:
     modal:
         cancel: "Abbrechen"
         validate: "Validieren"
+        confirm:
+            message: "Wollen Sie diese Aktion wirklich bestätigen? Diese Maßnahme ist unumkehrbar."
+            action: "Konfirmand"
         export:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"
             notConfigured: "Export ist nicht konfiguriert"
-        delete:
-            message: "Möchten Sie diesen Artikel wirklich löschen? Diese Aktion ist unwiderruflich."
-            action: "Löschen"
 
     field:
         createdAt: "Erstellt am"

@@ -37,6 +37,10 @@ interface ActionInterface
 
     public function setModal(?string $modal): static;
 
+    public function getConfirmModal(): bool;
+
+    public function setConfirmModal(bool $confirmModal): static;
+
     public function getConfig(): array;
 
     public function setConfig(array $config): static;

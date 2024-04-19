@@ -24,6 +24,8 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?string $modal = null;
 
+    protected bool $confirmModal = false;
+
     protected array $config = [];
 
     protected ?string $target = null;
@@ -118,6 +120,18 @@ abstract class AbstractAction implements ActionInterface
     public function setModal(?string $modal): static
     {
         $this->modal = $modal;
+
+        return $this;
+    }
+
+    public function getConfirmModal(): bool
+    {
+        return $this->confirmModal;
+    }
+
+    public function setConfirmModal(bool $confirmModal): static
+    {
+        $this->confirmModal = $confirmModal;
 
         return $this;
     }

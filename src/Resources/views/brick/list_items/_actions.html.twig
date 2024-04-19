@@ -15,24 +15,26 @@
 
                 {% if not (disabled and crudit_hide_if_disabled(action)) %}
                     <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
-                    <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
+                        <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
                             {% if action.target %}
                                 target="{{ action.target }}"
                             {% endif %}
-                        {% if action.modal %}
-                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                        {% elseif not action.disabled %}
-                            {% if action.url %}
-                                href="{{ absolute_url(action.url) }}"
-                            {% else %}
-                                href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
+                            {% if action.modal %}
+                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
+                            {% elseif action.confirmModal %}
+                                data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.'~action.label)|trans }}"
+                            {% elseif not action.disabled %}
+                                {% if action.url %}
+                                    href="{{ absolute_url(action.url) }}"
+                                {% else %}
+                                    href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    >
-                        {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                        {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
-                    </a>
-                </span>
+                        >
+                            {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                            {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
+                        </a>
+                    </span>
                 {% endif %}
             {% endif %}
             {% if action.dropdown %}

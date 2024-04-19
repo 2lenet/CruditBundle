@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Maker;
 
-use Doctrine\Common\Annotations\Annotation;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -496,10 +495,6 @@ final class MakeCrudit extends AbstractMaker
 
     public function configureDependencies(DependencyBuilder $dependencies): void
     {
-        $dependencies->addClassDependency(
-            Annotation::class,
-            'annotations'
-        );
     }
 
     private function getBasename(string $class): string
