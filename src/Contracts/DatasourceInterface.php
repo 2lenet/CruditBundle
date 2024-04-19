@@ -54,5 +54,5 @@ interface DatasourceInterface
 
     public function getTotals(?DatasourceParams $requestParams, array $fields): iterable;
 
-    public function setFilterState($filterState): self;
+    public function setFilterState(array $filterState): self;
 }
