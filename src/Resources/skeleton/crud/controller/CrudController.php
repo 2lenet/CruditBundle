@@ -1,8 +1,8 @@
-<?= "<?php" ?>
-<?php if ($strictType): ?>
+<?= '<?php' ?>
 
+<?php if ($strictType) { echo "\n"; ?>
 declare(strict_types=1);
-<?php endif; ?>
+<?php } ?>
 
 namespace <?= $namespace; ?>;
 

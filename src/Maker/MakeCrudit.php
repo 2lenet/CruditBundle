@@ -181,6 +181,7 @@ final class MakeCrudit extends AbstractMaker
         string $entityClass,
     ): string {
         $fields = $this->getFields($entityClass);
+        $tabs = $this->getTabs($entityClass);
         $cruds = [
             'CrudConfigInterface::INDEX' => $fields,
             'CrudConfigInterface::SHOW' => $fields,
@@ -209,7 +210,7 @@ final class MakeCrudit extends AbstractMaker
                     $this->getStringArgument('namespace-controller', $input) . '_' .
                     $shortEntity :
                     $shortEntity,
-                'tabs' => [],
+                'tabs' => $tabs,
             ]
         );
         $generator->writeChanges();
@@ -234,17 +235,35 @@ final class MakeCrudit extends AbstractMaker
             }
 
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
-                if ($metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
-                    $sortable = true;
-                } else {
-                    $sortable = false;
+                if (!$metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
+                    $fields[] = Field::new($fieldassoc)->setSortable($sortable);
                 }
-
-                $fields[] = Field::new($fieldassoc)->setSortable($sortable);
             }
         }
 
         return $fields;
+    }
+
+    private function getTabs(string $entityClass): array
+    {
+        $tabs = [];
+
+        /** @var ClassMetadataInfo $metadata */
+        $metadata = $this->entityHelper->getMetadata($entityClass);
+        if ($metadata instanceof ClassMetadata) {
+            foreach ($metadata->getAssociationNames() as $associationName) {
+                if ($metadata->getAssociationMapping($associationName)['type'] & ClassMetadataInfo::TO_MANY) {
+                    $tabs['sublist'][] = [
+                        'type' => 'sublist',
+                        'label' => 'tab.' . strtolower($associationName),
+                        'property' => strtolower($this->getBasename($entityClass)),
+                        'linkedEntity' => $this->getBasename($metadata->getAssociationMapping($associationName)['targetEntity']),
+                    ];
+                }
+            }
+        }
+
+        return $tabs;
     }
 
     private function getFilters(string $entityClass): array
