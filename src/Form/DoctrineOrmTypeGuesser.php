@@ -2,8 +2,6 @@
 
 namespace Lle\CruditBundle\Form;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
@@ -19,13 +17,11 @@ use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
     protected ManagerRegistry $registry;
-    protected Reader $annotationReader;
     private array $cache = [];
 
     public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
-        $this->annotationReader = new AnnotationReader();
     }
 
     /**
@@ -58,21 +54,14 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
         $isUploadableField = false;
         // The php version comparison is done because getAttributes() method doesn't exist in php < 8
-        if (PHP_MAJOR_VERSION >= 8) {
-            $attributes = $reflectionProperty->getAttributes();
-            foreach ($attributes as $attribute) {
-                if ($attribute->getName() === UploadableField::class) {
-                    $isUploadableField = true;
-                }
+        $attributes = $reflectionProperty->getAttributes();
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === UploadableField::class) {
+                $isUploadableField = true;
             }
         }
 
-        if (
-            $isUploadableField || $this->annotationReader->getPropertyAnnotation(
-                $reflectionProperty,
-                UploadableField::class
-            )
-        ) {
+        if ($isUploadableField) {
             return new TypeGuess(
                 'Lle\CruditBundle\Form\Type\FileType',
                 ['label' => $label],
