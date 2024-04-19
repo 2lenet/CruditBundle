@@ -53,7 +53,6 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 
         $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
         $isUploadableField = false;
-        // The php version comparison is done because getAttributes() method doesn't exist in php < 8
         $attributes = $reflectionProperty->getAttributes();
         foreach ($attributes as $attribute) {
             if ($attribute->getName() === UploadableField::class) {
