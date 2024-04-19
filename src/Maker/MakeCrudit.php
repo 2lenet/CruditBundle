@@ -68,19 +68,9 @@ final class MakeCrudit extends AbstractMaker
                 )
             )
             ->addArgument(
-                'namespace-controller',
+                'namespace',
                 InputArgument::OPTIONAL,
-                sprintf('Namespace for controller App/Controller/[...]/MyController.php ?')
-            )
-            ->addArgument(
-                'namespace-form',
-                InputArgument::OPTIONAL,
-                sprintf('Namespace for form App/Form/[...]/MyForm.php ?')
-            )
-            ->addArgument(
-                'sub-directories',
-                InputArgument::OPTIONAL,
-                sprintf('Sub directories for Crudit files App\Crudit\Config\[subdirectories] ?')
+                sprintf('Namespace for controllers, forms and sub-directories ?')
             )
             ->addArgument(
                 'filter',
@@ -94,9 +84,7 @@ final class MakeCrudit extends AbstractMaker
             );
 
         $inputConfig->setArgumentAsNonInteractive('entity-class');
-        $inputConfig->setArgumentAsNonInteractive('namespace-controller');
-        $inputConfig->setArgumentAsNonInteractive('namespace-form');
-        $inputConfig->setArgumentAsNonInteractive('sub-directories');
+        $inputConfig->setArgumentAsNonInteractive('namespace');
         $inputConfig->setArgumentAsNonInteractive('filter');
     }
 
@@ -111,49 +99,29 @@ final class MakeCrudit extends AbstractMaker
             $input->setArgument('entity-class', $value);
         }
 
-        if (null === $input->getArgument('namespace-controller')) {
-            $argument = $command->getDefinition()->getArgument('namespace-controller');
+        if (null === $input->getArgument('namespace')) {
+            $argument = $command->getDefinition()->getArgument('namespace');
             $question = new Question($argument->getDescription(), 'Crudit');
             $finder = new Finder();
+            $namespaces = [];
             $finder->in($this->projectDir . '/src/Controller/');
-            $controllerNamespaces = [null];
             foreach ($finder->directories() as $dir) {
                 /* @var SplFileInfo $dir */
-                $controllerNamespaces[] = $dir->getBasename();
+                $namespaces[] = $dir->getBasename();
             }
-            $question->setAutocompleterValues($controllerNamespaces);
-            $value = $io->askQuestion($question);
-            $input->setArgument('namespace-controller', $value);
-        }
-
-        if (null === $input->getArgument('namespace-form')) {
-            $argument = $command->getDefinition()->getArgument('namespace-form');
-            $question = new Question($argument->getDescription(), '');
-            $finder = new Finder();
             $finder->in($this->projectDir . '/src/Form/');
-            $formNamespaces = [null];
             foreach ($finder->directories() as $dir) {
                 /* @var SplFileInfo $dir */
-                $formNamespaces[] = $dir->getBasename();
+                $namespaces[] = $dir->getBasename();
             }
-            $question->setAutocompleterValues($formNamespaces);
-            $value = $io->askQuestion($question);
-            $input->setArgument('namespace-form', $value);
-        }
-
-        if (null === $input->getArgument('sub-directories')) {
-            $argument = $command->getDefinition()->getArgument('sub-directories');
-            $question = new Question($argument->getDescription(), '');
-            $finder = new Finder();
             $finder->in($this->projectDir . '/src/Crudit/');
-            $subDirectories = [null];
             foreach ($finder->directories() as $dir) {
                 /* @var SplFileInfo $dir */
-                $subDirectories[] = $dir->getBasename();
+                $namespaces[] = $dir->getBasename();
             }
-            $question->setAutocompleterValues($subDirectories);
+            $question->setAutocompleterValues($namespaces);
             $value = $io->askQuestion($question);
-            $input->setArgument('sub-directories', $value);
+            $input->setArgument('namespace', $value);
         }
 
         if (null === $input->getArgument('filter')) {
@@ -231,8 +199,8 @@ final class MakeCrudit extends AbstractMaker
 
         $configuratorClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            $this->getStringArgument('sub-directories', $input) ?
-                'Crudit\\Config\\' . $this->getStringArgument('sub-directories', $input) . '\\' :
+            $this->getStringArgument('namespace', $input) ?
+                'Crudit\\Config\\' . $this->getStringArgument('namespace', $input) . '\\' :
                 'Crudit\\Config\\',
             'CrudConfig'
         );
@@ -248,13 +216,13 @@ final class MakeCrudit extends AbstractMaker
                 'prefixFilename' => $shortEntity,
                 'fullEntityClass' => $entityClass,
                 'strictType' => true,
-                'controllerRoute' => ($input->getArgument('namespace-controller')) ?
-                    $this->getStringArgument('namespace-controller', $input) . '_' .
+                'controllerRoute' => ($input->getArgument('namespace')) ?
+                    $this->getStringArgument('namespace', $input) . '_' .
                     $shortEntity :
                     $shortEntity,
                 'tabs' => [],
-                'configSubdirectorie' => $this->getStringArgument('sub-directories', $input) ?
-                    $this->getStringArgument('sub-directories', $input) . '\\' :
+                'configSubdirectorie' => $this->getStringArgument('namespace', $input) ?
+                    $this->getStringArgument('namespace', $input) . '\\' :
                     '',
             ]
         );
@@ -414,8 +382,8 @@ final class MakeCrudit extends AbstractMaker
 
         $formTypeClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            $this->getStringArgument('namespace-form', $input) ?
-                'Form\\' . $this->getStringArgument('namespace-form', $input) . '\\' :
+            $this->getStringArgument('namespace', $input) ?
+                'Form\\' . $this->getStringArgument('namespace', $input) . '\\' :
                 'Form\\',
             'Type'
         );
@@ -462,8 +430,8 @@ final class MakeCrudit extends AbstractMaker
 
         $filtersetClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            $this->getStringArgument('sub-directories', $input) ?
-            'Crudit\Datasource\Filterset\\' . $this->getStringArgument('sub-directories', $input) . '\\' :
+            $this->getStringArgument('namespace', $input) ?
+            'Crudit\Datasource\Filterset\\' . $this->getStringArgument('namespace', $input) . '\\' :
             'Crudit\Datasource\Filterset\\',
             'FilterSet'
         );
@@ -497,8 +465,8 @@ final class MakeCrudit extends AbstractMaker
 
         $datasourceClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            $this->getStringArgument('sub-directories', $input) ?
-                'Crudit\\Datasource\\' . $this->getStringArgument('sub-directories', $input) . '\\' :
+            $this->getStringArgument('namespace', $input) ?
+                'Crudit\\Datasource\\' . $this->getStringArgument('namespace', $input) . '\\' :
                 'Crudit\\Datasource\\',
             'Datasource'
         );
@@ -512,8 +480,8 @@ final class MakeCrudit extends AbstractMaker
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'strictType' => true,
-                'configSubdirectorie' => $this->getStringArgument('sub-directories', $input) ?
-                    $this->getStringArgument('sub-directories', $input) . '\\' :
+                'configSubdirectorie' => $this->getStringArgument('namespace', $input) ?
+                    $this->getStringArgument('namespace', $input) . '\\' :
                     '',
             ]
         );
@@ -527,8 +495,8 @@ final class MakeCrudit extends AbstractMaker
 
         $controllerClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
-            $this->getStringArgument('namespace-controller', $input) ?
-                'Controller\\' . $this->getStringArgument('namespace-controller', $input) . '\\' :
+            $this->getStringArgument('namespace', $input) ?
+                'Controller\\' . $this->getStringArgument('namespace', $input) . '\\' :
                 'Controller\\',
             'Controller'
         );
@@ -541,8 +509,8 @@ final class MakeCrudit extends AbstractMaker
                 'entityClass' => $shortEntity,
                 'prefixFilename' => $shortEntity,
                 'strictType' => true,
-                'configSubdirectorie' => $this->getStringArgument('sub-directories', $input) ?
-                    $this->getStringArgument('sub-directories', $input) . '\\' :
+                'configSubdirectorie' => $this->getStringArgument('namespace', $input) ?
+                    $this->getStringArgument('namespace', $input) . '\\' :
                     '',
             ]
         );
