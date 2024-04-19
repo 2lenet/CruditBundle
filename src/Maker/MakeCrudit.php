@@ -203,7 +203,7 @@ final class MakeCrudit extends AbstractMaker
                 'controllerRoute' => ($input->getArgument('namespace')) ?
                     $this->getStringArgument('namespace', $input) . '_' .
                     $shortEntity :
-                    'crudit_' . $shortEntity,
+                    $shortEntity,
                 'tabs' => [],
                 'configSubdirectorie' => $this->getStringArgument('namespace', $input) ?
                     $this->getStringArgument('namespace', $input) . '\\' :

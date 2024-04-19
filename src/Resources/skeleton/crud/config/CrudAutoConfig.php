@@ -206,6 +206,6 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 
     public function getRootRoute(): string
     {
-        return "app_<?= strtolower($controllerRoute) ?>";
+        return "app_crudit_<?= strtolower($controllerRoute) ?>";
     }
 }
