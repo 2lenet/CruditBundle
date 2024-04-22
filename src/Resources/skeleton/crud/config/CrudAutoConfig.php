@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace <?= $namespace ?>;
 
-use App\Crudit\Datasource\<?= $prefixFilename ?>Datasource;
+use App\Crudit\Datasource\<?= $configSubdirectorie ?><?= $prefixFilename ?>Datasource;
 <?php if (array_key_exists('history', $tabs) && count($tabs['history'])) { ?>
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 <?php } ?>
@@ -209,6 +209,6 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 
     public function getRootRoute(): string
     {
-        return 'app_<?= strtolower($controllerRoute) ?>';
+        return 'app_crudit_<?= strtolower($controllerRoute) ?>';
     }
 }
