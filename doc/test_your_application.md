@@ -4,7 +4,7 @@ Crudit gives you some helper traits in order to test your app.
 
 ## Navigation test
 
-A navigation test is provided. The test will navigate on every crud which apear in the menu.
+A navigation test is provided. The test will navigate on every crud that appear in the menu.
 To enable the test create a new class in the tests directory :
 
 ```php
