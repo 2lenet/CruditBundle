@@ -82,7 +82,6 @@ trait FilterTestHelperTrait
                     default => [],
                 };
 
-
                 $filterState[$classKey][$filter->getId()] = $dataValue;
             }
             try {

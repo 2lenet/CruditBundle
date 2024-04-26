@@ -53,6 +53,4 @@ interface DatasourceInterface
     public function editData(string $id, array $data): bool;
 
     public function getTotals(?DatasourceParams $requestParams, array $fields): iterable;
-
-    public function setFilterState(array $filterState): self;
 }
