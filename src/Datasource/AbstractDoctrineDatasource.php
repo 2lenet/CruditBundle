@@ -84,7 +84,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->distinct();
-
         $this->applyFilters($qb, $requestParams);
         $this->applyLimit($qb, $requestParams);
         $this->applyOrders($qb, $requestParams);
@@ -104,7 +103,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $className = $this->getClassName();
 
         $metadata = $this->entityManager->getClassMetadata($className);
-
         if ($requestParams) {
             $i = 0;
             foreach ($requestParams->getFilters() as $filter) {
@@ -493,5 +491,12 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams && $requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
+    }
+
+    public function setFilterState(array $filterState): self
+    {
+        $this->filterState->setFilterdata($filterState);
+
+        return $this;
     }
 }

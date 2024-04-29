@@ -61,6 +61,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 - [Markdown](doc/markdown.md)
 - [Color list](doc/color_list.md)
 - [Twig extensions](doc/twig.md)
+- [Test your application](doc/test_your_application.md)
 
 ## Principle
 
