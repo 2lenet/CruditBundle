@@ -30,9 +30,9 @@ class Converter
 
     public function convert(array $config): iterable
     {
-        if (isset($config["entities"])) {
-            foreach ($config["entities"] as $short => $entityConfig) {
-                if (isset($entityConfig["filter"])) {
+        if (isset($config['entities'])) {
+            foreach ($config['entities'] as $short => $entityConfig) {
+                if (isset($entityConfig['filter'])) {
                     yield from $this->makeFilterSet($entityConfig, $short);
                 }
                 yield from $this->makeDatasource($entityConfig, $short);
@@ -44,45 +44,45 @@ class Converter
 
         yield from $this->makeMenu($config);
 
-        yield "success" => "Conversion finished ! Please note the warnings above and fix them.";
-        yield "warning" => "Note that the converter is not perfect. Some things were ignored, some things were modified. You need to check all pages.";
+        yield 'success' => 'Conversion finished ! Please note the warnings above and fix them.';
+        yield 'warning' => 'Note that the converter is not perfect. Some things were ignored, some things were modified. You need to check all pages.';
     }
 
     protected function makeFilterSet(array $entityConfig, string $prefixFilename): iterable
     {
-        $entityClass = $entityConfig["class"];
+        $entityClass = $entityConfig['class'];
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $filters = [];
         /** @var ClassMetadataInfo $metadata */
         $metadata = $this->doctrineHelper->getMetadata($entityClass);
-        foreach ($entityConfig["filter"]["fields"] as $filter) {
-            $filters[] = $this->cruditMaker->getFilterType($metadata, $filter["property"]);
+        foreach ($entityConfig['filter']['fields'] as $filter) {
+            $filters[] = $this->cruditMaker->getFilterType($metadata, $filter['property']);
         }
 
         $uses = [];
         foreach ($filters as $filter) {
-            array_push($uses, ...$filter["uses"]);
+            array_push($uses, ...$filter['uses']);
         }
         $uses = array_unique($uses);
         sort($uses);
 
         $filtersetClassNameDetails = $this->generator->createClassNameDetails(
             $prefixFilename,
-            "Crudit\Datasource\Filterset\\",
-            "FilterSet"
+            'Crudit\Datasource\Filterset\\',
+            'FilterSet'
         );
 
         $this->generator->generateClass(
             $filtersetClassNameDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("filterset/EntityFilterset.php"),
+            $this->cruditMaker->getSkeletonTemplate('filterset/EntityFilterset.php'),
             [
-                "namespace" => "App",
-                "prefixFilename" => $prefixFilename,
-                "fullEntityClass" => $entityClass,
-                "filters" => $filters,
-                "strictType" => true,
-                "uses" => $uses,
+                'namespace' => 'App',
+                'prefixFilename' => $prefixFilename,
+                'fullEntityClass' => $entityClass,
+                'filters' => $filters,
+                'strictType' => true,
+                'uses' => $uses,
             ]
         );
         $this->generator->writeChanges();
@@ -92,24 +92,24 @@ class Converter
 
     protected function makeDatasource(array $entityConfig, string $prefixFilename): iterable
     {
-        $entityClass = $entityConfig["class"];
+        $entityClass = $entityConfig['class'];
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $datasourceClassNameDetails = $this->generator->createClassNameDetails(
             $prefixFilename,
-            "Crudit\\Datasource\\",
-            "Datasource"
+            'Crudit\\Datasource\\',
+            'Datasource'
         );
         $this->generator->generateClass(
             $datasourceClassNameDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("datasource/DoctrineDatasource.php"),
+            $this->cruditMaker->getSkeletonTemplate('datasource/DoctrineDatasource.php'),
             [
-                "namespace" => "App",
-                "prefixFilename" => $prefixFilename,
-                "entityClass" => $shortEntity,
-                "hasFilterset" => isset($entityConfig["filter"]),
-                "fullEntityClass" => $entityClass,
-                "strictType" => true,
+                'namespace' => 'App',
+                'prefixFilename' => $prefixFilename,
+                'entityClass' => $shortEntity,
+                'hasFilterset' => isset($entityConfig['filter']),
+                'fullEntityClass' => $entityClass,
+                'strictType' => true,
             ]
         );
         $this->generator->writeChanges();
@@ -119,101 +119,101 @@ class Converter
 
     protected function makeCrudConfig(array $entityConfig, string $prefixFilename): iterable
     {
-        $entityClass = $entityConfig["class"];
+        $entityClass = $entityConfig['class'];
         $shortEntity = $this->getShortEntityName($entityClass);
         $fields = [];
         $cruds = [];
 
-        foreach ($entityConfig["list"]["fields"] ?? [] as $property) {
-            if (!isset($property["property"])) {
-                yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
+        foreach ($entityConfig['list']['fields'] ?? [] as $property) {
+            if (!isset($property['property'])) {
+                yield 'warning' => 'Property ' . http_build_query($property, '', ' ') . ' ignored';
                 continue;
             }
 
-            $sortable = isset($property["sortable"]) ? $property["sortable"] : true;
+            $sortable = isset($property['sortable']) ? $property['sortable'] : true;
 
             // the duplicate field is on purpose
-            $fields[] = Field::new($property["property"]);
-            $cruds["CrudConfigInterface::INDEX"][] = Field::new($property["property"])
+            $fields[] = Field::new($property['property']);
+            $cruds['CrudConfigInterface::INDEX'][] = Field::new($property['property'])
                 ->setSortable($sortable);
         }
 
         $group = false;
         $groupName = null;
         $groupId = 0;
-        foreach ($entityConfig["show"]["fields"] ?? [] as $property) {
-            if ((!isset($property["property"]) && !(isset($property["type"]) && $property["type"] === "group")) || (isset($property["type"]) && $property["type"] !== "group")) {
-                yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
+        foreach ($entityConfig['show']['fields'] ?? [] as $property) {
+            if ((!isset($property['property']) && !(isset($property['type']) && $property['type'] === 'group')) || (isset($property['type']) && $property['type'] !== 'group')) {
+                yield 'warning' => 'Property ' . http_build_query($property, '', ' ') . ' ignored';
                 continue;
             }
 
             // the duplicate field is on purpose
-            if (!isset($property["type"])) {
-                $fields[] = Field::new($property["property"]);
+            if (!isset($property['type'])) {
+                $fields[] = Field::new($property['property']);
             }
 
-            if (isset($property["type"]) && ($property['type'] === 'sublist' || $property['type'] === 'tab')) {
+            if (isset($property['type']) && ($property['type'] === 'sublist' || $property['type'] === 'tab')) {
                 continue;
             }
 
             // group management
-            if (isset($property["type"]) && $property["type"] === "group") {
+            if (isset($property['type']) && $property['type'] === 'group') {
                 $group = true;
 
                 if (!array_key_exists('CrudConfigInterface::SHOW', $cruds)) {
                     $cruds['CrudConfigInterface::SHOW'] = [];
                 }
 
-                if (isset($property["label"])) {
-                    $groupName = $property["label"];
-                    $cruds["CrudConfigInterface::SHOW"][$groupName] = [];
+                if (isset($property['label'])) {
+                    $groupName = $property['label'];
+                    $cruds['CrudConfigInterface::SHOW'][$groupName] = [];
                 } else {
                     $groupName = ++$groupId;
-                    $cruds["CrudConfigInterface::SHOW"][$groupName] = [];
+                    $cruds['CrudConfigInterface::SHOW'][$groupName] = [];
                 }
             } else {
                 if ($group) {
-                    $cruds["CrudConfigInterface::SHOW"][$groupName][] = Field::new($property["property"]);
+                    $cruds['CrudConfigInterface::SHOW'][$groupName][] = Field::new($property['property']);
                 } else {
-                    $cruds["CrudConfigInterface::SHOW"][$groupName][] = Field::new($property["property"]);
+                    $cruds['CrudConfigInterface::SHOW'][$groupName][] = Field::new($property['property']);
                 }
             }
         }
 
-        foreach ($entityConfig["export"]["fields"] ?? [] as $property) {
-            if (!isset($property["property"])) {
-                yield "warning" => "Property " . http_build_query($property, "", " ") . " ignored";
+        foreach ($entityConfig['export']['fields'] ?? [] as $property) {
+            if (!isset($property['property'])) {
+                yield 'warning' => 'Property ' . http_build_query($property, '', ' ') . ' ignored';
                 continue;
             }
 
             // the duplicate field is on purpose
-            $fields[] = Field::new($property["property"]);
-            $cruds["CrudConfigInterface::EXPORT"][] = Field::new($property["property"]);
+            $fields[] = Field::new($property['property']);
+            $cruds['CrudConfigInterface::EXPORT'][] = Field::new($property['property']);
         }
 
         $forms = [];
-        if (!isset($entityConfig["form"])) {
-            if (isset($entityConfig["edit"])) {
-                $forms["CrudConfigInterface::EDIT"] = "Edit";
+        if (!isset($entityConfig['form'])) {
+            if (isset($entityConfig['edit'])) {
+                $forms['CrudConfigInterface::EDIT'] = 'Edit';
             }
-            if (isset($entityConfig["new"])) {
-                $forms["CrudConfigInterface::NEW"] = "New";
+            if (isset($entityConfig['new'])) {
+                $forms['CrudConfigInterface::NEW'] = 'New';
             }
         }
 
         $tabs = [];
-        if (isset($entityConfig["show"]["fields"])) {
+        if (isset($entityConfig['show']['fields'])) {
             $tabs = $this->getTabs($entityConfig);
 
             foreach ($tabs['ignoredTabs'] as $ignoredTab) {
-                yield "warning" => "Tab " . http_build_query($ignoredTab, "", " ") . " ignored";
+                yield 'warning' => 'Tab ' . http_build_query($ignoredTab, '', ' ') . ' ignored';
             }
         }
 
         $sort = [];
-        if (isset($entityConfig["list"]["sort"])) {
-            $sort["property"] = $entityConfig["list"]["sort"][0];
-            $sort["order"] = $entityConfig["list"]["sort"][1];
+        if (isset($entityConfig['list']['sort'])) {
+            $sort['property'] = $entityConfig['list']['sort'][0];
+            $sort['order'] = $entityConfig['list']['sort'][1];
         }
 
         $disabledActions = [];
@@ -228,7 +228,7 @@ class Converter
             $listAndItemActions = $this->getListAndItemActions($entityConfig);
 
             foreach ($listAndItemActions['ignoredActions'] as $ignoredAction) {
-                yield "warning" => "Action " . http_build_query($ignoredAction, "", " ") . " ignored";
+                yield 'warning' => 'Action ' . http_build_query($ignoredAction, '', ' ') . ' ignored';
             }
         }
 
@@ -237,31 +237,31 @@ class Converter
             $showActions = $this->getShowActions($entityConfig);
 
             foreach ($showActions['ignoredActions'] as $ignoredAction) {
-                yield "warning" => "Action " . http_build_query($ignoredAction, "", " ") . " ignored";
+                yield 'warning' => 'Action ' . http_build_query($ignoredAction, '', ' ') . ' ignored';
             }
         }
 
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
             $prefixFilename,
-            "Crudit\\Config\\",
-            "CrudConfig"
+            'Crudit\\Config\\',
+            'CrudConfig'
         );
 
         $this->generator->generateClass(
             $configuratorClassNameDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("config/CrudAutoConfig.php"),
+            $this->cruditMaker->getSkeletonTemplate('config/CrudAutoConfig.php'),
             [
-                "namespace" => "App",
+                'namespace' => 'App',
                 // array_unique with flag SORT_REGULAR will compare object properties.
-                "fields" => array_unique($fields, SORT_REGULAR),
-                "cruds" => $cruds,
-                "prefixFilename" => $prefixFilename,
-                "fullEntityClass" => $entityClass,
-                "strictType" => true,
-                "forms" => $forms,
-                "tabs" => array_key_exists('tabs', $tabs) ? $tabs['tabs'] : [],
-                "sort" => $sort,
-                "controllerRoute" => "crudit_" . $shortEntity,
+                'fields' => array_unique($fields, SORT_REGULAR),
+                'cruds' => $cruds,
+                'prefixFilename' => $prefixFilename,
+                'fullEntityClass' => $entityClass,
+                'strictType' => true,
+                'forms' => $forms,
+                'tabs' => array_key_exists('tabs', $tabs) ? $tabs['tabs'] : [],
+                'sort' => $sort,
+                'controllerRoute' => 'crudit_' . $shortEntity,
                 'disabledActions' => $disabledActions,
                 'listActions' => array_key_exists(
                     'listActions',
@@ -282,22 +282,22 @@ class Converter
 
     protected function makeController(array $entityConfig, string $prefixFilename): iterable
     {
-        $entityClass = $entityConfig["class"];
+        $entityClass = $entityConfig['class'];
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
             $prefixFilename,
-            "Controller\\Crudit\\",
-            "Controller"
+            'Controller\\Crudit\\',
+            'Controller'
         );
         $this->generator->generateClass(
             $controllerClassNameDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("controller/CrudController.php"),
+            $this->cruditMaker->getSkeletonTemplate('controller/CrudController.php'),
             [
-                "namespace" => "App",
-                "fullEntityClass" => $entityClass,
-                "prefixFilename" => $prefixFilename,
-                "strictType" => true,
+                'namespace' => 'App',
+                'fullEntityClass' => $entityClass,
+                'prefixFilename' => $prefixFilename,
+                'strictType' => true,
             ]
         );
         $this->generator->writeChanges();
@@ -307,14 +307,14 @@ class Converter
 
     protected function makeFormType(array $entityConfig, string $prefixFilename): iterable
     {
-        if (isset($entityConfig["form"]["fields"])) {
-            $this->addFormType($entityConfig["form"]["fields"], "", $prefixFilename);
+        if (isset($entityConfig['form']['fields'])) {
+            $this->addFormType($entityConfig['form']['fields'], '', $prefixFilename);
         } else {
-            if (isset($entityConfig["edit"]["fields"])) {
-                $this->addFormType($entityConfig["edit"]["fields"], "Edit", $prefixFilename);
+            if (isset($entityConfig['edit']['fields'])) {
+                $this->addFormType($entityConfig['edit']['fields'], 'Edit', $prefixFilename);
             }
-            if (isset($entityConfig["new"]["fields"])) {
-                $this->addFormType($entityConfig["new"]["fields"], "New", $prefixFilename);
+            if (isset($entityConfig['new']['fields'])) {
+                $this->addFormType($entityConfig['new']['fields'], 'New', $prefixFilename);
             }
         }
 
@@ -325,43 +325,43 @@ class Converter
 
     public function makeMenu(array $config): iterable
     {
-        if (!isset($config["design"]["menu"])) {
+        if (!isset($config['design']['menu'])) {
             yield;
         }
 
         $items = [];
 
-        foreach ($config["design"]["menu"] as $menu) {
+        foreach ($config['design']['menu'] as $menu) {
             $parent = $this->getMenuItem($config, $menu);
             if (!$parent) {
                 continue;
             }
             $items[] = $parent;
 
-            if (isset($menu["children"])) {
-                foreach ($menu["children"] as $child) {
+            if (isset($menu['children'])) {
+                foreach ($menu['children'] as $child) {
                     $item = $this->getMenuItem($config, $child);
                     if (!$item) {
                         continue;
                     }
-                    $item["parent"] = $parent["label"];
+                    $item['parent'] = $parent['label'];
                     $items[] = $item;
                 }
             }
         }
 
-        $className = "MenuProvider";
+        $className = 'MenuProvider';
         $classDetails = $this->generator->createClassNameDetails(
-            "MenuProvider",
-            "Crudit\\CrudMenu",
+            'MenuProvider',
+            'Crudit\\CrudMenu',
         );
         $this->generator->generateClass(
             $classDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("menu/MenuProvider.php"),
+            $this->cruditMaker->getSkeletonTemplate('menu/MenuProvider.php'),
             [
-                "namespace" => "App",
-                "className" => $className,
-                "items" => $items,
+                'namespace' => 'App',
+                'className' => $className,
+                'items' => $items,
             ]
         );
         $this->generator->writeChanges();
@@ -374,42 +374,42 @@ class Converter
         $item = null;
         if (is_string($menu)) {
             // entity
-            $entity = $config["entities"][$menu]["class"];
+            $entity = $config['entities'][$menu]['class'];
 
             $item = [
-                "label" => "menu." . strtolower($menu),
-                "route" => "app_crudit_" . strtolower($this->getShortEntityName($entity)) . "_index",
+                'label' => 'menu.' . strtolower($menu),
+                'route' => 'app_crudit_' . strtolower($this->getShortEntityName($entity)) . '_index',
             ];
         } elseif (is_array($menu)) {
-            if (!isset($menu["entity"]) && !isset($menu["url"]) && !isset($menu["route"]) && !isset($menu["children"])) {
-                $item = ["type" => "separator"];
-                if (isset($menu["role"])) {
-                    $item["role"] = $menu["role"];
+            if (!isset($menu['entity']) && !isset($menu['url']) && !isset($menu['route']) && !isset($menu['children'])) {
+                $item = ['type' => 'separator'];
+                if (isset($menu['role'])) {
+                    $item['role'] = $menu['role'];
                 }
             } else {
                 $item = [
-                    "label" => $menu["label"] ?? "menu." . strtolower($menu["entity"]),
+                    'label' => $menu['label'] ?? 'menu.' . strtolower($menu['entity']),
                 ];
 
-                if (isset($menu["icon"])) {
-                    $item["icon"] = $menu["icon"];
+                if (isset($menu['icon'])) {
+                    $item['icon'] = $menu['icon'];
                 }
 
-                if (isset($menu["entity"])) {
-                    $entity = $config["entities"][$menu["entity"]]["class"];
-                    $item["route"] = "app_crudit_" . strtolower($this->getShortEntityName($entity)) . "_index";
+                if (isset($menu['entity'])) {
+                    $entity = $config['entities'][$menu['entity']]['class'];
+                    $item['route'] = 'app_crudit_' . strtolower($this->getShortEntityName($entity)) . '_index';
                 }
 
-                if (isset($menu["role"])) {
-                    $item["role"] = $menu["role"];
+                if (isset($menu['role'])) {
+                    $item['role'] = $menu['role'];
                 }
 
-                if (isset($menu["route"])) {
-                    $item["route"] = $menu["route"];
+                if (isset($menu['route'])) {
+                    $item['route'] = $menu['route'];
                 }
 
-                if (isset($menu["url"])) {
-                    $item["url"] = $menu["url"];
+                if (isset($menu['url'])) {
+                    $item['url'] = $menu['url'];
                 }
             }
         }
@@ -422,23 +422,23 @@ class Converter
         $fields = [];
         foreach ($properties as $property) {
             if (array_key_exists('property', $property)) {
-                $fields[] = Field::new($property["property"]);
+                $fields[] = Field::new($property['property']);
             }
         }
 
         $formTypeClassNameDetails = $this->generator->createClassNameDetails(
             $prefix . $prefixFilename,
-            "Form\\",
-            "Type"
+            'Form\\',
+            'Type'
         );
         $this->generator->generateClass(
             $formTypeClassNameDetails->getFullName(),
-            $this->cruditMaker->getSkeletonTemplate("form/EntityCruditType.php"),
+            $this->cruditMaker->getSkeletonTemplate('form/EntityCruditType.php'),
             [
-                "namespace" => "App",
-                "prefixFilename" => $prefix . $prefixFilename,
-                "fields" => $fields,
-                "strictType" => true,
+                'namespace' => 'App',
+                'prefixFilename' => $prefix . $prefixFilename,
+                'fields' => $fields,
+                'strictType' => true,
             ]
         );
     }
@@ -448,41 +448,41 @@ class Converter
         $tabs = [];
         $ignoredTabs = [];
 
-        foreach ($entityConfig["show"]["fields"] as $field) {
-            if (is_array($field) && isset($field["type"])) {
-                if ($field["type"] === "sublist") {
+        foreach ($entityConfig['show']['fields'] as $field) {
+            if (is_array($field) && isset($field['type'])) {
+                if ($field['type'] === 'sublist') {
                     /** @var ClassMetadataInfo $metadata */
-                    $metadata = $this->doctrineHelper->getMetadata($entityConfig["class"]);
-                    // "No mapping found for field ..." => your sublist property does not exist
+                    $metadata = $this->doctrineHelper->getMetadata($entityConfig['class']);
+                    // 'No mapping found for field ...' => your sublist property does not exist
 
                     $association = null;
-                    if (!isset($field["property"])) {
+                    if (!isset($field['property'])) {
                         foreach ($metadata->getAssociationMappings() as $mapping) {
-                            if ($this->getShortEntityName($mapping["targetEntity"]) === $field["entity"]) {
+                            if ($this->getShortEntityName($mapping['targetEntity']) === $field['entity']) {
                                 $association = $mapping;
                                 break;
                             }
                         }
-                    } elseif (isset($metadata->getAssociationMappings()[$field["property"]])) {
-                        $association = $metadata->getAssociationMapping($field["property"]);
+                    } elseif (isset($metadata->getAssociationMappings()[$field['property']])) {
+                        $association = $metadata->getAssociationMapping($field['property']);
                     } else {
                         $ignoredTabs[] = $field;
                     }
 
                     if ($association) {
-                        $mappedBy = $association["mappedBy"];
+                        $mappedBy = $association['mappedBy'];
 
-                        $tabs[] = [
-                            "type" => "sublist",
-                            "label" => $field["label"] ?? "tab." . strtolower($field["property"]),
-                            "property" => $mappedBy,
-                            "linkedEntity" => $this->getShortEntityName($association["targetEntity"]),
+                        $tabs['sublist'][] = [
+                            'type' => 'sublist',
+                            'label' => $field['label'] ?? 'tab.' . strtolower($field['property']),
+                            'property' => $mappedBy,
+                            'linkedEntity' => $this->getShortEntityName($association['targetEntity']),
                         ];
                     }
-                } elseif ($field["type"] === "tab" && isset($field["action"]) && $field["action"] === "historyAction") {
-                    $tabs[] = [
-                        "type" => "history",
-                        "label" => $field["label"] ?? "tab.history",
+                } elseif ($field['type'] === 'tab' && isset($field['action']) && $field['action'] === 'historyAction') {
+                    $tabs['history'][] = [
+                        'type' => 'history',
+                        'label' => $field['label'] ?? 'tab.history',
                     ];
                 }
             }
@@ -493,7 +493,7 @@ class Converter
 
     protected function getShortEntityName(string $class): string
     {
-        return basename(str_replace("\\", "/", $class));
+        return basename(str_replace('\\', '/', $class));
     }
 
     protected function getListAndItemActions(array $entityConfig): array

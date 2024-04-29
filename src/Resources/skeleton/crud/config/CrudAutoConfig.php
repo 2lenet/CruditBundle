@@ -1,14 +1,16 @@
 <?= '<?php' ?>
-<?php if ($strictType): ?>
 
+<?php if ($strictType) { echo "\n"; ?>
 declare(strict_types=1);
-<?php endif; ?>
+<?php } ?>
 
 namespace <?= $namespace ?>;
 
 use App\Crudit\Datasource\<?= $configSubdirectorie ?><?= $prefixFilename ?>Datasource;
-<?php if (count($tabs)) { ?>
+<?php if (array_key_exists('history', $tabs) && count($tabs['history'])) { ?>
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
+<?php } ?>
+<?php if (array_key_exists('sublist', $tabs) && count($tabs['sublist'])) { ?>
 use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
 <?php } ?>
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
@@ -29,12 +31,10 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 {
     public function __construct(
 <?php $allLinkedEntity = []; ?>
-<?php foreach ($tabs as $tab) { ?>
-<?php if ($tab['type'] === 'sublist') { ?>
+<?php foreach ($tabs['sublist'] as $tab) { ?>
 <?php if (!in_array($tab['linkedEntity'], $allLinkedEntity)) { ?>
-        private <?= $tab['linkedEntity'] ?>CrudConfig $<?= strtolower($tab['linkedEntity']) ?>CrudConfig,
+        protected <?= $tab['linkedEntity'] ?>CrudConfig $<?= strtolower($tab['linkedEntity']) ?>CrudConfig,
 <?php $allLinkedEntity[] = $tab['linkedEntity'] ?>
-<?php } ?>
 <?php } ?>
 <?php } ?>
         <?= $prefixFilename ?>Datasource $datasource
@@ -102,17 +102,20 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
         );
     }
 <?php } ?>
-<?php if (isset($tabs) && count($tabs)) { ?>
+<?php if ((isset($tabs['sublist']) && count($tabs['sublist'])) || (isset($tabs['history']) && count($tabs['history']))) { ?>
 
-        public function getTabs(): array
-        {
-            return [
-<?php foreach ($tabs as $tab) { ?>
-<?php if ($tab['type'] === 'history') { ?>
-                '<?= $tab['label'] ?>' => [HistoryConfig::new()],
-<?php } elseif ($tab['type'] === 'sublist') { ?>
-                '<?= $tab['label'] ?>' => [SublistConfig::new('<?= $tab['property'] ?>', $this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig)
-                    ->setFields($this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig->getFields(CrudConfigInterface::INDEX))],
+    public function getTabs(): array
+    {
+        return [
+<?php if (array_key_exists('sublist', $tabs)) { ?>
+<?php foreach ($tabs['sublist'] as $tab) { ?>
+            '<?= $tab['label'] ?>' => [SublistConfig::new('<?= $tab['property'] ?>', $this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig)
+                ->setFields($this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig->getFields(CrudConfigInterface::INDEX))],
+<?php } ?>
+<?php } ?>
+<?php if (array_key_exists('history', $tabs)) { ?>
+<?php foreach ($tabs['history'] as $tab) { ?>
+            '<?= $tab['label'] ?>' => [HistoryConfig::new()],
 <?php } ?>
 <?php } ?>
         ];
