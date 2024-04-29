@@ -19,6 +19,12 @@ class KernelFilterListener
     public function onKernelController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
+
+        if ($request->attributes->get('_stateless') === true) {
+            // firewall is stateless (e.g. APIs); don't use session
+            return;
+        }
+
         $this->filterState->handleRequest($request);
     }
 }
