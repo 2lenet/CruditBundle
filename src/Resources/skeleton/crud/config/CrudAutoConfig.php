@@ -31,10 +31,12 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 {
     public function __construct(
 <?php $allLinkedEntity = []; ?>
+<?php if (array_key_exists('sublist', $tabs)) { ?>
 <?php foreach ($tabs['sublist'] as $tab) { ?>
 <?php if (!in_array($tab['linkedEntity'], $allLinkedEntity)) { ?>
         protected <?= $tab['linkedEntity'] ?>CrudConfig $<?= strtolower($tab['linkedEntity']) ?>CrudConfig,
 <?php $allLinkedEntity[] = $tab['linkedEntity'] ?>
+<?php } ?>
 <?php } ?>
 <?php } ?>
         <?= $prefixFilename ?>Datasource $datasource
@@ -102,12 +104,12 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
         );
     }
 <?php } ?>
+<?php if (array_key_exists('sublist', $tabs)) { ?>
 <?php if ((isset($tabs['sublist']) && count($tabs['sublist'])) || (isset($tabs['history']) && count($tabs['history']))) { ?>
 
     public function getTabs(): array
     {
         return [
-<?php if (array_key_exists('sublist', $tabs)) { ?>
 <?php foreach ($tabs['sublist'] as $tab) { ?>
             '<?= $tab['label'] ?>' => [SublistConfig::new('<?= $tab['property'] ?>', $this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig)
                 ->setFields($this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig->getFields(CrudConfigInterface::INDEX))],
