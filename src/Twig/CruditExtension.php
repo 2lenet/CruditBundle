@@ -124,9 +124,7 @@ class CruditExtension extends AbstractExtension
         $association = $metadata->getAssociationMapping($field);
         $targetEntity = $association['targetEntity'];
 
-        $entityParts = explode('\\', $targetEntity);
-        $entity = strtolower(end($entityParts));
-
+        $entity = str_replace('\\', '_', str_replace('App\\Entity\\', '', $targetEntity));
         $route = 'app_crudit_' . $entity;
 
         try {
