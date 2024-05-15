@@ -1,10 +1,13 @@
-{% if view.field.editInPlace %}
+{% if
+    (view.field.editInPlace and view.field.options['editRole'] is not defined)
+    or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
+%}
     {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
                 <input type="number" class="form-control form-control-sm crudit-eip-input" style="min-width: 100px;"
-                       autocomplete="off" value="{{ value }}">
+                       autocomplete="off" value="{{ value }}" step="{{ 1 / 10 ** options.decimals }}">
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">
                         <i class="fa fa-check"></i>
@@ -19,7 +22,12 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% elseif value is not null %}
-    <div class="{{ view.field.options['tableCssClass']|default('text-end') }} me-3">
+    {% set tableCssClass = options.tableCssClass %}
+    {% if view.field.options is defined and view.field.options and view.field.options['tableCssClass'] is defined %}
+        {% set tableCssClass = view.field.options['tableCssClass'] %}
+    {% endif %}
+
+    <div class="{{ tableCssClass|default('text-end') }} me-3">
         {{ value|number_format(options.decimals, options.decimal_separator, options.thousands_separator) }}
     </div>
 {% endif %}

@@ -37,6 +37,10 @@ interface ActionInterface
 
     public function setModal(?string $modal): static;
 
+    public function getConfirmModal(): bool;
+
+    public function setConfirmModal(bool $confirmModal): static;
+
     public function getConfig(): array;
 
     public function setConfig(array $config): static;
@@ -46,4 +50,12 @@ interface ActionInterface
     public function setTarget(string $target): static;
 
     public function isDisabled(): bool;
+
+    public function getRole(): ?string;
+
+    public function setRole(string $role): static;
+
+    public function getHideIfDisabled(): ?bool;
+
+    public function setHideIfDisabled(?bool $hideIfDisabled): static;
 }

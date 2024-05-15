@@ -4,10 +4,19 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Environment;
 
 class NumberField extends AbstractField
 {
+    public function __construct(
+        Environment $twig,
+        protected ParameterBagInterface $parameterBag,
+    ) {
+        parent::__construct($twig);
+    }
+
     public function support(string $type): bool
     {
         return (in_array($type, ['float', self::class]));
@@ -20,9 +29,12 @@ class NumberField extends AbstractField
 
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
+        /** @var string $defaultNumberAlignment */
+        $defaultNumberAlignment = $this->parameterBag->get('lle_crudit.default_number_alignment');
+
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "tableCssClass" => "text-end",
+            'tableCssClass' => $this->getTableCssClass($defaultNumberAlignment),
             'decimals' => '2',
             'decimal_separator' => ',',
             'thousands_separator' => ' ',

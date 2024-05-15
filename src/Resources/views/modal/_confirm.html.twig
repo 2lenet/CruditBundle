@@ -2,15 +2,17 @@
 
 {% block content %}
     <div class="modal-body">
-        {{ 'crudit.modal.delete.message'|trans({}, 'LleCruditBundle') }}
+        <p id="modal-confirm-text">
+            {{ 'crudit.modal.confirm.message'|trans({}, 'LleCruditBundle') }}
+        </p>
     </div>
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             {{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}
         </button>
-        <a href="{{ path(action.path.route, params) }}" type="button" class="btn btn-danger">
-            {{ 'crudit.modal.delete.action'|trans({}, 'LleCruditBundle') }}
+        <a id="modal-confirm-link" href="#" type="button" class="btn btn-danger">
+            {{ 'crudit.modal.confirm.action'|trans({}, 'LleCruditBundle') }}
         </a>
     </div>
 {% endblock %}

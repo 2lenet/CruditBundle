@@ -44,6 +44,10 @@
                     {% block main %}
                         {% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}
                         {% block content %}{% endblock %}
+
+                        {% block modal_confirmation %}
+                            {% include '@LleCrudit/modal/_confirm.html.twig' with {id: 'modal-confirm'} %}
+                        {% endblock %}
                     {% endblock main %}
                 </div>
             </div>

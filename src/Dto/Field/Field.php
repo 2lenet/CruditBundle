@@ -12,7 +12,7 @@ class Field
 
     private string $name;
 
-    private bool $sort;
+    private bool $sort = true;
 
     private ?Path $path;
 
@@ -22,7 +22,7 @@ class Field
 
     private ?string $type;
 
-    private ?string $template;
+    private ?string $template = null;
 
     private ?int $ruptGroup = 0;
 
@@ -41,6 +41,7 @@ class Field
         $this->name = $name;
         $this->label = 'field.' . strtolower(str_replace('.', '_', $name));
         $this->type = $type;
+        $this->options = $options;
         $this->setOptions($options);
     }
 
@@ -57,14 +58,14 @@ class Field
     public function setOptions(array $options): self
     {
         $this->label = $options['label'] ?? $this->label;
-        $this->sort = $options['sort'] ?? true;
+        $this->sort = $options['sort'] ?? $this->sort;
         $this->path = $options['path'] ?? $options['link_to'] ?? null;
-        $this->template = (isset($options['template'])) ? $options['template'] : null;
+        $this->template = (isset($options['template'])) ? $options['template'] : $this->template;
         unset($options['label']);
         unset($options['sort']);
         unset($options['path']);
         unset($options['template']);
-        $this->options = $options;
+        $this->options = array_merge($this->options, $options);
 
         return $this;
     }
@@ -96,10 +97,14 @@ class Field
     /**
      * @param ?string $editRoute #Route
      */
-    public function setEditable(?string $editRoute = null): self
+    public function setEditable(?string $editRoute = null, ?string $role = null): self
     {
         if ($editRoute) {
             $this->options['edit_route'] = $editRoute;
+        }
+
+        if ($role) {
+            $this->options['editRole'] = $role;
         }
 
         $this->editInPlace = true;

@@ -1,0 +1,12 @@
+.ck-content {
+    min-height: 200px;
+    line-height: normal;
+}
+
+.ck-content p:not(:first-child) {
+    margin-top: 15px;
+}
+
+.ck.ck-editor__editable_inline > :first-child {
+    margin-top: 5px !important;
+}

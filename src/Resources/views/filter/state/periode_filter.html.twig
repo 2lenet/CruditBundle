@@ -2,8 +2,8 @@
 
 {% block value %}
     <span class="badge bg-secondary">
-        {{ data.value is defined ? data.value|date('d/m/Y') : '...' }}
+        {{ data.value is defined and data.value != '' ? data.value|date('d/m/Y') : '...' }}
         -
-        {{ data.to is defined ? data.to|date('d/m/Y') : '...' }}
+        {{ data.to is defined and data.to != '' ? data.to|date('d/m/Y') : '...' }}
     </span>
 {% endblock %}

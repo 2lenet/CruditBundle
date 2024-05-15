@@ -10,7 +10,10 @@
     {% if view.config.actions|length %}
         {% set hasActions = false %}
         {% for action in view.config.actions %}
-            {% if action.path.role is null or is_granted(action.path.role) %}
+            {% if
+                (action.path.role is null or is_granted(action.path.role))
+                and (action.role is null or is_granted(action.role))
+            %}
                 {% set hasActions = true %}
             {% endif %}
         {% endfor %}
@@ -19,26 +22,28 @@
         {% endif %}
     {% endif %}
 </tr>
-<tr>
-    {% for field in view.config.fields %}
-        {% set match = false %}
-        {% for total in view.data.totals %}
-            {% if field.id == total.field.id %}
-                {% set match = true %}
-                <td>
-                    {% if total.field.path %}
-                    <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
-                        {% endif %}
-                        {{ total.value|raw }}
+{% if view.data.totals %}
+    <tr>
+        {% for field in view.config.fields %}
+            {% set match = false %}
+            {% for total in view.data.totals %}
+                {% if field.id == total.field.id %}
+                    {% set match = true %}
+                    <td>
                         {% if total.field.path %}
-                    </a>
-                    {% endif %}
-                </td>
+                        <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
+                            {% endif %}
+                            {{ total.value|raw }}
+                            {% if total.field.path %}
+                        </a>
+                        {% endif %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+            {% if not match %}
+                <td></td>
             {% endif %}
         {% endfor %}
-        {% if not match %}
-            <td></td>
-        {% endif %}
-    {% endfor %}
-</tr>
+    </tr>
+{% endif %}
 </tfoot>

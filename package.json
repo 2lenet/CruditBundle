@@ -19,6 +19,7 @@
         "build": "encore production"
     },
     "dependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^40.1.0",
         "@popperjs/core": "^2.9.2",
         "bootstrap": "^5.0.2",
         "easymde": "^2.16.1",

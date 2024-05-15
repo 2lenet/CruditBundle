@@ -11,14 +11,28 @@ use Lle\CruditBundle\Dto\Path;
 abstract class AbstractAction implements ActionInterface
 {
     protected string $label;
+
     protected Path $path;
+
     protected ?Icon $icon;
+
     protected ?string $url;
+
     protected ?string $cssClass = null;
+
     protected bool $hideLabel = false;
+
     protected ?string $modal = null;
+
+    protected bool $confirmModal = false;
+
     protected array $config = [];
+
     protected ?string $target = null;
+
+    protected ?string $role = null;
+
+    protected ?bool $hideIfDisabled = null;
 
     public function __construct(string $label, Path $path)
     {
@@ -110,6 +124,18 @@ abstract class AbstractAction implements ActionInterface
         return $this;
     }
 
+    public function getConfirmModal(): bool
+    {
+        return $this->confirmModal;
+    }
+
+    public function setConfirmModal(bool $confirmModal): static
+    {
+        $this->confirmModal = $confirmModal;
+
+        return $this;
+    }
+
     public function getConfig(): array
     {
         return $this->config;
@@ -137,5 +163,29 @@ abstract class AbstractAction implements ActionInterface
     public function isDisabled(): bool
     {
         return false;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    public function getHideIfDisabled(): ?bool
+    {
+        return $this->hideIfDisabled;
+    }
+
+    public function setHideIfDisabled(?bool $hideIfDisabled): static
+    {
+        $this->hideIfDisabled = $hideIfDisabled;
+
+        return $this;
     }
 }

@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Brick\SublistBrick;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceFilter;
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
@@ -61,6 +62,7 @@ class SublistFactory extends AbstractBasicBrickFactory
         $lines = [];
         $foreignKeyValue = $this->getRequest()->get('id');
         // normal list
+        /** @var DatasourceParams $dsParams */
         $dsParams = $brickConfigurator->getDatasourceParams();
         $fkFilter = new DatasourceFilter($brickConfigurator->getFieldname(), $foreignKeyValue);
         $fkFilter->setOperator("IN");

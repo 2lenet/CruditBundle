@@ -31,7 +31,7 @@ class ExcelExporter extends AbstractExporter
         return Exporter::EXCEL;
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params, array $total = []): Response
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -74,7 +74,7 @@ class ExcelExporter extends AbstractExporter
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.xls"
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.xls'
         );
         $response->headers->set("Content-Disposition", $disposition);
 

@@ -31,6 +31,10 @@ services:
         autowire: true
         tags:
             - { name: form.type, alias: crudit_file }
+    Lle\CruditBundle\Form\Type\CronExpressionType:
+        autowire: true
+        tags:
+            - { name: form.type, alias: crudit_cron_expression }
     Lle\CruditBundle\Form\Extension\TooltipExtension:
         tags:
             - { name: form.type_extension }

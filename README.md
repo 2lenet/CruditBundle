@@ -61,6 +61,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 - [Markdown](doc/markdown.md)
 - [Color list](doc/color_list.md)
 - [Twig extensions](doc/twig.md)
+- [Test your application](doc/test_your_application.md)
 
 ## Principle
 
@@ -71,7 +72,7 @@ A crud is composed by
 - a datasource
 - a filterset if needed
 
-The layout and menu are independant from the crud. You can integrate easily you own controller in a Crudit Layout
+The layout and menu are independent from the crud. You can integrate easily your own controller in a Crudit Layout
 
 ## Feature
 
@@ -84,7 +85,7 @@ The list view has the following features :
 - Sorting
 - Item Actions ( Show, Edit and Delete as standard )
 - List Actions ( Add and Export csv and excel as standard )
-- List grouping ( to save place in repeating values )
+- List grouping ( to save space in repeating values )
 - Batch Action ( see [Batch actions](doc/batch_action.md) )
 - Possibility to color the lines according to a class passed to the entity (
   see [Coloring the rows in a list](doc/color_list.md) )

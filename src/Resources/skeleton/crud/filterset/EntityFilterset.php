@@ -1,8 +1,8 @@
-<?= "<?php" ?>
-<?php if ($strictType): ?>
+<?= '<?php' ?>
 
+<?php if ($strictType) { echo "\n"; ?>
 declare(strict_types=1);
-<?php endif; ?>
+<?php } ?>
 
 namespace <?= $namespace ?>;
 
@@ -17,7 +17,7 @@ class <?= $prefixFilename ?>FilterSet extends AbstractFilterSet
     {
         return [
 <?php foreach ($filters as $filter) { ?>
-            <?= $filter["type"] ?>::new("<?= $filter["property"] ?>"<?php if ($filter["options"]) { ?>, <?= implode(", ", $filter["options"]) ?><?php
+            <?= $filter['type'] ?>::new('<?= $filter['property'] ?>'<?php if ($filter['options']) { ?>, <?= implode(', ', $filter['options']) ?><?php
             } ?>),
 <?php } ?>
         ];

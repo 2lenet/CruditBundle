@@ -39,6 +39,9 @@ class Path
         return $this->role;
     }
 
+    /**
+     * @deprecated use the setRole method directly on the action
+     */
     public function setRole(?string $role): self
     {
         $this->role = $role;

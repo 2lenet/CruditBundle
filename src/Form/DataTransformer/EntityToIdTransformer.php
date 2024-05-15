@@ -42,20 +42,20 @@ class EntityToIdTransformer implements DataTransformerInterface
     }
 
     /**
-     * @param mixed $entity entity to transform
-     * @return mixed|null the identifier of the entity
+     * @param mixed $value entity to transform
+     * @return mixed the identifier of the entity
      */
-    public function transform($entity)
+    public function transform(mixed $value): mixed
     {
         // Multiple input
         if ($this->isMultiple()) {
             $result = [];
 
-            if ($entity === null) {
+            if ($value === null) {
                 return $result;
             }
 
-            foreach ($entity as $e) {
+            foreach ($value as $e) {
                 $result[] = $e->getId();
             }
 
@@ -63,16 +63,16 @@ class EntityToIdTransformer implements DataTransformerInterface
         }
 
         // Single input
-        return $entity !== null ? $entity->getId() : null;
+        return $value?->getId();
     }
 
     /**
-     * @param mixed $id the identifier
-     * @return mixed|void entity or null
+     * @param mixed $value the identifier
+     * @return mixed entity
      */
-    public function reverseTransform($id)
+    public function reverseTransform(mixed $value): mixed
     {
-        if (!$id) {
+        if (!$value) {
             return $this->multiple ? [] : null;
         }
 
@@ -81,7 +81,7 @@ class EntityToIdTransformer implements DataTransformerInterface
 
         // Multiple input
         if ($this->isMultiple()) {
-            $ids = explode(",", $id);
+            $ids = explode(",", $value);
 
             $entities = $this->em
                 ->getRepository($class)
@@ -100,14 +100,14 @@ class EntityToIdTransformer implements DataTransformerInterface
         // Single input
         $entity = $this->em
             ->getRepository($class)
-            ->find($id);
+            ->find($value);
 
         if (!$entity) {
             throw new TransformationFailedException(
                 sprintf(
                     "Entity of class %s with id '%s' does not exist!",
                     $this->class,
-                    $id
+                    $value
                 )
             );
         }

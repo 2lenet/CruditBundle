@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
@@ -83,24 +84,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->distinct();
-
-        if ($this->filterset && $requestParams?->isEnableFilters()) {
-            $this->applyFilters($qb);
-        }
-
-        if ($requestParams && $requestParams->getLimit()) {
-            $qb->setMaxResults($requestParams->getLimit());
-        }
-
-        if ($requestParams) {
-            foreach ($requestParams->getSorts() as $sort) {
-                $this->addOrderBy($qb, $sort[0], $sort[1]);
-            }
-        }
-
-        if ($requestParams && $requestParams->getOffset()) {
-            $qb->setFirstResult($requestParams->getOffset());
-        }
+        $this->applyFilters($qb, $requestParams);
+        $this->applyLimit($qb, $requestParams);
+        $this->applyOrders($qb, $requestParams);
+        $this->applyOffset($qb, $requestParams);
 
         return $qb->getQuery()->execute();
     }
@@ -116,7 +103,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $className = $this->getClassName();
 
         $metadata = $this->entityManager->getClassMetadata($className);
-
         if ($requestParams) {
             $i = 0;
             foreach ($requestParams->getFilters() as $filter) {
@@ -150,9 +136,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $qb;
     }
 
-    protected function applyFilters(QueryBuilder $qb): void
+    protected function applyFilters(QueryBuilder $qb, ?DatasourceParams $requestParams): void
     {
-        if ($this->filterset) {
+        if ($this->filterset && $requestParams?->isEnableFilters()) {
             foreach ($this->filterset->getFilters() as $filter) {
                 $filter->setData($this->filterState->getData($this->filterset->getId(), $filter->getId()));
                 $filter->apply($qb);
@@ -276,9 +262,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->select('count(DISTINCT(root.id))');
 
-        if ($this->filterset && $requestParams?->isEnableFilters()) {
-            $this->applyFilters($qb);
-        }
+        $this->applyFilters($qb, $requestParams);
 
         return intval($qb->getQuery()->getSingleScalarResult());
     }
@@ -402,59 +386,62 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
+    public function fillFromData(object $item, array $data): void
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+            ->getPropertyAccessor();
+
+        foreach ($data as $field => $value) {
+            if ($field === "id") {
+                continue;
+            }
+
+            if ($value === "") {
+                $value = null;
+            } else {
+                /** @var class-string $className */
+                $className = $this->getClassName();
+
+                if ($this->isEntity($field)) {
+                    $associations = $this->entityManager->getClassMetadata(
+                        $className
+                    )->associationMappings;
+
+                    $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
+                } else {
+                    $fields = $this->entityManager->getClassMetadata($className);
+                    $type = $fields->fieldMappings[$field]['type'];
+
+                    switch ($type) {
+                        case "date":
+                        case "datetime":
+                            $value = new \DateTime($value);
+                            break;
+                        case "integer":
+                        case "smallint":
+                            $value = (int)$value;
+                            break;
+                        case "float":
+                            $value = (float)$value;
+                            break;
+                        case "string":
+                        case "text":
+                        case "decimal":
+                        default:
+                            // do nothing
+                    }
+                }
+            }
+            $propertyAccessor->setValue($item, $field, $value);
+        }
+    }
+
     public function editData(string $id, array $data): bool
     {
         $item = $this->get($id);
 
         if ($item) {
-            $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-                ->getPropertyAccessor();
-
-            foreach ($data as $field => $value) {
-                if ($field === "id") {
-                    continue;
-                }
-
-                if ($value === "") {
-                    $value = null;
-                } else {
-                    /** @var class-string $className */
-                    $className = $this->getClassName();
-
-                    if ($this->isEntity($field)) {
-                        $associations = $this->entityManager->getClassMetadata(
-                            $className
-                        )->associationMappings;
-
-                        $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
-                    } else {
-                        $fields = $this->entityManager->getClassMetadata($className);
-                        $type = $fields->fieldMappings[$field]['type'];
-
-                        switch ($type) {
-                            case "date":
-                            case "datetime":
-                                $value = new \DateTime($value);
-                                break;
-                            case "integer":
-                            case "smallint":
-                                $value = (int)$value;
-                                break;
-                            case "float":
-                                $value = (float)$value;
-                                break;
-                            case "string":
-                            case "text":
-                            case "decimal":
-                            default:
-                                // do nothing
-                        }
-                    }
-                }
-
-                $propertyAccessor->setValue($item, $field, $value);
-            }
-
+            $this->fillFromData($item, $data);
             $this->save($item);
 
             return true;
@@ -468,17 +455,49 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb = $this->buildQueryBuilder($requestParams);
 
         foreach ($fields as $field => $data) {
+            $expression = $data['type'] . '(root.' . $field . ')';
+            if ($data['type'] === CrudConfigInterface::EXPRESSION) {
+                $expression = $data['expression'];
+            }
             if ($field === array_key_first($fields)) {
-                $qb->select($data['type'] . '(root.' . $field . ')');
+                $qb->select($expression);
             } else {
-                $qb->addSelect($data['type'] . '(root.' . $field . ')');
+                $qb->addSelect($expression);
             }
         }
 
-        if ($this->filterset && $requestParams?->isEnableFilters()) {
-            $this->applyFilters($qb);
-        }
+        $this->applyFilters($qb, $requestParams);
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function applyLimit(QueryBuilder $qb, ?DatasourceParams $requestParams): void
+    {
+        if ($requestParams && $requestParams->getLimit()) {
+            $qb->setMaxResults($requestParams->getLimit());
+        }
+    }
+
+    public function applyOrders(QueryBuilder $qb, ?DatasourceParams $requestParams): void
+    {
+        if ($requestParams) {
+            foreach ($requestParams->getSorts() as $sort) {
+                $this->addOrderBy($qb, $sort[0], $sort[1]);
+            }
+        }
+    }
+
+    public function applyOffset(QueryBuilder $qb, ?DatasourceParams $requestParams): void
+    {
+        if ($requestParams && $requestParams->getOffset()) {
+            $qb->setFirstResult($requestParams->getOffset());
+        }
+    }
+
+    public function setFilterState(array $filterState): self
+    {
+        $this->filterState->setFilterdata($filterState);
+
+        return $this;
     }
 }

@@ -92,14 +92,21 @@ function submitEIP(eip_elem, eip_input, eip_val) {
         if (response.status === 200) {
             response.json().then((json) => {
                 Object.entries(json.fieldsToUpdate).forEach(([key, html]) => {
-                    document.getElementById(key).innerHTML = html;
+                    let eipElement = document.getElementById(key);
+                    if (eipElement) {
+                        eipElement.innerHTML = html;
+                    }
                 });
 
                 if ('eipToUpdate' in json) {
                     json.eipToUpdate.forEach(field => {
                         let eip_elem = document.getElementById(field);
-
-                        createEipField(eip_elem.querySelector('.crudit-eip'));
+                        if (eip_elem) {
+                            let cruditEipElem = eip_elem.querySelector('.crudit-eip');
+                            if (cruditEipElem) {
+                                createEipField(cruditEipElem);
+                            }
+                        }
                     });
                 }
             });
