@@ -132,14 +132,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                     $qb->join($alias . "." . $filter->getField(), $joinAlias);
                     $field = $joinAlias;
                 }
-
                 $parameterName = "filter_" . $filter->getAlias() . "_" . $i;
-                if ($filter->getOperator() == "IN") {
                 // between parenthesis for IN/NOT IN
-                    $qb->andWhere($field . " " . $filter->getOperator() . "(:$parameterName)");
-                } else {
-                    $qb->andWhere($field . " " . $filter->getOperator() . " :$parameterName");
-                }
+                $qb->andWhere($field . " " . $filter->getOperator() . "(:$parameterName)");
 
                 $qb->setParameter($parameterName, $filter->getValue());
 
