@@ -84,15 +84,17 @@ class FormFactory extends AbstractBasicBrickFactory
                     $resource = $this->propertyAccessor->getValue($resource, $brickConfig->getAssocProperty());
                 }
 
+                $referer = $this->getRequest()->request->get('referer');
                 $this->brickResponseCollector->add(
                     new RedirectBrickResponse(
-                        $this->urlGenerator->generate(
+                        $brickConfig->getSuccessRedirectPath()
+                            ? $this->urlGenerator->generate(
                             $brickConfig->getSuccessRedirectPath()->getRoute(),
                             array_merge(
                                 $brickConfig->getSuccessRedirectPath()->getParams(),
                                 ['id' => $resource->getId()]
                             )
-                        )
+                        ) : ($referer ?? $brickConfig->getCrudConfig()->getAfterEditPath())
                     )
                 );
             } else {
