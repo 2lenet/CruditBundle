@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -75,11 +77,35 @@ trait TraitCrudController
     public function delete(Request $request): Response
     {
         $resource = $this->getResource($request, false);
+        if (method_exists($resource, 'canDelete')) {
+            $check = $resource->canDelete();
+
+            if ($check === false || is_string($check)) {
+                $this->addFlash('danger', 'crudit.flash.error.delete');
+
+                return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+            }
+        }
 
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_DELETE', $resource);
 
         $dataSource = $this->config->getDatasource();
         $dataSource->delete($dataSource->getIdentifier($resource));
+
+        $referer = $request->headers->get('referer');
+        if ($referer && str_contains($referer, 'show')) {
+            if ($route = $request->attributes->get('_route')) {
+                preg_match('/^app_crudit_(.+)_delete$/', $route, $matches);
+                if ($matches && array_key_exists(1, $matches)) {
+                    if (str_contains($referer, '/' . $matches[1] . '/')) {
+                        return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+                    } else {
+                        // If we're in a sublist, add the sublist anchor to the url so that it remains in the correct sublist after deletion
+                        return $this->redirect($request->headers->get('referer') . '#' . $matches[1] . 's');
+                    }
+                }
+            }
+        }
 
         return $this->redirectToRoute($this->config->getRootRoute() . "_index");
     }
@@ -123,7 +149,7 @@ trait TraitCrudController
     }
 
     #[Route('/editdata/{id}')]
-    public function editdata(string $id, Request $request, TranslatorInterface $translator): Response
+    public function editdata(string $id, Request $request, TranslatorInterface $translator, ValidatorInterface $validator): Response
     {
         try {
             $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
@@ -132,18 +158,37 @@ trait TraitCrudController
 
             $data = json_decode($request->request->get("data", "{}"), true);
 
-            if ($dataSource->editData($id, $data)) {
+            $item = $this->getResource($request);
+
+            if (!$item) {
                 return new JsonResponse([
-                    "status" => "ok",
-                    "fieldsToUpdate" => $this->config->fieldsToUpdate($id),
-                    'eipToUpdate' => $this->config->eipToUpdate($id),
-                ]);
+                    "status" => "ko",
+                    "message" => $translator->trans("crudit.flash.error.eip.bad_request", [], "LleCruditBundle"),
+                ], Response::HTTP_BAD_REQUEST);
             }
 
+            $dataSource->fillFromData($item, $data);
+            $errors = $validator->validate($item);
+
+            if (count($errors) > 0) {
+                $message = '';
+                foreach ($errors as $error) {
+                    $message .= $error->getMessage() . ' ';
+                }
+
+                return new JsonResponse([
+                    "status" => "ko",
+                    "message" => $message,
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $dataSource->save($item);
+
             return new JsonResponse([
-                "status" => "ko",
-                "message" => $translator->trans("crudit.flash.error.eip.bad_request", [], "LleCruditBundle"),
-            ], Response::HTTP_BAD_REQUEST);
+                "status" => "ok",
+                "fieldsToUpdate" => $this->config->fieldsToUpdate($id),
+                'eipToUpdate' => $this->config->eipToUpdate($id),
+            ]);
         } catch (AccessDeniedException $e) {
             return new JsonResponse([
                 "status" => "ko",
@@ -186,12 +231,35 @@ trait TraitCrudController
             }
         };
 
+        $totals = [];
+        if (count($this->config->getTotalFields()) > 0) {
+            $dsParams = $this->config->getDatasourceParams($request);
+            $dsParams->setCount($this->config->getDatasource()->count($dsParams));
+            /** @var array $totalByField */
+            $totalByField = $this->config->getDatasource()->getTotals($dsParams, $this->config->getTotalFields());
+
+            $i = 0;
+            $fieldViews = [];
+            foreach ($this->config->getTotalFields() as $field) {
+                $i++;
+
+                $fieldView = new FieldView($field['field'], $totalByField[$i]);
+                $fieldView->setOptions($field['field']->getOptions());
+
+                $totals[] = [
+                    'field' => $fieldView,
+                    'total' => $totalByField[$i]
+                ];
+            }
+        }
+
         $format = $request->get("format", "csv");
 
         return $exporter->export(
             $generator(),
             $format,
-            $this->config->getExportParams($format)
+            $this->config->getExportParams($format),
+            $totals
         );
     }
 

@@ -20,8 +20,8 @@ class StringFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            FilterTypeInterface::OPERATOR_STARTS_WITH => ["icon" => "far fa-caret-square-right"],
             FilterTypeInterface::OPERATOR_CONTAINS => ["icon" => "fa fa-text-width"],
+            FilterTypeInterface::OPERATOR_STARTS_WITH => ["icon" => "far fa-caret-square-right"],
             FilterTypeInterface::OPERATOR_ENDS_WITH => ["icon" => "far fa-caret-square-left"],
             FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
             FilterTypeInterface::OPERATOR_NOT_EQUAL => ["icon" => "fas fa-not-equal"],

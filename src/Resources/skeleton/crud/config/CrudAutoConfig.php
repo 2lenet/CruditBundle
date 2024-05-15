@@ -1,14 +1,16 @@
-<?= "<?php" ?>
-<?php if ($strictType): ?>
+<?= '<?php' ?>
 
+<?php if ($strictType) { echo "\n"; ?>
 declare(strict_types=1);
-<?php endif; ?>
+<?php } ?>
 
 namespace <?= $namespace ?>;
 
-use App\Crudit\Datasource\<?= $prefixFilename ?>Datasource;
-<?php if (count($tabs)) { ?>
+use App\Crudit\Datasource\<?= $configSubdirectorie ?><?= $prefixFilename ?>Datasource;
+<?php if (array_key_exists('history', $tabs) && count($tabs['history'])) { ?>
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
+<?php } ?>
+<?php if (array_key_exists('sublist', $tabs) && count($tabs['sublist'])) { ?>
 use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
 <?php } ?>
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
@@ -29,10 +31,10 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 {
     public function __construct(
 <?php $allLinkedEntity = []; ?>
-<?php foreach ($tabs as $tab) { ?>
-<?php if ($tab["type"] === "sublist") { ?>
+<?php if (array_key_exists('sublist', $tabs)) { ?>
+<?php foreach ($tabs['sublist'] as $tab) { ?>
 <?php if (!in_array($tab['linkedEntity'], $allLinkedEntity)) { ?>
-        private <?= $tab["linkedEntity"] ?>CrudConfig $<?= strtolower($tab["linkedEntity"]) ?>CrudConfig,
+        protected <?= $tab['linkedEntity'] ?>CrudConfig $<?= strtolower($tab['linkedEntity']) ?>CrudConfig,
 <?php $allLinkedEntity[] = $tab['linkedEntity'] ?>
 <?php } ?>
 <?php } ?>
@@ -50,10 +52,10 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 <?php foreach ($fields as $field) { ?>
 <?php if (is_array($field)) { ?>
 <?php foreach ($field as $value) { ?>
-        $<?php echo str_replace(".", "", $value->getName()) ?> = Field::new("<?php echo $value->getName() ?>");
+        $<?php echo str_replace('.', '', $value->getName()) ?> = Field::new('<?php echo $value->getName() ?>');
 <?php } ?>
 <?php } else { ?>
-        $<?php echo str_replace(".", "", $field->getName()) ?> = Field::new("<?php echo $field->getName() ?>");
+        $<?php echo str_replace('.', '', $field->getName()) ?> = Field::new('<?php echo $field->getName() ?>');
 <?php } ?>
 <?php } ?>
 
@@ -63,13 +65,13 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
                 $fields = [
 <?php foreach ($crudFields as $key => $field) { ?>
 <?php if (is_array($field)) { ?>
-                    "<?= $key ?>" => [
+                    '<?= $key ?>' => [
 <?php foreach ($field as $value) { ?>
-                        $<?= str_replace(".", "", $value->getName()) ?><?php if (!$value->isSortable()) { echo "->setSortable(false)"; } ?>,
+                        $<?= str_replace('.', '', $value->getName()) ?><?php if (!$value->isSortable()) { echo '->setSortable(false)'; } ?>,
 <?php } ?>
                     ],
 <?php } else { ?>
-                    $<?= str_replace(".", "", $field->getName()) ?><?php if (!$field->isSortable()) { echo "->setSortable(false)"; } ?>,
+                    $<?= str_replace('.', '', $field->getName()) ?><?php if (!$field->isSortable()) { echo '->setSortable(false)'; } ?>,
 <?php } ?>
 <?php } ?>
                 ];
@@ -88,7 +90,7 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
         switch ($pageKey) {
 <?php foreach ($forms as $key => $formPrefix) { ?>
             case <?= $key ?>:
-                $prefix = "<?= $formPrefix ?>";
+                $prefix = '<?= $formPrefix ?>';
                 break;
 <?php } ?>
             default:
@@ -96,23 +98,26 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
         }
 
         return str_replace(
-            "App\\Crudit\\Config\\",
-            "App\\Form\\" . $prefix,
-            str_replace("CrudConfig", "Type", get_class($this))
+            'App\\Crudit\\Config\\',
+            'App\\Form\\' . $prefix,
+            str_replace('CrudConfig', 'Type', get_class($this))
         );
     }
 <?php } ?>
-<?php if (isset($tabs) && count($tabs)) { ?>
+<?php if (array_key_exists('sublist', $tabs)) { ?>
+<?php if ((isset($tabs['sublist']) && count($tabs['sublist'])) || (isset($tabs['history']) && count($tabs['history']))) { ?>
 
-        public function getTabs(): array
-        {
-            return [
-<?php foreach ($tabs as $tab) { ?>
-<?php if ($tab["type"] === "history") { ?>
-                "<?= $tab["label"] ?>" => [HistoryConfig::new()],
-<?php } elseif ($tab["type"] === "sublist") { ?>
-                "<?= $tab["label"] ?>" => [SublistConfig::new("<?= $tab["property"] ?>", $this-><?= strtolower($tab["linkedEntity"]) ?>CrudConfig)
-                    ->setFields($this-><?= strtolower($tab["linkedEntity"]) ?>CrudConfig->getFields(CrudConfigInterface::INDEX))],
+    public function getTabs(): array
+    {
+        return [
+<?php foreach ($tabs['sublist'] as $tab) { ?>
+            '<?= $tab['label'] ?>' => [SublistConfig::new('<?= $tab['property'] ?>', $this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig)
+                ->setFields($this-><?= strtolower($tab['linkedEntity']) ?>CrudConfig->getFields(CrudConfigInterface::INDEX))],
+<?php } ?>
+<?php } ?>
+<?php if (array_key_exists('history', $tabs)) { ?>
+<?php foreach ($tabs['history'] as $tab) { ?>
+            '<?= $tab['label'] ?>' => [HistoryConfig::new()],
 <?php } ?>
 <?php } ?>
         ];
@@ -196,16 +201,16 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
         return $actions;
     }
 <?php } ?>
-<?php if (isset($sort["property"]) && isset($sort["order"])) { ?>
+<?php if (isset($sort['property']) && isset($sort['order'])) { ?>
 
     public function getDefaultSort(): array
     {
-        return [["<?= $sort["property"] ?>", "<?= $sort["order"] ?>"]];
+        return [['<?= $sort['property'] ?>', '<?= $sort['order'] ?>']];
     }
 <?php } ?>
 
     public function getRootRoute(): string
     {
-        return "app_<?= strtolower($controllerRoute) ?>";
+        return 'app_crudit_<?= strtolower($controllerRoute) ?>';
     }
 }

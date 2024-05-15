@@ -19,3 +19,7 @@ Options :
 ### Markdown
 
 The [Lle\CruditBundle\Form\Type\MarkdownType](markdown.md#markdowntype) allows you to create a Markdown editor textarea.
+
+### Cron expression
+
+The `Lle\CruditBundle\Form\Type\CronExpressionType` allows you to create a cron input with a interface to select value.

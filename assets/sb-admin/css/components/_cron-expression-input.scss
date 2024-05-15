@@ -1,0 +1,43 @@
+cron-expression-input {
+
+    .cronInput input[type='text'] {
+        border-color: $border-color;
+        border-radius: $border-radius;
+    }
+
+    .modal-dialog {
+        max-width: unset !important;
+
+        .modal-header {
+            display: initial;
+            border: none;
+        }
+
+        .modal-body {
+            .nav-tabs {
+                margin-top: -29px !important;
+                & > li.active > a {
+                    border: none;
+                }
+                & > .nav-link {
+                    padding: 0;
+                    & > .nav-link {
+                        margin: 0 !important;
+                    }
+                }
+            }
+
+            .panel-body {
+                .form-group {
+                    div {
+                        min-width: 55px;
+                    }
+
+                    label.container {
+                        padding-right: 0 !important;
+                    }
+                }
+            }
+        }
+    }
+}

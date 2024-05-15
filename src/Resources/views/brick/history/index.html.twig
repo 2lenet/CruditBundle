@@ -57,9 +57,9 @@
                                                         </span>
                                                     {% elseif value.type == 'single_assoc' %}
                                                         <span class="badge bg-primary">
-                                                            {% if value.classname is defined %}
+                                                            {% if value.classname is defined and value.crudConfig is defined and value.crudConfig %}
                                                                 <a href="
-                                                            {{ path('app_crudit_'~ value.classname ~'_show', {'id': value.raw.id}) }}
+                                                            {{ path(value.crudConfig.rootRoute ~ '_show', {'id': value.raw.id}) }}
                                                             "
                                                                    class="text-light text-decoration-none">{{ value.value }}</a>
                                                             {% else %}

@@ -3,6 +3,14 @@
         <div class="card-header py-1">
             {% if tab is defined %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab } %}
+                <script>
+                    window.addEventListener('load', function () {
+                        var badge = document.getElementById("{{ tab.id }}-badge");
+                        if (!badge.textContent) {
+                            badge.textContent = "{{ view.config.datasource_params.count }}";
+                        }
+                    });
+                </script>
             {% else %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
             {% endif %}
@@ -101,7 +109,7 @@
                                     {% if loop.first %}
                                         <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                                     {% endif %}
-                                    <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower }}">
+                                    <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
                                         {% if column.field.path %}
                                         <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
                                             {% endif %}
@@ -117,7 +125,10 @@
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
                                     {% for action in view.config.actions %}
-                                        {% if action.path.role is null or is_granted(action.path.role) %}
+                                        {% if
+                                            (action.path.role is null or is_granted(action.path.role))
+                                            and (action.role is null or is_granted(action.role))
+                                        %}
                                             {% set params = { 'id': line.resource.id } %}
                                             {% do action.setResource(line.resource) %}
                                             {% if action.modal %}
@@ -129,6 +140,8 @@
                                                     class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
                                                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
+                                                        {% elseif action.confirmmodal %}
+                                                            data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.'~action.label)|trans }}"
                                                         {% elseif not action.disabled %}
                                                             href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                                                         {% endif %}

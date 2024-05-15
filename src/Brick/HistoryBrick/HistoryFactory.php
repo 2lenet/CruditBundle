@@ -9,6 +9,7 @@ use Gedmo\Loggable\Entity\LogEntry;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
+use Lle\CruditBundle\Provider\ConfigProvider;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -20,6 +21,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         EntityManagerInterface $em,
+        private ConfigProvider $configProvider,
     ) {
         parent::__construct($resourceResolver, $requestStack);
 
@@ -120,7 +122,10 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         "raw" => $value,
                     ];
                     if ($class) {
-                        $data[$property] = array_merge($data[$property], ['classname' => strtolower(end($class))]);
+                        $data[$property] = array_merge($data[$property], [
+                            'classname' => strtolower(end($class)),
+                            'crudConfig' => $this->configProvider->getConfigurator(strtoupper(end($class))),
+                        ]);
                     }
                 }
                 $history[] = [

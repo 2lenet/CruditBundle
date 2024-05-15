@@ -38,13 +38,13 @@ crudit:
     modal:
         cancel: "Annullare"
         validate: "Convalidare"
+        confirm:
+            message: "Volete davvero confermare questa azione? Questo atto è irrevocabile."
+            action: "Confermare"
         export:
             message: "Scegliere un formato di esportazione"
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
-        delete:
-            message: "Vuoi davvero cancellare questo articolo ? Questa azione è irrevocabile."
-            action: "Cancellare"
 
     field:
         createdAt: "Creato il"
@@ -96,6 +96,7 @@ crudit:
                 generic: "Il valore non può essere cambiato."
                 access_denied: "Non ti è permesso cambiare questo valore."
                 bad_request: "Stai cercando di cambiare un valore inesistente."
+            delete: "Impossibile eliminare questo oggetto."
 
     error:
         generic:

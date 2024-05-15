@@ -1,4 +1,4 @@
-<?= "<?php" ?>
+<?= '<?php' ?>
 
 namespace <?= $namespace ?>;
 
@@ -16,14 +16,14 @@ class <?= $className ?> implements MenuProviderInterface
     {
         return [
 <?php foreach ($items as $item) { ?>
-<?php if (isset($item["type"]) && $item["type"] === "separator") { ?>
+<?php if (isset($item['type']) && $item['type'] === 'separator') { ?>
         
-                HorizontalSeparatorElement::new()<?php if (isset($item["role"])) { ?>->setRole("<?= $item["role"] ?>")<?php } ?><?php if (isset($item["parent"])) { ?>->setParent("<?= str_replace(".", "-", $item["parent"]) ?>")<?php } ?>,
+                HorizontalSeparatorElement::new()<?php if (isset($item['role'])) { ?>->setRole('<?= $item['role'] ?>')<?php } ?><?php if (isset($item['parent'])) { ?>->setParent('<?= str_replace('.', '-', $item['parent']) ?>')<?php } ?>,
         
-<?php } elseif (isset($item["url"])) { ?>
-                ExternalLinkElement::new("<?= $item["label"] ?>", "<?= $item["url"] ?>")<?php if (isset($item["icon"])) { ?>->setIcon(Icon::new("<?= $item["icon"] ?>")) <?php } ?><?php if (isset($item["role"])) { ?>->setRole("<?= $item["role"] ?>")<?php } ?><?php if (isset($item["parent"])) { ?>->setParent("<?= str_replace(".", "-", $item["parent"]) ?>")<?php } ?>,
+<?php } elseif (isset($item['url'])) { ?>
+                ExternalLinkElement::new('<?= $item['label'] ?>', '<?= $item['url'] ?>')<?php if (isset($item['icon'])) { ?>->setIcon(Icon::new('<?= $item['icon'] ?>')) <?php } ?><?php if (isset($item['role'])) { ?>->setRole('<?= $item['role'] ?>')<?php } ?><?php if (isset($item['parent'])) { ?>->setParent('<?= str_replace('.', '-', $item['parent']) ?>')<?php } ?>,
 <?php } else { ?>
-                LinkElement::new("<?= $item["label"] ?>", <?php if (isset($item["route"])) { ?>Path::new("<?= $item["route"] ?>")<?php } else { ?>null<?php } ?>)->setId("<?= str_replace(".", "-", $item["label"]) ?>")<?php if (isset($item["icon"])) { ?>->setIcon(Icon::new("<?= $item["icon"] ?>"))<?php } ?><?php if (isset($item["role"])) { ?>->setRole("<?= $item["role"] ?>")<?php } ?><?php if (isset($item["parent"])) { ?>->setParent("<?= str_replace(".", "-", $item["parent"]) ?>")<?php } ?>,
+                LinkElement::new('<?= $item['label'] ?>', <?php if (isset($item['route'])) { ?>Path::new('<?= $item['route'] ?>')<?php } else { ?>null<?php } ?>)->setId('<?= str_replace('.', '-', $item['label']) ?>')<?php if (isset($item['icon'])) { ?>->setIcon(Icon::new('<?= $item['icon'] ?>'))<?php } ?><?php if (isset($item['role'])) { ?>->setRole('<?= $item['role'] ?>')<?php } ?><?php if (isset($item['parent'])) { ?>->setParent('<?= str_replace('.', '-', $item['parent']) ?>')<?php } ?>,
 <?php } ?>
 <?php } ?>
         ];

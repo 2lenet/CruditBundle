@@ -19,7 +19,7 @@ class SublistConfig extends AbstractBrickConfig
     /** @var ItemAction[] */
     private array $actions = [];
     private ?DatasourceInterface $datasource = null;
-    private DatasourceParams $datasourceParams;
+    private ?DatasourceParams $datasourceParams = null;
     private string $className;
     private string $fieldname;
     protected CrudConfigInterface $subCrudConfig;
@@ -35,16 +35,6 @@ class SublistConfig extends AbstractBrickConfig
     public static function new(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = []): self
     {
         return new self($fieldname, $subCrudConfig, $options);
-    }
-
-    public function setCrudConfig(CrudConfigInterface $crudConfig): self
-    {
-        parent::setCrudConfig($crudConfig);
-        if ($this->datasource === null) {
-            $this->setDatasource($crudConfig->getDatasource());
-        }
-
-        return $this;
     }
 
     public function getDatasource(): DatasourceInterface
@@ -70,7 +60,14 @@ class SublistConfig extends AbstractBrickConfig
     {
         $sessionKey = $this->crudConfig->getDatasourceParamsKey()
             . "_sublist_" . $this->subCrudConfig->getName() . $request->get("id");
-        $this->setDatasourceParams($this->subCrudConfig->getDatasourceParams($request, $sessionKey));
+
+        $subDatasourceParams = $this->subCrudConfig->getDatasourceParams($request, $sessionKey);
+
+        if ($this->getDatasourceParams()) {
+            $subDatasourceParams->setNonDefaultValuesOnSubDatasourceParams($this->getDatasourceParams());
+        }
+
+        $this->setDatasourceParams($subDatasourceParams);
 
         return [
             'fields' => $this->getFields(),
@@ -114,7 +111,7 @@ class SublistConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getDatasourceParams(): DatasourceParams
+    public function getDatasourceParams(): ?DatasourceParams
     {
         return $this->datasourceParams;
     }

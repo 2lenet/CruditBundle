@@ -27,6 +27,7 @@ interface CrudConfigInterface
     public const AVERAGE = "AVG";
     public const COUNT = "COUNT";
     public const SUM = "SUM";
+    public const EXPRESSION = "EXPRESSION";
 
     public function getFields(string $key): array;
 

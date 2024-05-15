@@ -38,13 +38,13 @@ crudit:
     modal:
         cancel: "Abbrechen"
         validate: "Validieren"
+        confirm:
+            message: "Wollen Sie diese Aktion wirklich bestätigen? Diese Maßnahme ist unumkehrbar."
+            action: "Konfirmand"
         export:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"
             notConfigured: "Export ist nicht konfiguriert"
-        delete:
-            message: "Möchten Sie diesen Artikel wirklich löschen? Diese Aktion ist unwiderruflich."
-            action: "Löschen"
 
     field:
         createdAt: "Erstellt am"
@@ -96,6 +96,7 @@ crudit:
                 generic: "Der Wert konnte nicht geändert werden."
                 access_denied: "Sie dürfen diesen Wert nicht ändern."
                 bad_request: "Sie versuchen, einen nicht existierenden Wert zu ändern."
+            delete: "Dieses Objekt kann nicht gelöscht werden."
 
     error:
         generic:
