@@ -2,15 +2,20 @@
 
 namespace Lle\CruditBundle\Exporter;
 
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Field\BooleanField;
 use Lle\CruditBundle\Field\CurrencyField;
+use Lle\CruditBundle\Field\DateField;
+use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,8 +58,15 @@ class ExcelExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-
-                $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                if ($field->getField()->getType() === DateField::class || $field->getField()->getType() === DateTimeField::class) {
+                    if ($field->getValue()) {
+                        $format = $this->convertFormat($field->getOptions()['format'], $field->getField()->getType());
+                        $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
+                        $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                    }
+                } else {
+                    $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                }
             }
 
             $row++;
@@ -81,6 +93,24 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
+    protected function convertFormat(string $format): string
+    {
+        $pattern = [
+            '/y/',
+            '/Y/',
+            '/m/',
+            '/d/'
+        ];
+        $remplacement = [
+            'yyyy',
+            'yyyy',
+            'mm',
+            'dd'
+        ];
+
+        return preg_replace($pattern, $remplacement, $format);
+    }
+
     protected function getHeaders(array $fields): array
     {
         $result = [];
@@ -102,8 +132,12 @@ class ExcelExporter extends AbstractExporter
         return match ($field->getField()->getType()) {
             "bigint", "smallint", "float", "integer", NumberField::class, CurrencyField::class, IntegerField::class
             => DataType::TYPE_NUMERIC,
-            "boolean", BooleanField::class => DataType::TYPE_BOOL,
-            default => DataType::TYPE_STRING,
+            "boolean", BooleanField::class
+            => DataType::TYPE_BOOL,
+            'date', 'datetime', DateField::class, DateTimeField::class
+            => DataType::TYPE_ISO_DATE,
+            default
+            => DataType::TYPE_STRING,
         };
     }
 }
