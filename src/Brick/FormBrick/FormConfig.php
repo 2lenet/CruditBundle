@@ -55,9 +55,9 @@ class FormConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function getSuccessRedirectPath(): Path
+    public function getSuccessRedirectPath(): ?Path
     {
-        return $this->successRedirectPath ?? $this->getCrudConfig()->getPath();
+        return $this->successRedirectPath;
     }
 
     public function setFlashMessageSuccess(string $message): self
