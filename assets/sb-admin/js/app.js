@@ -10,7 +10,6 @@ import './form';
 import './multisearch';
 import './scroll-to-top';
 import './sidebar';
-import './ckeditor_type';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {
