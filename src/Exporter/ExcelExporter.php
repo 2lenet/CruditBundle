@@ -58,7 +58,11 @@ class ExcelExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-                if ($field->getField()->getType() === DateField::class || $field->getField()->getType() === DateTimeField::class) {
+                if ($field->getField()->getType() === DateField::class
+                    || $field->getField()->getType() === DateTimeField::class
+                    || $field->getField()->getType() === DateTimeField::class
+                    || $field->getField()->getType() === DateTimeField::class
+                ) {
                     if ($field->getValue()) {
                         $format = $this->convertFormat($field->getOptions()['format'], $field->getField()->getType());
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
