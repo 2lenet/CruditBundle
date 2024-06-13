@@ -60,8 +60,8 @@ class ExcelExporter extends AbstractExporter
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
                 if ($field->getField()->getType() === DateField::class
                     || $field->getField()->getType() === DateTimeField::class
-                    || $field->getField()->getType() === DateTimeField::class
-                    || $field->getField()->getType() === DateTimeField::class
+                    || $field->getField()->getType() === 'date'
+                    || $field->getField()->getType() === 'datetime'
                 ) {
                     if ($field->getValue()) {
                         $format = $this->convertFormat($field->getOptions()['format'], $field->getField()->getType());
