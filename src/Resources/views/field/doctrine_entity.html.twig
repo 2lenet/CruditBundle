@@ -3,9 +3,9 @@
     or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
     {% if view.field.autocompleteUrl is defined and view.field.autocompleteUrl %}
-        {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
+        {% set autocompleteUrl = path(view.field.autocompleteUrl, view.field.autocompleteUrlData) %}
     {% else %}
-        {% set autocompleteUrl = path(resource|get_crudit_routename_key_field(view.field.id, 'autocomplete')) %}
+        {% set autocompleteUrl = path(resource|get_crudit_routename_key_field(view.field.id, 'autocomplete', view.field.autocompleteUrlData)) %}
     {% endif %}
 
     {% if view.field.options['edit_route'] is defined and view.field.options['edit_route'] %}
