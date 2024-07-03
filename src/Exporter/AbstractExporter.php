@@ -17,7 +17,7 @@ abstract class AbstractExporter implements ExporterInterface
             switch ($field->getField()->getType()) {
                 case "date":
                 case "datetime":
-                    $format = $field->getOptions()['format'];
+                    $format = 'Y-m-d H:i:s';
                     if ($field->getRawValue()) {
                         $result = $field->getRawValue()->format($format);
                     } else {
