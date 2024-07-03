@@ -64,9 +64,9 @@ class ExcelExporter extends AbstractExporter
                     || $field->getField()->getType() === 'datetime'
                 ) {
                     if ($field->getValue()) {
-                        $format = $this->convertFormat($field->getOptions()['format'], $field->getField()->getType());
+                        $format = $this->convertFormat($field->getOptions()['format']);
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
-                        $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                        $sheet->setCellValueExplicit($cell, $field->getRawValue()->format('Y-m-d H:i:s'), $this->getType($field));
                     }
                 } else {
                     $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
@@ -97,19 +97,25 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
-    protected function convertFormat(string $format): string
+    protected function convertFormat(string $format): ?string
     {
         $pattern = [
             '/y/',
             '/Y/',
             '/m/',
-            '/d/'
+            '/d/',
+            '/H/',
+            '/i/',
+            '/s/',
         ];
         $remplacement = [
             'yyyy',
             'yyyy',
             'mm',
-            'dd'
+            'dd',
+            'hh',
+            'mm',
+            'ss',
         ];
 
         return preg_replace($pattern, $remplacement, $format);
