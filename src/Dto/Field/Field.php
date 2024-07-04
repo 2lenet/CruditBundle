@@ -32,8 +32,6 @@ class Field
 
     private ?string $autocompleteUrl = null;
 
-    private array $autocompleteUrlData = [];
-
     private bool $multiple = false;
 
     private ?string $info = null;
@@ -233,18 +231,6 @@ class Field
     public function setAutocompleteUrl(?string $autocompleteUrl): self
     {
         $this->autocompleteUrl = $autocompleteUrl;
-
-        return $this;
-    }
-
-    public function getAutocompleteUrlData(): array
-    {
-        return $this->autocompleteUrlData;
-    }
-
-    public function setAutocompleteUrlData(array $autocompleteUrlData): self
-    {
-        $this->autocompleteUrlData = $autocompleteUrlData;
 
         return $this;
     }
