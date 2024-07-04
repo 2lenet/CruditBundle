@@ -58,13 +58,9 @@ class ExcelExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-                if ($field->getField()->getType() === DateField::class
-                    || $field->getField()->getType() === DateTimeField::class
-                    || $field->getField()->getType() === 'date'
-                    || $field->getField()->getType() === 'datetime'
-                ) {
+                if ($field->getField()->getType() === DateField::class || $field->getField()->getType() === DateTimeField::class) {
                     if ($field->getValue()) {
-                        $format = $this->convertFormat($field->getOptions()['format'], $field->getField()->getType());
+                        $format = $this->convertFormat($field->getOptions()['format']);
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
                         $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
                     }
@@ -97,7 +93,7 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
-    protected function convertFormat(string $format): string
+    protected function convertFormat(string $format): ?string
     {
         $pattern = [
             '/y/',
