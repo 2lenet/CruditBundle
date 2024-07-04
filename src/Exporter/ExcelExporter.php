@@ -93,7 +93,7 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
-    protected function convertFormat(string $format): ?string
+    protected function convertFormat(string $format): string
     {
         $pattern = [
             '/y/',
@@ -108,7 +108,7 @@ class ExcelExporter extends AbstractExporter
             'dd',
         ];
 
-        return preg_replace($pattern, $remplacement, $format);
+        return (string)preg_replace($pattern, $remplacement, $format);
     }
 
     protected function getHeaders(array $fields): array
