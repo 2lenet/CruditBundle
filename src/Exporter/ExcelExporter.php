@@ -55,11 +55,15 @@ class ExcelExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-                if ($field->getField()->getType() === DateField::class || $field->getField()->getType() === DateTimeField::class) {
+                if ($field->getField()->getType() === DateField::class
+                    || $field->getField()->getType() === DateTimeField::class
+                    || $field->getField()->getType() === 'date'
+                    || $field->getField()->getType() === 'datetime'
+                ) {
                     if ($field->getValue()) {
                         $format = $this->convertFormat($field->getOptions()['format']);
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
-                        $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                        $sheet->setCellValueExplicit($cell, $field->getRawValue()->format('Y-m-d H:i:s'), $this->getType($field));
                     }
                 } else {
                     $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
@@ -90,19 +94,25 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
-    protected function convertFormat(string $format): string
+    protected function convertFormat(string $format): ?string
     {
         $pattern = [
             '/y/',
             '/Y/',
             '/m/',
             '/d/',
+            '/H/',
+            '/i/',
+            '/s/',
         ];
         $remplacement = [
             'yyyy',
             'yyyy',
             'mm',
             'dd',
+            'hh',
+            'mm',
+            'ss',
         ];
 
         return (string)preg_replace($pattern, $remplacement, $format);
