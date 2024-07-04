@@ -2,8 +2,6 @@
 
 namespace Lle\CruditBundle\Exporter;
 
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Field\BooleanField;
@@ -15,7 +13,6 @@ use Lle\CruditBundle\Field\NumberField;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
