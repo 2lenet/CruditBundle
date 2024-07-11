@@ -55,7 +55,8 @@ class ExcelExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-                if ($field->getField()->getType() === DateField::class
+                if (
+                    $field->getField()->getType() === DateField::class
                     || $field->getField()->getType() === DateTimeField::class
                     || $field->getField()->getType() === 'date'
                     || $field->getField()->getType() === 'datetime'
@@ -63,7 +64,11 @@ class ExcelExporter extends AbstractExporter
                     if ($field->getValue()) {
                         $format = $this->convertFormat($field->getOptions()['format']);
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
-                        $sheet->setCellValueExplicit($cell, $field->getRawValue()->format('Y-m-d H:i:s'), $this->getType($field));
+                        $sheet->setCellValueExplicit(
+                            $cell,
+                            $field->getRawValue()->format('Y-m-d H:i:s'),
+                            $this->getType($field)
+                        );
                     }
                 } else {
                     $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
