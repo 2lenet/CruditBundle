@@ -99,7 +99,7 @@ class ExcelExporter extends AbstractExporter
         return $response;
     }
 
-    protected function convertFormat(string $format): ?string
+    protected function convertFormat(string $format): string
     {
         $pattern = [
             '/y/',
