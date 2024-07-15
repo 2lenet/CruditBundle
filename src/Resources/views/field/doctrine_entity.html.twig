@@ -3,7 +3,12 @@
     or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
     {% if view.field.autocompleteUrl is defined and view.field.autocompleteUrl %}
-        {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
+        {% if view.field.autocompleteUrl starts with 'http'%}
+            {% set autocompleteUrl = view.field.autocompleteUrl %}
+        {% else %}
+            {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
+        {% endif %}
+
     {% else %}
         {% set autocompleteUrl = path(resource|get_crudit_routename_key_field(view.field.id, 'autocomplete')) %}
     {% endif %}
@@ -13,7 +18,6 @@
     {% else %}
         {% set editUrl = path(resource|get_crudit_routename_key_object('editdata', {'id': resource.id}), {'id': resource.id}) %}
     {% endif %}
-
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ editUrl }}">
         <form class="form-inline d-none">
             <input type="hidden" id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}_items"
