@@ -1,0 +1,48 @@
+<div class="dropdown dropdown--no-arrow">
+    {% block dropdown_actions_button %}
+        <button id="actions_{{ view.id }}" class="btn dropdown-toggle py-1" data-bs-toggle="dropdown">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+    {% endblock %}
+    {% block dropdown_actions_menu %}
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="#actions_{{ view.id }}">
+            {% for action in view.data.actions %}
+                {% if action.dropdown %}
+                    {% set params = action.path.params %}
+                    {% if view.data.resource and action.setResource is defined%}
+                        {% do action.setResource(view.data.resource) %}
+                    {% endif %}
+                    {% set id = app.request.attributes.get('id') %}
+                    {% if id %}
+                        {% set params = action.path.params|merge({id: id}) %}
+                    {% endif %}
+
+                    {% if action.modal %}
+                        {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
+                    {% endif %}
+                    {% set disabled = action.disabled or not
+                        ((action.path.role is null or is_granted(action.path.role, view.data.resource))
+                        and (action.role is null or is_granted(action.role, view.data.resource)))
+                    %}
+
+                    {% block dropdown_actions_item %}
+                        {% if not (disabled and crudit_hide_if_disabled(action)) %}
+                            <li>
+                                <a class="dropdown-item {% if disabled %}disabled{% endif %}"
+                                    {% if action.modal %}
+                                        data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                                    {% elseif not action.disabled %}
+                                        href="{{ action.url ?? path(action.path.route, params) }}"
+                                    {% endif %}
+                                >
+                                    {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
+                                    {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endblock %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endblock %}
+</div>

@@ -10,7 +10,6 @@ use Lle\CruditBundle\Dto\Path;
 class ItemAction extends AbstractAction
 {
     protected ?object $resource = null;
-    protected bool $dropdown = false;
     protected ?string $title = null;
     protected bool $disabled = false;
 
@@ -30,18 +29,6 @@ class ItemAction extends AbstractAction
     public function setResource(?object $resource): self
     {
         $this->resource = $resource;
-
-        return $this;
-    }
-
-    public function isDropdown(): bool
-    {
-        return $this->dropdown;
-    }
-
-    public function setDropdown(bool $dropdown): self
-    {
-        $this->dropdown = $dropdown;
 
         return $this;
     }

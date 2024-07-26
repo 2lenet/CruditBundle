@@ -34,6 +34,8 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?bool $hideIfDisabled = null;
 
+    protected bool $dropdown = false;
+
     public function __construct(string $label, Path $path)
     {
         $this->label = $label;
@@ -185,6 +187,18 @@ abstract class AbstractAction implements ActionInterface
     public function setHideIfDisabled(?bool $hideIfDisabled): static
     {
         $this->hideIfDisabled = $hideIfDisabled;
+
+        return $this;
+    }
+
+    public function isDropdown(): bool
+    {
+        return $this->dropdown;
+    }
+
+    public function setDropdown(bool $dropdown): self
+    {
+        $this->dropdown = $dropdown;
 
         return $this;
     }
