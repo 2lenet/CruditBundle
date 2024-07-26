@@ -29,9 +29,9 @@ trait FilterTestHelperTrait
     {
         $this->client = static::buildClient();
         $container = static::getContainer();
-        
+
         $this->loginUser();
-        
+
         $configs = $container->get(ConfigProvider::class)->getConfigurators();
         $filterState = [];
         /** @var CrudConfigInterface $config */
@@ -106,7 +106,7 @@ trait FilterTestHelperTrait
     protected function loginUser(): void
     {
         $userRepository = static::getContainer()->get(self::USER_REPOSITORY);
-        
+
         $this->client->loginUser($userRepository->findOneByEmail(self::LOGIN_USER));
     }
 
