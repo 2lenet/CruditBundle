@@ -17,14 +17,21 @@ use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use Lle\CruditBundle\Filter\FilterType\TreeFilterType;
 use Lle\CruditBundle\Filter\FilterType\WorkflowFilterType;
 use Lle\CruditBundle\Provider\ConfigProvider;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 trait FilterTestHelperTrait
 {
     protected iterable $cruditDatasources;
 
+    protected KernelBrowser $client;
+
     public function testFilters(): void
     {
+        $this->client = static::buildClient();
         $container = static::getContainer();
+        
+        $this->loginUser();
+        
         $configs = $container->get(ConfigProvider::class)->getConfigurators();
         $filterState = [];
         /** @var CrudConfigInterface $config */
@@ -94,5 +101,19 @@ trait FilterTestHelperTrait
                 $this->assertTrue(false, 'class : ' . $classKey . ' error: ' . $exception->getMessage());
             }
         }
+    }
+
+    protected function loginUser(): void
+    {
+        $userRepository = static::getContainer()->get(self::USER_REPOSITORY);
+        
+        $this->client->loginUser($userRepository->findOneByEmail(self::LOGIN_USER));
+    }
+
+    protected function buildClient(): KernelBrowser
+    {
+        self::ensureKernelShutdown();
+
+        return static::createClient();
     }
 }
