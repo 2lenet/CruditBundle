@@ -166,7 +166,7 @@ class FormFactory extends AbstractBasicBrickFactory
         }
     }
 
-    private function getRedirectPath(FormConfig $brickConfig, object $resource): string
+    private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
         if ($brickConfig->getSuccessRedirectPath()) {
             return $this->urlGenerator->generate(
@@ -176,7 +176,7 @@ class FormFactory extends AbstractBasicBrickFactory
                     ['id' => $resource->getId()]
                 )
             );
-        } elseif ($referer = $this->getRequest()->request->get('referer')) {
+        } elseif ($referer = (string)$this->getRequest()->request->get('referer')) {
             return $referer;
         } else {
             return $this->urlGenerator->generate(
