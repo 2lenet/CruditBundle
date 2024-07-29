@@ -92,19 +92,8 @@ class FormFactory extends AbstractBasicBrickFactory
                     $resource = $this->propertyAccessor->getValue($resource, $brickConfig->getAssocProperty());
                 }
 
-                $referer = $this->getRequest()->request->get('referer');
-                $this->brickResponseCollector->add(
-                    new RedirectBrickResponse(
-                        ($referer ? (string)$referer : null)
-                        ?? $this->urlGenerator->generate(
-                            $brickConfig->getSuccessRedirectPath()->getRoute(),
-                            array_merge(
-                                $brickConfig->getSuccessRedirectPath()->getParams(),
-                                ['id' => $resource->getId()]
-                            )
-                        )
-                    )
-                );
+                $redirectPath = $this->getRedirectPath($brickConfig, $resource);
+                $this->brickResponseCollector->add(new RedirectBrickResponse($redirectPath));
             } else {
                 $this->addFlash(FlashBrickResponse::ERROR, $brickConfig->getMessageError());
             }
@@ -174,6 +163,29 @@ class FormFactory extends AbstractBasicBrickFactory
 
         if (method_exists($request->getSession(), "getFlashBag")) {
             $request->getSession()->getFlashBag()->add($type, $message);
+        }
+    }
+
+    private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
+    {
+        if ($brickConfig->getSuccessRedirectPath()) {
+            return $this->urlGenerator->generate(
+                $brickConfig->getSuccessRedirectPath()->getRoute(),
+                array_merge(
+                    $brickConfig->getSuccessRedirectPath()->getParams(),
+                    ['id' => $resource->getId()]
+                )
+            );
+        } elseif ($referer = (string)$this->getRequest()->request->get('referer')) {
+            return $referer;
+        } else {
+            return $this->urlGenerator->generate(
+                $brickConfig->getCrudConfig()->getAfterEditPath()->getRoute(),
+                array_merge(
+                    $brickConfig->getCrudConfig()->getAfterEditPath()->getParams(),
+                    ['id' => $resource->getId()]
+                )
+            );
         }
     }
 }

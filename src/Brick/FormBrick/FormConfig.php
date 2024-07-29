@@ -48,16 +48,16 @@ class FormConfig extends AbstractBrickConfig
         $this->form = $options['form'] ?? null;
     }
 
-    public function setSuccessRedirectPath(Path $path): self
+    public function setSuccessRedirectPath(?Path $path): self
     {
         $this->successRedirectPath = $path;
 
         return $this;
     }
 
-    public function getSuccessRedirectPath(): Path
+    public function getSuccessRedirectPath(): ?Path
     {
-        return $this->successRedirectPath ?? $this->getCrudConfig()->getPath();
+        return $this->successRedirectPath;
     }
 
     public function setFlashMessageSuccess(string $message): self
@@ -141,9 +141,6 @@ class FormConfig extends AbstractBrickConfig
         parent::setCrudConfig($crudConfig);
         if ($this->datasource === null) {
             $this->setDatasource($crudConfig->getDatasource());
-        }
-        if (!$this->successRedirectPath) {
-            $this->setSuccessRedirectPath($crudConfig->getAfterEditPath());
         }
 
         return $this;
