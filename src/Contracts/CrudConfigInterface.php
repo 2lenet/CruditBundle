@@ -80,7 +80,7 @@ interface CrudConfigInterface
 
     public function getRootRoute(): ?string;
 
-    public function getListAutoRefresh(?int $interval = null): ?int;
+    public function getListAutoRefresh(): ?int;
 
-    public function getShowAutoRefresh(?int $interval = null): ?int;
+    public function getShowAutoRefresh(): ?int;
 }

@@ -343,13 +343,13 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return [];
     }
 
-    public function getListAutoRefresh(?int $interval = null): ?int
+    public function getListAutoRefresh(): ?int
     {
-        return $interval;
+        return null;
     }
 
-    public function getShowAutoRefresh(?int $interval = null): ?int
+    public function getShowAutoRefresh(): ?int
     {
-        return $interval;
+        return null;
     }
 }
