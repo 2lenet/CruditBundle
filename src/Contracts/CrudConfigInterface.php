@@ -79,4 +79,8 @@ interface CrudConfigInterface
     public function getTotalFields(): array;
 
     public function getRootRoute(): ?string;
+
+    public function getListAutoRefresh(): ?int;
+
+    public function getShowAutoRefresh(): ?int;
 }

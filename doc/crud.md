@@ -242,3 +242,20 @@ public function eipToUpdate(int|string $id): array
     ];
 }
 ```
+
+## How to auto refresh the page:
+
+It is possible to auto refresh the page for the list and/or the show using the `getListAutoRefresh`/`getShowAutoRefresh` methods.
+To do this, you need to return an integer that corresponds to the time interval (in seconds) between 2 refreshes.
+
+```php
+public function getListAutoRefresh(): ?int
+{
+    return 60;
+}
+
+public function getShowAutoRefresh(): ?int
+{
+    return 60;
+}
+```

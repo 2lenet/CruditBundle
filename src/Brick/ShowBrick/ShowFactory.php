@@ -23,7 +23,10 @@ class ShowFactory extends AbstractBasicBrickFactory
         if ($brickConfigurator instanceof ShowConfig) {
             /** @var object $item */
             $item = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
-            $data = ['resource' => $this->getResourceView($brickConfigurator)];
+            $data = [
+                'resource' => $this->getResourceView($brickConfigurator),
+                'auto_refresh' => $brickConfigurator->getCrudConfig()->getShowAutoRefresh(),
+            ];
             if (method_exists($item, "getCreatedAt")) {
                 $data["createdAt"] = $item->getCreatedAt();
             }

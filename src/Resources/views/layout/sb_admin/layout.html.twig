@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block autorefresh %}{% endblock %}
     <title>{% block page_title %}{% if app_name is defined %}{{ app_name }}{% else %}CRUD-IT{% endif %}{% endblock %}</title>
     {% block favicon %}
         <link rel="shortcut icon" href="/img/logo.png"/>

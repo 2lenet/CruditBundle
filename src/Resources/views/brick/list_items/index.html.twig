@@ -1,3 +1,9 @@
+{% block autorefresh %}
+    {% if view.data.auto_refresh %}
+        <meta http-equiv="refresh" content="{{ view.data.auto_refresh }}">
+    {% endif %}
+{% endblock %}
+
 {% set has_batch = view.data.batch_actions|length %}
 <div class="card shadow mb-4">
     <div class="card-header py-1">
