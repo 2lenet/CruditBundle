@@ -61,6 +61,7 @@ class ListFactory extends AbstractBasicBrickFactory
                     'lines' => $this->getLines($brickConfigurator),
                     'totals' => $this->getTotals($brickConfigurator),
                     'batch_actions' => $batchActions,
+                    'auto_refresh' => $brickConfigurator->getCrudConfig()->getListAutoRefresh(),
                 ]);
         }
 
