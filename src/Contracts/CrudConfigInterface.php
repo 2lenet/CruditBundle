@@ -77,7 +77,7 @@ interface CrudConfigInterface
     public function eipToUpdate(int|string $id): array;
 
     public function getTotalFields(): array;
-    
+
     public function getRootRoute(): ?string;
 
     public function getListAutoRefresh(?int $interval = null): ?int;
