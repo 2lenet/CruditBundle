@@ -249,12 +249,12 @@ It is possible to auto refresh the page for the list and/or the show using the `
 To do this, you need to return an integer that corresponds to the time interval (in seconds) between 2 refreshes.
 
 ```php
-public function getListAutoRefresh(?int $interval = null): ?int
+public function getListAutoRefresh(): ?int
 {
     return 60;
 }
 
-public function getShowAutoRefresh(?int $interval = null): ?int
+public function getShowAutoRefresh(): ?int
 {
     return 60;
 }
