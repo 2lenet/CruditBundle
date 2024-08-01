@@ -62,11 +62,20 @@ class ExcelExporter extends AbstractExporter
                     || $field->getField()->getType() === 'datetime'
                 ) {
                     if ($field->getValue()) {
+                        // Showing format
                         $format = $this->convertFormat($field->getOptions()['format']);
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
+
+                        // Value format
+                        if ($field->getRawValue() instanceof \DateTimeInterface) {
+                            $value = $field->getRawValue()->format('Y-m-d H:i:s');
+                        } else {
+                            $value = $this->getValue($field);
+                        }
+
                         $sheet->setCellValueExplicit(
                             $cell,
-                            $field->getRawValue()->format('Y-m-d H:i:s'),
+                            $value,
                             $this->getType($field)
                         );
                     }
