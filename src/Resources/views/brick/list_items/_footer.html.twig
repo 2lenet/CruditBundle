@@ -7,20 +7,21 @@
             </th>
         {% endif %}
     {% endfor %}
-    {% if view.config.actions|length %}
-        {% set hasActions = false %}
-        {% for action in view.config.actions %}
-            {% if
-                (action.path.role is null or is_granted(action.path.role))
-                and (action.role is null or is_granted(action.role))
-            %}
-                {% set hasActions = true %}
-            {% endif %}
-        {% endfor %}
-        {% if hasActions %}
-            <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
-        {% endif %}
-    {% endif %}
+    FOOTER
+{#    {% if view.config.actions|length %}#}
+{#        {% set hasActions = false %}#}
+{#        {% for action in view.config.actions %}#}
+{#            {% if#}
+{#                (action.path.role is null or is_granted(action.path.role))#}
+{#                and (action.role is null or is_granted(action.role))#}
+{#            %}#}
+{#                {% set hasActions = true %}#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#        {% if hasActions %}#}
+{#            <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>#}
+{#        {% endif %}#}
+{#    {% endif %}#}
 </tr>
 {% if view.data.totals %}
     <tr>

@@ -104,6 +104,9 @@ services:
     Lle\CruditBundle\Service\SanitizerService: ~
     Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
 
+    Lle\CruditBundle\Twig\CruditActionExtension:
+        tags: [twig.extension]
+
 when@dev:
     services:
         Lle\CruditBundle\Service\EasyAdminConverter\Converter:

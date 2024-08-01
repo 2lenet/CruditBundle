@@ -1,78 +1,79 @@
 <td>
     <div class="btn-group btn-group-sm" role="group">
-        {% set hasDropdown = false %}
-        {% for action in view.config.actions %}
-            {% do action.setResource(line.resource) %}
-            {% if not action.dropdown %}
-                {% set params = { 'id': line.resource.id } %}
-                {% if action.modal %}
-                    {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
-                {% endif %}
-                {% set disabled = action.disabled or not
-                    ((action.path.role is null or is_granted(action.path.role, line.resource))
-                    and (action.role is null or is_granted(action.role, line.resource)))
-                %}
+        ITEM
+{#        {% set hasDropdown = false %}#}
+{#        {% for action in view.config.actions %}#}
+{#            {% do action.setResource(line.resource) %}#}
+{#            {% if not action.dropdown %}#}
+{#                {% set params = { 'id': line.resource.id } %}#}
+{#                {% if action.modal %}#}
+{#                    {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}#}
+{#                {% endif %}#}
+{#                {% set disabled = action.disabled or not#}
+{#                    ((action.path.role is null or is_granted(action.path.role, line.resource))#}
+{#                    and (action.role is null or is_granted(action.role, line.resource)))#}
+{#                %}#}
 
-                {% if not (disabled and crudit_hide_if_disabled(action)) %}
-                    <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
-                        <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"
-                            {% if action.target %}
-                                target="{{ action.target }}"
-                            {% endif %}
-                            {% if action.modal %}
-                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                            {% elseif action.confirmModal %}
-                                data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.'~action.label)|trans }}"
-                            {% elseif not action.disabled %}
-                                {% if action.url %}
-                                    href="{{ absolute_url(action.url) }}"
-                                {% else %}
-                                    href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                {% endif %}
-                            {% endif %}
-                        >
-                            {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                            {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
-                        </a>
-                    </span>
-                {% endif %}
-            {% endif %}
-            {% if action.dropdown %}
-                {% set hasDropdown = true %}
-            {% endif %}
-        {% endfor %}
+{#                {% if not (disabled and crudit_hide_if_disabled(action)) %}#}
+{#                    <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">#}
+{#                        <a class="{{ action.cssClass ?? 'btn btn-sm' }} {% if disabled %}disabled{% endif %}"#}
+{#                            {% if action.target %}#}
+{#                                target="{{ action.target }}"#}
+{#                            {% endif %}#}
+{#                            {% if action.modal %}#}
+{#                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"#}
+{#                            {% elseif action.confirmModal %}#}
+{#                                data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.'~action.label)|trans }}"#}
+{#                            {% elseif not action.disabled %}#}
+{#                                {% if action.url %}#}
+{#                                    href="{{ absolute_url(action.url) }}"#}
+{#                                {% else %}#}
+{#                                    href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"#}
+{#                                {% endif %}#}
+{#                            {% endif %}#}
+{#                        >#}
+{#                            {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}#}
+{#                            {% if not action.hideLabel and not action.icon %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}#}
+{#                        </a>#}
+{#                    </span>#}
+{#                {% endif %}#}
+{#            {% endif %}#}
+{#            {% if action.dropdown %}#}
+{#                {% set hasDropdown = true %}#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
 
-        {% if hasDropdown %}
-            <div class="dropdown dropdown--no-arrow">
-                <button id="actions_{{ line.resource.id }}" class="btn dropdown-toggle py-1" data-bs-toggle="dropdown">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="#actions_{{ line.resource.id }}">
-                    {% for action in view.config.actions %}
-                        {% if action.dropdown %}
-                            {% set disabled = action.disabled or not
-                                ((action.path.role is null or is_granted(action.path.role, line.resource))
-                                and (action.role is null or is_granted(action.role, line.resource)))
-                            %}
+{#        {% if hasDropdown %}#}
+{#            <div class="dropdown dropdown--no-arrow">#}
+{#                <button id="actions_{{ line.resource.id }}" class="btn dropdown-toggle py-1" data-bs-toggle="dropdown">#}
+{#                    <i class="fas fa-ellipsis-v"></i>#}
+{#                </button>#}
+{#                <ul class="dropdown-menu" aria-labelledby="#actions_{{ line.resource.id }}">#}
+{#                    {% for action in view.config.actions %}#}
+{#                        {% if action.dropdown %}#}
+{#                            {% set disabled = action.disabled or not#}
+{#                                ((action.path.role is null or is_granted(action.path.role, line.resource))#}
+{#                                and (action.role is null or is_granted(action.role, line.resource)))#}
+{#                            %}#}
 
-                            {% if not (disabled and crudit_hide_if_disabled(action)) %}
-                                <li>
-                                    <a class="dropdown-item {% if disabled %}disabled{% endif %}"
-                                        {% if action.modal %}
-                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                                        {% elseif not action.disabled %}
-                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                        {% endif %}
-                                    >
-                                        {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                                        {{ action.label|trans(domain=view.config.translation_domain) }}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+{#                            {% if not (disabled and crudit_hide_if_disabled(action)) %}#}
+{#                                <li>#}
+{#                                    <a class="dropdown-item {% if disabled %}disabled{% endif %}"#}
+{#                                        {% if action.modal %}#}
+{#                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"#}
+{#                                        {% elseif not action.disabled %}#}
+{#                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"#}
+{#                                        {% endif %}#}
+{#                                    >#}
+{#                                        {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}#}
+{#                                        {{ action.label|trans(domain=view.config.translation_domain) }}#}
+{#                                    </a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                        {% endif %}#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#        {% endif %}#}
     </div>
 </td>
