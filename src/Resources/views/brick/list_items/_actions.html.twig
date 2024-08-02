@@ -1,25 +1,30 @@
 <td>
-    <div class="btn-group btn-group-sm" role="group">
-        {% set has_dropdown = false %}
+    <div class="btn-toolbar flex-nowrap" role="toolbar">
         {% block links_actions %}
-            {% for action in view.config.actions %}
-                {% if crudit_is_dropdown_action(action) %}
-                    {% block dropdown_actions %}
-                        {{ include('@LleCrudit/brick/list_items/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
-                    {% endblock %}
-                {% elseif not action.dropdown %}
-                    {% block actions %}
-                        {{ include('@LleCrudit/brick/list_items/actions/_actions.html.twig', {action: action, view: view}) }}
-                    {% endblock %}
-                {% else %}
-                    {% set has_dropdown = true %}
-                {% endif %}
-            {% endfor %}
+            <div class="btn-group btn-group-sm" role="group">
+                {% set has_dropdown = false %}
+
+                {% for action in view.config.actions %}
+                    {% if crudit_is_dropdown_action(action) %}
+                        {% block dropdown_actions %}
+                            {{ include('@LleCrudit/brick/list_items/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
+                        {% endblock %}
+                    {% elseif not action.dropdown %}
+                        {% block actions %}
+                            {{ include('@LleCrudit/brick/list_items/actions/_actions.html.twig', {action: action, view: view}) }}
+                        {% endblock %}
+                    {% else %}
+                        {% set has_dropdown = true %}
+                    {% endif %}
+                {% endfor %}
+            </div>
 
             {% if has_dropdown %}
-                {% block kebab_dropdown_actions %}
-                    {{ include('@LleCrudit/brick/list_items/actions/_kebab_dropdown_actions.html.twig', {view: view}) }}
-                {% endblock %}
+                <div class="btn-group btn-group-sm" role="group">
+                    {% block kebab_dropdown_actions %}
+                        {{ include('@LleCrudit/brick/list_items/actions/_kebab_dropdown_actions.html.twig', {view: view}) }}
+                    {% endblock %}
+                </div>
             {% endif %}
         {% endblock %}
     </div>

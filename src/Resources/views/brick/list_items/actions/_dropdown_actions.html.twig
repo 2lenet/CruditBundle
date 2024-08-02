@@ -4,15 +4,13 @@
 %}
 
 {% if not (disabled and crudit_hide_if_disabled(dropdown_action)) %}
-    <div class="dropdown">
+    <span class="btn-group">
         {% block dropdown_actions_button %}
             <button
                 {# Replace . & _ in label to have only - #}
                 id="dropdown-actions-{{ action.label|replace({'.': '-', '_': '-'}) ~ '-' ~ line.resource.id }}"
-                class="
-                    {{ dropdown_action.cssClass ?? 'btn btn-sm btn-primary dropdown-toggle' }}
-                    {% if disabled %} disabled{% endif %}
-                "
+                class="{{ dropdown_action.cssClass ?? 'btn btn-sm btn-primary dropdown-toggle' }}
+                    {% if disabled %} disabled{% endif %}"
                 data-bs-toggle="dropdown"
             >
                 {% if dropdown_action.icon %}
@@ -26,6 +24,7 @@
         {% block dropdown_actions_menu %}
             <ul
                 class="dropdown-menu dropdown-menu-end"
+                {# Replace . & _ in label to have only - #}
                 aria-labelledby="#dropdown-actions-{{ dropdown_action.label|replace({'.': '-'}) ~ '-' ~ line.resource.id }}"
             >
                 {% for group_name, group in dropdown_action.actions %}
@@ -70,5 +69,5 @@
                 {% endfor %}
             </ul>
         {% endblock %}
-    </div>
+    </span>
 {% endif %}
