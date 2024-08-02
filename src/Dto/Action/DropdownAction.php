@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Action;
 
-use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Dto\Icon;
-use Lle\CruditBundle\Dto\Path;
 
 class DropdownAction extends AbstractAction
 {
