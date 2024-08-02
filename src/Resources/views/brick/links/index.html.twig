@@ -10,9 +10,7 @@
                     {% block dropdown_actions %}
                         {{ include('@LleCrudit/brick/links/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
                     {% endblock %}
-                {% endif %}
-
-                {% if not action.dropdown %}
+                {% elseif not action.dropdown %}
                     {% block actions %}
                         {{ include('@LleCrudit/brick/links/actions/_actions.html.twig', {action: action, view: view}) }}
                     {% endblock %}
@@ -27,70 +25,5 @@
                 {% endblock %}
             {% endif %}
         {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{#        {% set hasDropdown = false %}#}
-{#        {% for action in view.data.actions %}#}
-{#            {% if not action.dropdown %}#}
-{#                {% set params = action.path.params %}#}
-{#                {% if view.data.resource and action.setResource is defined%}#}
-{#                    {% do action.setResource(view.data.resource) %}#}
-{#                {% endif %}#}
-{#                {% set id = app.request.attributes.get('id') %}#}
-{#                {% if id %}#}
-{#                    {% set params = action.path.params|merge({id: id}) %}#}
-{#                {% endif %}#}
-
-{#                {% if action.modal %}#}
-{#                    {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}#}
-{#                {% endif %}#}
-{#                {% set disabled = action.disabled or not#}
-{#                    ((action.path.role is null or is_granted(action.path.role, view.data.resource))#}
-{#                    and (action.role is null or is_granted(action.role, view.data.resource)))#}
-{#                %}#}
-
-{#                {% if not (disabled and crudit_hide_if_disabled(action)) %}#}
-{#                    <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">#}
-{#                        <a#}
-{#                            class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0' }} {% if disabled %}disabled{% endif %}"#}
-{#                                {% if action.modal %}#}
-{#                                    data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"#}
-{#                                {% elseif action.confirmModal %}#}
-{#                                    data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"#}
-{#                                {% elseif not action.disabled %}#}
-{#                                    href="{{ action.url ?? path(action.path.route, params) }}"#}
-{#                                {% endif %}#}
-
-{#                            {% if action.target is defined and action.target %}#}
-{#                                target="{{ action.target }}"#}
-{#                            {% endif %}#}
-{#                        >#}
-{#                            {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}#}
-{#                            {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}#}
-{#                        </a>#}
-{#                    </span>#}
-{#                {% endif %}#}
-{#            {% else %}#}
-{#                {% set hasDropdown = true %}#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-
-{#        {% block dropdown_actions %}#}
-{#            {% if hasDropdown %}#}
-{#                {{ include('@LleCrudit/brick/links/_dropdown_actions.html.twig', {view: view}) }}#}
-{#            {% endif %}#}
-{#        {% endblock %}#}
     </div>
 </nav>

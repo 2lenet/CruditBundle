@@ -70,19 +70,24 @@
                             {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
-                            IDK
-{#                            {% set hasActions = false %}#}
-{#                            {% for action in view.config.actions %}#}
-{#                                {% if#}
-{#                                    (action.path.role is null or is_granted(action.path.role))#}
-{#                                    and (action.role is null or is_granted(action.role))#}
-{#                                %}#}
-{#                                    {% set hasActions = true %}#}
-{#                                {% endif %}#}
-{#                            {% endfor %}#}
-{#                            {% if hasActions %}#}
-{#                                <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>#}
-{#                            {% endif %}#}
+                            {% set hasActions = false %}
+                            {% for action in view.config.actions %}
+                                {% if
+                                    (
+                                        not crudit_is_dropdown_action(action)
+                                        and (action.path.role is null or is_granted(action.path.role))
+                                        and (action.role is null or is_granted(action.role))
+                                    ) or (
+                                        crudit_is_dropdown_action(action)
+                                        and (action.role is null or is_granted(action.role))
+                                    )
+                                %}
+                                    {% set hasActions = true %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if hasActions %}
+                                <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
+                            {% endif %}
                         {% endif %}
                     </tr>
                     </thead>

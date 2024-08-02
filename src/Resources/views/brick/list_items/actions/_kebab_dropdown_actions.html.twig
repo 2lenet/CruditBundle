@@ -1,30 +1,20 @@
 <div class="dropdown dropdown--no-arrow">
     {% block kebab_dropdown_actions_button %}
-        <button id="actions_{{ view.id }}" class="btn btn-sm dropdown-toggle mt-2 ms-1 mt-md-0" data-bs-toggle="dropdown">
+        <button id="actions_{{ line.resource.id }}" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">
             <i class="fas fa-ellipsis-v"></i>
         </button>
     {% endblock %}
     {% block kebab_dropdown_actions_menu %}
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="#actions_{{ view.id }}">
-            {% for action in view.data.actions %}
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="#actions_{{ line.resource.id }}">
+            {% for action in view.config.actions %}
                 {% if action.dropdown %}
-                    {% set params = action.path.params %}
-                    {% if view.data.resource and action.setResource is defined%}
-                        {% do action.setResource(view.data.resource) %}
-                    {% endif %}
-
-                    {% set id = app.request.attributes.get('id') %}
-                    {% if id %}
-                        {% set params = action.path.params|merge({id: id}) %}
-                    {% endif %}
-
                     {% if action.modal %}
-                        {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
+                        {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                     {% endif %}
 
                     {% set disabled = action.disabled or not
-                        ((action.path.role is null or is_granted(action.path.role, view.data.resource))
-                        and (action.role is null or is_granted(action.role, view.data.resource)))
+                        ((action.path.role is null or is_granted(action.path.role, line.resource))
+                        and (action.role is null or is_granted(action.role, line.resource)))
                     %}
 
                     {% if not (disabled and crudit_hide_if_disabled(action)) %}
@@ -32,9 +22,9 @@
                             <li>
                                 <a class="{{ action.cssClass ?? 'dropdown-item' }} {% if disabled %}disabled{% endif %}"
                                     {% if action.modal %}
-                                        data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                                        data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                                     {% elseif not action.disabled %}
-                                        href="{{ action.url ?? path(action.path.route, params) }}"
+                                        href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                                     {% endif %}
                                 >
                                     {% if action.icon %}
