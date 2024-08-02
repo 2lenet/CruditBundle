@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lle\CruditBundle\Dto\Action;
 
 use Lle\CruditBundle\Contracts\ActionInterface;

@@ -10,7 +10,7 @@ class DeleteAction extends ItemAction
 {
     public const CALLBACK = "canDelete";
 
-    public function __construct(string $label, ?Path $path = null)
+    public function __construct(string $label, Path $path)
     {
         parent::__construct($label, $path);
     }
