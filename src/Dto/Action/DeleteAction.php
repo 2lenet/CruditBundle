@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto\Action;
 
-use Lle\CruditBundle\Dto\Path;
-
 class DeleteAction extends ItemAction
 {
     public const CALLBACK = "canDelete";
 
-    public function __construct(string $label, Path $path)
+    public function __construct(string $label)
     {
-        parent::__construct($label, $path);
+        parent::__construct($label);
     }
 
     public function getTitle(): string

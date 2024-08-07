@@ -7,7 +7,7 @@ use Lle\CruditBundle\Dto\Path;
 
 interface ActionInterface
 {
-    public function __construct(string $label, Path $path);
+    public function __construct(string $label);
 
     public function getId(): string;
 

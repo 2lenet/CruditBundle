@@ -16,7 +16,7 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?Icon $icon;
 
-    protected ?string $url;
+    protected ?string $url = null;
 
     protected ?string $cssClass = null;
 
@@ -34,11 +34,11 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?bool $hideIfDisabled = null;
 
-    public function __construct(string $label, Path $path)
+    protected bool $dropdown = false;
+
+    public function __construct(string $label)
     {
         $this->label = $label;
-        $this->path = $path;
-        $this->url = null;
     }
 
     public function getId(): string
@@ -59,6 +59,13 @@ abstract class AbstractAction implements ActionInterface
     public function getPath(): Path
     {
         return $this->path;
+    }
+
+    public function setPath(Path $path): static
+    {
+        $this->path = $path;
+
+        return $this;
     }
 
     public function getIcon(): ?Icon
@@ -185,6 +192,18 @@ abstract class AbstractAction implements ActionInterface
     public function setHideIfDisabled(?bool $hideIfDisabled): static
     {
         $this->hideIfDisabled = $hideIfDisabled;
+
+        return $this;
+    }
+
+    public function isDropdown(): bool
+    {
+        return $this->dropdown;
+    }
+
+    public function setDropdown(bool $dropdown): self
+    {
+        $this->dropdown = $dropdown;
 
         return $this;
     }
