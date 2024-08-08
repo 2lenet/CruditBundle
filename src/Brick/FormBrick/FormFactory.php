@@ -9,6 +9,7 @@ use Lle\CruditBundle\Brick\BrickResponse\FlashBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -168,11 +169,19 @@ class FormFactory extends AbstractBasicBrickFactory
 
     private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
-        if ($brickConfig->getSuccessRedirectPath()) {
+        if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
             return $this->urlGenerator->generate(
-                $brickConfig->getSuccessRedirectPath()->getRoute(),
+                $successRedirectPath->getRoute(),
                 array_merge(
-                    $brickConfig->getSuccessRedirectPath()->getParams(),
+                    $successRedirectPath->getParams(),
+                    ['id' => $resource->getId()]
+                )
+            );
+        } elseif ($afterEditPath = $brickConfig->getCrudConfig()->getAfterEditPath()) {
+            return $this->urlGenerator->generate(
+                $afterEditPath->getRoute(),
+                array_merge(
+                    $afterEditPath->getParams(),
                     ['id' => $resource->getId()]
                 )
             );
@@ -180,11 +189,7 @@ class FormFactory extends AbstractBasicBrickFactory
             return $referer;
         } else {
             return $this->urlGenerator->generate(
-                $brickConfig->getCrudConfig()->getAfterEditPath()->getRoute(),
-                array_merge(
-                    $brickConfig->getCrudConfig()->getAfterEditPath()->getParams(),
-                    ['id' => $resource->getId()]
-                )
+                $brickConfig->getCrudConfig()->getPath(CrudConfigInterface::INDEX)->getRoute()
             );
         }
     }
