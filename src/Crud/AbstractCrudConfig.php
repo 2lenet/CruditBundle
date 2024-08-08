@@ -308,9 +308,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setFilename($this->getName());
     }
 
-    public function getAfterEditPath(): Path
+    public function getAfterEditPath(): ?Path
     {
-        return $this->getPath(CrudConfigInterface::INDEX);
+        return null;
     }
 
     public function getNbItems(): int
