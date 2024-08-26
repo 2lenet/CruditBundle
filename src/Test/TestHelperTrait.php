@@ -84,6 +84,9 @@ trait TestHelperTrait
 
         $showElements = $crawler->filter('span.btn-wrapper > a > i.fa-search');
         $this->checkAction($showElements);
+
+        $addElements = $crawler->filter('span.btn-wrapper > a > i.fa-plus');
+        $this->checkAction($addElements);
     }
 
     protected function checkAction(Crawler $elements): void
