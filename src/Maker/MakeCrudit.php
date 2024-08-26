@@ -253,8 +253,8 @@ final class MakeCrudit extends AbstractMaker
                 if ($metadata->getAssociationMapping($associationName)['type'] & ClassMetadataInfo::TO_MANY) {
                     $tabs['sublist'][] = [
                         'type' => 'sublist',
-                        'label' => 'tab.' . strtolower($associationName),
-                        'property' => strtolower($this->getBasename($entityClass)),
+                        'label' => 'tab.' . $associationName,
+                        'property' => lcfirst($this->getBasename($entityClass)),
                         'linkedEntity' => $this->getBasename($metadata->getAssociationMapping($associationName)['targetEntity']),
                     ];
                 }
