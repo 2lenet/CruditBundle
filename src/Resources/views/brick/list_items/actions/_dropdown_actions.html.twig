@@ -35,6 +35,8 @@
                     {% endif %}
 
                     {% for action in group %}
+                        {% do action.setResource(line.resource) %}
+
                         {% if action.modal %}
                             {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                         {% endif %}
