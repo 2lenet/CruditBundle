@@ -254,7 +254,7 @@ final class MakeCrudit extends AbstractMaker
                     $tabs['sublist'][] = [
                         'type' => 'sublist',
                         'label' => 'tab.' . strtolower($associationName),
-                        'property' => strtolower($this->getBasename($entityClass)),
+                        'property' => lcfirst($this->getBasename($entityClass)),
                         'linkedEntity' => $this->getBasename($metadata->getAssociationMapping($associationName)['targetEntity']),
                     ];
                 }
