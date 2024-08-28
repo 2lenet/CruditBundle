@@ -1,3 +1,5 @@
+{% do action.setResource(line.resource) %}
+
 {% set params = { 'id': line.resource.id } %}
 
 {% if action.modal %}

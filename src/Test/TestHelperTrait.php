@@ -115,6 +115,11 @@ trait TestHelperTrait
 
     protected function getPageTitle(): string
     {
-        return $this->client->getCrawler()->filter('title')->first()->text();
+        $titleElements = $this->client->getCrawler()->filter('title');
+        if ($titleElements->count() > 0) {
+            return $titleElements->first()->text();
+        }
+
+        return '';
     }
 }
