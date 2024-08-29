@@ -14,6 +14,7 @@ trait TestHelperTrait
 {
     protected KernelBrowser $client;
     protected RouterInterface $router;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -42,7 +43,6 @@ trait TestHelperTrait
                 }
             }
         }
-        dump($this->stopwatch);
     }
 
     protected function buildClient(): KernelBrowser
@@ -70,8 +70,8 @@ trait TestHelperTrait
         $this->client->request('GET', $url);
         $this->stopwatch->stop($url);
         $e = $this->stopwatch->getEvent($url); // dumps e.g. '4.50 MiB - 26 ms'
-        if ($e->getDuration()>500) {
-            $this->addWarning("page > 500ms " . $url);
+        if ($e->getDuration() > 500) {
+            $this->addWarning("page > 500ms " . $url . " " . $e->getDuration()."ms");
         }
         $code = $this->client->getResponse()->getStatusCode();
         if ($code != '200') {
@@ -102,8 +102,8 @@ trait TestHelperTrait
                     $this->client->request('GET', $attribute->value);
                     $this->stopwatch->stop($attribute->nodeName);
                     $e = $this->stopwatch->getEvent($attribute->nodeName); // dumps e.g. '4.50 MiB - 26 ms'
-                    if ($e->getDuration()>500) {
-                        $this->addWarning("page > 500ms " . $attribute->nodeName);
+                    if ($e->getDuration() > 500) {
+                        $this->addWarning("page > 500ms " . $attribute->nodeName. " " . $e->getDuration()."ms");
                     }
                     $code = $this->client->getResponse()->getStatusCode();
 
