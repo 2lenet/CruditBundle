@@ -5,14 +5,15 @@ namespace Lle\CruditBundle\Test;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\Clock\Clock;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 trait TestHelperTrait
 {
     protected KernelBrowser $client;
     protected RouterInterface $router;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -21,6 +22,7 @@ trait TestHelperTrait
         /** @var RouterInterface $router */
         $router = static::getContainer()->get(RouterInterface::class);
         $this->router = $router;
+        $this->stopwatch = new Stopwatch();
 
         $this->loginUser();
     }
@@ -40,6 +42,7 @@ trait TestHelperTrait
                 }
             }
         }
+        dump($this->stopwatch);
     }
 
     protected function buildClient(): KernelBrowser
@@ -63,13 +66,17 @@ trait TestHelperTrait
         }
 
         $url = $this->router->generate($element->getPath()->getRoute(), $element->getPath()->getParams());
+        $this->stopwatch->start($url);
         $this->client->request('GET', $url);
-
+        $this->stopwatch->stop($url);
+        $e = $this->stopwatch->getEvent($url); // dumps e.g. '4.50 MiB - 26 ms'
+        if ($e->getDuration()>500) {
+            $this->addWarning("page > 500ms " . $url);
+        }
         $code = $this->client->getResponse()->getStatusCode();
         if ($code != '200') {
             echo($this->client->getResponse()->getStatusCode());
         }
-
         self::assertEquals(
             '200',
             $code,
@@ -94,7 +101,13 @@ trait TestHelperTrait
         foreach ($elements as $element) {
             foreach ($element->parentNode->attributes as $attribute) {
                 if ($attribute->nodeName === 'href') {
+                    $this->stopwatch->start($attribute->nodeName);
                     $this->client->request('GET', $attribute->value);
+                    $this->stopwatch->stop($attribute->nodeName);
+                    $e = $this->stopwatch->getEvent($attribute->nodeName); // dumps e.g. '4.50 MiB - 26 ms'
+                    if ($e->getDuration()>500) {
+                        $this->addWarning("page > 500ms " . $attribute->nodeName);
+                    }
                     $code = $this->client->getResponse()->getStatusCode();
 
                     if ($code != '200') {
