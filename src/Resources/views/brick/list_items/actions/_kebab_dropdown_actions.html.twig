@@ -8,6 +8,8 @@
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="#actions_{{ line.resource.id }}">
             {% for action in view.config.actions %}
                 {% if action.dropdown %}
+                    {% do action.setResource(line.resource) %}
+
                     {% if action.modal %}
                         {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                     {% endif %}

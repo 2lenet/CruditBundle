@@ -14,7 +14,6 @@ trait TestHelperTrait
 {
     protected KernelBrowser $client;
     protected RouterInterface $router;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,6 +42,7 @@ trait TestHelperTrait
                 }
             }
         }
+        dump($this->stopwatch);
     }
 
     protected function buildClient(): KernelBrowser
@@ -91,6 +91,9 @@ trait TestHelperTrait
 
         $showElements = $crawler->filter('span.btn-wrapper > a > i.fa-search');
         $this->checkAction($showElements);
+
+        $addElements = $crawler->filter('span.btn-wrapper > a > i.fa-plus');
+        $this->checkAction($addElements);
     }
 
     protected function checkAction(Crawler $elements): void
@@ -125,6 +128,11 @@ trait TestHelperTrait
 
     protected function getPageTitle(): string
     {
-        return $this->client->getCrawler()->filter('title')->first()->text();
+        $titleElements = $this->client->getCrawler()->filter('title');
+        if ($titleElements->count() > 0) {
+            return $titleElements->first()->text();
+        }
+
+        return '';
     }
 }
