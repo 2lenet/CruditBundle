@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Workflow\Registry;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -23,6 +24,7 @@ class CruditExtension extends AbstractExtension
         private RouterInterface $router,
         private EntityManagerInterface $em,
         private ParameterBagInterface $parameterBag,
+        private Registry $workflowRegistry,
     ) {
     }
 
@@ -32,7 +34,7 @@ class CruditExtension extends AbstractExtension
             new TwigFunction('crudit_menu_items', [$this, 'menuItems']),
             new TwigFunction('crudit_menu_active', [$this, 'menuIsActive']),
             new TwigFunction('crudit_hide_if_disabled', [$this, 'hideIfDisabled']),
-
+            new TwigFunction('get_workflow_names', $this->getWorkflowNames(...))
         ];
     }
 
@@ -156,5 +158,17 @@ class CruditExtension extends AbstractExtension
         }
 
         return $hideIfDisabled;
+    }
+
+    public function getWorkflowNames(object $subject): array
+    {
+        $workflows = $this->workflowRegistry->all($subject);
+
+        $result = [];
+        foreach ($workflows as $workflow) {
+            $result[] = $workflow->getName();
+        }
+
+        return $result;
     }
 }
