@@ -98,12 +98,12 @@ trait TestHelperTrait
         foreach ($elements as $element) {
             foreach ($element->parentNode->attributes as $attribute) {
                 if ($attribute->nodeName === 'href') {
-                    $this->stopwatch->start($attribute->nodeName);
+                    $this->stopwatch->start($attribute->value);
                     $this->client->request('GET', $attribute->value);
-                    $this->stopwatch->stop($attribute->nodeName);
-                    $e = $this->stopwatch->getEvent($attribute->nodeName); // dumps e.g. '4.50 MiB - 26 ms'
+                    $this->stopwatch->stop($attribute->value);
+                    $e = $this->stopwatch->getEvent($attribute->value); // dumps e.g. '4.50 MiB - 26 ms'
                     if ($e->getDuration() > 500) {
-                        $this->addWarning("page > 500ms " . $attribute->nodeName. " " . $e->getDuration()."ms");
+                        $this->addWarning("page > 500ms " . $attribute->value. " " . $e->getDuration()."ms");
                     }
                     $code = $this->client->getResponse()->getStatusCode();
 
