@@ -7,7 +7,7 @@ function basic(path, Encore) {
         .setPublicPath('/')
         .setManifestKeyPrefix('bundles/crudit')
         .cleanupOutputBeforeBuild()
-        .enableEslintLoader()
+        .enableEslintPlugin()
         .enableSassLoader()
         .enableSourceMaps(false)
         .enableVersioning(false)

@@ -127,8 +127,11 @@ function submitEIP(eip_elem, eip_input, eip_val) {
             let entityId = eip_input.tomselect.getValue();
             let entity = eip_input.tomselect.options[entityId];
 
-            eip_val.textContent = entity.text;
-            eip_input.tomselect.clear();
+            if (entity) {
+                eip_val.textContent = entity.text;
+            } else {
+                eip_val.textContent = '';
+            }
         } else {
             eip_val.textContent = eip_input.value;
         }
