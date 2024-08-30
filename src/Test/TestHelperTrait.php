@@ -5,7 +5,6 @@ namespace Lle\CruditBundle\Test;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\Clock\Clock;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -71,7 +70,7 @@ trait TestHelperTrait
         $this->stopwatch->stop($url);
         $e = $this->stopwatch->getEvent($url); // dumps e.g. '4.50 MiB - 26 ms'
         if ($e->getDuration() > 500) {
-            $this->addWarning("page > 500ms " . $url . " " . $e->getDuration()."ms");
+            $this->addWarning("page > 500ms " . $url . " " . $e->getDuration() . "ms");
         }
         $code = $this->client->getResponse()->getStatusCode();
         if ($code != '200') {
@@ -106,7 +105,7 @@ trait TestHelperTrait
                     $this->stopwatch->stop($attribute->value);
                     $e = $this->stopwatch->getEvent($attribute->value); // dumps e.g. '4.50 MiB - 26 ms'
                     if ($e->getDuration() > 500) {
-                        $this->addWarning("page > 500ms " . $attribute->value. " " . $e->getDuration()."ms");
+                        $this->addWarning("page > 500ms " . $attribute->value . " " . $e->getDuration() . "ms");
                     }
                     $code = $this->client->getResponse()->getStatusCode();
 
