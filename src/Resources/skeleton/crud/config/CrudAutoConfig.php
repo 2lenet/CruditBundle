@@ -45,7 +45,7 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
     }
 
     /**
-    * @return Field[]
+    * @return array<Field|Field[]>
     */
     public function getFields(string $key): array
     {
