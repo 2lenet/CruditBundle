@@ -54,10 +54,16 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class FiltersTest extends KernelTestCase
 {
     use FilterTestHelperTrait;
+    
+    const LOGIN_USER = 'admin@app.fr'
+    const USER_REPOSITORY = UserRepository::class
 }
 
 ```
+There is 2 constants to setup in order to configure the test :
 
+- `LOGIN_USER` The user to be used in the tests. Make sure that this user has the rights to access every pages.
+- `USER_REPOSITORY` The repository that manages users in the app.
 ## Sortable test
 
 To test the sort actions on the cruds, you can use the sortable test.
