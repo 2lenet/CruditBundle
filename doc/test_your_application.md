@@ -49,9 +49,9 @@ Here is the class to set up:
 namespace App\Tests;
 
 use Lle\CruditBundle\Test\FilterTestHelperTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class FiltersTest extends KernelTestCase
+class FiltersTest extends WebTestCase
 {
     use FilterTestHelperTrait;
     
