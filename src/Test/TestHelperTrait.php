@@ -41,7 +41,6 @@ trait TestHelperTrait
                 }
             }
         }
-        dump($this->stopwatch);
     }
 
     protected function buildClient(): KernelBrowser
