@@ -311,13 +311,14 @@ trait TraitCrudController
     public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
     {
         $transition = $request->get("transition");
+        $workflowName = $request->get("name");
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
 
         if ($item && $transition) {
             $roleTransition = str_replace("-", "_", strtoupper($transition));
             $this->denyAccessUnlessGranted(
-                "ROLE_" . $this->config->getName() . "_WF_" . $roleTransition
+                "ROLE_" . strtoupper($workflowName) . "_WF_" . $roleTransition
             );
 
             foreach ($wfRegistry->all($item) as $wf) {
