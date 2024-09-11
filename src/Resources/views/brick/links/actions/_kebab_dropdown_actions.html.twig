@@ -36,6 +36,10 @@
                                     {% elseif not action.disabled %}
                                         href="{{ action.url ?? path(action.path.route, params) }}"
                                     {% endif %}
+
+                                    {% if action.target is defined and action.target %}
+                                        target="{{ action.target }}"
+                                    {% endif %}
                                 >
                                     {% if action.icon %}
                                         <i class="{{ action.icon.cssClass }}"></i>
