@@ -255,19 +255,20 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     {
         /** @var array $ret */
         $ret = $this->getMetadata($class);
+        if ($ret) {
+            /** @var ClassMetadataInfo $classMetadata */
+            $classMetadata = $ret[0];
 
-        /** @var ClassMetadataInfo $classMetadata */
-        $classMetadata = $ret[0];
+            if (isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
+                $mapping = $classMetadata->getFieldMapping($property);
 
-        if ($ret && isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
-            $mapping = $classMetadata->getFieldMapping($property);
+                if (isset($mapping['length'])) {
+                    return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
+                }
 
-            if (isset($mapping['length'])) {
-                return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
-            }
-
-            if (\in_array($classMetadata->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
-                return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
+                if (\in_array($classMetadata->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
+                    return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
+                }
             }
         }
 
@@ -281,13 +282,14 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     {
         /** @var array $ret */
         $ret = $this->getMetadata($class);
+        if ($ret) {
+            /** @var ClassMetadataInfo $classMetadata */
+            $classMetadata = $ret[0];
 
-        /** @var ClassMetadataInfo $classMetadata */
-        $classMetadata = $ret[0];
-
-        if ($ret && isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
-            if (\in_array($classMetadata->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
-                return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
+            if (isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
+                if (\in_array($classMetadata->getTypeOfField($property), [Types::DECIMAL, Types::FLOAT])) {
+                    return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
+                }
             }
         }
 
