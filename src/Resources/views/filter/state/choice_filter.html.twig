@@ -1,11 +1,14 @@
 {% extends "@LleCrudit/filter/state/_base_filter.html.twig" %}
 
 {% block value %}
-    {% if data['value'] is iterable %}
-        {% for v in data['value'] %}
-            <span class="badge bg-secondary">{{ filtertype.choices[v] }}</span>
-        {% endfor %}
-    {% else %}
-        <span class="badge bg-secondary">{{ filtertype.choices[data['value']] }}</span>
+    {% if data.items is not defined and data.value is defined and data.value != '' %}
+        {% set data = data|merge({
+            items: data.value|split(',')|json_encode
+        }) %}
     {% endif %}
+
+    {% set items = data['items']|json_decode %}
+    {% for val in items %}
+        <span class="badge bg-secondary">{{ val }}</span>
+    {% endfor %}
 {% endblock %}
