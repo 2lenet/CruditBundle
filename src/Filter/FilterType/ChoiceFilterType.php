@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 /**
  * ChoiceFilterType
@@ -21,6 +22,16 @@ class ChoiceFilterType extends AbstractFilterType
         $f->setMultiple($isMultiple);
 
         return $f;
+    }
+
+    public function getOperators(): array
+    {
+        return [
+            FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ['icon' => 'fas fa-not-equal'],
+            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
+        ];
     }
 
     public function setChoices(array $choices): void
@@ -44,13 +55,33 @@ class ChoiceFilterType extends AbstractFilterType
     {
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
-        if (isset($this->data['value']) && $this->data['value']) {
-            if ($this->getMultiple()) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));
-            } else {
-                $queryBuilder->andWhere($queryBuilder->expr()->eq($alias . $column, ':' . $paramname));
+        $data = [];
+        if (isset($this->data['value']) && $this->data['value'] != '') {
+            $data = explode(',', $this->data['value']);
+        }
+
+
+        if (isset($this->data["op"])) {
+            switch ($this->data['op']) {
+                case FilterTypeInterface::OPERATOR_IS_NULL:
+                    $queryBuilder->andWhere($alias . $column . ' IS NULL OR ' . $alias . $column . " = '' ");
+                    break;
+                case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
+                    $queryBuilder->andWhere($alias . $column . ' IS NOT NULL OR ' . $alias . $column . " = '' ");
+                    break;
+                case FilterTypeInterface::OPERATOR_NOT_EQUAL:
+                    if (!empty($data)) {
+                        $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $column, ':' . $paramname));
+                        $queryBuilder->setParameter($paramname, $data);
+                    }
+                    break;
+                case FilterTypeInterface::OPERATOR_EQUAL:
+                default:
+                    if (!empty($data)) {
+                        $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));
+                        $queryBuilder->setParameter($paramname, $data);
+                    }
             }
-            $queryBuilder->setParameter($paramname, $this->data['value']);
         }
     }
 
