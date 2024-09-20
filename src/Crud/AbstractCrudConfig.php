@@ -54,11 +54,22 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
      */
     protected function getFormType(string $pageKey): ?string
     {
-        return str_replace(
+        $formFqcn = str_replace(
             'App\Crudit\Config',
-            'App\Form',
+            'App\Form\Crudit',
             str_replace('CrudConfig', 'Type', get_class($this))
         );
+
+        // compatibility for old project
+        if (!class_exists($formFqcn)) {
+            $formFqcn = str_replace(
+                'App\Crudit\Config',
+                'App\Form',
+                str_replace('CrudConfig', 'Type', get_class($this))
+            );
+        }
+
+        return $formFqcn;
     }
 
     public function getListActions(): array
