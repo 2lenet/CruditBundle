@@ -7,8 +7,10 @@ namespace Lle\CruditBundle\Maker;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Lle\CruditBundle\Contracts\CruditEntityInterface;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
 use Lle\CruditBundle\Filter\FilterType\DateFilterType;
 use Lle\CruditBundle\Filter\FilterType\DateTimeFilterType;
@@ -96,7 +98,11 @@ final class MakeCrudit extends AbstractMaker
             $question = new Question($argument->getDescription());
             $question->setAutocompleterValues($entities);
             $value = $io->askQuestion($question);
-            $input->setArgument('entity-class', $value);
+            if (!is_a("App\\Entity\\" . $value, CruditEntityInterface::class, true)) {
+                throw new CruditException('Entity ' . $value . ' doesn\'t implement CruditEntityInterface.');
+            } else {
+                $input->setArgument('entity-class', $value);
+            }
         }
 
         if (null === $input->getArgument('namespace')) {
@@ -122,9 +128,11 @@ final class MakeCrudit extends AbstractMaker
             $this->getStringArgument('entity-class', $input),
             $this->entityHelper->getEntitiesForAutocomplete()
         );
+
         if (strpos($classname, '\\') === false) {
             $classname = "App\\Entity\\" . $classname;
         }
+
         $io->text('Create a configurator for ' . $classname);
         try {
             $this->createConfigurator($input, $io, $generator, $classname);
