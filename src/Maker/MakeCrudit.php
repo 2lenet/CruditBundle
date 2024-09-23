@@ -523,6 +523,9 @@ final class MakeCrudit extends AbstractMaker
                 'configSubdirectorie' => $this->getStringArgument('namespace', $input) ?
                     $this->getStringArgument('namespace', $input) . '\\' :
                     '',
+                'routeSubdirectorie' => $this->getStringArgument('namespace', $input) ?
+                    $this->getStringArgument('namespace', $input) . '/' :
+                    '',
             ]
         );
         $generator->writeChanges();

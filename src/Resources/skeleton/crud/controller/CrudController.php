@@ -11,7 +11,7 @@ use Lle\CruditBundle\Controller\AbstractCrudController;
 use Lle\CruditBundle\Controller\TraitCrudController;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/<?= strtolower($prefixFilename) ?>')]
+#[Route('/<?= strtolower($routeSubdirectorie) ?><?= strtolower($prefixFilename) ?>')]
 class <?= $prefixFilename ?>Controller extends AbstractCrudController
 {
     use TraitCrudController;
