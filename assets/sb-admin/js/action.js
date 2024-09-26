@@ -23,7 +23,7 @@ function addTimeoutOnCruditActions() {
             choice.classList.add('disabled');
             setTimeout(() => {
                 choice.classList.remove('disabled');
-            }, 5000);
+            }, 1000);
         });
     });
 }
