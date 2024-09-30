@@ -18,12 +18,12 @@ function initConfirmModals() {
 
 // Avoid double clic on actions
 function addTimeoutOnCruditActions() {
-    document.querySelectorAll('.btn').forEach(choice => {
+    document.querySelectorAll('.crudit-action').forEach(choice => {
         choice.addEventListener('click', () => {
             choice.classList.add('disabled');
             setTimeout(() => {
                 choice.classList.remove('disabled');
-            }, 1000);
+            }, 500);
         });
     });
 }

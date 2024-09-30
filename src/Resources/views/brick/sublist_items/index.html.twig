@@ -123,7 +123,7 @@
                         {% endfor %}
                         {% if view.config.actions|length %}
                             <td>
-                                <div class="btn-group btn-group-sm" role="group">
+                                <div class="btn-group btn-group-sm crudit-action" role="group">
                                     {% for action in view.config.actions %}
                                         {% if
                                             (action.path.role is null or is_granted(action.path.role))

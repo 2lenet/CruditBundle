@@ -98,6 +98,7 @@ crudit:
                 access_denied: "You are not allowed to change this value."
                 bad_request: "You are trying to edit a non-existing value."
             delete: "Impossible to delete this object."
+            resource_not_found: "The resource has not been found."
 
     error:
         generic:
