@@ -15,7 +15,7 @@
     {% block actions_item %}
         <a
             class="
-                {{ action.cssClass ?? 'btn btn-sm btn-primary' }}
+                {{ action.cssClass ?? 'btn btn-sm btn-primary crudit-action' }}
                 {% if disabled %} disabled{% endif %}
             "
             title="{{ action.title|trans(domain=view.config.translation_domain) }}"
