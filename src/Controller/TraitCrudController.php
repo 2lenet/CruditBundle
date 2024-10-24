@@ -97,8 +97,11 @@ trait TraitCrudController
             if ($route = $request->attributes->get('_route')) {
                 preg_match('/^app_crudit_(.+)_delete$/', $route, $matches);
                 if ($matches && array_key_exists(1, $matches)) {
-                    if (str_contains($referer, '/' . $matches[1] . '/')) {
-                        return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+                    // explode is necessary in case your controller is in a subdirectory
+                    $parts = explode('_', $matches[1]);
+                    $entityName = end($parts);
+                    if (str_contains($referer, '/' . $entityName . '/')) {
+                        return $this->redirectToRoute($this->config->getRootRoute() . '_index');
                     } else {
                         // If we're in a sublist, add the sublist anchor to the url so that it remains in the correct sublist after deletion
                         return $this->redirect($request->headers->get('referer') . '#' . $matches[1] . 's');
