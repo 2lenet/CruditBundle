@@ -12,7 +12,11 @@
     {% if element.path %}
         {% set path = path(element.path.route, element.path.params) %}
     {% endif %}
-    <a class="collapse-item {% if active %}active{% endif %} m-0" href="{{ path|default('#') }}">
+    <a
+            class="collapse-item {% if active %}active{% endif %} m-0"
+            href="{{ path|default('#') }}"
+            {% if element.target is defined and element.target %}target="{{ element.target }}" {% endif %}
+    >
         {% if element.icon and element.icon.img %}
             <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
         {% elseif element.icon %}
@@ -31,9 +35,13 @@
         {% if element.path %}
             {% set path = path(element.path.route, element.path.params) %}
         {% endif %}
-        <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}"
-           {% if element.children|length %}data-bs-toggle="collapse"
-           data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path|default('#') }}">
+        <a
+                id="heading-{{ element.id }}"
+                class="nav-link py-2 {% if not active %}collapsed{% endif %}"
+                {% if element.target is defined and element.target %}target="{{ element.target }}" {% endif %}
+                {% if element.children|length %}data-bs-toggle="collapse"
+                    data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path|default('#') }}"
+        >
             {% if element.icon and element.icon.img %}
                 <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
             {% elseif element.icon %}
