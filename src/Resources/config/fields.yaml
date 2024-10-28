@@ -50,6 +50,6 @@ services:
     Lle\CruditBundle\Field\UrlField:
         arguments: ['@twig']
         tags: ['crudit.field']
-    Lle\CruditBundle\Field\ProgressField:
+    Lle\CruditBundle\Field\ProgressBarField:
         arguments: ['@twig']
         tags: ['crudit.field']

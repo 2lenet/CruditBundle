@@ -1,0 +1,32 @@
+{% set percentage = (attribute(resource, options.progressValue) / value) * 100 %}
+
+<div class="position-relative d-flex">
+    <div class="progress w-100" role="progressbar" aria-valuenow="{{ value }}"
+         aria-valuemin="{{ options.min }}" aria-valuemax="{{ options.max }}">
+        <div class="progress-bar
+            {% if options.isStripped %} progress-bar-striped {% endif %}
+            {% if percentage > options.max %} bg-danger
+            {% elseif options.theme %} {{ options.theme }}
+            {% else %} bg-primary {% endif %}
+            progress-bar-animated" style="width: {{ percentage }}%;">
+        </div>
+    </div>
+    <div class="d-flex position-absolute justify-content-center align-items-center w-100">
+        <span class="{% if percentage > options.max %} text-white {% endif %}
+            {% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
+            {% else %} lh-sm fa-sm {% endif %}">
+            {% if options.progressValue %} {{ attribute(resource, options.progressValue) }} / {{ value }}
+            {% else %} {{ percentage }} % {% endif %}
+        </span>
+    </div>
+</div>
+
+{% if options.isBottomLabelActivate %}
+    <div>
+        <span class="{% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
+            {% else %} lh-sm fa-sm {% endif %}">
+            {% if options.isNotPercentBottomLabel %} {{ attribute(resource, options.bottomLabel) }} / {{ value }}
+            {% else %} {{ percentage }} % {% endif %}
+        </span>
+    </div>
+{% endif %}

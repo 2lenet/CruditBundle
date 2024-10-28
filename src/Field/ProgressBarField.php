@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Field;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProgressField extends AbstractField
+class ProgressBarField extends AbstractField
 {
     public function support(string $type): bool
     {
@@ -15,7 +15,7 @@ class ProgressField extends AbstractField
 
     public function getDefaultTemplate(): ?string
     {
-        return "@LleCrudit/field/progress.html.twig";
+        return "@LleCrudit/field/progressbar.html.twig";
     }
 
     public function configureOptions(OptionsResolver $optionsResolver): void
@@ -23,11 +23,13 @@ class ProgressField extends AbstractField
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
             "theme" => null,
-            "progressLabel" => null,
+            "progressValue" => null,
             "progressLabelCssClass" => null,
             "min" => 0,
             "max" => 100,
-            "bottomLabel" => false,
+            "isBottomLabelActivate" => false,
+            "isNotPercentBottomLabel"=> false,
+            "isStripped" => false,
         ]);
     }
 }

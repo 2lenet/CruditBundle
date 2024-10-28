@@ -58,7 +58,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 - [Add a map to a list or to a show](doc/map_config.md)
 - [How to export data](doc/export.md)
 - [Workflows](doc/workflow.md)
-- [ProgressField](doc/progress_field.md)
+- [ProgressBarField](doc/progressbar_field.md)
 - [Markdown](doc/markdown.md)
 - [Color list](doc/color_list.md)
 - [Twig extensions](doc/twig.md)
