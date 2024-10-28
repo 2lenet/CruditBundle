@@ -28,7 +28,7 @@ class ProgressBarField extends AbstractField
             "min" => 0,
             "max" => 100,
             "isBottomLabelActivate" => false,
-            "isNotPercentBottomLabel"=> false,
+            "isNotPercentBottomLabel" => false,
             "isStripped" => false,
         ]);
     }
