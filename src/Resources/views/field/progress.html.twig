@@ -1,0 +1,19 @@
+{% set percentage = ((value - options.min) / (options.max - options.min)) * 100 %}
+<div class="position-relative d-flex">
+    <div class="progress w-100" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="{{ options.min }}"
+         aria-valuemax="{{ options.max }}">
+        <div
+            class="progress-bar {% if options.theme is not null %} {{ options.theme }} {% else %} bg-primary {% endif %} progress-bar-animated"
+            style="width: {{ percentage }}%">
+        </div>
+    </div>
+    <div class="d-flex position-absolute justify-content-center align-items-center w-100">
+        <span
+            class="{% if options.progressLabelCssClass is not null %} {{ options.progressLabelCssClass }} {% else %} lh-sm fa-sm {% endif %}"> {% if options.progressLabel is not null %} {{ options.progressLabel }} {% else %} {{ percentage }} % {% endif %} </span>
+    </div>
+</div>
+{% if options.bottomLabel %}
+    <div>
+        <span>{{ value }} / {{ options.max }}</span>
+    </div>
+{% endif %}
