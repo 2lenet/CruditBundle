@@ -24,6 +24,7 @@ class ProgressBarField extends AbstractField
         $optionsResolver->setDefaults([
             "theme" => null,
             "progressValue" => null,
+            "isProgressValuePercent" => true,
             "progressLabelCssClass" => null,
             "min" => 0,
             "max" => 100,

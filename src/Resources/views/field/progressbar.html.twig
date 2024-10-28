@@ -15,7 +15,7 @@
         <span class="{% if percentage > options.max %} text-white {% endif %}
             {% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
             {% else %} lh-sm fa-sm {% endif %}">
-            {% if options.progressValue %} {{ attribute(resource, options.progressValue) }} / {{ value }}
+            {% if options.isProgressValuePercent  == false %} {{ attribute(resource, options.progressValue) }} / {{ value }}
             {% else %} {{ percentage }} % {% endif %}
         </span>
     </div>
