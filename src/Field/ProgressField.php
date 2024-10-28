@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Field;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Twig\Environment;
 
 class ProgressField extends AbstractField
 {
