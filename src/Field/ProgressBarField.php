@@ -22,15 +22,13 @@ class ProgressBarField extends AbstractField
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "theme" => null,
-            "progressValue" => null,
-            "isProgressValuePercent" => true,
+            "barCssClass" => null,
+            "progressLabel" => null,
             "progressLabelCssClass" => null,
             "min" => 0,
             "max" => 100,
             "isBottomLabelActivate" => false,
-            "isNotPercentBottomLabel" => false,
-            "isStripped" => false,
+            "bottomLabel" => null,
         ]);
     }
 }
