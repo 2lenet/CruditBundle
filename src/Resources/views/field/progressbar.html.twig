@@ -2,9 +2,9 @@
     <div class="progress w-100" role="progressbar" aria-valuenow="{{ value }}"
          aria-valuemin="{{ options.min }}" aria-valuemax="{{ options.max }}">
         <div class="progress-bar
-            {% if value > options.max %} bg-danger {% endif %}
-            {% if options.barCssClass %} {{ options.barCssClass }}
+            {% if value > options.max %} bg-danger 
             {% else %} bg-primary {% endif %}
+            {% if options.barCssClass %} {{ options.barCssClass }}{% endif %}
             progress-bar-animated" style="width: {{ value }}%;">
         </div>
     </div>
