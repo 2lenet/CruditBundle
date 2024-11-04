@@ -12,15 +12,24 @@ class LinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
     public const TYPE_BODY = 'body';
+
     protected string $type;
+
     protected string $libelle;
+
     protected ?Icon $icon = null;
+
     protected ?Path $path = null;
+
     /** @var Badge[] */
     protected array $badges = [];
+
     protected ?string $cssClass = null;
+
     /** @var LinkElement[] */
     protected array $children = [];
+
+    protected ?string $target = null;
 
     public static function new(string $libelle, ?Path $path, ?Icon $icon = null, ?string $role = null): self
     {
@@ -111,5 +120,17 @@ class LinkElement extends AbstractLayoutElement
     public function add(self $element): void
     {
         $this->children[] = $element;
+    }
+
+    public function getTarget(): ?string
+    {
+        return $this->target;
+    }
+
+    public function setTarget(?string $target): self
+    {
+        $this->target = $target;
+
+        return $this;
     }
 }
