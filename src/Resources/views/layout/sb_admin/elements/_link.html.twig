@@ -23,7 +23,7 @@
             <ul class="btn-toggle-nav list-unstyled">
                 {% for child in element.children %}
                     {% if is_granted(child.role) %}
-                        {% include '@LleCrudit/layout/sb_admin/elements/_sidebar_element.html.twig' with {
+                        {% include '@LleCrudit/layout/sb_admin/elements/_link_element.html.twig' with {
                             'element': child,
                             'elementType': 'sidebar-collapse-link'
                         } %}
@@ -33,7 +33,7 @@
         </div>
     </li>
 {% else %}
-    {% include '@LleCrudit/layout/sb_admin/elements/_sidebar_element.html.twig' with {
+    {% include '@LleCrudit/layout/sb_admin/elements/_link_element.html.twig' with {
         'element': element,
         'elementType': 'sidebar-link'
     } %}

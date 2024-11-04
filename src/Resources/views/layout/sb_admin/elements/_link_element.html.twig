@@ -3,7 +3,12 @@
     {% if element.path %}
         {% set path = path(element.path.route, element.path.params) %}
     {% endif %}
-    <a href="{{ path|default('#') }}" id="heading-{{ element.id }}" class="nav-link {{ elementType }}">
+    <a
+        href="{{ path|default('#') }}"
+        id="heading-{{ element.id }}"
+        class="nav-link {{ elementType }}"
+        {% if element.target is defined and element.target %}target="{{ element.target }}" {% endif %}
+    >
         {% if element.icon and element.icon.img %}
             <img src="{{ element.icon.icon }}" class="img-thumbnail" alt="{{ element.libelle|trans }}">
         {% elseif element.icon %}
