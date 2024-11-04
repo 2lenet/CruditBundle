@@ -19,7 +19,7 @@
             {% for badge in element.badges %}
                 <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
             {% endfor %}
-            {% if element.target is defined and element.target == '_blank' %}
+            {% if element.target is defined and element.target %}
                 &nbsp;<i class="fas fa-external-link-alt external-link"></i>
             {% endif %}
         </span>
