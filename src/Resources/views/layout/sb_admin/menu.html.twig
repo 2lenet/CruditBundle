@@ -1,17 +1,19 @@
 {% block side_header %}{% endblock %}
 
-{% for element in crudit_menu_items('menu_side') %}
-    {% set mustBeDisplayed = (element.children|length) ? false : true %}
-    {% for child in element.children %}
-        {% if is_granted(child.role) %}
-            {% set mustBeDisplayed = true %}
+<ul class="nav nav-pills list-unstyled ps-0">
+    {% for element in crudit_menu_items('menu_side') %}
+        {% set mustBeDisplayed = (element.children|length) ? false : true %}
+        {% for child in element.children %}
+            {% if is_granted(child.role) %}
+                {% set mustBeDisplayed = true %}
+            {% endif %}
+        {% endfor %}
+
+        {% if is_granted(element.role) and mustBeDisplayed %}
+            {% include element.template with {'element': element, 'where': 'menu-nav'} %}
         {% endif %}
     {% endfor %}
-
-    {% if is_granted(element.role) and mustBeDisplayed %}
-        {% include element.template with {'element': element, 'where': 'menu-nav'} %}
-    {% endif %}
-{% endfor %}
+</ul>
 
 <li class="text-center d-none d-md-block">
     <button id="sidebarToggle" class="rounded-circle border-0"></button>

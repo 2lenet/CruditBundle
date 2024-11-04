@@ -1,61 +1,40 @@
-{% if where == 'header-nav' %}
-    <li class="nav-item {% if crudit.isActive(element, app.request) %}active{% endif %}">
-        {% if element.path %}
-            {% set path = path(element.path.route, element.path.params) %}
-        {% endif %}
-        <a class="nav-link py-2" href="{{ path|default('#') }}">
-            {{ element.libelle|trans() }}
-        </a>
-    </li>
-{% elseif submenu|default(false) %}
+{% if element.children|length %}
     {% set active = crudit_menu_active(element, app.request) %}
-    {% if element.path %}
-        {% set path = path(element.path.route, element.path.params) %}
-    {% endif %}
-    <a class="collapse-item {% if active %}active{% endif %} m-0" href="{{ path|default('#') }}">
-        {% if element.icon and element.icon.img %}
-            <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
-        {% elseif element.icon %}
-            <i class="nav-icon {{ element.icon.cssClass }}"></i>
-        {% endif %}
-        <span>
-            {{ element.libelle|trans() }}
-            {% for badge in element.badges %}
-                <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
-            {% endfor %}
-        </span>
-    </a>
-{% else %}
-    {% set active = crudit_menu_active(element, app.request) %}
-    <li class="nav-item {% if active %}active{% endif %} {{ element.cssClass }}">
-        {% if element.path %}
-            {% set path = path(element.path.route, element.path.params) %}
-        {% endif %}
-        <a id="heading-{{ element.id }}" class="nav-link py-2 {% if not active %}collapsed{% endif %}"
-           {% if element.children|length %}data-bs-toggle="collapse"
-           data-bs-target="#collapse-{{ element.id|lower }}"{% endif %} href="{{ path|default('#') }}">
+    <li class="nav-item">
+        <button
+            class="btn btn-toggle nav-link text-start collapsed sidebar-item {% if active %}active{% endif %}"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapse-{{ element.id|lower }}"
+            aria-expanded="true"
+        >
             {% if element.icon and element.icon.img %}
-                <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans() }}"/>
+                <img src="{{ element.icon.icon }}" class="img-thumbnail" alt="{{ element.libelle|trans }}">
             {% elseif element.icon %}
-                <i class="nav-icon {{ element.icon.cssClass }}"></i>
+                <i class="nav-icon" {{ element.icon.cssClass }}></i>
             {% endif %}
             <span>
-                {{ element.libelle|trans() }}
+                {{ element.libelle|trans }}
                 {% for badge in element.badges %}
-                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans() }}</span>
+                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
                 {% endfor %}
             </span>
-        </a>
-        {% if element.children|length %}
-            <div id="collapse-{{ element.id|lower }}" class="collapse {% if active %}show{% endif %}">
-                <div class="py-0 collapse-inner">
-                    {% for child in element.children %}
-                        {% if is_granted(child.role) %}
-                            {% include child.template with {'element': child, 'submenu': true} %}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
+        </button>
+        <div id="collapse-{{ element.id|lower }}" class="collapse sidebar-collapse {% if active %}show{% endif %}">
+            <ul class="btn-toggle-nav list-unstyled">
+                {% for child in element.children %}
+                    {% if is_granted(child.role) %}
+                        {% include '@LleCrudit/layout/sb_admin/elements/_sidebar_element.html.twig' with {
+                            'element': child,
+                            'elementType': 'sidebar-collapse-link'
+                        } %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
     </li>
+{% else %}
+    {% include '@LleCrudit/layout/sb_admin/elements/_sidebar_element.html.twig' with {
+        'element': element,
+        'elementType': 'sidebar-link'
+    } %}
 {% endif %}

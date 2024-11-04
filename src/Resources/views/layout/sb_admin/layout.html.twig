@@ -22,11 +22,11 @@
     {% block head_javascript %}{% endblock %}
 </head>
 
-<body id="page-top">
+<body id="page-top" class="{% if app.request.cookies.get('sidebarToggled') %}sidebar-toggled{% endif %}">
 {% block body %}
     <div id="wrapper">
         <div id="collapse-sidebar" class="sidebar">
-            <ul class="bg-gradient-primary">
+            <ul class="bg-gradient-primary sidebar__container {% if app.request.cookies.get('sidebarToggled') %}toggled{% endif %}">
                 {% block brand %}
                     {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
                 {% endblock %}

@@ -1,0 +1,148 @@
+$icon-width: 32px;
+
+.sidebar {
+    &__container {
+        position: fixed;
+        width: 0 !important;
+        height: 100dvh;
+        padding-left: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        @include media('>mobile') {
+            width: $sidebar-base-width !important;
+        }
+
+        .sidebar-brand {
+            height: #{$topbar-base-height + 1rem};
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 800;
+            padding: 1rem;
+            color: $white;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+            z-index: 1;
+
+            > img {
+                height: $topbar-base-height;
+            }
+
+            &-text {
+                display: inline;
+            }
+        }
+
+        > .nav {
+            > .sidebar-divider {
+                margin: 0 1rem 1rem;
+                border-top: 1px solid fade-out($white, 0.5);
+            }
+
+            > .sidebar-heading {
+                padding: 0 1rem;
+                color: fade-out($white, 0.6);
+                font-weight: 800;
+                font-size: 0.65rem;
+                @extend .text-uppercase;
+            }
+
+            .sidebar-item {
+                border-radius: 0;
+
+                &:hover,
+                &:active,
+                &:focus {
+                    color: $white;
+                    background-color: lighten($primary, 10%);
+                }
+
+                &.active {
+                    color: $white;
+                    background-color: lighten($primary, 15%);
+                }
+            }
+
+            > .nav-item {
+                .sidebar-collapse {
+                    .sidebar-collapse-link {
+                        display: flex;
+                        margin-left: 1rem;
+                    }
+                }
+
+                > .nav-link {
+                    width: $sidebar-base-width;
+                    color: fade-out($white, 0.2);
+
+                    img {
+                        height: $icon-width;
+                        margin-right: 5px;
+                    }
+
+                    span {
+                        font-size: 0.85rem;
+
+                        > i {
+                            margin-right: 0.25rem;
+                            color: fade-out($white, 0.7);
+                            font-size: 0.85rem;
+                        }
+                    }
+
+                    &[data-bs-toggle="collapse"] {
+                        &::after {
+                            content: '\f105';
+                            width: 1rem;
+                            float: right;
+                            color: fade-out($white, 0.5);
+                            border: 0;
+                            text-align: center;
+                            vertical-align: 0;
+                            @include iconsFont;
+                        }
+
+                        &.collapsed::after {
+                            content: '\f107';
+                        }
+                    }
+                }
+
+                > .collapse,
+                > .collapsing {
+                    > ul > li > .nav-link {
+                        width: $sidebar-base-width;
+                        color: fade-out($white, 0.2);
+
+                        img {
+                            height: $icon-width;
+                            margin-right: 5px;
+                        }
+
+                        span {
+                            font-size: 0.85rem;
+                        }
+
+                        &[data-bs-toggle="collapse"] {
+                            &::after {
+                                content: '\f105';
+                                width: 1rem;
+                                float: right;
+                                color: fade-out($white, 0.5);
+                                border: 0;
+                                text-align: center;
+                                vertical-align: 0;
+                                @include iconsFont;
+                            }
+
+                            &.collapsed::after {
+                                content: '\f107';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
