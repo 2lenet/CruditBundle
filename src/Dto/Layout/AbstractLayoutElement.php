@@ -9,10 +9,15 @@ use Lle\CruditBundle\Contracts\LayoutElementInterface;
 abstract class AbstractLayoutElement implements LayoutElementInterface
 {
     protected ?string $role = null;
+
     protected ?string $cssClass = null;
+
     protected int $priority = 1;
+
     protected ?string $id = null;
+
     protected ?string $parent = null;
+
     /** @var LayoutElementInterface[] */
     protected array $children = [];
 
