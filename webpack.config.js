@@ -24,11 +24,6 @@ function basic(path, Encore) {
  */
 basic('sbadmin', Encore)
     .addEntry('app', './assets/sb-admin/js/app.js')
-    .copyFiles({
-        from: './node_modules/startbootstrap-sb-admin-2/img/',
-        to: 'images/[name].[ext]',
-        pattern: /\.(jpg|png|svg)$/,
-    })
 ;
 const sbadmin = Encore.getWebpackConfig();
 Encore.reset();
