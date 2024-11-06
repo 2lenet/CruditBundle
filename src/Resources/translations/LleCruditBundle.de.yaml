@@ -40,7 +40,7 @@ crudit:
         validate: "Validieren"
         confirm:
             message: "Wollen Sie diese Aktion wirklich bestätigen? Diese Maßnahme ist unumkehrbar."
-            action: "Konfirmand"
+            action: "Bestätigen"
         export:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"
