@@ -1,24 +1,26 @@
 {% if element.children|length %}
     {% set active = crudit_menu_active(element, app.request) %}
     <li class="nav-item">
-        <button
-            class="btn btn-toggle nav-link text-start collapsed sidebar-item {% if active %}active{% endif %}"
-            data-bs-toggle="collapse"
-            data-bs-target="#collapse-{{ element.id|lower }}"
-            aria-expanded="true"
-        >
-            {% if element.icon and element.icon.img %}
-                <img src="{{ element.icon.icon }}" class="img-thumbnail" alt="{{ element.libelle|trans }}">
-            {% elseif element.icon %}
-                <i class="nav-icon {{ element.icon.cssClass }}"></i>
-            {% endif %}
-            <span>
-                {{ element.libelle|trans }}
-                {% for badge in element.badges %}
-                    <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
-                {% endfor %}
-            </span>
-        </button>
+        {% apply spaceless %}
+            <button
+                class="btn btn-toggle nav-link text-start collapsed sidebar-item {% if active %}active{% endif %}"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse-{{ element.id|lower }}"
+                aria-expanded="true"
+            >
+                {% if element.icon and element.icon.img %}
+                    <img src="{{ element.icon.icon }}" class="img-thumbnail" alt="{{ element.libelle|trans }}">
+                {% elseif element.icon %}
+                    <i class="nav-icon {{ element.icon.cssClass }}"></i>
+                {% endif %}
+                <span>
+                    {{- element.libelle|trans -}}
+                    {% for badge in element.badges %}
+                        <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
+                    {% endfor %}
+                </span>
+            </button>
+        {% endapply %}
         <div id="collapse-{{ element.id|lower }}" class="collapse sidebar-collapse {% if active %}show{% endif %}">
             <ul class="btn-toggle-nav list-unstyled">
                 {% for child in element.children %}
