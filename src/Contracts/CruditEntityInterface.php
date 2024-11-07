@@ -10,5 +10,5 @@ interface CruditEntityInterface
 
     public function canEdit(): bool;
 
-    public function canDelete(): bool;
+    public function canDelete(): bool|string;
 }
