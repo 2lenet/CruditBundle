@@ -30,6 +30,7 @@ crudit:
         cancel: "Abbrechen"
         back: "Zurück"
         logout: "Abmelden"
+        validate: "Valideren"
 
     message:
         success: "Erfolg"
