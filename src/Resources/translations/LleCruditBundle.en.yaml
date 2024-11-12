@@ -31,6 +31,7 @@ crudit:
         back: "Go back"
         logout: "Logout"
         batch: "Choose a batch action"
+        validate: "Validate"
 
     message:
         success: "Success"
