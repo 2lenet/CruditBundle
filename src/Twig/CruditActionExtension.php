@@ -9,7 +9,7 @@ use Twig\TwigFunction;
 
 class CruditActionExtension extends AbstractExtension
 {
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('crudit_is_dropdown_action', [$this, 'isDropdownAction']),
