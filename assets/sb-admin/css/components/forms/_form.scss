@@ -25,9 +25,11 @@ fieldset.form_row {
 
 label.required:not(.form-check-label), legend.required {
     &::after {
-        content: '*';
+        position: relative !important;
+        content: '*' !important;
         margin-left: 7px;
         color: red;
+        inset: initial !important;
     }
 }
 
