@@ -136,5 +136,4 @@ window.addEventListener('DOMContentLoaded', function () {
             },
         );
     });
-
 });
