@@ -55,25 +55,11 @@
                         {% if not (disabled and crudit_hide_if_disabled(action)) %}
                             {% block dropdown_actions_item %}
                                 <li>
-                                    <a
-                                        class="{{ action.cssClass ?? 'dropdown-item' }} {% if disabled %}disabled{% endif %}"
-                                        {% if action.modal %}
-                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-                                        {% elseif not action.disabled %}
-                                            href="{{ action.url ?? path(action.path.route, params) }}"
-                                        {% endif %}
-
-                                        {% if action.target is defined and action.target %}
-                                            target="{{ action.target }}"
-                                        {% endif %}
-                                    >
-                                        {% if action.icon %}
-                                            <i class="{{ action.icon.cssClass }}"></i>
-                                        {% endif %}
-                                        {% if not action.hideLabel %}
-                                            {{ action.label|trans(domain=view.config.translation_domain) }}
-                                        {% endif %}
-                                    </a>
+                                    {% if action.template %}
+                                        {% include action.template %}
+                                    {% else %}
+                                        {% include '@LleCrudit/brick/links/actions/_dropdown_action.html.twig' %}
+                                    {% endif %}
                                 </li>
                             {% endblock %}
                         {% endif %}
