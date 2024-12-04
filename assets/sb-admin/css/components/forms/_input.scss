@@ -24,16 +24,16 @@ $input-height: 42px;
         min-height: 64px;
     }
 
-    & > .form-select {
+    & > .form-select:not(.ts-control) {
         padding-top: 1rem;
         padding-bottom: 0;
     }
 
-    .form-control:not(.form-check-input) {
+    .form-control:not(.form-check-input), & {
         height: auto;
         min-height: $form-floating-height;
 
-        &.entity-select, &.tom-select {
+        &.entity-select, &.tom-select, &.choice-tom-select {
             min-height: $input-height;
             padding: 0;
             background-color: $white;
