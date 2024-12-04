@@ -99,41 +99,42 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     // Normal select
-    document.querySelectorAll('.tom-select').forEach(select => {
-        const inioptions = JSON.parse(select.dataset.options);
+    document.querySelectorAll('select.tom-select').forEach(select => {
+        const settings = {
+            maxItems: select.dataset.maxitems,
+            plugins: [
+                'remove_button',
+            ],
+            valueField: 'id',
+            labelField: 'text',
+            searchField: 'text',
+            onChange(value) {
+                let items = [];
+                let values;
+                if (value != '') {
 
-        new TomSelect('#' + select.id,
-            {
-                maxItems: select.dataset.maxitems,
-                plugins: [
-                    'remove_button',
-                ],
-                valueField: 'id',
-                labelField: 'text',
-                searchField: 'text',
-                options: inioptions,
-                onChange(value) {
-                    let items = [];
-                    let values;
-                    if (value != '') {
-
-                        if (Array.isArray(value)) {
-                            values = value;
-                        } else {
-                            values = value.split(',');
-                        }
-
-                        values.forEach(v => {
-                            items.push({ id: v, text: this.options[v].text });
-                        });
+                    if (Array.isArray(value)) {
+                        values = value;
+                    } else {
+                        values = value.split(',');
                     }
-                    document.getElementById(select.id + '_items').value = JSON.stringify(items);
-                },
-                onItemAdd() {
-                    select.parentElement.querySelector('.ts-input > input').value = '';
-                    select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
-                },
+
+                    values.forEach(v => {
+                        items.push({ id: v, text: this.options[v].text });
+                    });
+                }
+                document.getElementById(select.id + '_items').value = JSON.stringify(items);
             },
-        );
+            onItemAdd() {
+                select.parentElement.querySelector('.ts-input > input').value = '';
+                select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+            },
+        };
+
+        if (select.dataset.options !== undefined) {
+            settings.options = JSON.parse(select.dataset.options);
+        }
+
+        new TomSelect('#' + select.id, settings);
     });
 });

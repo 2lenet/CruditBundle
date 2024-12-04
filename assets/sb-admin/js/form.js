@@ -24,7 +24,7 @@ window.addEventListener('load', function () {
     /**
      * Apply TomSelect on choice types forms
      */
-    document.querySelectorAll('.form-select').forEach(select => {
+    document.querySelectorAll('select.choice-tom-select').forEach(select => {
         new TomSelect('#' + select.id,
             {
                 plugins: [

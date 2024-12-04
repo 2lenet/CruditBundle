@@ -33,7 +33,7 @@ $input-height: 42px;
         height: auto;
         min-height: $form-floating-height;
 
-        &.entity-select, &.tom-select, &.form-select {
+        &.entity-select, &.tom-select, &.choice-tom-select {
             min-height: $input-height;
             padding: 0;
             background-color: $white;

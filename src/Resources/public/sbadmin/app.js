@@ -3414,15 +3414,13 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   // Normal select
-  document.querySelectorAll('tom-select').forEach(function (select) {
-    var inioptions = JSON.parse(select.dataset.options);
-    new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + select.id, {
+  document.querySelectorAll('select.tom-select').forEach(function (select) {
+    var settings = {
       maxItems: select.dataset.maxitems,
       plugins: ['remove_button'],
       valueField: 'id',
       labelField: 'text',
       searchField: 'text',
-      options: inioptions,
       onChange: function onChange(value) {
         var _this3 = this;
         var items = [];
@@ -3446,7 +3444,11 @@ window.addEventListener('DOMContentLoaded', function () {
         select.parentElement.querySelector('.ts-input > input').value = '';
         select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
       }
-    });
+    };
+    if (select.dataset.options !== undefined) {
+      settings.options = JSON.parse(select.dataset.options);
+    }
+    new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + select.id, settings);
   });
 });
 
@@ -3504,7 +3506,7 @@ window.addEventListener('load', function () {
   /**
    * Apply TomSelect on choice types forms
    */
-  document.querySelectorAll('.form-select').forEach(function (select) {
+  document.querySelectorAll('select.choice-tom-select').forEach(function (select) {
     new (tom_select__WEBPACK_IMPORTED_MODULE_0___default())('#' + select.id, {
       plugins: ['remove_button'],
       onItemAdd: function onItemAdd() {

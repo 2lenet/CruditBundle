@@ -38,3 +38,6 @@ services:
     Lle\CruditBundle\Form\Extension\TooltipExtension:
         tags:
             - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\TomSelectExtension:
+        tags:
+            - { name: form.type_extension }
