@@ -22,7 +22,7 @@ class TomSelectExtension extends AbstractTypeExtension
         return [ChoiceType::class];
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $tomSelectDisabled = $options['disable_tom_select'] ?? false;
         $expanded = $options['expanded'] ?? null;
@@ -40,7 +40,7 @@ class TomSelectExtension extends AbstractTypeExtension
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('disable_tom_select', false);
     }
