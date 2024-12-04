@@ -64,3 +64,25 @@ a {
         }
     }
 }
+
+.btn-group {
+    .btn-wrapper {
+        &:not(:first-of-type):not(:last-of-type) {
+            .btn {
+                border-radius: 0;
+            }
+        }
+        &:first-of-type {
+            .btn {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
+        &:last-of-type {
+            .btn {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+    }
+}
