@@ -1,0 +1,32 @@
+{% block action %}
+    <a
+            {% block attributes %}
+                class="
+                    {{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0' }}
+                    {% if disabled %} disabled{% endif %}
+                "
+                {% if action.modal %}
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal_{{ action.id }}"
+                {% elseif action.confirmModal %}
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-confirm"
+                    data-confirm-link="{{ path(action.path.route, params) }}"
+                    data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"
+                {% elseif not action.disabled %}
+                    href="{{ action.url ?? path(action.path.route, params) }}"
+                {% endif %}
+
+                {% if action.target is defined and action.target %}
+                    target="{{ action.target }}"
+                {% endif %}
+            {% endblock %}
+    >
+        {% if action.icon %}
+            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
+        {% endif %}
+        {% if not action.hideLabel %}
+            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
+        {% endif %}
+    </a>
+{% endblock %}

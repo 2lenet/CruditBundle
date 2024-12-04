@@ -36,6 +36,8 @@ abstract class AbstractAction implements ActionInterface
 
     protected bool $dropdown = false;
 
+    protected ?string $template = null;
+
     public function __construct(string $label)
     {
         $this->label = $label;
@@ -204,6 +206,18 @@ abstract class AbstractAction implements ActionInterface
     public function setDropdown(bool $dropdown): self
     {
         $this->dropdown = $dropdown;
+
+        return $this;
+    }
+
+    public function getTemplate(): ?string
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(?string $template): static
+    {
+        $this->template = $template;
 
         return $this;
     }

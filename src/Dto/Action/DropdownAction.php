@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Dto\Action;
 
 use Lle\CruditBundle\Dto\Icon;
+use Lle\CruditBundle\Exception\CruditException;
 
 class DropdownAction extends AbstractAction
 {
@@ -35,5 +36,10 @@ class DropdownAction extends AbstractAction
         $this->actions = $actions;
 
         return $this;
+    }
+
+    public function setTemplate(?string $template): static
+    {
+        throw new CruditException('Custom templates on dropdown action are not available.');
     }
 }

@@ -58,4 +58,11 @@ interface ActionInterface
     public function getHideIfDisabled(): ?bool;
 
     public function setHideIfDisabled(?bool $hideIfDisabled): static;
+
+    public function getTemplate(): ?string;
+
+    /**
+     * @param ?string $template #Template
+     */
+    public function setTemplate(?string $template): static;
 }
