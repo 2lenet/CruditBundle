@@ -1,6 +1,6 @@
 <?php
 
-namespace Lle\CruditBundle\Form \Extension;
+namespace Lle\CruditBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
