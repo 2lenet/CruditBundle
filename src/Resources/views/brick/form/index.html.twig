@@ -79,14 +79,15 @@
     {% endif %}
 
     {% block form_buttons %}
-        <div class="btn-group" role="group">
-            <button class="btn btn-primary"
-                    type="submit">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</button>
+        <div class="d-flex">
             {% if view.data.cancel_path %}
                 <a class="btn btn-danger" href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}">
                     {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
                 </a>
             {% endif %}
+            <button class="ms-auto btn btn-primary" type="submit">
+                {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
+            </button>
         </div>
     {% endblock %}
     {{ form_end(form) }}
