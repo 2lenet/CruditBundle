@@ -48,6 +48,7 @@ Here is the class to set up:
 
 namespace App\Tests;
 
+use App\Repository\UserRepository;
 use Lle\CruditBundle\Test\FilterTestHelperTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -55,8 +56,8 @@ class FiltersTest extends WebTestCase
 {
     use FilterTestHelperTrait;
     
-    const LOGIN_USER = 'admin@app.fr'
-    const USER_REPOSITORY = UserRepository::class
+    public const LOGIN_USER = 'admin@app.fr';
+    public const USER_REPOSITORY = UserRepository::class;
 }
 
 ```
