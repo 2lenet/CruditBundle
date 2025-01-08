@@ -11,9 +11,9 @@
 @import 'tools/texts';
 
 @import '~bootstrap/scss/bootstrap';
-@import 'tom-select/dist/scss/tom-select';
 @import '~@fortawesome/fontawesome-free/css/all.css';
 @import '~@fortawesome/fontawesome-free/css/v4-shims.css';
+@import 'libraries/tom-select.bootstrap5';
 @import '~easymde/dist/easymde.min.css';
 
 @import 'generics/body';
