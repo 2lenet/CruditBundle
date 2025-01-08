@@ -24,7 +24,7 @@ $input-height: 42px;
         min-height: 64px;
     }
 
-    & > .form-select:not(.ts-control) {
+    & > .form-select:not(.ts-wrapper) {
         padding-top: 1rem;
         padding-bottom: 0;
     }
@@ -38,8 +38,9 @@ $input-height: 42px;
             padding: 0;
             background-color: $white;
 
-            & .ts-input {
+            & .ts-control {
                 height: $input-height;
+                border: none;
 
                 & > input {
                     height: 21px !important;
@@ -72,6 +73,13 @@ $input-height: 42px;
         top: -25px;
         left: calc(-50% - 10px);
         transform: scale(0.7) translateX(calc(50% + 0.8rem));
+    }
+
+    &.multisearch {
+        .form-control {
+            background-color: transparent !important;
+            border: none !important;
+        }
     }
 }
 

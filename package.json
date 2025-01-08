@@ -24,6 +24,6 @@
         "easymde": "^2.16.1",
         "jquery": "^3.6.0",
         "sass": "^1.59.3",
-        "tom-select": "^1.7.5"
+        "tom-select": "^2.4.1"
     }
 }

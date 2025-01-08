@@ -52,7 +52,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     document.getElementById(select.id + '_items').value = JSON.stringify(items);
                 },
                 onItemAdd() {
-                    select.parentElement.querySelector('.ts-input > input').value = '';
+                    select.parentElement.querySelector('.ts-control > input').value = '';
                     select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
                 },
                 firstUrl(query) {
@@ -69,6 +69,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     fetch(url)
                         .then(response => response.json())
                         .then(json => {
+                            // Fix Virtual Scroll Plugin scrolls to top when next url loads
+                            const _scrollToOption = this.scrollToOption;
+                            this.scrollToOption = () => {};
+
                             if (json.next_offset < json.total_count) {
                                 let params = new URLSearchParams({
                                     q: encodeURIComponent(query),
@@ -79,8 +83,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
                                 this.setNextUrl(query, nextUrl);
                             }
+
                             // add data to the results
                             callback(json.items);
+
+                            // Fix Virtual Scroll Plugin scrolls to top when next url loads
+                            this.scrollToOption = _scrollToOption;
                         }).catch((e) => {
                         console.log('error', e);
                         callback();
@@ -126,7 +134,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 document.getElementById(select.id + '_items').value = JSON.stringify(items);
             },
             onItemAdd() {
-                select.parentElement.querySelector('.ts-input > input').value = '';
+                select.parentElement.querySelector('.ts-control > input').value = '';
                 select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
             },
         };

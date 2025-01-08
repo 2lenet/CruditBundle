@@ -44,7 +44,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             },
             onItemAdd() {
-                globalSearch.parentElement.querySelector('.ts-input > input').value = '';
+                globalSearch.parentElement.querySelector('.ts-control > input').value = '';
                 globalSearch.parentElement.querySelector('.ts-dropdown').style.display = 'none';
             },
             firstUrl(query) {

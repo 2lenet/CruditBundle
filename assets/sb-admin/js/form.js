@@ -31,7 +31,7 @@ window.addEventListener('load', function () {
                     'remove_button',
                 ],
                 onItemAdd() {
-                    select.parentElement.querySelector('.ts-input > input').value = '';
+                    select.parentElement.querySelector('.ts-control > input').value = '';
                     select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
                 },
             },
