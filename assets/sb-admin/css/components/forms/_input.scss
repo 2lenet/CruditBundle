@@ -81,6 +81,12 @@ $input-height: 42px;
             border: none !important;
         }
     }
+
+    & > .choice-tom-select.form-select {
+        height: inherit !important;
+        padding: 0 !important;
+        border: none !important;
+    }
 }
 
 .tab-pane {

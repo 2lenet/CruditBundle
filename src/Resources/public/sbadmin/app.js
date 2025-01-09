@@ -3397,6 +3397,7 @@ window.addEventListener('DOMContentLoaded', function () {
             var nextUrl = dataurl + '?' + params.toString();
             _this2.setNextUrl(query, nextUrl);
           }
+
           // add data to the results
           callback(json.items);
 
@@ -3419,7 +3420,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   // Normal select
-  document.querySelectorAll('select.tom-select').forEach(function (select) {
+  document.querySelectorAll('input.tom-select').forEach(function (select) {
     var settings = {
       maxItems: select.dataset.maxitems,
       plugins: ['remove_button'],

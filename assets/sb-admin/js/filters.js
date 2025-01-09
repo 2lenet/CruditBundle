@@ -107,7 +107,7 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     // Normal select
-    document.querySelectorAll('select.tom-select').forEach(select => {
+    document.querySelectorAll('input.tom-select').forEach(select => {
         const settings = {
             maxItems: select.dataset.maxitems,
             plugins: [
