@@ -22,7 +22,7 @@
         <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
             <a
                 class="
-                    {{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0' }}
+                    {{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action' }}
                     {% if disabled %} disabled{% endif %}
                 "
                 {% if action.modal %}
