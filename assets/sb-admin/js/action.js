@@ -21,9 +21,6 @@ function addTimeoutOnCruditActions() {
     document.querySelectorAll('.crudit-action').forEach(choice => {
         choice.addEventListener('click', () => {
             choice.classList.add('disabled');
-            setTimeout(() => {
-                choice.classList.remove('disabled');
-            }, 500);
         });
     });
 }
