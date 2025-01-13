@@ -40,6 +40,11 @@ trait TraitCrudController
     public function show(Request $request, $id): Response
     {
         $resource = $this->getResource($request, false);
+        if (!$resource) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
 
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_SHOW', $resource);
 
@@ -53,6 +58,11 @@ trait TraitCrudController
     public function edit(Request $request, $id): Response
     {
         $resource = $this->getResource($request, false);
+        if (!$resource) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
 
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT', $resource);
 
@@ -77,6 +87,11 @@ trait TraitCrudController
     public function delete(Request $request): Response
     {
         $resource = $this->getResource($request, false);
+        if (!$resource) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
         if (method_exists($resource, 'canDelete')) {
             $check = $resource->canDelete();
 
@@ -335,7 +350,7 @@ trait TraitCrudController
         return $this->redirectToReferrer($request);
     }
 
-    private function getResource(Request $request, $allowCreate = true): object
+    private function getResource(Request $request, $allowCreate = true): ?object
     {
         $dataSource = $this->config->getDatasource();
         $resource = null;
@@ -344,16 +359,6 @@ trait TraitCrudController
             $resource = $dataSource->get($request->get("id"));
         } elseif ($allowCreate) {
             $resource = $dataSource->newInstance();
-        }
-
-        if ($resource === null) {
-            throw new CruditException(
-                sprintf(
-                    "Resource %s of class %s not found",
-                    $request->get("id", "NO_ID"),
-                    $dataSource->getClassName()
-                )
-            );
         }
 
         return $resource;

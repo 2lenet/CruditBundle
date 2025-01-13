@@ -1,4 +1,4 @@
-window.addEventListener('load', function () {
+function initConfirmModals() {
     const confirmModal = document.getElementById('modal-confirm');
     const confirmModalText = document.getElementById('modal-confirm-text');
     const confirmModalLink = document.getElementById('modal-confirm-link');
@@ -14,4 +14,18 @@ window.addEventListener('load', function () {
             confirmModalLink.setAttribute('href', href);
         });
     }
+}
+
+// Avoid double clic on actions
+function addTimeoutOnCruditActions() {
+    document.querySelectorAll('.crudit-action').forEach(choice => {
+        choice.addEventListener('click', () => {
+            choice.classList.add('disabled');
+        });
+    });
+}
+
+window.addEventListener('load', function () {
+    initConfirmModals();
+    addTimeoutOnCruditActions()
 });

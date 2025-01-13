@@ -137,7 +137,7 @@
                                             <span class="btn-wrapper"
                                                   title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                                                 <a
-                                                    class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
+                                                    class="{{ action.cssClass ?? 'btn btn-sm crudit-action' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
                                                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                                                         {% elseif action.confirmmodal %}
