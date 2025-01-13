@@ -3017,7 +3017,7 @@ function withinMaxClamp(min, value, max) {
   \**************************************/
 /***/ (() => {
 
-window.addEventListener('load', function () {
+function initConfirmModals() {
   var confirmModal = document.getElementById('modal-confirm');
   var confirmModalText = document.getElementById('modal-confirm-text');
   var confirmModalLink = document.getElementById('modal-confirm-link');
@@ -3031,6 +3031,19 @@ window.addEventListener('load', function () {
       confirmModalLink.setAttribute('href', href);
     });
   }
+}
+
+// Avoid double clic on actions
+function addTimeoutOnCruditActions() {
+  document.querySelectorAll('.crudit-action').forEach(function (choice) {
+    choice.addEventListener('click', function () {
+      choice.classList.add('disabled');
+    });
+  });
+}
+window.addEventListener('load', function () {
+  initConfirmModals();
+  addTimeoutOnCruditActions();
 });
 
 /***/ }),
