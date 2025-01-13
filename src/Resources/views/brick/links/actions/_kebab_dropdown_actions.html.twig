@@ -30,7 +30,7 @@
                     {% if not (disabled and crudit_hide_if_disabled(action)) %}
                         {% block kebab_dropdown_actions_item %}
                             <li>
-                                <a class="{{ action.cssClass ?? 'dropdown-item' }} {% if disabled %}disabled{% endif %}"
+                                <a class="{{ action.cssClass ?? 'dropdown-item crudit-action' }} {% if disabled %}disabled{% endif %}"
                                     {% if action.modal %}
                                         data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
                                     {% elseif not action.disabled %}
