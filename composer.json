@@ -27,7 +27,7 @@
         "ezyang/htmlpurifier": "^4.14",
         "friendsofsymfony/jsrouting-bundle": "^3.0",
         "gedmo/doctrine-extensions": "^3.1",
-        "mpdf/mpdf": "^8.2"
+        "mpdf/mpdf": "^8.2",
         "phpdocumentor/reflection-docblock": "^5.0",
         "phpoffice/phpspreadsheet": "^1.18",
         "symfony/dependency-injection": "^6.0 || ^7.0",
