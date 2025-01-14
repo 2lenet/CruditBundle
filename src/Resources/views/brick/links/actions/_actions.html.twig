@@ -20,34 +20,11 @@
 {% if not (disabled and crudit_hide_if_disabled(action)) %}
     {% block actions_item %}
         <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
-            <a
-                class="
-                    {{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action' }}
-                    {% if disabled %} disabled{% endif %}
-                "
-                {% if action.modal %}
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal_{{ action.id }}"
-                {% elseif action.confirmModal %}
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-confirm"
-                    data-confirm-link="{{ path(action.path.route, params) }}"
-                    data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"
-                {% elseif not action.disabled %}
-                    href="{{ action.url ?? path(action.path.route, params) }}"
-                {% endif %}
-
-                {% if action.target is defined and action.target %}
-                    target="{{ action.target }}"
-                {% endif %}
-            >
-                {% if action.icon %}
-                    <i class="{{ action.icon.cssClass }}"></i>
-                {% endif %}
-                {% if not action.hideLabel %}
-                    {{ action.label|trans(domain=view.config.translation_domain) }}
-                {% endif %}
-            </a>
+            {% if action.template %}
+                {% include action.template %}
+            {% else %}
+                {% include '@LleCrudit/brick/links/actions/_action.html.twig' %}
+            {% endif %}
         </span>
     {% endblock %}
 {% endif %}

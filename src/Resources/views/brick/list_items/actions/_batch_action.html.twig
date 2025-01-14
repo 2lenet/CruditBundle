@@ -1,24 +1,24 @@
 {% block action %}
     <a
-            {% block attributes %}
-                class="{{ action.cssClass ?? 'btn btn-sm crudit-batch-dropdown-item dropdown-item' }}"
-                {% if action.modal %}
-                    data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-                {% elseif action.confirmModal %}
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-confirm"
-                    data-confirm-link="{{ path(action.path.route, params) }}"
-                    data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"
-                {% elseif form %}
-                    data-form="batch-form-{{ key ~ '-' ~ view.id }}"
-                {% else %}
-                    href="{{ action.url ?? path(action.path.route, params) }}"
-                {% endif %}
-                title="{{ action.label|trans }}"
-                {% if action.target is defined and action.target %}
-                    target="{{ action.target }}"
-                {% endif %}
-            {% endblock %}
+        {% block attributes %}
+            class="{{ action.cssClass ?? 'btn btn-sm crudit-batch-dropdown-item dropdown-item crudit-action' }}"
+            {% if action.modal %}
+                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+            {% elseif action.confirmModal %}
+                data-bs-toggle="modal"
+                data-bs-target="#modal-confirm"
+                data-confirm-link="{{ path(action.path.route, params) }}"
+                data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"
+            {% elseif form %}
+                data-form="batch-form-{{ key ~ '-' ~ view.id }}"
+            {% else %}
+                href="{{ action.url ?? path(action.path.route, params) }}"
+            {% endif %}
+            title="{{ action.label|trans }}"
+            {% if action.target is defined and action.target %}
+                target="{{ action.target }}"
+            {% endif %}
+        {% endblock %}
     >
         {% if action.icon %}
             {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}

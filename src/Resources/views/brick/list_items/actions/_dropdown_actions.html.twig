@@ -35,39 +35,29 @@
                     {% endif %}
 
                     {% for action in group %}
-                        {% do action.setResource(line.resource) %}
+                    {% do action.setResource(line.resource) %}
 
-                        {% if action.modal %}
-                            {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
-                        {% endif %}
+                    {% if action.modal %}
+                        {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
+                    {% endif %}
 
-                        {% set disabled = action.disabled or not
-                            ((action.path.role is null or is_granted(action.path.role, line.resource))
-                            and (action.role is null or is_granted(action.role, line.resource)))
-                        %}
+                    {% set disabled = action.disabled or not
+                        ((action.path.role is null or is_granted(action.path.role, line.resource))
+                        and (action.role is null or is_granted(action.role, line.resource)))
+                    %}
 
-                        {% if not (disabled and crudit_hide_if_disabled(action)) %}
-                            {% block dropdown_actions_item %}
-                                <li>
-                                    <a
-                                        class="{{ action.cssClass ?? 'dropdown-item crudit-action' }} {% if disabled %}disabled{% endif %}"
-                                        {% if action.modal %}
-                                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-                                        {% elseif not action.disabled %}
-                                            href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                                        {% endif %}
-                                    >
-                                        {% if action.icon %}
-                                            <i class="{{ action.icon.cssClass }}"></i>
-                                        {% endif %}
-                                        {% if not action.hideLabel %}
-                                            {{ action.label|trans(domain=view.config.translation_domain) }}
-                                        {% endif %}
-                                    </a>
+                    {% if not (disabled and crudit_hide_if_disabled(action)) %}
+                        {% block dropdown_actions_item %}
+                            <li>
+                                    {% if action.template %}
+                                        {% include action.template %}
+                                    {% else %}
+                                        {% include '@LleCrudit/brick/list_items/actions/_dropdown_action.html.twig' %}
+                                    {% endif %}
                                 </li>
-                            {% endblock %}
-                        {% endif %}
-                    {% endfor %}
+                        {% endblock %}
+                    {% endif %}
+                {% endfor %}
                 {% endfor %}
             </ul>
         {% endblock %}
