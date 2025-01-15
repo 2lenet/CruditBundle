@@ -34,5 +34,14 @@
         &-content {
             max-height: 175px;
         }
+
+        & .active {
+            background-color: #e9ecef !important;
+            color: black !important;
+        }
+
+        & [data-selectable] .highlight {
+            background-color: rgba(255,237,40,.4);
+        }
     }
 }

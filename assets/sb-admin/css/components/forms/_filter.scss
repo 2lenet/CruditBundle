@@ -63,6 +63,15 @@ $input-group-prepend-length: 60px;
                 left: -#{$input-group-prepend-length};
                 min-width: min(400px, 75vw);
                 z-index: $zindex-dropdown;
+
+                & .active {
+                    background-color: #e9ecef !important;
+                    color: black !important;
+                }
+
+                & [data-selectable] .highlight {
+                    background-color: rgba(255,237,40,.4);
+                }
             }
         }
 

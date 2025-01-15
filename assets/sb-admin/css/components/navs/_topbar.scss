@@ -26,6 +26,19 @@
 
             .ts-dropdown {
                 margin: 0 !important;
+
+                & .active {
+                    background-color: #e9ecef !important;
+                    color: black !important;
+                }
+
+                & [data-selectable] .highlight {
+                    background-color: rgba(255,237,40,.4);
+                }
+            }
+
+            & + .form-label {
+                z-index: 1;
             }
         }
     }
