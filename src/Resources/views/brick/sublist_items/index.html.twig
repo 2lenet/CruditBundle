@@ -71,18 +71,27 @@
                         </thead>
                     {% endif %}
                     <tbody>
-                    {% set ruptval1 = "" %}
-                    {% set ruptval2 = "" %}
+                    {% set ruptval1 = '' %}
+                    {% set ruptval2 = '' %}
 
                     {% for line in view.data.lines %}
                         {% for column in line.fields %}
                             {% if
-                                column.field.role is not defined or column.field.role is null or
-                                (column.field.role is defined and column.field.role is not null and is_granted(column.field.role))
+                                column.field.role is not defined
+                                or column.field.role is null
+                                or (
+                                    column.field.role is defined
+                                    and column.field.role is not null
+                                    and is_granted(column.field.role)
+                                )
                             %}
                                 {# RUPTURE NIVEAU 1 #}
                                 {# Don't display ruptGroup1 if there is a ruptGroup2 #}
-                                {% if column.field.ruptGroup == 1 and view.data.lines[1].fields[1].field.ruptGroup != 2 %}
+                                {% if
+                                    column.field.ruptGroup == 1
+                                    and view.data.lines|length > 1
+                                    and view.data.lines[1].fields[1].field.ruptGroup != 2
+                                %}
                                     {% if ruptval1 != column.value %}
                                         <tr>
                                             <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
@@ -95,7 +104,7 @@
 
                                 {# RUPTURE NIVEAU 2 #}
                                 {% if column.field.ruptGroup == 2 %}
-                                    {% if ruptval2 != column.value %}
+                                    {% if ruptval2 != column.value and view.data.lines|length > 0 %}
                                         <tr>
                                             <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }}
                                                 - {{ column.value|raw }}</th>
@@ -137,7 +146,7 @@
                                             <span class="btn-wrapper"
                                                   title="{{ action.title|trans(domain=view.config.translation_domain) }}">
                                                 <a
-                                                    class="{{ action.cssClass ?? 'btn btn-sm crudit-action' }} {% if action.disabled %}disabled{% endif %}"
+                                                    class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
                                                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
                                                         {% elseif action.confirmmodal %}
