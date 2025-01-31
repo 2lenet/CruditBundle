@@ -409,4 +409,15 @@
     width: 1px !important;
     white-space: nowrap !important;
 }
+
+.is-invalid .ts-wrapper,
+.was-validated .ts-wrapper.invalid {
+    border-color: #DC3545;
+}
+
+.is-invalid .ts-wrapper.focus,
+.was-validated .ts-wrapper.invalid.focus {
+    border-color: #BD2130;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
 /*# sourceMappingURL=tom-select.css.map */
