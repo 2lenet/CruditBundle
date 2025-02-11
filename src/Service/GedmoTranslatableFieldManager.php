@@ -60,11 +60,15 @@ class GedmoTranslatableFieldManager
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $identifierField = $this->em->getClassMetadata($class)->getIdentifier()[0]; // <- none composite keys only
         $identifierValue = $propertyAccessor->getValue($entity, $identifierField);
+
+        if (!$identifierValue) {
+            return null;
+        }
+
         $entityInDefaultLocale = $this->em->getRepository($class)->createQueryBuilder('entity')
             ->select("entity")
             ->where("entity.$identifierField = :identifier")
             ->setParameter('identifier', $identifierValue)
-            ->setMaxResults(1)
             ->getQuery()
             ->useQueryCache(false)
             ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, self::GEDMO_TRANSLATION_WALKER)
