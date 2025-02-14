@@ -108,14 +108,22 @@ class GedmoTranslatableType extends AbstractType
 
     private function getTabLabels(): array
     {
-        $tabLabels = [];
+        $tabLabels = [
+            'fr' => '🇫🇷',
+            'de' => '🇩🇪',
+            'en' => '🇬🇧',
+            'it' => '🇮🇹',
+            'es' => '🇪🇸',
+        ];
         foreach ($this->locales as $locale) {
-            $tabLabels[$locale] = ucfirst(\Locale::getDisplayLanguage($locale, $this->currentLocale));
+            if (!isset($tabLabels[$locale])) {
+                $tabLabels[$locale] = ucfirst(\Locale::getDisplayLanguage($locale, $this->currentLocale));
+            }
         }
 
         return $tabLabels;
     }
-
+    
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
