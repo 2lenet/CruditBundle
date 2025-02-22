@@ -80,3 +80,7 @@ SublistConfig::new('client', $this->commandeCrudConfig)
 ## Sublists
 
 See [Sublists](sublist.md)
+
+## Tags
+
+See [Tags](brick/tags.md)

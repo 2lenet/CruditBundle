@@ -10,6 +10,7 @@ import './form';
 import './multisearch';
 import './scroll-to-top';
 import './sidebar';
+import './tag';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {

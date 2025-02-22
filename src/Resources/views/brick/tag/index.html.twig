@@ -1,0 +1,28 @@
+<div class="card shadow mb-4">
+    <div class="card-body">
+        {% for key, tag in view.data.tags %}
+            {% if tag is iterable %}
+                {% block group_tags %}
+                    <div class="d-flex flex-wrap mb-3">
+                        <div class="col-2">{{ key }}</div>
+                        <div class="col-10">
+                            {% for t in tag %}
+                                {% include '@LleCrudit/brick/tag/_tag.html.twig' with {
+                                    tag: t,
+                                    currentTags: view.data.currentTags,
+                                    editRoute: view.data.editRoute
+                                } %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endblock %}
+            {% else %}
+                {% include '@LleCrudit/brick/tag/_tag.html.twig' with {
+                    tag: tag,
+                    currentTags: view.data.currentTags,
+                    editRoute: view.data.editRoute
+                } %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

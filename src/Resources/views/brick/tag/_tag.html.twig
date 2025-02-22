@@ -1,0 +1,10 @@
+{% block tag %}
+    <div
+        class="crudit-tag d-inline-block me-1 text-decoration-none"
+        data-edit-route="{{ path(editRoute, {id: app.request.get('id'), tag: tag.id}) }}"
+    >
+        <span class="badge bg-{% if tag in currentTags %}primary {% else %}secondary {% endif %}">
+            <i class="{% if tag in currentTags %} fas fa-check-square {% else %} fas fa-square {% endif %}"></i> {{ tag }}
+        </span>
+    </div>
+{% endblock %}
