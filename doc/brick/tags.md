@@ -17,7 +17,7 @@ public function getTabs(): array
 }
 ```
 
-You can pass an optional third parameter, which is the method of your datasource (1st params) that will be used to retrieve the data (default: `getTags()`).
+You can pass 2 optionals parameters, which are the role for editing tags and the method of your datasource (1st params) that will be used to retrieve the data (default: `getTags()`).
 
 > This method receive a `id` params who's typed in `int|string`
 
@@ -25,7 +25,7 @@ You can pass an optional third parameter, which is the method of your datasource
 public function getTabs(): array
 {
     return [
-        'tab.tags' => TagConfig::new($this->getDatasource(), 'app_crudit_refuge_addtag', 'getSpecialTags'),
+        'tab.tags' => TagConfig::new($this->getDatasource(), 'app_crudit_refuge_addtag', 'ROLE_TOTO', 'getSpecialTags'),
     ];
 }
 ```

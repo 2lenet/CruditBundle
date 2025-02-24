@@ -3,7 +3,7 @@
 import {addFlash} from './editinplace';
 
 window.addEventListener('load', function () {
-    let tagsElement = document.querySelectorAll('.crudit-tag');
+    let tagsElement = document.querySelectorAll('.crudit-tag-input');
     if (tagsElement) {
         tagsElement.forEach((tagElement) => {
             tagElement.addEventListener('click', () => {
@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
                 fetch(editRoute)
                     .then((response) => {
                         if (response.status === 200) {
-                            changeTagDesign(tagElement);
+                            changeTagDesign(tagElement.parentElement);
                         } else if (response.status >= 400) {
                             response.json().then((json) => {
                                 addFlash(json.message || 'Error while saving data.', 'danger');
@@ -25,8 +25,7 @@ window.addEventListener('load', function () {
     }
 });
 
-function changeTagDesign(tagElement) {
-    let spanElement = tagElement.querySelector('span');
+function changeTagDesign(spanElement) {
     if (spanElement) {
         if (spanElement.classList.contains('bg-secondary')) {
             spanElement.classList.remove('bg-secondary');
@@ -34,17 +33,6 @@ function changeTagDesign(tagElement) {
         } else {
             spanElement.classList.remove('bg-primary');
             spanElement.classList.add('bg-secondary');
-        }
-
-        let icon = tagElement.querySelector('i');
-        if (icon) {
-            if (icon.classList.contains('fa-square')) {
-                icon.classList.remove('fas', 'fa-square');
-                icon.classList.add('fas', 'fa-check-square');
-            } else {
-                icon.classList.remove('fas', 'fa-check-square');
-                icon.classList.add('fas', 'fa-square');
-            }
         }
     }
 }

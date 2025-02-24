@@ -1,10 +1,15 @@
 {% block tag %}
-    <div
-        class="crudit-tag d-inline-block me-1 text-decoration-none"
-        data-edit-route="{{ path(editRoute, {id: app.request.get('id'), tag: tag.id}) }}"
-    >
+    {% set disabled = editRole and not is_granted(editRole) %}
+
+    <label class="crudit-tag d-inline-block me-1">
         <span class="badge bg-{% if tag in currentTags %}primary {% else %}secondary {% endif %}">
-            <i class="{% if tag in currentTags %} fas fa-check-square {% else %} fas fa-square {% endif %}"></i> {{ tag }}
+            <input
+                type="checkbox"
+                class="crudit-tag-input"
+                {% if tag in currentTags %}checked{% endif %}
+                {% if disabled %}disabled{% endif %}
+                data-edit-route="{{ path(editRoute, {id: app.request.get('id'), tag: tag.id}) }}"
+            ></input> {{ tag }}
         </span>
-    </div>
+    </label>
 {% endblock %}

@@ -10,7 +10,8 @@
                                 {% include '@LleCrudit/brick/tag/_tag.html.twig' with {
                                     tag: t,
                                     currentTags: view.data.currentTags,
-                                    editRoute: view.data.editRoute
+                                    editRoute: view.data.editRoute,
+                                    editRole: view.data.editRole,
                                 } %}
                             {% endfor %}
                         </div>
@@ -20,7 +21,8 @@
                 {% include '@LleCrudit/brick/tag/_tag.html.twig' with {
                     tag: tag,
                     currentTags: view.data.currentTags,
-                    editRoute: view.data.editRoute
+                    editRoute: view.data.editRoute,
+                    editRole: view.data.editRole,
                 } %}
             {% endif %}
         {% endfor %}

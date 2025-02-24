@@ -12,13 +12,18 @@ class TagConfig extends AbstractBrickConfig
     public function __construct(
         protected DatasourceInterface $datasource,
         protected string $editRoute,
+        protected ?string $editRole = null,
         protected ?string $getTagsMethod = null,
     ) {
     }
 
-    public static function new(DatasourceInterface $datasource, string $editRoute, ?string $getTagsMethod = null): self
-    {
-        return new self($datasource, $editRoute, $getTagsMethod);
+    public static function new(
+        DatasourceInterface $datasource,
+        string $editRoute,
+        ?string $editRole = null,
+        ?string $getTagsMethod = null
+    ): self {
+        return new self($datasource, $editRoute, $editRole, $getTagsMethod);
     }
 
     public function getDatasource(): DatasourceInterface
@@ -53,6 +58,18 @@ class TagConfig extends AbstractBrickConfig
     public function setTagsMethod(?string $method): self
     {
         $this->getTagsMethod = $method;
+
+        return $this;
+    }
+
+    public function getEditRole(): ?string
+    {
+        return $this->editRole;
+    }
+
+    public function setEditRole(string $editRole): self
+    {
+        $this->editRole = $editRole;
 
         return $this;
     }

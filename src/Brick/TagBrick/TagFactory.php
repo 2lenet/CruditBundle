@@ -34,6 +34,7 @@ class TagFactory extends AbstractBasicBrickFactory
                     'tags' => $data['tags'],
                     'currentTags' => $data['currentTags'],
                     'editRoute' => $brickConfigurator->getEditRoute(),
+                    'editRole' => $brickConfigurator->getEditRole(),
                 ]);
         }
 

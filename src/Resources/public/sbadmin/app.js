@@ -3851,14 +3851,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 window.addEventListener('load', function () {
-  var tagsElement = document.querySelectorAll('.crudit-tag');
+  var tagsElement = document.querySelectorAll('.crudit-tag-input');
   if (tagsElement) {
     tagsElement.forEach(function (tagElement) {
       tagElement.addEventListener('click', function () {
         var editRoute = tagElement.dataset.editRoute;
         fetch(editRoute).then(function (response) {
           if (response.status === 200) {
-            changeTagDesign(tagElement);
+            changeTagDesign(tagElement.parentElement);
           } else if (response.status >= 400) {
             response.json().then(function (json) {
               (0,_editinplace__WEBPACK_IMPORTED_MODULE_0__.addFlash)(json.message || 'Error while saving data.', 'danger');
@@ -3871,8 +3871,7 @@ window.addEventListener('load', function () {
     });
   }
 });
-function changeTagDesign(tagElement) {
-  var spanElement = tagElement.querySelector('span');
+function changeTagDesign(spanElement) {
   if (spanElement) {
     if (spanElement.classList.contains('bg-secondary')) {
       spanElement.classList.remove('bg-secondary');
@@ -3880,16 +3879,6 @@ function changeTagDesign(tagElement) {
     } else {
       spanElement.classList.remove('bg-primary');
       spanElement.classList.add('bg-secondary');
-    }
-    var icon = tagElement.querySelector('i');
-    if (icon) {
-      if (icon.classList.contains('fa-square')) {
-        icon.classList.remove('fas', 'fa-square');
-        icon.classList.add('fas', 'fa-check-square');
-      } else {
-        icon.classList.remove('fas', 'fa-check-square');
-        icon.classList.add('fas', 'fa-square');
-      }
     }
   }
 }
