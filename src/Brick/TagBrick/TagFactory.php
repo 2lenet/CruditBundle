@@ -4,10 +4,7 @@ namespace Lle\CruditBundle\Brick\TagBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Datasource\DatasourceFilter;
-use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 class TagFactory extends AbstractBasicBrickFactory
 {
