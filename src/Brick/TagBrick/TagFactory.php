@@ -5,6 +5,7 @@ namespace Lle\CruditBundle\Brick\TagBrick;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
+use Lle\CruditBundle\Exception\CruditException;
 
 class TagFactory extends AbstractBasicBrickFactory
 {
@@ -20,6 +21,15 @@ class TagFactory extends AbstractBasicBrickFactory
             $config = $brickConfigurator->getConfig($this->getRequest());
             $objectId = $this->getRequest()->get('id');
             $resource = $brickConfigurator->getDatasource()->get($objectId);
+            if (!$resource) {
+                throw new CruditException(
+                    sprintf(
+                        "Resource %s of class %s not found",
+                        $request->get("id", "NO_ID"),
+                        $brickConfigurator->getDatasource()->getClassName()
+                    )
+                );
+            }
 
             $data = $brickConfigurator->getTagsMethod()
                 ? $brickConfigurator->getDatasource()->{$brickConfigurator->getTagsMethod()}($resource)
