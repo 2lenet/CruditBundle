@@ -500,7 +500,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this;
     }
 
-    public function getTags(int|string $id): iterable
+    public function getTags(object $resource): iterable
     {
         return ['tags' => [], 'currentTags' => []];
     }
