@@ -145,7 +145,7 @@ function submitEIP(eip_elem, eip_input, eip_val) {
     }
 }
 
-function addFlash(message, type = 'success') {
+export function addFlash(message, type = 'success') {
     let flash = document.createElement('div');
     flash.classList.add('alert', 'alert-dismissible');
     flash.classList.add('alert-' + type);

@@ -3162,9 +3162,13 @@ function saveIds() {
 /*!*******************************************!*\
   !*** ./assets/sb-admin/js/editinplace.js ***!
   \*******************************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   addFlash: () => (/* binding */ addFlash)
+/* harmony export */ });
 
 
 //called when the DOM tree is built (before load)
@@ -3831,6 +3835,53 @@ window.addEventListener('load', function () {
     }
   }
 });
+
+/***/ }),
+
+/***/ "./assets/sb-admin/js/tag.js":
+/*!***********************************!*\
+  !*** ./assets/sb-admin/js/tag.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./editinplace */ "./assets/sb-admin/js/editinplace.js");
+
+
+
+window.addEventListener('load', function () {
+  var tagsElement = document.querySelectorAll('.crudit-tag-input');
+  if (tagsElement) {
+    tagsElement.forEach(function (tagElement) {
+      tagElement.addEventListener('click', function () {
+        var editRoute = tagElement.dataset.editRoute;
+        fetch(editRoute).then(function (response) {
+          if (response.status === 200) {
+            changeTagDesign(tagElement.parentElement);
+          } else if (response.status >= 400) {
+            response.json().then(function (json) {
+              (0,_editinplace__WEBPACK_IMPORTED_MODULE_0__.addFlash)(json.message || 'Error while saving data.', 'danger');
+            })["catch"](function () {
+              (0,_editinplace__WEBPACK_IMPORTED_MODULE_0__.addFlash)('Unknown error, please contact an administrator.', 'danger');
+            });
+          }
+        });
+      });
+    });
+  }
+});
+function changeTagDesign(spanElement) {
+  if (spanElement) {
+    if (spanElement.classList.contains('bg-secondary')) {
+      spanElement.classList.remove('bg-secondary');
+      spanElement.classList.add('bg-primary');
+    } else {
+      spanElement.classList.remove('bg-primary');
+      spanElement.classList.add('bg-secondary');
+    }
+  }
+}
 
 /***/ }),
 
@@ -44853,7 +44904,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _action__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./action */ "./assets/sb-admin/js/action.js");
 /* harmony import */ var _action__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_action__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editinplace */ "./assets/sb-admin/js/editinplace.js");
-/* harmony import */ var _editinplace__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_editinplace__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _batch_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./batch_actions */ "./assets/sb-admin/js/batch_actions.js");
 /* harmony import */ var _batch_actions__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_batch_actions__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _input_date__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./input_date */ "./assets/sb-admin/js/input_date.js");
@@ -44869,7 +44919,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scroll_to_top__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./scroll-to-top */ "./assets/sb-admin/js/scroll-to-top.js");
 /* harmony import */ var _scroll_to_top__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_scroll_to_top__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var _sidebar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./sidebar */ "./assets/sb-admin/js/sidebar.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _tag__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./tag */ "./assets/sb-admin/js/tag.js");
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+
 
 
 
@@ -44900,11 +44952,11 @@ window.addEventListener('load', function () {
   });
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
   popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_12__.Popover(popoverTriggerEl);
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_13__.Popover(popoverTriggerEl);
   });
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_12__.Tooltip(tooltipTriggerEl);
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_13__.Tooltip(tooltipTriggerEl);
   });
 });
 })();

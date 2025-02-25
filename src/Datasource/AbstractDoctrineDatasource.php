@@ -499,4 +499,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         return $this;
     }
+
+    public function getTags(int|string $id): iterable
+    {
+        return ['tags' => [], 'currentTags' => []];
+    }
 }
