@@ -19,10 +19,11 @@ class TagFactory extends AbstractBasicBrickFactory
         if ($brickConfigurator instanceof TagConfig) {
             $config = $brickConfigurator->getConfig($this->getRequest());
             $objectId = $this->getRequest()->get('id');
+            $resource = $brickConfigurator->getDatasource()->get($objectId);
 
             $data = $brickConfigurator->getTagsMethod()
-                ? $brickConfigurator->getDatasource()->{$brickConfigurator->getTagsMethod()}($objectId)
-                : $brickConfigurator->getDatasource()->getTags($objectId);
+                ? $brickConfigurator->getDatasource()->{$brickConfigurator->getTagsMethod()}($resource)
+                : $brickConfigurator->getDatasource()->getTags($resource);
 
             $view
                 ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/tag')

@@ -2,7 +2,7 @@
 
 First of all, you need to implement the brick in your CrudConfig file, in the `getTabs` method for exemple.
 
-To do this, you need to pass 2 parameters, the datasource where you will put the method for retriebing the data and the route that you will use to modify the tags linked to your object.
+To do this, you need to pass 2 parameters, the datasource where you will put the method for retrieving the data and the route that you will use to modify the tags linked to your object.
 
 ```php
 use Lle\CruditBundle\Brick\TagBrick\TagConfig;
@@ -30,15 +30,15 @@ public function getTabs(): array
 }
 ```
 
-The next step is to configure the `getTags()` method (or another if you've override it) in your datasource to get the data you want.
+The next step is to configure the `getTags()` method (or another if you've overridden it) in your datasource to get the data you want.
 
 You need to return an array with 2 keys, `tags` (the list of available tags) and `currentTags` (the tags currently linked to your object).
 
 ```php
-public function getTags(int|string $id): iterable
+public function getTags(object $resource): iterable
 {
     $tags = $this->entityManager->getRepository(YourTagEntity::class)->findAll();
-    $currentTags = $this->entityManager->getRepository(YourEntity)->findBy(['your_field' => $id]);
+    $currentTags = $this->entityManager->getRepository(YourEntity)->findBy(['your_field' => $resource]); // you can also use the getter on your resource
     
     return ['tags' => $tags, 'currentTags' => $currentTags];
 }
@@ -47,15 +47,11 @@ public function getTags(int|string $id): iterable
 You can also group these tags by category as follows.
 
 ```php
-public function getTags(int|string $id): iterable
+public function getTags(object $resource): iterable
 {
     $groupedTags = [];
     $tags = $this->entityManager->getRepository(YourTagEntity::class)->findAll();
-    foreach ($tags as $tag) {
-        if (!array_key_exists($tag->getCategory(), $groupedTags)) {
-            $groupedTags[$tag->getCategory()] = [];
-        }
-        
+    foreach ($tags as $tag) {        
         $groupedTags[$tag->getCategory()][] = $tag;
     }
     
