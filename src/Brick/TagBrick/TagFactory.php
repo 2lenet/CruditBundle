@@ -25,7 +25,7 @@ class TagFactory extends AbstractBasicBrickFactory
                 throw new CruditException(
                     sprintf(
                         "Resource %s of class %s not found",
-                        $request->get("id", "NO_ID"),
+                        $this->getRequest()->get("id", "NO_ID"),
                         $brickConfigurator->getDatasource()->getClassName()
                     )
                 );
