@@ -184,7 +184,7 @@ trait TraitCrudController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            $dataSource->fillFromData($item, $data);
+            $dataSource->fillFromData($item, $data, $request->query->all());
             $errors = $validator->validate($item);
 
             if (count($errors) > 0) {

@@ -2,7 +2,17 @@
     (view.field.editInPlace and view.field.options['editRole'] is not defined)
     or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
-    {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
+    {% set edit_url = path(view.field.options['edit_route'], {
+        id: resource.id,
+        options: {
+            (view.field.id) : {
+                currency: options['isInt'] is defined and options['isInt'] ? 'currency_int' : 'currency_float'
+            }
+        }
+    }) %}
+    {% if options['isInt'] is defined and options['isInt'] %}
+        {% set value =  value / 100 %}
+    {% endif %}
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
