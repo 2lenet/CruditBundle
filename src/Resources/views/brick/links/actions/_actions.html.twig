@@ -1,0 +1,30 @@
+{% set params = action.path.params %}
+{% if view.data.resource and action.setResource is defined%}
+    {% do action.setResource(view.data.resource) %}
+{% endif %}
+
+{% set id = app.request.attributes.get('id') %}
+{% if id %}
+    {% set params = action.path.params|merge({id: id}) %}
+{% endif %}
+
+{% if action.modal %}
+    {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
+{% endif %}
+
+{% set disabled = action.disabled or not
+    ((action.path.role is null or is_granted(action.path.role, view.data.resource))
+    and (action.role is null or is_granted(action.role, view.data.resource)))
+%}
+
+{% if not (disabled and crudit_hide_if_disabled(action)) %}
+    {% block actions_item %}
+        <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
+            {% if action.template %}
+                {% include action.template %}
+            {% else %}
+                {% include '@LleCrudit/brick/links/actions/_action.html.twig' %}
+            {% endif %}
+        </span>
+    {% endblock %}
+{% endif %}

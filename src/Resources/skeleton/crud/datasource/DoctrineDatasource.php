@@ -1,12 +1,12 @@
-<?= "<?php" ?>
-<?php if ($strictType): ?>
+<?= '<?php' ?>
 
+<?php if ($strictType) { echo "\n"; ?>
 declare(strict_types=1);
-<?php endif; ?>
+<?php } ?>
 
 namespace <?= $namespace; ?>;
 
-<?php if ($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $prefixFilename ?>FilterSet;<?php echo "\n"; } ?>
+<?php if ($hasFilterset) { ?>use App\Crudit\Datasource\Filterset\<?= $configSubdirectorie ?><?= $prefixFilename ?>FilterSet;<?php echo "\n"; } ?>
 use App\Entity\<?= $entityClass ?>;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 <?php if ($hasFilterset) { ?>

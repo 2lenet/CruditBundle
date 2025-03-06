@@ -1,8 +1,14 @@
+{% block autorefresh %}
+    {% if view.data.auto_refresh is defined and view.data.auto_refresh %}
+        <meta http-equiv="refresh" content="{{ view.data.auto_refresh }}">
+    {% endif %}
+{% endblock %}
+
 {% set has_batch = view.data.batch_actions|length %}
 <div class="card shadow mb-4">
     <div class="card-header py-1">
         {% include('@LleCrudit/brick/list_items/_pager.html.twig') %}
-        {% include('@LleCrudit/brick/list_items/_batch.html.twig') %}
+        {% include('@LleCrudit/brick/list_items/actions/_batch_actions.html.twig') %}
     </div>
 
     <div class="card-body">
@@ -13,9 +19,9 @@
                     <tr>
                         {% if has_batch %}
                             <th>
-                                    <span>
-                                        <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
-                                    </span>
+                                <span>
+                                    <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
+                                </span>
                             </th>
                         {% endif %}
                         {% for field in view.config.fields %}
@@ -73,8 +79,14 @@
                             {% set hasActions = false %}
                             {% for action in view.config.actions %}
                                 {% if
-                                    (action.path.role is null or is_granted(action.path.role))
-                                    and (action.role is null or is_granted(action.role))
+                                    (
+                                        not crudit_is_dropdown_action(action)
+                                        and (action.path.role is null or is_granted(action.path.role))
+                                        and (action.role is null or is_granted(action.role))
+                                    ) or (
+                                        crudit_is_dropdown_action(action)
+                                        and (action.role is null or is_granted(action.role))
+                                    )
                                 %}
                                     {% set hasActions = true %}
                                 {% endif %}

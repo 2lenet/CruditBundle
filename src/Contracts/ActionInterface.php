@@ -7,7 +7,7 @@ use Lle\CruditBundle\Dto\Path;
 
 interface ActionInterface
 {
-    public function __construct(string $label, Path $path);
+    public function __construct(string $label);
 
     public function getId(): string;
 
@@ -37,6 +37,10 @@ interface ActionInterface
 
     public function setModal(?string $modal): static;
 
+    public function getConfirmModal(): bool;
+
+    public function setConfirmModal(bool $confirmModal): static;
+
     public function getConfig(): array;
 
     public function setConfig(array $config): static;
@@ -50,4 +54,15 @@ interface ActionInterface
     public function getRole(): ?string;
 
     public function setRole(string $role): static;
+
+    public function getHideIfDisabled(): ?bool;
+
+    public function setHideIfDisabled(?bool $hideIfDisabled): static;
+
+    public function getTemplate(): ?string;
+
+    /**
+     * @param ?string $template #Template
+     */
+    public function setTemplate(?string $template): static;
 }

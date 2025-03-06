@@ -2,12 +2,22 @@
     (view.field.editInPlace and view.field.options['editRole'] is not defined)
     or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
-    {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
+    {% set edit_url = path(view.field.options['edit_route'], {
+        id: resource.id,
+        options: {
+            (view.field.id) : {
+                currency: options['isInt'] is defined and options['isInt'] ? 'currency_int' : 'currency_float'
+            }
+        }
+    }) %}
+    {% if options['isInt'] is defined and options['isInt'] %}
+        {% set value =  value / 100 %}
+    {% endif %}
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
-                <input type="text" class="form-control form-control-sm crudit-eip-input" style="min-width: 100px;"
-                       autocomplete="off" value="{{ value }}">
+                <input type="number" class="form-control form-control-sm crudit-eip-input" style="min-width: 100px;"
+                       autocomplete="off" value="{{ value }}" step="0.01">
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary crudit-eip-submit">
                         <i class="fa fa-check"></i>
@@ -34,7 +44,12 @@
     {% if options.removeHtml %}
         {{ result }}
     {% else %}
-        <div class="{{ view.field.options['tableCssClass']|default('text-end') }} me-3">
+        {% set tableCssClass = options.tableCssClass %}
+        {% if view.field.options is defined and view.field.options and view.field.options['tableCssClass'] is defined %}
+            {% set tableCssClass = view.field.options['tableCssClass'] %}
+        {% endif %}
+
+        <div class="{{ tableCssClass|default('text-end') }} me-3">
             {{ result }}
         </div>
     {% endif %}

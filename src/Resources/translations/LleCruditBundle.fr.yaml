@@ -31,6 +31,7 @@ crudit:
         back: "Retour"
         logout: "Déconnexion"
         batch: "Choisir une action de masse"
+        validate: "Valider"
 
     message:
         success: "Succès"
@@ -39,13 +40,13 @@ crudit:
     modal:
         cancel: "Annuler"
         validate: "Valider"
+        confirm:
+            message: "Souhaitez-vous vraiment confirmer cette action ? Cette action est irréversible."
+            action: "Confirmer"
         export:
             message: "Choisissez un format d'export"
             action: "Exporter"
             notConfigured: "L'export n'est pas configuré"
-        delete:
-            message: "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible."
-            action: "Supprimer"
         transition:
             message: "Voulez-vous vraiment modifier le statut de cet élément ?"
             action: "Valider"
@@ -101,6 +102,7 @@ crudit:
                 access_denied: "Vous n'avez pas le droit de modifier cette valeur."
                 bad_request: "Vous essayez de modifer une valeur inexistante."
             delete: "Impossible de supprimer cet objet."
+            resource_not_found: "La ressource n'a pas été trouvée."
 
     error:
         generic:

@@ -1,3 +1,9 @@
+{% block autorefresh %}
+    {% if view.data.auto_refresh is defined and view.data.auto_refresh %}
+        <meta http-equiv="refresh" content="{{ view.data.auto_refresh }}">
+    {% endif %}
+{% endblock %}
+
 <div
     class="card shadow mb-4 {% if view.data.resource.resource and view.data.resource.resource.getCssClass is defined %}{{ view.data.resource.resource.getCssClass }}{% endif %}">
     <div class="card-body">

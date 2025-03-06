@@ -54,11 +54,22 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
      */
     protected function getFormType(string $pageKey): ?string
     {
-        return str_replace(
+        $formFqcn = str_replace(
             'App\Crudit\Config',
-            'App\Form',
+            'App\Form\Crudit',
             str_replace('CrudConfig', 'Type', get_class($this))
         );
+
+        // compatibility for old project
+        if (!class_exists($formFqcn)) {
+            $formFqcn = str_replace(
+                'App\Crudit\Config',
+                'App\Form',
+                str_replace('CrudConfig', 'Type', get_class($this))
+            );
+        }
+
+        return $formFqcn;
     }
 
     public function getListActions(): array
@@ -73,6 +84,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::NEW),
             Icon::new('plus')
         )
+            ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::NEW));
 
         /**
@@ -83,10 +95,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::EXPORT),
             Icon::new('file-export')
         )
+            ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-export-action')
             ->setModal('@LleCrudit/modal/_export.html.twig')
             ->setConfig(
                 [
-                    'export' => [Exporter::EXCEL, Exporter::CSV],
+                    'export' => [Exporter::EXCEL, Exporter::CSV, Exporter::PDF],
                 ]
             )
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EXPORT));
@@ -103,7 +116,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
         )
-            ->setCssClass('btn btn-primary btn-sm mr-1')
+            ->setCssClass('btn btn-primary btn-sm crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
@@ -111,7 +124,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )
-            ->setCssClass('btn btn-secondary btn-sm mr-1')
+            ->setCssClass('btn btn-secondary btn-sm crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
 
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
@@ -119,8 +132,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
         )
-            ->setCssClass('btn btn-danger btn-sm mr-1')
-            ->setModal('@LleCrudit/modal/_confirm_delete.html.twig')
+            ->setCssClass('btn btn-danger btn-sm crudit-action')
+            ->setConfirmModal(true)
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
         return $actions;
@@ -135,7 +148,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::INDEX),
             Icon::new('list')
         )
-            ->setCssClass('btn btn-secondary btn-sm mr-1')
+            ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
@@ -143,7 +156,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )
-            ->setCssClass('btn btn-secondary btn-sm mr-1')
+            ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
 
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
@@ -151,8 +164,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::DELETE),
             Icon::new('trash-alt')
         )
-            ->setCssClass('btn btn-danger btn-sm mr-1')
-            ->setModal('@LleCrudit/modal/_confirm_delete.html.twig')
+            ->setCssClass('btn btn-danger btn-sm ms-1 crudit-action')
+            ->setConfirmModal(true)
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
         return $actions;
@@ -308,9 +321,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setFilename($this->getName());
     }
 
-    public function getAfterEditPath(): Path
+    public function getAfterEditPath(): ?Path
     {
-        return $this->getPath(CrudConfigInterface::INDEX);
+        return null;
     }
 
     public function getNbItems(): int
@@ -341,5 +354,15 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getTotalFields(): array
     {
         return [];
+    }
+
+    public function getListAutoRefresh(): ?int
+    {
+        return null;
+    }
+
+    public function getShowAutoRefresh(): ?int
+    {
+        return null;
     }
 }

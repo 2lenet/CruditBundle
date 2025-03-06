@@ -112,4 +112,12 @@ class FilterState
 
         return $filterdata;
     }
+
+    /**
+     * @param array|null $filterdata
+     */
+    public function setFilterdata(?array $filterdata): void
+    {
+        $this->filterdata = $filterdata;
+    }
 }

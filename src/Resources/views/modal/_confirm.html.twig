@@ -1,0 +1,18 @@
+{% extends '@LleCrudit/modal/_base_modal.html.twig' %}
+
+{% block content %}
+    <div class="modal-body">
+        <p id="modal-confirm-text">
+            {{ 'crudit.modal.confirm.message'|trans({}, 'LleCruditBundle') }}
+        </p>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            {{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}
+        </button>
+        <a id="modal-confirm-link" href="#" type="button" class="btn btn-danger crudit-action">
+            {{ 'crudit.modal.confirm.action'|trans({}, 'LleCruditBundle') }}
+        </a>
+    </div>
+{% endblock %}

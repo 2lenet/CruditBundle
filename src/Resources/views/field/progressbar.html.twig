@@ -1,0 +1,30 @@
+<div class="position-relative d-flex">
+    <div class="progress w-100" role="progressbar" aria-valuenow="{{ value }}"
+         aria-valuemin="{{ options.min }}" aria-valuemax="{{ options.max }}">
+        <div class="progress-bar
+            {% if value > options.max %} bg-danger 
+            {% else %} bg-primary {% endif %}
+            {% if options.barCssClass %} {{ options.barCssClass }}{% endif %}
+            progress-bar-animated" style="width: {{ value }}%;">
+        </div>
+    </div>
+    <div class="d-flex position-absolute justify-content-center align-items-center w-100">
+        <span class="{% if value > options.max %} text-white {% endif %}
+            {% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
+            {% else %} lh-sm fa-sm {% endif %}">
+            {% if options.progressLabel %}
+                {{ options.progressLabel }}
+            {% else %} {{ value }} % {% endif %}
+        </span>
+    </div>
+</div>
+
+{% if options.isBottomLabelActivate %}
+    <div>
+        <span class="{% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
+            {% else %} lh-sm fa-sm {% endif %}">
+            {% if options.bottomLabel %} {{ options.bottomLabel }}
+            {% else %} {{ value }} % {% endif %}
+        </span>
+    </div>
+{% endif %}

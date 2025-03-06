@@ -1,9 +1,12 @@
 {# Get allowed transitions #}
 
-{% set transitions = workflow_transitions(resource, options.name|default(null)) %}
+{% set workflow_name = options.name|default(get_workflow_names(resource)|first) %}
+
+{% set transitions = workflow_transitions(resource, workflow_name) %}
+
 {# Filter by user role #}
 {% if view.config %}
-    {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (view.config.name) ~ '_WF_' ~ (t.name | upper | replace({'-': '_'})))) %}
+    {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (workflow_name|upper) ~ '_WF_' ~ (t.name | upper | replace({'-': '_'})))) %}
 {% endif %}
 
 {% if transitions is not empty %}
@@ -47,6 +50,7 @@
                                 id : resource.id,
                                 transition: transition.name,
                                 field: view.field.name,
+                                name: workflow_name,
                             }) : '#' }}"
                             class="btn btn-primary">
                             {{ 'crudit.modal.transition.action'|trans({}, 'LleCruditBundle') }}

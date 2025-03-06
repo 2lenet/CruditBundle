@@ -31,6 +31,7 @@ crudit:
         back: "Go back"
         logout: "Logout"
         batch: "Choose a batch action"
+        validate: "Validate"
 
     message:
         success: "Success"
@@ -39,13 +40,13 @@ crudit:
     modal:
         cancel: "Cancel"
         validate: "Validate"
+        confirm:
+            message: "Do you really wish to confirm this action ? This action is irreversible."
+            action: "Confirm"
         export:
             message: "Choose your export format"
             action: "Export"
             notConfigured: "Export is not configured"
-        delete:
-            message: "Do you really wish to delete this element ? This action is irreversible."
-            action: "Delete"
 
     field:
         createdAt: "Created at"
@@ -98,6 +99,7 @@ crudit:
                 access_denied: "You are not allowed to change this value."
                 bad_request: "You are trying to edit a non-existing value."
             delete: "Impossible to delete this object."
+            resource_not_found: "The resource has not been found."
 
     error:
         generic:

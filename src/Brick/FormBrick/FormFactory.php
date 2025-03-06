@@ -9,6 +9,7 @@ use Lle\CruditBundle\Brick\BrickResponse\FlashBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -92,19 +93,8 @@ class FormFactory extends AbstractBasicBrickFactory
                     $resource = $this->propertyAccessor->getValue($resource, $brickConfig->getAssocProperty());
                 }
 
-                $referer = $this->getRequest()->request->get('referer');
-                $this->brickResponseCollector->add(
-                    new RedirectBrickResponse(
-                        ($referer ? (string)$referer : null)
-                        ?? $this->urlGenerator->generate(
-                            $brickConfig->getSuccessRedirectPath()->getRoute(),
-                            array_merge(
-                                $brickConfig->getSuccessRedirectPath()->getParams(),
-                                ['id' => $resource->getId()]
-                            )
-                        )
-                    )
-                );
+                $redirectPath = $this->getRedirectPath($brickConfig, $resource);
+                $this->brickResponseCollector->add(new RedirectBrickResponse($redirectPath));
             } else {
                 $this->addFlash(FlashBrickResponse::ERROR, $brickConfig->getMessageError());
             }
@@ -174,6 +164,33 @@ class FormFactory extends AbstractBasicBrickFactory
 
         if (method_exists($request->getSession(), "getFlashBag")) {
             $request->getSession()->getFlashBag()->add($type, $message);
+        }
+    }
+
+    private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
+    {
+        if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
+            return $this->urlGenerator->generate(
+                $successRedirectPath->getRoute(),
+                array_merge(
+                    $successRedirectPath->getParams(),
+                    ['id' => $resource->getId()]
+                )
+            );
+        } elseif ($afterEditPath = $brickConfig->getCrudConfig()->getAfterEditPath()) {
+            return $this->urlGenerator->generate(
+                $afterEditPath->getRoute(),
+                array_merge(
+                    $afterEditPath->getParams(),
+                    ['id' => $resource->getId()]
+                )
+            );
+        } elseif ($referer = (string)$this->getRequest()->request->get('referer')) {
+            return $referer;
+        } else {
+            return $this->urlGenerator->generate(
+                $brickConfig->getCrudConfig()->getPath(CrudConfigInterface::INDEX)->getRoute()
+            );
         }
     }
 }

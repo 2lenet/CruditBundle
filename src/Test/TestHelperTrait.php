@@ -7,87 +7,130 @@ use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 trait TestHelperTrait
 {
+    protected KernelBrowser $client;
+    protected RouterInterface $router;
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client = static::buildClient();
+        /** @var RouterInterface $router */
+        $router = static::getContainer()->get(RouterInterface::class);
+        $this->router = $router;
+        $this->stopwatch = new Stopwatch();
+
+        $this->loginUser();
+    }
+
     public function testMenuNav(): void
     {
-        $client = static::createClient();
-        $container = static::getContainer();
+        $menuRegistry = static::getContainer()->get(MenuRegistry::class);
 
-        $menuRegistry = $container->get(MenuRegistry::class);
-        $router = $container->get(RouterInterface::class);
-        $userRepository = $container->get(self::USER_REPOSITORY);
-
-        $client->loginUser($userRepository->findOneByEmail(self::LOGIN_USER));
-
-        foreach ($menuRegistry->getElements('') as $elem) {
-            if ($elem instanceof LinkElement && $elem->getPath() !== null) {
-                $this->checkRoute($router, $elem, $client);
+        foreach ($menuRegistry->getElements('') as $element) {
+            if ($element instanceof LinkElement && $element->getPath() !== null) {
+                $this->checkRoute($element);
             }
 
-            foreach ($elem->getChildren() as $child) {
+            foreach ($element->getChildren() as $child) {
                 if ($child instanceof LinkElement && $child->getPath() !== null) {
-                    $this->checkRoute($router, $child, $client);
+                    $this->checkRoute($child);
                 }
             }
         }
     }
 
-    protected function checkRoute(?object $router, LinkElement $elem, KernelBrowser $client): void
+    protected function buildClient(): KernelBrowser
     {
-        if (in_array($elem->getPath()->getRoute(), self::EXCLUDED_ROUTES)) {
+        self::ensureKernelShutdown();
+
+        return static::createClient();
+    }
+
+    protected function loginUser(): void
+    {
+        $userRepository = static::getContainer()->get(self::USER_REPOSITORY);
+
+        $this->client->loginUser($userRepository->findOneByEmail(self::LOGIN_USER));
+    }
+
+    protected function checkRoute(LinkElement $element): void
+    {
+        if (in_array($element->getPath()->getRoute(), self::EXCLUDED_ROUTES)) {
             return;
         }
 
-        $url = $router->generate($elem->getPath()->getRoute(), $elem->getPath()->getParams());
-        $client->request('GET', $url);
-
-        $code = $client->getResponse()->getStatusCode();
-        if ($code != '200') {
-            echo($client->getResponse()->getContent());
+        $url = $this->router->generate($element->getPath()->getRoute(), $element->getPath()->getParams());
+        $this->stopwatch->start($url);
+        $this->client->request('GET', $url);
+        $this->stopwatch->stop($url);
+        $e = $this->stopwatch->getEvent($url); // dumps e.g. '4.50 MiB - 26 ms'
+        if ($e->getDuration() > 500) {
+            $this->addWarning("page > 500ms " . $url . " " . $e->getDuration() . "ms");
         }
-
-        $this->assertEquals(
+        $code = $this->client->getResponse()->getStatusCode();
+        if ($code != '200') {
+            echo($this->client->getResponse()->getStatusCode());
+        }
+        self::assertEquals(
             '200',
             $code,
-            'Erreur ' . $elem->getPath()->getRoute() . ' : ' . $client->getCrawler()->filter('title')->first()->text()
+            'Erreur ' . $element->getPath()->getRoute() . ' : ' . $this->getPageTitle(),
         );
 
-        $content = $client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
         $crawler = new Crawler($content);
 
         $editElements = $crawler->filter('span.btn-wrapper > a > i.fa-edit');
-        $this->checkAction($editElements, $client);
+        $this->checkAction($editElements);
 
         $showElements = $crawler->filter('span.btn-wrapper > a > i.fa-search');
-        $this->checkAction($showElements, $client);
+        $this->checkAction($showElements);
 
-        $exportElements = $crawler->filter('span.btn-wrapper > a > i.fa-file-export');
-        $this->checkAction($editElements, $client);
+        $addElements = $crawler->filter('span.btn-wrapper > a > i.fa-plus');
+        $this->checkAction($addElements);
     }
 
-    protected function checkAction(Crawler $elements, KernelBrowser $client): void
+    protected function checkAction(Crawler $elements): void
     {
         foreach ($elements as $element) {
             foreach ($element->parentNode->attributes as $attribute) {
                 if ($attribute->nodeName === 'href') {
-                    $client->request('GET', $attribute->value);
-                    $code = $client->getResponse()->getStatusCode();
+                    $this->stopwatch->start($attribute->value);
+                    $this->client->request('GET', $attribute->value);
+                    $this->stopwatch->stop($attribute->value);
+                    $e = $this->stopwatch->getEvent($attribute->value); // dumps e.g. '4.50 MiB - 26 ms'
+                    if ($e->getDuration() > 500) {
+                        $this->addWarning("page > 500ms " . $attribute->value . " " . $e->getDuration() . "ms");
+                    }
+                    $code = $this->client->getResponse()->getStatusCode();
 
                     if ($code != '200') {
-                        echo($client->getResponse()->getStatusCode());
+                        echo($this->client->getResponse()->getStatusCode());
                     }
 
-                    $this->assertEquals(
+                    self::assertEquals(
                         '200',
                         $code,
-                        'Erreur ' . $attribute->value . ' : ' . $client->getCrawler()->filter('title')->first()->text(),
+                        'Erreur ' . $attribute->value . ' : ' . $this->getPageTitle(),
                     );
 
                     break 2;
                 }
             }
         }
+    }
+
+    protected function getPageTitle(): string
+    {
+        $titleElements = $this->client->getCrawler()->filter('title');
+        if ($titleElements->count() > 0) {
+            return $titleElements->first()->text();
+        }
+
+        return '';
     }
 }

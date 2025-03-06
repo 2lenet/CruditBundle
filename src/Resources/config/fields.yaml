@@ -12,7 +12,7 @@ services:
         arguments: ['@twig']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\NumberField:
-        arguments: ['@twig']
+        arguments: ['@twig', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\DoctrineEntityField:
         arguments: ['@twig']
@@ -30,7 +30,7 @@ services:
         arguments: ['@twig']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\IntegerField:
-        arguments: ['@twig']
+        arguments: ['@twig', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\WorkflowField:
         arguments: ['@twig']
@@ -39,7 +39,7 @@ services:
         arguments: ['@twig']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\CurrencyField:
-        arguments: ['@twig', '@request_stack']
+        arguments: ['@twig', '@request_stack', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\JsonField:
         arguments: ['@twig', '@request_stack']
@@ -47,6 +47,9 @@ services:
     Lle\CruditBundle\Field\ColorField:
         arguments: ['@twig']
         tags: ['crudit.field']
-    Lle\CruditBundle\Field\CKEditorField:
+    Lle\CruditBundle\Field\UrlField:
+        arguments: ['@twig']
+        tags: ['crudit.field']
+    Lle\CruditBundle\Field\ProgressBarField:
         arguments: ['@twig']
         tags: ['crudit.field']

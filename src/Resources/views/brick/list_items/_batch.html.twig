@@ -21,6 +21,11 @@
                             class="{{ action.cssClass ?? 'btn btn-sm crudit-batch-dropdown-item dropdown-item' }}"
                             {% if action.modal %}
                                 data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
+                            {% elseif action.confirmModal %}
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-confirm"
+                                data-confirm-link="{{ path(action.path.route, params) }}"
+                                data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"
                             {% elseif form %}
                                 data-form="batch-form-{{ key ~ '-' ~ view.id }}"
                             {% else %}
@@ -74,15 +79,16 @@
                             <div class="{{ classes }}">
                                 <div class="form-floating">
                                     {{ form_widget(field) }}
-                                    {{ form_label((field)) }}
+                                    {{ form_label(field) }}
                                 </div>
                             </div>
                         {% endif %}
                     {% endfor %}
                     <div class="col-xxxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap">
-                        <button type="submit" class="btn btn-sm btn-primary mt-2">
+                        <button type="submit" class="btn btn-sm btn-primary">
                             <i class="fas fa-check"></i>&nbsp;
-                            {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
+                            {{ 'crudit.action.validate'|trans({}, 'LleCruditBundle') }}
+                            {% if action and action.label is defined and action.label is not null %}&nbsp;"{{ action.label|trans }}"{% endif %}
                         </button>
                     </div>
                 </div>

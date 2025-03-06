@@ -22,7 +22,12 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% elseif value is not null %}
-    <div class="{{ view.field.options['tableCssClass']|default('text-end') }} me-3">
+    {% set tableCssClass = options.tableCssClass %}
+    {% if view.field.options is defined and view.field.options and view.field.options['tableCssClass'] is defined %}
+        {% set tableCssClass = view.field.options['tableCssClass'] %}
+    {% endif %}
+
+    <div class="{{ tableCssClass|default('text-end') }} me-3">
         {{ value|number_format(null, null, options.thousands_separator) }}
     </div>
 {% endif %}

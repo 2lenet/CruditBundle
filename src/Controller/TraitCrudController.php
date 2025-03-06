@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Exception\CruditException;
+use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -39,6 +39,11 @@ trait TraitCrudController
     public function show(Request $request, $id): Response
     {
         $resource = $this->getResource($request, false);
+        if (!$resource) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
 
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_SHOW', $resource);
 
@@ -52,6 +57,11 @@ trait TraitCrudController
     public function edit(Request $request, $id): Response
     {
         $resource = $this->getResource($request, false);
+        if (!$resource) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
 
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT', $resource);
 
@@ -76,6 +86,11 @@ trait TraitCrudController
     public function delete(Request $request): Response
     {
         $resource = $this->getResource($request, false);
+        if (!$resource) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
         if (method_exists($resource, 'canDelete')) {
             $check = $resource->canDelete();
 
@@ -96,8 +111,11 @@ trait TraitCrudController
             if ($route = $request->attributes->get('_route')) {
                 preg_match('/^app_crudit_(.+)_delete$/', $route, $matches);
                 if ($matches && array_key_exists(1, $matches)) {
-                    if (str_contains($referer, '/' . $matches[1] . '/')) {
-                        return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+                    // explode is necessary in case your controller is in a subdirectory
+                    $parts = explode('_', $matches[1]);
+                    $entityName = end($parts);
+                    if (str_contains($referer, '/' . $entityName . '/')) {
+                        return $this->redirectToRoute($this->config->getRootRoute() . '_index');
                     } else {
                         // If we're in a sublist, add the sublist anchor to the url so that it remains in the correct sublist after deletion
                         return $this->redirect($request->headers->get('referer') . '#' . $matches[1] . 's');
@@ -166,7 +184,7 @@ trait TraitCrudController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            $dataSource->fillFromData($item, $data);
+            $dataSource->fillFromData($item, $data, $request->query->all());
             $errors = $validator->validate($item);
 
             if (count($errors) > 0) {
@@ -230,12 +248,35 @@ trait TraitCrudController
             }
         };
 
+        $totals = [];
+        if (count($this->config->getTotalFields()) > 0) {
+            $dsParams = $this->config->getDatasourceParams($request);
+            $dsParams->setCount($this->config->getDatasource()->count($dsParams));
+            /** @var array $totalByField */
+            $totalByField = $this->config->getDatasource()->getTotals($dsParams, $this->config->getTotalFields());
+
+            $i = 0;
+            $fieldViews = [];
+            foreach ($this->config->getTotalFields() as $field) {
+                $i++;
+
+                $fieldView = new FieldView($field['field'], $totalByField[$i]);
+                $fieldView->setOptions($field['field']->getOptions());
+
+                $totals[] = [
+                    'field' => $fieldView,
+                    'total' => $totalByField[$i]
+                ];
+            }
+        }
+
         $format = $request->get("format", "csv");
 
         return $exporter->export(
             $generator(),
             $format,
-            $this->config->getExportParams($format)
+            $this->config->getExportParams($format),
+            $totals
         );
     }
 
@@ -287,13 +328,14 @@ trait TraitCrudController
     public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
     {
         $transition = $request->get("transition");
+        $workflowName = $request->get("name");
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
 
         if ($item && $transition) {
             $roleTransition = str_replace("-", "_", strtoupper($transition));
             $this->denyAccessUnlessGranted(
-                "ROLE_" . $this->config->getName() . "_WF_" . $roleTransition
+                "ROLE_" . strtoupper($workflowName) . "_WF_" . $roleTransition
             );
 
             foreach ($wfRegistry->all($item) as $wf) {
@@ -307,7 +349,7 @@ trait TraitCrudController
         return $this->redirectToReferrer($request);
     }
 
-    private function getResource(Request $request, $allowCreate = true): object
+    private function getResource(Request $request, $allowCreate = true): ?object
     {
         $dataSource = $this->config->getDatasource();
         $resource = null;
@@ -316,16 +358,6 @@ trait TraitCrudController
             $resource = $dataSource->get($request->get("id"));
         } elseif ($allowCreate) {
             $resource = $dataSource->newInstance();
-        }
-
-        if ($resource === null) {
-            throw new CruditException(
-                sprintf(
-                    "Resource %s of class %s not found",
-                    $request->get("id", "NO_ID"),
-                    $dataSource->getClassName()
-                )
-            );
         }
 
         return $resource;

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block autorefresh %}{% endblock %}
     <title>{% block page_title %}{% if app_name is defined %}{{ app_name }}{% else %}CRUD-IT{% endif %}{% endblock %}</title>
     {% block favicon %}
         <link rel="shortcut icon" href="/img/logo.png"/>
@@ -21,11 +22,11 @@
     {% block head_javascript %}{% endblock %}
 </head>
 
-<body id="page-top">
+<body id="page-top" class="{% if app.request.cookies.get('sidebarToggled') %}sidebar-toggled{% endif %}">
 {% block body %}
     <div id="wrapper">
         <div id="collapse-sidebar" class="sidebar">
-            <ul class="bg-gradient-primary">
+            <ul class="bg-gradient-primary sidebar__container {% if app.request.cookies.get('sidebarToggled') %}toggled{% endif %}">
                 {% block brand %}
                     {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
                 {% endblock %}
@@ -44,6 +45,10 @@
                     {% block main %}
                         {% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}
                         {% block content %}{% endblock %}
+
+                        {% block modal_confirmation %}
+                            {% include '@LleCrudit/modal/_confirm.html.twig' with {id: 'modal-confirm'} %}
+                        {% endblock %}
                     {% endblock main %}
                 </div>
             </div>

@@ -1,0 +1,65 @@
+{% set disabled =
+    dropdown_action.disabled or not
+    (dropdown_action.role is null or is_granted(dropdown_action.role, line.resource))
+%}
+
+{% if not (disabled and crudit_hide_if_disabled(dropdown_action)) %}
+    <span class="btn-group">
+        {% block dropdown_actions_button %}
+            <button
+                {# Replace . & _ in label to have only - #}
+                id="dropdown-actions-{{ action.label|replace({'.': '-', '_': '-'}) ~ '-' ~ line.resource.id }}"
+                class="{{ dropdown_action.cssClass ?? 'btn btn-sm btn-primary dropdown-toggle' }}
+                    {% if disabled %} disabled{% endif %}"
+                data-bs-toggle="dropdown"
+            >
+                {% if dropdown_action.icon %}
+                    <i class="{{ dropdown_action.icon.cssClass }}"></i>
+                {% endif %}
+                {% if not action.hideLabel and not action.icon %}
+                    {{ dropdown_action.label|trans(domain=view.config.translation_domain) }}
+                {% endif %}
+            </button>
+        {% endblock %}
+        {% block dropdown_actions_menu %}
+            <ul
+                class="dropdown-menu dropdown-menu-end"
+                {# Replace . & _ in label to have only - #}
+                aria-labelledby="#dropdown-actions-{{ dropdown_action.label|replace({'.': '-'}) ~ '-' ~ line.resource.id }}"
+            >
+                {% for group_name, group in dropdown_action.actions %}
+                    {% if crudit_is_dropdown_group_name(group_name) %}
+                        <li><h6 class="dropdown-header">{{ group_name|trans(domain=view.config.translation_domain) }}</h6></li>
+                    {% elseif loop.index0 != 0 and not crudit_is_dropdown_group_name(group_name) %}
+                        <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+
+                    {% for action in group %}
+                    {% do action.setResource(line.resource) %}
+
+                    {% if action.modal %}
+                        {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
+                    {% endif %}
+
+                    {% set disabled = action.disabled or not
+                        ((action.path.role is null or is_granted(action.path.role, line.resource))
+                        and (action.role is null or is_granted(action.role, line.resource)))
+                    %}
+
+                    {% if not (disabled and crudit_hide_if_disabled(action)) %}
+                        {% block dropdown_actions_item %}
+                            <li>
+                                    {% if action.template %}
+                                        {% include action.template %}
+                                    {% else %}
+                                        {% include '@LleCrudit/brick/list_items/actions/_dropdown_action.html.twig' %}
+                                    {% endif %}
+                                </li>
+                        {% endblock %}
+                    {% endif %}
+                {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endblock %}
+    </span>
+{% endif %}

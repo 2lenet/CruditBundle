@@ -14,7 +14,8 @@ class ListAction extends AbstractAction
 
     public static function new(string $label, Path $path, ?Icon $icon = null): static
     {
-        return (new static($label, $path))
+        return (new static($label))
+            ->setPath($path)
             ->setIcon($icon)
             ->setHideLabel(false);
     }

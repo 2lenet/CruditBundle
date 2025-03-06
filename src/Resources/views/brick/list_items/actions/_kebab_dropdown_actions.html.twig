@@ -1,0 +1,37 @@
+<div class="btn-group dropdown--no-arrow">
+    {% block kebab_dropdown_actions_button %}
+        <button id="actions_{{ line.resource.id }}" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+    {% endblock %}
+    {% block kebab_dropdown_actions_menu %}
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="#actions_{{ line.resource.id }}">
+            {% for action in view.config.actions %}
+                {% if action.dropdown %}
+                    {% do action.setResource(line.resource) %}
+
+                    {% if action.modal %}
+                        {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
+                    {% endif %}
+
+                    {% set disabled = action.disabled or not
+                        ((action.path.role is null or is_granted(action.path.role, line.resource))
+                        and (action.role is null or is_granted(action.role, line.resource)))
+                    %}
+
+                    {% if not (disabled and crudit_hide_if_disabled(action)) %}
+                        {% block kebab_dropdown_actions_item %}
+                            <li>
+                                {% if action.template %}
+                                    {% include action.template %}
+                                {% else %}
+                                    {% include '@LleCrudit/brick/list_items/actions/_kebab_dropdown_action.html.twig' %}
+                                {% endif %}
+                            </li>
+                        {% endblock %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endblock %}
+</div>

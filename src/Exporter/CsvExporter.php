@@ -25,7 +25,7 @@ class CsvExporter extends AbstractExporter
         return Exporter::CSV;
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params, array $total = []): Response
     {
         $path = tempnam(sys_get_temp_dir(), Exporter::CSV);
 
@@ -62,7 +62,7 @@ class CsvExporter extends AbstractExporter
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            "$filename.csv"
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.csv'
         );
         $response->headers->set("Content-Disposition", $disposition);
         $response->headers->set("Content-Type", "text/csv");

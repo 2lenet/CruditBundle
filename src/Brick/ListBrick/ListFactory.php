@@ -61,6 +61,7 @@ class ListFactory extends AbstractBasicBrickFactory
                     'lines' => $this->getLines($brickConfigurator),
                     'totals' => $this->getTotals($brickConfigurator),
                     'batch_actions' => $batchActions,
+                    'auto_refresh' => $brickConfigurator->getCrudConfig()->getListAutoRefresh(),
                 ]);
         }
 
@@ -111,7 +112,6 @@ class ListFactory extends AbstractBasicBrickFactory
             $fieldViews = [];
             foreach ($crudConfig->getTotalFields() as $field) {
                 $i++;
-
                 $fieldView = new FieldView($field['field'], $totalByField[$i]);
                 $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
                     $fieldView,

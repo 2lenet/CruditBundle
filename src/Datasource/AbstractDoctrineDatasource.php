@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
@@ -83,7 +84,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     {
         $qb = $this->buildQueryBuilder($requestParams);
         $qb->distinct();
-
         $this->applyFilters($qb, $requestParams);
         $this->applyLimit($qb, $requestParams);
         $this->applyOrders($qb, $requestParams);
@@ -103,7 +103,6 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $className = $this->getClassName();
 
         $metadata = $this->entityManager->getClassMetadata($className);
-
         if ($requestParams) {
             $i = 0;
             foreach ($requestParams->getFilters() as $filter) {
@@ -121,7 +120,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                 }
 
                 $parameterName = "filter_" . $filter->getAlias() . "_" . $i;
-                if ($filter->getOperator() == "IN") {
+                if ($filter->getOperator() === "IN" || $filter->getOperator() === "NOT IN") {
                     $qb->andWhere($field . " " . $filter->getOperator() . "(:$parameterName)");
                 } else {
                     $qb->andWhere($field . " " . $filter->getOperator() . " :$parameterName");
@@ -324,7 +323,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if (in_array($property, ['tel', 'telephone', 'mobile', 'portable', 'telephoneMobile'])) {
             return TelephoneField::class;
         }
-
+        
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
             if (isset($metadata->getAssociationMappings()[$property])) {
@@ -386,7 +385,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    public function fillFromData(object $item, array $data): void
+    public function fillFromData(object $item, array $data, array $params = []): void
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
             ->getPropertyAccessor();
@@ -412,6 +411,14 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                     $fields = $this->entityManager->getClassMetadata($className);
                     $type = $fields->fieldMappings[$field]['type'];
 
+                    if (
+                        $params
+                        && array_key_exists($field, $params['options'])
+                        && $params['options'][$field]['currency'] === 'currency_int'
+                    ) {
+                        $type = 'currency_int';
+                    }
+
                     switch ($type) {
                         case "date":
                         case "datetime":
@@ -420,6 +427,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                         case "integer":
                         case "smallint":
                             $value = (int)$value;
+                            break;
+                        case "currency_int":
+                            $value = (int)($value * 100);
                             break;
                         case "float":
                             $value = (float)$value;
@@ -455,10 +465,14 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         $qb = $this->buildQueryBuilder($requestParams);
 
         foreach ($fields as $field => $data) {
+            $expression = $data['type'] . '(root.' . $field . ')';
+            if ($data['type'] === CrudConfigInterface::EXPRESSION) {
+                $expression = $data['expression'];
+            }
             if ($field === array_key_first($fields)) {
-                $qb->select($data['type'] . '(root.' . $field . ')');
+                $qb->select($expression);
             } else {
-                $qb->addSelect($data['type'] . '(root.' . $field . ')');
+                $qb->addSelect($expression);
             }
         }
 
@@ -488,5 +502,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if ($requestParams && $requestParams->getOffset()) {
             $qb->setFirstResult($requestParams->getOffset());
         }
+    }
+
+    public function setFilterState(array $filterState): self
+    {
+        $this->filterState->setFilterdata($filterState);
+
+        return $this;
+    }
+
+    public function getTags(object $resource): iterable
+    {
+        return ['tags' => [], 'currentTags' => []];
     }
 }

@@ -13,8 +13,8 @@ services:
             - "@doctrine.orm.entity_manager"
     Lle\CruditBundle\Form\Type\GedmoTranslatableType:
         arguments:
-            - '%default_locale%'
-            - '%locales%'
+            - '%kernel.default_locale%'
+            - '%kernel.enabled_locales%'
             - '@Lle\CruditBundle\Service\GedmoTranslatableFieldManager'
             - '@Symfony\Contracts\Translation\TranslatorInterface'
         tags:
@@ -36,5 +36,8 @@ services:
         tags:
             - { name: form.type, alias: crudit_cron_expression }
     Lle\CruditBundle\Form\Extension\TooltipExtension:
+        tags:
+            - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\TomSelectExtension:
         tags:
             - { name: form.type_extension }

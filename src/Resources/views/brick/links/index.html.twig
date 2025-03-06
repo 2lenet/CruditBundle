@@ -2,43 +2,28 @@
     <h4 class="navbar-brand text-primary mb-0 {% if view.data.resource.getCssClass is defined %}{{ view.data.resource.getCssClass }}{% endif %}">
         {{ view.config.title|trans({'%entity%': view.data.entity}, view.config.translation_domain) }}
     </h4>
-    <div>
-        {% for action in view.data.actions %}
-            {% set params = action.path.params %}
-            {% if view.data.resource and action.setResource is defined%}
-                {% do action.setResource(view.data.resource) %}
-            {% endif %}
-            {% set id = app.request.attributes.get('id') %}
-            {% if id %}
-                {% set params = action.path.params|merge({id: id}) %}
-            {% endif %}
+    <div class="position-relative d-inline-flex">
+        {% set has_dropdown = false %}
+        {% block links_actions %}
+            {% for action in view.data.actions %}
+                {% if crudit_is_dropdown_action(action) %}
+                    {% block dropdown_actions %}
+                        {{ include('@LleCrudit/brick/links/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
+                    {% endblock %}
+                {% elseif not action.dropdown %}
+                    {% block actions %}
+                        {{ include('@LleCrudit/brick/links/actions/_actions.html.twig', {action: action, view: view}) }}
+                    {% endblock %}
+                {% else %}
+                    {% set has_dropdown = true %}
+                {% endif %}
+            {% endfor %}
 
-            {% if action.modal %}
-                {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
+            {% if has_dropdown %}
+                {% block kebab_dropdown_actions %}
+                    {{ include('@LleCrudit/brick/links/actions/_kebab_dropdown_actions.html.twig', {view: view}) }}
+                {% endblock %}
             {% endif %}
-            {% set disabled = action.disabled
-                or (
-                    (action.path.role is not null and not is_granted(action.path.role, view.data.resource))
-                    and (action.role is not null and not is_granted(action.role, view.data.resource))
-                )
-            %}
-            <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
-                <a
-                    class="{{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ml-2 mt-md-0' }} {% if disabled %}disabled{% endif %}"
-                        {% if action.modal %}
-                            data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-                        {% elseif not action.disabled %}
-                            href="{{ action.url ?? path(action.path.route, params) }}"
-                        {% endif %}
-
-                    {% if action.target is defined and action.target %}
-                        target="{{ action.target }}"
-                    {% endif %}
-                >
-                    {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                    {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
-                </a>
-            </span>
-        {% endfor %}
+        {% endblock %}
     </div>
 </nav>

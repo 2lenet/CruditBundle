@@ -6,7 +6,9 @@
                 <script>
                     window.addEventListener('load', function () {
                         var badge = document.getElementById("{{ tab.id }}-badge");
-                        badge.textContent ="{{ view.config.datasource_params.count }}";
+                        if (!badge.textContent) {
+                            badge.textContent = "{{ view.config.datasource_params.count }}";
+                        }
                     });
                 </script>
             {% else %}
@@ -69,18 +71,27 @@
                         </thead>
                     {% endif %}
                     <tbody>
-                    {% set ruptval1 = "" %}
-                    {% set ruptval2 = "" %}
+                    {% set ruptval1 = '' %}
+                    {% set ruptval2 = '' %}
 
                     {% for line in view.data.lines %}
                         {% for column in line.fields %}
                             {% if
-                                column.field.role is not defined or column.field.role is null or
-                                (column.field.role is defined and column.field.role is not null and is_granted(column.field.role))
+                                column.field.role is not defined
+                                or column.field.role is null
+                                or (
+                                    column.field.role is defined
+                                    and column.field.role is not null
+                                    and is_granted(column.field.role)
+                                )
                             %}
                                 {# RUPTURE NIVEAU 1 #}
                                 {# Don't display ruptGroup1 if there is a ruptGroup2 #}
-                                {% if column.field.ruptGroup == 1 and view.data.lines[1].fields[1].field.ruptGroup != 2 %}
+                                {% if
+                                    column.field.ruptGroup == 1
+                                    and view.data.lines|length > 1
+                                    and view.data.lines[1].fields[1].field.ruptGroup != 2
+                                %}
                                     {% if ruptval1 != column.value %}
                                         <tr>
                                             <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
@@ -93,7 +104,7 @@
 
                                 {# RUPTURE NIVEAU 2 #}
                                 {% if column.field.ruptGroup == 2 %}
-                                    {% if ruptval2 != column.value %}
+                                    {% if ruptval2 != column.value and view.data.lines|length > 0 %}
                                         <tr>
                                             <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }}
                                                 - {{ column.value|raw }}</th>
@@ -124,8 +135,8 @@
                                 <div class="btn-group btn-group-sm" role="group">
                                     {% for action in view.config.actions %}
                                         {% if
-                                            (action.path.role is null or is_granted(action.path.role))
-                                            and (action.role is null or is_granted(action.role))
+                                            (action.path.role is null or is_granted(action.path.role, line.resource))
+                                            and (action.role is null or is_granted(action.role, line.resource))
                                         %}
                                             {% set params = { 'id': line.resource.id } %}
                                             {% do action.setResource(line.resource) %}
@@ -138,6 +149,8 @@
                                                     class="{{ action.cssClass ?? 'btn btn-sm' }} {% if action.disabled %}disabled{% endif %}"
                                                         {% if action.modal %}
                                                             data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
+                                                        {% elseif action.confirmmodal %}
+                                                            data-bs-toggle="modal" data-bs-target="#modal-confirm" data-confirm-link="{{ path(action.path.route, params) }}" data-confirm-text="{{ ('modal.confirm.'~action.label)|trans }}"
                                                         {% elseif not action.disabled %}
                                                             href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
                                                         {% endif %}

@@ -30,6 +30,7 @@ crudit:
         cancel: "Annullare"
         back: "Indietro"
         logout: "Disconnettersi"
+        validate: "Convalidare"
 
     message:
         success: "Successo"
@@ -38,13 +39,13 @@ crudit:
     modal:
         cancel: "Annullare"
         validate: "Convalidare"
+        confirm:
+            message: "Volete davvero confermare questa azione? Questo atto è irrevocabile."
+            action: "Confermare"
         export:
             message: "Scegliere un formato di esportazione"
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
-        delete:
-            message: "Vuoi davvero cancellare questo articolo ? Questa azione è irrevocabile."
-            action: "Cancellare"
 
     field:
         createdAt: "Creato il"
@@ -97,6 +98,7 @@ crudit:
                 access_denied: "Non ti è permesso cambiare questo valore."
                 bad_request: "Stai cercando di cambiare un valore inesistente."
             delete: "Impossibile eliminare questo oggetto."
+            resource_not_found: "La risorsa non è stata trovata."
 
     error:
         generic:

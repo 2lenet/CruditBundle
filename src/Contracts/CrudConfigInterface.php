@@ -27,6 +27,7 @@ interface CrudConfigInterface
     public const AVERAGE = "AVG";
     public const COUNT = "COUNT";
     public const SUM = "SUM";
+    public const EXPRESSION = "EXPRESSION";
 
     public function getFields(string $key): array;
 
@@ -63,7 +64,7 @@ interface CrudConfigInterface
 
     public function getExportParams(string $format): ExportParams;
 
-    public function getAfterEditPath(): Path;
+    public function getAfterEditPath(): ?Path;
 
     public function getNbItems(): int;
 
@@ -78,4 +79,8 @@ interface CrudConfigInterface
     public function getTotalFields(): array;
 
     public function getRootRoute(): ?string;
+
+    public function getListAutoRefresh(): ?int;
+
+    public function getShowAutoRefresh(): ?int;
 }

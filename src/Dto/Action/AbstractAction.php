@@ -11,21 +11,36 @@ use Lle\CruditBundle\Dto\Path;
 abstract class AbstractAction implements ActionInterface
 {
     protected string $label;
+
     protected Path $path;
+
     protected ?Icon $icon;
-    protected ?string $url;
+
+    protected ?string $url = null;
+
     protected ?string $cssClass = null;
+
     protected bool $hideLabel = false;
+
     protected ?string $modal = null;
+
+    protected bool $confirmModal = false;
+
     protected array $config = [];
+
     protected ?string $target = null;
+
     protected ?string $role = null;
 
-    public function __construct(string $label, Path $path)
+    protected ?bool $hideIfDisabled = null;
+
+    protected bool $dropdown = false;
+
+    protected ?string $template = null;
+
+    public function __construct(string $label)
     {
         $this->label = $label;
-        $this->path = $path;
-        $this->url = null;
     }
 
     public function getId(): string
@@ -46,6 +61,13 @@ abstract class AbstractAction implements ActionInterface
     public function getPath(): Path
     {
         return $this->path;
+    }
+
+    public function setPath(Path $path): static
+    {
+        $this->path = $path;
+
+        return $this;
     }
 
     public function getIcon(): ?Icon
@@ -111,6 +133,18 @@ abstract class AbstractAction implements ActionInterface
         return $this;
     }
 
+    public function getConfirmModal(): bool
+    {
+        return $this->confirmModal;
+    }
+
+    public function setConfirmModal(bool $confirmModal): static
+    {
+        $this->confirmModal = $confirmModal;
+
+        return $this;
+    }
+
     public function getConfig(): array
     {
         return $this->config;
@@ -148,6 +182,42 @@ abstract class AbstractAction implements ActionInterface
     public function setRole(string $role): static
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getHideIfDisabled(): ?bool
+    {
+        return $this->hideIfDisabled;
+    }
+
+    public function setHideIfDisabled(?bool $hideIfDisabled): static
+    {
+        $this->hideIfDisabled = $hideIfDisabled;
+
+        return $this;
+    }
+
+    public function isDropdown(): bool
+    {
+        return $this->dropdown;
+    }
+
+    public function setDropdown(bool $dropdown): self
+    {
+        $this->dropdown = $dropdown;
+
+        return $this;
+    }
+
+    public function getTemplate(): ?string
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(?string $template): static
+    {
+        $this->template = $template;
 
         return $this;
     }

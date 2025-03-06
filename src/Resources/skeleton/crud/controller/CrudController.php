@@ -1,17 +1,17 @@
-<?= "<?php" ?>
-<?php if ($strictType): ?>
+<?= '<?php' ?>
 
+<?php if ($strictType) { echo "\n"; ?>
 declare(strict_types=1);
-<?php endif; ?>
+<?php } ?>
 
 namespace <?= $namespace; ?>;
 
-use App\Crudit\Config\<?= $prefixFilename ?>CrudConfig;
+use App\Crudit\Config\<?= $configSubdirectorie ?><?= $prefixFilename ?>CrudConfig;
 use Lle\CruditBundle\Controller\AbstractCrudController;
 use Lle\CruditBundle\Controller\TraitCrudController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/<?= strtolower($prefixFilename) ?>')]
+#[Route('/<?= strtolower($routeSubdirectorie) ?><?= strtolower($prefixFilename) ?>')]
 class <?= $prefixFilename ?>Controller extends AbstractCrudController
 {
     use TraitCrudController;

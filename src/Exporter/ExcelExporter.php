@@ -6,6 +6,8 @@ use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Field\BooleanField;
 use Lle\CruditBundle\Field\CurrencyField;
+use Lle\CruditBundle\Field\DateField;
+use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -31,7 +33,7 @@ class ExcelExporter extends AbstractExporter
         return Exporter::EXCEL;
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function export(iterable $resources, ExportParams $params, array $total = []): Response
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -53,8 +55,33 @@ class ExcelExporter extends AbstractExporter
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
                 $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
+                if (
+                    $field->getField()->getType() === DateField::class
+                    || $field->getField()->getType() === DateTimeField::class
+                    || $field->getField()->getType() === 'date'
+                    || $field->getField()->getType() === 'datetime'
+                ) {
+                    if ($field->getValue()) {
+                        // Showing format
+                        $format = $this->convertFormat($field->getOptions()['format']);
+                        $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
 
-                $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                        // Value format
+                        if ($field->getRawValue() instanceof \DateTimeInterface) {
+                            $value = $field->getRawValue()->format('Y-m-d H:i:s');
+                        } else {
+                            $value = $this->getValue($field);
+                        }
+
+                        $sheet->setCellValueExplicit(
+                            $cell,
+                            $value,
+                            $this->getType($field)
+                        );
+                    }
+                } else {
+                    $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
+                }
             }
 
             $row++;
@@ -74,11 +101,35 @@ class ExcelExporter extends AbstractExporter
         $filename = $params->getFilename() ?? "export";
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.xls"
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.xls'
         );
         $response->headers->set("Content-Disposition", $disposition);
 
         return $response;
+    }
+
+    protected function convertFormat(string $format): string
+    {
+        $pattern = [
+            '/y/',
+            '/Y/',
+            '/m/',
+            '/d/',
+            '/H/',
+            '/i/',
+            '/s/',
+        ];
+        $remplacement = [
+            'yyyy',
+            'yyyy',
+            'mm',
+            'dd',
+            'hh',
+            'mm',
+            'ss',
+        ];
+
+        return (string)preg_replace($pattern, $remplacement, $format);
     }
 
     protected function getHeaders(array $fields): array
@@ -102,8 +153,12 @@ class ExcelExporter extends AbstractExporter
         return match ($field->getField()->getType()) {
             "bigint", "smallint", "float", "integer", NumberField::class, CurrencyField::class, IntegerField::class
             => DataType::TYPE_NUMERIC,
-            "boolean", BooleanField::class => DataType::TYPE_BOOL,
-            default => DataType::TYPE_STRING,
+            "boolean", BooleanField::class
+            => DataType::TYPE_BOOL,
+            'date', 'datetime', DateField::class, DateTimeField::class
+            => DataType::TYPE_ISO_DATE,
+            default
+            => DataType::TYPE_STRING,
         };
     }
 }

@@ -10,11 +10,17 @@ class ExternalLinkElement extends AbstractLayoutElement
 {
     public const TYPE_HEADER = 'header';
     public const TYPE_BODY = 'body';
+
     protected string $type;
+
     protected string $libelle;
+
     protected ?Icon $icon = null;
+
     protected ?string $url;
+
     protected ?string $target;
+
     protected ?string $cssClass = null;
 
     public static function new(
@@ -32,7 +38,7 @@ class ExternalLinkElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return '@LleCrudit/layout/sb_admin/elements/_external-link.html.twig';
+        return '@LleCrudit/layout/sb_admin/elements/_external_link.html.twig';
     }
 
     public function __construct(
@@ -102,7 +108,7 @@ class ExternalLinkElement extends AbstractLayoutElement
         return $this->target;
     }
 
-    public function setTarget(string $target): self
+    public function setTarget(?string $target): self
     {
         $this->target = $target;
 

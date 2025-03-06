@@ -3,7 +3,11 @@
     or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
     {% if view.field.autocompleteUrl is defined and view.field.autocompleteUrl %}
-        {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
+        {% if view.field.autocompleteUrl starts with 'http'%}
+            {% set autocompleteUrl = view.field.autocompleteUrl %}
+        {% else %}
+            {% set autocompleteUrl = path(view.field.autocompleteUrl) %}
+        {% endif %}
     {% else %}
         {% set autocompleteUrl = path(resource|get_crudit_routename_key_field(view.field.id, 'autocomplete')) %}
     {% endif %}
@@ -14,11 +18,19 @@
         {% set editUrl = path(resource|get_crudit_routename_key_object('editdata', {'id': resource.id}), {'id': resource.id}) %}
     {% endif %}
 
+    {% if value and value.id %}
+        {% set selectedItem = [{
+            id: value.id,
+            text: value.__toString()
+        }]|json_encode %}
+    {% endif %}
+
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ editUrl }}">
         <form class="form-inline d-none">
             <input type="hidden" id="input-doctrine-entity-{{ view.field.id }}_{{ resource.id }}_items"
                    name="{{ view.field.id }}_items"
-                   value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
+                   value="{{ selectedItem|default('[]')|escape('html_attr') }}"
+            />
             <div class="control-group form-group d-flex justify-content-around align-items-center">
                 <input
                     type="text"
@@ -26,9 +38,9 @@
                     class="form-control form-control-sm entity-select crudit-eip-input"
                     style="min-width: 150px;"
                     autocomplete="off"
-                    value="{{ value }}"
+                    {% if value and value.id %}value="{{ value.id }}"{% endif %}
                     data-url="{{ autocompleteUrl }}"
-                    data-options="[]"
+                    data-options="{{ selectedItem|default('[]')|escape('html_attr') }}"
                     data-maxItems="{% if view.field.multiple is defined %} {{ view.field.multiple ? 'null' : '1' }} {% else %} 1 {% endif %}"
                 >
                 <div class="btn-group btn-group-sm">

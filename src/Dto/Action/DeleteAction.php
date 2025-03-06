@@ -8,6 +8,11 @@ class DeleteAction extends ItemAction
 {
     public const CALLBACK = "canDelete";
 
+    public function __construct(string $label)
+    {
+        parent::__construct($label);
+    }
+
     public function getTitle(): string
     {
         if ($this->getResource() !== null) {

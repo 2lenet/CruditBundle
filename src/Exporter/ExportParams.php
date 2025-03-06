@@ -2,11 +2,26 @@
 
 namespace Lle\CruditBundle\Exporter;
 
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+
 class ExportParams
 {
     protected ?string $filename = null;
     protected string $separator = ";";
     protected bool $includeHeaders = true;
+    protected array $pdfParams = [
+        'title' => 'Export',
+        'paper_size' => PageSetup::PAPERSIZE_A4,
+        'orientation' => PageSetup::ORIENTATION_LANDSCAPE,
+        'decimal_separator' => ',',
+        'thousands_separator' => '.',
+        'locale' => 'fr',
+        'header-footer' => [],
+        'margin-top' => 0.8,
+        'margin-bottom' => 0.8,
+        'margin-left' => 0.25,
+        'margin-right' => 0.25,
+    ];
 
     public static function new(): self
     {
@@ -54,6 +69,18 @@ class ExportParams
     public function setIncludeHeaders(bool $includeHeaders): self
     {
         $this->includeHeaders = $includeHeaders;
+
+        return $this;
+    }
+
+    public function getPdfParams(): array
+    {
+        return $this->pdfParams;
+    }
+
+    public function setPdfParams(array $pdfParams): self
+    {
+        $this->pdfParams = $pdfParams;
 
         return $this;
     }

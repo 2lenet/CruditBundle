@@ -3,12 +3,16 @@
 namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
+use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Workflow\Registry;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -19,6 +23,8 @@ class CruditExtension extends AbstractExtension
         private MenuRegistry $menuRegistry,
         private RouterInterface $router,
         private EntityManagerInterface $em,
+        private ParameterBagInterface $parameterBag,
+        private Registry $workflowRegistry,
     ) {
     }
 
@@ -27,7 +33,8 @@ class CruditExtension extends AbstractExtension
         return [
             new TwigFunction('crudit_menu_items', [$this, 'menuItems']),
             new TwigFunction('crudit_menu_active', [$this, 'menuIsActive']),
-
+            new TwigFunction('crudit_hide_if_disabled', [$this, 'hideIfDisabled']),
+            new TwigFunction('get_workflow_names', $this->getWorkflowNames(...))
         ];
     }
 
@@ -131,5 +138,37 @@ class CruditExtension extends AbstractExtension
         }
 
         return $route . '_' . $key;
+    }
+
+    public function hideIfDisabled(ActionInterface $action): bool
+    {
+        $hideIfDisabled = false;
+        if ($action->getHideIfDisabled() !== null) {
+            $hideIfDisabled = $action->getHideIfDisabled();
+        } else {
+            if ($action instanceof DeleteAction) {
+                /** @var bool $defaultValue */
+                $defaultValue = $this->parameterBag->get('lle_crudit.delete_hide_if_disabled');
+                $hideIfDisabled = $defaultValue;
+            } else {
+                /** @var bool $defaultValue */
+                $defaultValue = $this->parameterBag->get('lle_crudit.hide_if_disabled');
+                $hideIfDisabled = $defaultValue;
+            }
+        }
+
+        return $hideIfDisabled;
+    }
+
+    public function getWorkflowNames(object $subject): array
+    {
+        $workflows = $this->workflowRegistry->all($subject);
+
+        $result = [];
+        foreach ($workflows as $workflow) {
+            $result[] = $workflow->getName();
+        }
+
+        return $result;
     }
 }

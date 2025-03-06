@@ -53,4 +53,7 @@ interface DatasourceInterface
     public function editData(string $id, array $data): bool;
 
     public function getTotals(?DatasourceParams $requestParams, array $fields): iterable;
+
+    /** @return iterable{tags: iterable, currentTags: iterable} */
+    public function getTags(object $resource): iterable;
 }

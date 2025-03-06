@@ -1,20 +1,29 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
-{% block operator %}
-    <div class="input-group-prepend"></div>
-{% endblock %}
-
 {% block input %}
-    <div class="form-floating">
-        <select class="form-control tom-select" data-widget="select2" {% if filtertype.multiple %} multiple {% endif %}
-                name="{{ id }}_value{% if filtertype.multiple %}[]{% endif %}">
-            {% for k,v in filtertype.choices %}
-                <option
-                    value="{{ k }}" {% if data['value'] is defined and filtertype.isSelected(data,k) %} selected {% endif %}>{{ v }}</option>
-            {% endfor %}
-        </select>
-        <label for="input_{{ id }}">
-            {{ filter.label|trans(domain=view.config.translation_domain) }}
-        </label>
+    {% set items = [] %}
+    {% for key, choice in filtertype.choices %}
+        {% set item = [{'id': choice, 'text': key|trans}] %}
+        {% set items = items|merge(item) %}
+    {% endfor %}
+
+    {% set items = items|json_encode %}
+
+    <div class="form-floating crudit-filter-choice">
+        <input
+            type="hidden"
+            id="input_{{ id|replace({':': '_'}) }}_items"
+            name="{{ id }}_items"
+            value="{{ data["items"]|default('[]')|escape('html_attr') }}"
+        />
+        <input id="input_{{ id|replace({':': "_"}) }}"
+               class="form-control tom-select"
+               name="{{ id }}_value"
+               value="{{ data['value']|default('') }}"
+               placeholder=""
+               autocomplete="off"
+               data-options="{{ items|default("[]")|escape('html_attr') }}"
+        />
+        <label>{{ filter.label|trans(domain=view.config.translation_domain) }}</label>
     </div>
 {% endblock %}

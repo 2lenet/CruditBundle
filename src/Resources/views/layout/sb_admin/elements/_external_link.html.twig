@@ -1,0 +1,20 @@
+<li class="nav-item sidebar-item {{ element.cssClass }}">
+    <a
+        href="{{ element.url|default('#') }}"
+        id="heading-{{ element.id }}"
+        class="nav-link"
+        target="{{ element.target }}"
+    >
+        {% if element.icon and element.icon.img %}
+            <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans }}"/>
+        {% elseif element.icon %}
+            <i class="nav-icon {{ element.icon.cssClass }}"></i>
+        {% endif %}
+        <span>
+            {{ element.libelle|trans }}
+            {% if element.target == '_blank' %}
+                &nbsp;<i class="fas fa-external-link-alt external-link"></i>
+            {% endif %}
+        </span>
+    </a>
+</li>
