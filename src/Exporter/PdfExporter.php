@@ -9,6 +9,7 @@ use Lle\CruditBundle\Field\BooleanField;
 use Lle\CruditBundle\Field\CurrencyField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
+use Lle\CruditBundle\Exception\ExporterException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
