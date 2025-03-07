@@ -18,12 +18,12 @@ class Exporter
 
     public function export(iterable $resources, string $format, ExportParams $params, array $totals = []): string
     {
-        $this->getExporter($format)->export($resources, $params, $totals);
+        return $this->getExporter($format)->export($resources, $params, $totals);
     }
 
     public function getContentType(string $format): string
     {
-        $this->getExporter($format)->getContentType();
+        return $this->getExporter($format)->getContentType();
     }
 
     protected function getExporter(string $format): ExporterInterface
