@@ -3,7 +3,6 @@
 namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Exporter\ExportParams;
-use Symfony\Component\HttpFoundation\Response;
 
 interface ExporterInterface
 {
@@ -15,7 +14,12 @@ interface ExporterInterface
     /**
      * @param iterable $resources an iterable of ResourceView
      * @param ExportParams $params the parameters of the export
-     * @return Response the file
+     * @return string the filename
      */
-    public function export(iterable $resources, ExportParams $params, array $totals = []): Response;
+    public function export(iterable $resources, ExportParams $params, array $totals = []): string;
+
+    /**
+     * @return string the Content-Type of the generated file (e.g. text/csv)
+     */
+    public function getContentType(): string;
 }
