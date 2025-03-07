@@ -1,3 +1,6 @@
+{% if options['isInt'] is defined and options['isInt'] %}
+    {% set value =  value / 100 %}
+{% endif %}
 {% if
     (view.field.editInPlace and view.field.options['editRole'] is not defined)
     or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
@@ -10,9 +13,6 @@
             }
         }
     }) %}
-    {% if options['isInt'] is defined and options['isInt'] %}
-        {% set value =  value / 100 %}
-    {% endif %}
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
