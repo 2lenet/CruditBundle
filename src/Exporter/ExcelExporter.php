@@ -26,7 +26,7 @@ class ExcelExporter extends AbstractExporter
 
     public function getSupportedFormat(): string
     {
-        return Exporter::XLS;
+        return Exporter::EXCEL;
     }
 
     public function export(iterable $resources, ExportParams $params, array $total = []): string
@@ -87,7 +87,7 @@ class ExcelExporter extends AbstractExporter
             $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
         }
 
-        $path = tempnam(sys_get_temp_dir(), Exporter::XLS);
+        $path = tempnam(sys_get_temp_dir(), Exporter::EXCEL);
         if ($path === false) {
             throw new ExporterException('Unknown EXCEL exporter error');
         }

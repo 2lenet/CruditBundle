@@ -50,7 +50,7 @@ It is already possible to add action in a dropdown, adding `->setDropdown(true)`
           ->setModal("@LleCrudit/modal/_export.html.twig")
           ->setConfig(
               [
-                  "export" => [Exporter::CSV, Exporter::XLS],
+                  "export" => [Exporter::CSV, Exporter::EXCEL],
               ]
           );
           

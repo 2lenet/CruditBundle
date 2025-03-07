@@ -8,7 +8,7 @@ use Lle\CruditBundle\Exception\ExporterException;
 class Exporter
 {
     public const CSV = 'csv';
-    public const XLS = 'xls';
+    public const EXCEL = 'xls';
     public const PDF = 'pdf';
 
     protected iterable $exporters;

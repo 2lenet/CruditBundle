@@ -295,7 +295,7 @@ trait TraitCrudController
 
         if ($format === Exporter::CSV) {
             $contentType = 'text/csv';
-        } elseif ($format === Exporter::XLS) {
+        } elseif ($format === Exporter::EXCEL) {
             $contentType = 'application/vnd.ms-excel';
         } elseif ($format === Exporter::PDF) {
             $contentType = 'application/pdf';
