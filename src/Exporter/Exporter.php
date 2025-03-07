@@ -11,19 +11,27 @@ class Exporter
     public const EXCEL = 'xls';
     public const PDF = 'pdf';
 
-    protected iterable $exporters;
-
-    public function __construct(iterable $exporters)
-    {
-        $this->exporters = $exporters;
+    public function __construct(
+        protected iterable $exporters,
+    ) {
     }
 
     public function export(iterable $resources, string $format, ExportParams $params, array $totals = []): string
     {
+        $this->getExporter($format)->export($resources, $params, $totals);
+    }
+
+    public function getContentType(string $format): string
+    {
+        $this->getExporter($format)->getContentType();
+    }
+
+    protected function getExporter(string $format): ExporterInterface
+    {
         /** @var ExporterInterface $exporter */
         foreach ($this->exporters as $exporter) {
             if ($format === $exporter->getSupportedFormat()) {
-                return $exporter->export($resources, $params, $totals);
+                return $exporter;
             }
         }
 

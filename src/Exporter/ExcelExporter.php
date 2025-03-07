@@ -29,6 +29,11 @@ class ExcelExporter extends AbstractExporter
         return Exporter::EXCEL;
     }
 
+    public function getContentType(): string
+    {
+        return 'application/vnd.ms-excel';
+    }
+
     public function export(iterable $resources, ExportParams $params, array $total = []): string
     {
         $spreadsheet = new Spreadsheet();

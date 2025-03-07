@@ -293,13 +293,7 @@ trait TraitCrudController
         );
         $response->headers->set('Content-Disposition', $disposition);
 
-        if ($format === Exporter::CSV) {
-            $contentType = 'text/csv';
-        } elseif ($format === Exporter::EXCEL) {
-            $contentType = 'application/vnd.ms-excel';
-        } elseif ($format === Exporter::PDF) {
-            $contentType = 'application/pdf';
-        }
+        $contentType = $exporter->getContentType($format);
         $response->headers->set('Content-Type', $contentType);
 
         return $response;

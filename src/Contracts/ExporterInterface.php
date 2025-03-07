@@ -17,4 +17,9 @@ interface ExporterInterface
      * @return string the filename
      */
     public function export(iterable $resources, ExportParams $params, array $totals = []): string;
+
+    /**
+     * @return string the Content-Type of the generated file (e.g. text/csv)
+     */
+    public function getContentType(): string;
 }
