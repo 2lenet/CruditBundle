@@ -14,16 +14,14 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
-use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporter extends AbstractExporter
 {
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        protected TranslatorInterface $translator,
+    ) {
     }
 
     public function getSupportedFormat(): string
@@ -31,7 +29,7 @@ class PdfExporter extends AbstractExporter
         return Exporter::PDF;
     }
 
-    public function export(iterable $resources, ExportParams $params, array $totals = []): Response
+    public function export(iterable $resources, ExportParams $params, array $totals = []): string
     {
         $spreadsheet = new Spreadsheet();
         $this->pageSetup($spreadsheet, $params);
@@ -149,23 +147,19 @@ class PdfExporter extends AbstractExporter
             $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
         }
 
+        $path = tempnam(sys_get_temp_dir(), Exporter::PDF);
+        if ($path === false) {
+            throw new ExporterException('Unknown PDF exporter error');
+        }
+
         $writer = new Mpdf($spreadsheet);
         $pdfParams = $params->getPdfParams();
         if ($pdfParams['header-footer']) {
             $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParams['header-footer']));
         }
-        $response = new StreamedResponse(function () use ($writer) {
-            $writer->save('php://output');
-        });
-        $response->headers->set('Content-Type', 'application/pdf');
-        $filename = $params->getFilename() ?? "export";
-        $disposition = HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            "$filename.pdf"
-        );
-        $response->headers->set("Content-Disposition", $disposition);
+        $writer->save($path);
 
-        return $response;
+        return $path;
     }
 
     protected function getHeaders(array $fields): array

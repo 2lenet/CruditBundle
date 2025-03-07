@@ -10,10 +10,13 @@ use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -271,13 +274,35 @@ trait TraitCrudController
         }
 
         $format = $request->get("format", "csv");
+        $params = $this->config->getExportParams($format);
 
-        return $exporter->export(
+        $path = $exporter->export(
             $generator(),
             $format,
-            $this->config->getExportParams($format),
-            $totals
+            $params,
+            $totals,
         );
+
+        $response = new BinaryFileResponse($path);
+        $response->deleteFileAfterSend();
+
+        $filename = $params->getFilename() ?? 'export';
+        $disposition = HeaderUtils::makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $filename . '_' . (new \DateTime())->format('YmdHis') . '.' . $format,
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+
+        if ($format === Exporter::CSV) {
+            $contentType = 'text/csv';
+        } elseif ($format === Exporter::XLS) {
+            $contentType = 'application/vnd.ms-excel';
+        } elseif ($format === Exporter::PDF) {
+            $contentType = 'application/pdf';
+        }
+        $response->headers->set('Content-Type', $contentType);
+
+        return $response;
     }
 
     #[Route('/api/{pageKey}')]

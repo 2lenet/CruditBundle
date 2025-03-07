@@ -4,13 +4,13 @@ namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Exception\ExporterException;
-use Symfony\Component\HttpFoundation\Response;
 
 class Exporter
 {
-    public const CSV = "csv";
-    public const EXCEL = "excel";
-    public const PDF = "pdf";
+    public const CSV = 'csv';
+    public const XLS = 'xls';
+    public const PDF = 'pdf';
+
     protected iterable $exporters;
 
     public function __construct(iterable $exporters)
@@ -18,7 +18,7 @@ class Exporter
         $this->exporters = $exporters;
     }
 
-    public function export(iterable $resources, string $format, ExportParams $params, array $totals = []): Response
+    public function export(iterable $resources, string $format, ExportParams $params, array $totals = []): string
     {
         /** @var ExporterInterface $exporter */
         foreach ($this->exporters as $exporter) {
