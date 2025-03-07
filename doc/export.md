@@ -23,7 +23,7 @@ public function getListActions(): array
         ->setConfig(
             [
                 // you can change this part to put whatever you want
-                "export" => [Exporter::CSV, Exporter::EXCEL],
+                "export" => [Exporter::CSV, Exporter::XLS],
             ]
         );
 }
@@ -53,7 +53,7 @@ If you want to change the behaviour of the exporters, you can edit your CrudConf
 ```php
 public function getExportParams(string $format): ExportParams
 {
-    // $format contains Exporter::CSV, Exporter:EXCEL or whatever else you added
+    // $format contains Exporter::CSV, Exporter:XLS or whatever else you added
     return ExportParams::new()
         ->setFilename($this->getName())
         ->setSeparator(";");
