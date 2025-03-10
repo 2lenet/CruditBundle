@@ -26,6 +26,11 @@ class Exporter
         return $this->getExporter($format)->getContentType();
     }
 
+    public function getFileExtension(string $format): string
+    {
+        return $this->getExporter($format)->getFileExtension();
+    }
+
     protected function getExporter(string $format): ExporterInterface
     {
         /** @var ExporterInterface $exporter */

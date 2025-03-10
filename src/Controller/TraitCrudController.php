@@ -289,7 +289,7 @@ trait TraitCrudController
         $filename = $params->getFilename() ?? 'export';
         $disposition = HeaderUtils::makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $filename . '_' . (new \DateTime())->format('YmdHis') . '.' . $format,
+            $filename . '_' . (new \DateTime())->format('YmdHis') . $exporter->getFileExtension($format),
         );
         $response->headers->set('Content-Disposition', $disposition);
 

@@ -12,6 +12,11 @@ interface ExporterInterface
     public function getSupportedFormat(): string;
 
     /**
+     * @return string the extension of the export file (e.g. .csv)
+     */
+    public function getFileExtension(): string;
+
+    /**
      * @param iterable $resources an iterable of ResourceView
      * @param ExportParams $params the parameters of the export
      * @return string the filename

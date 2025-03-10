@@ -34,6 +34,11 @@ class ExcelExporter extends AbstractExporter
         return 'application/vnd.ms-excel';
     }
 
+    public function getFileExtension(): string
+    {
+        return '.xls';
+    }
+
     public function export(iterable $resources, ExportParams $params, array $total = []): string
     {
         $spreadsheet = new Spreadsheet();
