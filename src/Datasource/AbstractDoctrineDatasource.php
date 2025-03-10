@@ -385,7 +385,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this->filterset;
     }
 
-    public function fillFromData(object $item, array $data): void
+    public function fillFromData(object $item, array $data, array $params = []): void
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
             ->getPropertyAccessor();
@@ -411,6 +411,14 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                     $fields = $this->entityManager->getClassMetadata($className);
                     $type = $fields->fieldMappings[$field]['type'];
 
+                    if (
+                        $params
+                        && array_key_exists($field, $params['options'])
+                        && $params['options'][$field]['currency'] === 'currency_int'
+                    ) {
+                        $type = 'currency_int';
+                    }
+
                     switch ($type) {
                         case "date":
                         case "datetime":
@@ -419,6 +427,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                         case "integer":
                         case "smallint":
                             $value = (int)$value;
+                            break;
+                        case "currency_int":
+                            $value = (int)($value * 100);
                             break;
                         case "float":
                             $value = (float)$value;
