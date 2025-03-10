@@ -323,7 +323,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         if (in_array($property, ['tel', 'telephone', 'mobile', 'portable', 'telephoneMobile'])) {
             return TelephoneField::class;
         }
-        
+
         $type = $metadata->getTypeOfField($property);
         if ($type === null) {
             if (isset($metadata->getAssociationMappings()[$property])) {
