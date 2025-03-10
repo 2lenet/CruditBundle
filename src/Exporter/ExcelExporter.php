@@ -10,22 +10,18 @@ use Lle\CruditBundle\Field\DateField;
 use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
+use Lle\CruditBundle\Exception\ExporterException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExcelExporter extends AbstractExporter
 {
-    protected TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
+    public function __construct(
+        protected TranslatorInterface $translator,
+    ) {
     }
 
     public function getSupportedFormat(): string
@@ -33,7 +29,12 @@ class ExcelExporter extends AbstractExporter
         return Exporter::EXCEL;
     }
 
-    public function export(iterable $resources, ExportParams $params, array $total = []): Response
+    public function getContentType(): string
+    {
+        return 'application/vnd.ms-excel';
+    }
+
+    public function export(iterable $resources, ExportParams $params, array $total = []): string
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -91,21 +92,15 @@ class ExcelExporter extends AbstractExporter
             $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
         }
 
+        $path = tempnam(sys_get_temp_dir(), Exporter::EXCEL);
+        if ($path === false) {
+            throw new ExporterException('Unknown EXCEL exporter error');
+        }
+
         $writer = new Xls($spreadsheet);
-        $response = new StreamedResponse(function () use ($writer) {
-            $writer->save("php://output");
-        });
+        $writer->save($path);
 
-        $response->headers->set("Content-Type", "application/vnd.ms-excel");
-
-        $filename = $params->getFilename() ?? "export";
-        $disposition = HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            $filename . '_' . (new \DateTime())->format('YmdHis') . '.xls'
-        );
-        $response->headers->set("Content-Disposition", $disposition);
-
-        return $response;
+        return $path;
     }
 
     protected function convertFormat(string $format): string

@@ -5,19 +5,13 @@ namespace Lle\CruditBundle\Exporter;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Exception\ExporterException;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CsvExporter extends AbstractExporter
 {
-    protected TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
+    public function __construct(
+        protected TranslatorInterface $translator,
+    ) {
     }
 
     public function getSupportedFormat(): string
@@ -25,7 +19,12 @@ class CsvExporter extends AbstractExporter
         return Exporter::CSV;
     }
 
-    public function export(iterable $resources, ExportParams $params, array $total = []): Response
+    public function getContentType(): string
+    {
+        return 'text/csv';
+    }
+
+    public function export(iterable $resources, ExportParams $params, array $total = []): string
     {
         $path = tempnam(sys_get_temp_dir(), Exporter::CSV);
 
@@ -56,18 +55,7 @@ class CsvExporter extends AbstractExporter
             }
         }
 
-        $response = new BinaryFileResponse($path);
-        $response->deleteFileAfterSend();
-
-        $filename = $params->getFilename() ?? "export";
-        $disposition = HeaderUtils::makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $filename . '_' . (new \DateTime())->format('YmdHis') . '.csv'
-        );
-        $response->headers->set("Content-Disposition", $disposition);
-        $response->headers->set("Content-Type", "text/csv");
-
-        return $response;
+        return $path;
     }
 
     protected function getHeaders(array $fields): array
