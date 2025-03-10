@@ -35,6 +35,11 @@ class PdfExporter extends AbstractExporter
         return 'application/pdf';
     }
 
+    public function getFileExtension(): string
+    {
+        return '.pdf';
+    }
+
     public function export(iterable $resources, ExportParams $params, array $totals = []): string
     {
         $spreadsheet = new Spreadsheet();

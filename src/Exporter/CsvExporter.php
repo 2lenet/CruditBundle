@@ -24,6 +24,11 @@ class CsvExporter extends AbstractExporter
         return 'text/csv';
     }
 
+    public function getFileExtension(): string
+    {
+        return '.csv';
+    }
+
     public function export(iterable $resources, ExportParams $params, array $total = []): string
     {
         $path = tempnam(sys_get_temp_dir(), Exporter::CSV);
