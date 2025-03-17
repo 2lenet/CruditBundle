@@ -3038,6 +3038,9 @@ function addTimeoutOnCruditActions() {
   document.querySelectorAll('.crudit-action').forEach(function (choice) {
     choice.addEventListener('click', function () {
       choice.classList.add('disabled');
+      setTimeout(function () {
+        choice.classList.remove('disabled');
+      }, 500);
     });
   });
 }
