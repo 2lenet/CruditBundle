@@ -38,8 +38,14 @@ class PeriodeFilterType extends AbstractFilterType
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
-                    $queryBuilder->andWhere($alias . $column . ' >= :min_' . $paramname);
-                    $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
+                    if ($this->data['value'] !== $this->data['to']) {
+                        $queryBuilder->andWhere($alias . $column . ' >= :min_' . $paramname);
+                        $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
+                    } else {
+                        $queryBuilder->andWhere($alias . $column . ' LIKE :min_' . $paramname);
+                        $queryBuilder->setParameter('min_' . $paramname, $this->data['value'] . '%');
+                    }
+
                     break;
             }
         }
@@ -50,8 +56,11 @@ class PeriodeFilterType extends AbstractFilterType
                     $queryBuilder->andWhere($queryBuilder->expr()->isNull($alias . $column));
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
-                    $queryBuilder->andWhere($alias . $column . ' <= :max_' . $paramname);
-                    $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
+                    if ($this->data['value'] !== $this->data['to']) {
+                        $queryBuilder->andWhere($alias . $column . ' <= :max_' . $paramname);
+                        $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
+                    }
+
                     break;
             }
         }
