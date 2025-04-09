@@ -11,6 +11,7 @@ import './multisearch';
 import './scroll-to-top';
 import './sidebar';
 import './tag';
+import './form_collection';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {
