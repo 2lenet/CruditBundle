@@ -28,7 +28,15 @@ The `Lle\CruditBundle\Form\Type\CronExpressionType` allows you to create a cron 
 
 Crudit works with CollectionType, but you need to do configure some things on your side.
 
-Here's a working example:
+First, you need to include @LleCrudit/form/custom_types.html.twig in Twig templates:
+```yaml
+twig:
+    form_themes:
+        - 'bootstrap_5_layout.html.twig'
+        - '@LleCrudit/form/custom_types.html.twig'
+```
+
+Then you can use the CollectionType. Here's a working example:
 ```php
 // in parent form OrderType.php
 $builder->add('lines', CollectionType::class, [
