@@ -72,10 +72,6 @@ $input-height: 42px;
             .form-label {
                 width: 10rem;
             }
-
-            & + div[class^="col-"] {
-                margin-top: 1rem;
-            }
         }
     }
 

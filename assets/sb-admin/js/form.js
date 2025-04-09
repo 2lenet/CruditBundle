@@ -2,6 +2,22 @@
 
 import TomSelect from "tom-select";
 
+export function initChoiceTomSelect() {
+    document.querySelectorAll('select.choice-tom-select:not(.tomselected)').forEach(select => {
+        new TomSelect('#' + select.id,
+            {
+                plugins: [
+                    'remove_button',
+                ],
+                onItemAdd() {
+                    select.parentElement.querySelector('.ts-control > input').value = '';
+                    select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+                },
+            },
+        );
+    });
+}
+
 window.addEventListener('load', function () {
 
     /**
@@ -24,17 +40,5 @@ window.addEventListener('load', function () {
     /**
      * Apply TomSelect on choice types forms
      */
-    document.querySelectorAll('select.choice-tom-select').forEach(select => {
-        new TomSelect('#' + select.id,
-            {
-                plugins: [
-                    'remove_button',
-                ],
-                onItemAdd() {
-                    select.parentElement.querySelector('.ts-control > input').value = '';
-                    select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
-                },
-            },
-        );
-    });
+    initChoiceTomSelect();
 });

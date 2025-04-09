@@ -3338,32 +3338,13 @@ function addFlash(message) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initTomSelect: () => (/* binding */ initTomSelect)
+/* harmony export */ });
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tom-select */ "./node_modules/tom-select/dist/esm/tom-select.complete.js");
 
-window.addEventListener('DOMContentLoaded', function () {
-  // Change the operator of the filter
-  document.querySelectorAll('.valuesetter').forEach(function (choice) {
-    choice.addEventListener('click', function (e) {
-      var hidden = document.getElementById(e.target.dataset.valueid);
-      hidden.value = e.target.dataset.value;
-
-      // Set into the button the icon selected in the dropdown
-      var icon = document.getElementById(e.target.dataset.valueid + '_icon');
-      icon.classList = e.target.querySelector('i').classList;
-    });
-  });
-
-  // Submit form on press on Enter and prevent operators dropdown opening
-  var filtersContainer = document.getElementById('collapse-filters');
-  if (filtersContainer) {
-    filtersContainer.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        filtersContainer.closest('form').submit();
-      }
-    });
-  }
-  document.querySelectorAll('.entity-select').forEach(function (select) {
+function initTomSelect() {
+  document.querySelectorAll('input.entity-select:not(.tomselected)').forEach(function (select) {
     var dataurl = select.dataset.url;
     var inioptions = JSON.parse(select.dataset.options);
     new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, {
@@ -3438,9 +3419,8 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-
   // Normal select
-  document.querySelectorAll('input.tom-select').forEach(function (select) {
+  document.querySelectorAll('input.tom-select:not(.tomselected)').forEach(function (select) {
     var settings = {
       maxItems: select.dataset.maxitems,
       plugins: ['remove_button'],
@@ -3476,6 +3456,31 @@ window.addEventListener('DOMContentLoaded', function () {
     }
     new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, settings);
   });
+}
+window.addEventListener('DOMContentLoaded', function () {
+  // Change the operator of the filter
+  document.querySelectorAll('.valuesetter').forEach(function (choice) {
+    choice.addEventListener('click', function (e) {
+      var hidden = document.getElementById(e.target.dataset.valueid);
+      hidden.value = e.target.dataset.value;
+
+      // Set into the button the icon selected in the dropdown
+      var icon = document.getElementById(e.target.dataset.valueid + '_icon');
+      icon.classList = e.target.querySelector('i').classList;
+    });
+  });
+
+  // Submit form on press on Enter and prevent operators dropdown opening
+  var filtersContainer = document.getElementById('collapse-filters');
+  if (filtersContainer) {
+    filtersContainer.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        filtersContainer.closest('form').submit();
+      }
+    });
+  }
+  initTomSelect();
 });
 
 /***/ }),
@@ -3509,10 +3514,24 @@ window.addEventListener('load', function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initChoiceTomSelect: () => (/* binding */ initChoiceTomSelect)
+/* harmony export */ });
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tom-select */ "./node_modules/tom-select/dist/esm/tom-select.complete.js");
 
 
 
+function initChoiceTomSelect() {
+  document.querySelectorAll('select.choice-tom-select:not(.tomselected)').forEach(function (select) {
+    new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, {
+      plugins: ['remove_button'],
+      onItemAdd: function onItemAdd() {
+        select.parentElement.querySelector('.ts-control > input').value = '';
+        select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+      }
+    });
+  });
+}
 window.addEventListener('load', function () {
   /**
    * Client side form validation with Bootstrap
@@ -3531,16 +3550,91 @@ window.addEventListener('load', function () {
   /**
    * Apply TomSelect on choice types forms
    */
-  document.querySelectorAll('select.choice-tom-select').forEach(function (select) {
-    new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, {
-      plugins: ['remove_button'],
-      onItemAdd: function onItemAdd() {
-        select.parentElement.querySelector('.ts-control > input').value = '';
-        select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+  initChoiceTomSelect();
+});
+
+/***/ }),
+
+/***/ "./assets/sb-admin/js/form_collection.js":
+/*!***********************************************!*\
+  !*** ./assets/sb-admin/js/form_collection.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./filters */ "./assets/sb-admin/js/filters.js");
+/* harmony import */ var _form__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./form */ "./assets/sb-admin/js/form.js");
+var _templateObject;
+function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
+// Handle CollectionType client side
+// https://symfony.com/doc/current/form/form_collections.html
+
+
+
+var onLoad = function onLoad(callback) {
+  if (document.readyState !== 'loading') {
+    callback();
+  } else {
+    document.addEventListener('DOMContentLoaded', callback);
+  }
+};
+onLoad(function () {
+  document.querySelectorAll('.crudit-collection-add').forEach(function (btn) {
+    // add the remove buttons
+    document.querySelectorAll(btn.dataset.target + ' > div').forEach(function (tag) {
+      if (tag.classList.contains('crudit-collection-ignore')) {
+        return;
       }
+      addTagFormDeleteLink(tag);
     });
+    btn.addEventListener('click', addFormToCollection);
   });
 });
+function addFormToCollection(e) {
+  var collectionHolder = document.querySelector(e.target.dataset.target);
+  var item = document.createElement('div');
+  var name = collectionHolder.dataset.name;
+
+  // The prototype is in an HTML attribute, so it's escaped
+  // We use a textarea to decode it and be able to use it as HTML
+  var txtArea = document.createElement('textarea');
+  txtArea.innerHTML = collectionHolder.dataset.prototype;
+  item.innerHTML = txtArea.value.replace(new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", ""])), name), 'g'), collectionHolder.dataset.index);
+  item.querySelectorAll('.crudit-collection-add').forEach(function (btn) {
+    btn.addEventListener('click', addFormToCollection);
+  });
+  if (collectionHolder.childElementCount > 1) {
+    // > 1 because there's the labels row
+    collectionHolder.appendChild(document.createElement('hr'));
+  }
+  collectionHolder.appendChild(item);
+  addTagFormDeleteLink(collectionHolder.lastChild);
+  collectionHolder.dataset.index++;
+  (0,_form__WEBPACK_IMPORTED_MODULE_1__.initChoiceTomSelect)();
+  (0,_filters__WEBPACK_IMPORTED_MODULE_0__.initTomSelect)();
+}
+function addTagFormDeleteLink(item) {
+  var removeFormButton = document.createElement('button');
+  var icon = document.createElement('i');
+  icon.classList = 'fa fa-trash pe-none';
+  removeFormButton.appendChild(icon);
+  removeFormButton.classList = 'btn btn-sm btn-link text-danger px-2 me-3 mt-1';
+  var removeFormButtonWrapper = document.createElement('div');
+  removeFormButtonWrapper.classList.add('col-1');
+  removeFormButtonWrapper.classList.add('d-flex');
+  removeFormButtonWrapper.classList.add('align-items-center');
+  removeFormButtonWrapper.appendChild(removeFormButton);
+  item.parentNode.insertBefore(removeFormButtonWrapper, item.nextSibling);
+  removeFormButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    item.remove();
+    if (removeFormButtonWrapper.previousElementSibling.tagName === 'HR') {
+      removeFormButtonWrapper.previousElementSibling.remove();
+    }
+    removeFormButtonWrapper.remove();
+  });
+}
 
 /***/ }),
 
@@ -44923,7 +45017,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scroll_to_top__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_scroll_to_top__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var _sidebar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./sidebar */ "./assets/sb-admin/js/sidebar.js");
 /* harmony import */ var _tag__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./tag */ "./assets/sb-admin/js/tag.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _form_collection__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./form_collection */ "./assets/sb-admin/js/form_collection.js");
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+
 
 
 
@@ -44955,11 +45051,11 @@ window.addEventListener('load', function () {
   });
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
   popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_13__.Popover(popoverTriggerEl);
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_14__.Popover(popoverTriggerEl);
   });
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_13__.Tooltip(tooltipTriggerEl);
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_14__.Tooltip(tooltipTriggerEl);
   });
 });
 })();

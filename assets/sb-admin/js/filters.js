@@ -1,31 +1,7 @@
 import TomSelect from 'tom-select';
 
-window.addEventListener('DOMContentLoaded', function () {
-
-    // Change the operator of the filter
-    document.querySelectorAll('.valuesetter').forEach(choice => {
-        choice.addEventListener('click', (e) => {
-            const hidden = document.getElementById(e.target.dataset.valueid);
-            hidden.value = e.target.dataset.value;
-
-            // Set into the button the icon selected in the dropdown
-            const icon = document.getElementById(e.target.dataset.valueid + '_icon');
-            icon.classList = e.target.querySelector('i').classList;
-        });
-    });
-
-    // Submit form on press on Enter and prevent operators dropdown opening
-    const filtersContainer = document.getElementById('collapse-filters');
-    if (filtersContainer) {
-        filtersContainer.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                filtersContainer.closest('form').submit();
-            }
-        });
-    }
-
-    document.querySelectorAll('.entity-select').forEach(select => {
+export function initTomSelect() {
+    document.querySelectorAll('input.entity-select:not(.tomselected)').forEach(select => {
         const dataurl = select.dataset.url;
         const inioptions = JSON.parse(select.dataset.options);
 
@@ -105,9 +81,8 @@ window.addEventListener('DOMContentLoaded', function () {
             },
         );
     });
-
     // Normal select
-    document.querySelectorAll('input.tom-select').forEach(select => {
+    document.querySelectorAll('input.tom-select:not(.tomselected)').forEach(select => {
         const settings = {
             maxItems: select.dataset.maxitems,
             plugins: [
@@ -145,4 +120,32 @@ window.addEventListener('DOMContentLoaded', function () {
 
         new TomSelect('#' + select.id, settings);
     });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+
+    // Change the operator of the filter
+    document.querySelectorAll('.valuesetter').forEach(choice => {
+        choice.addEventListener('click', (e) => {
+            const hidden = document.getElementById(e.target.dataset.valueid);
+            hidden.value = e.target.dataset.value;
+
+            // Set into the button the icon selected in the dropdown
+            const icon = document.getElementById(e.target.dataset.valueid + '_icon');
+            icon.classList = e.target.querySelector('i').classList;
+        });
+    });
+
+    // Submit form on press on Enter and prevent operators dropdown opening
+    const filtersContainer = document.getElementById('collapse-filters');
+    if (filtersContainer) {
+        filtersContainer.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                filtersContainer.closest('form').submit();
+            }
+        });
+    }
+
+    initTomSelect();
 });
