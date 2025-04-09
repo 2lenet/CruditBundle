@@ -199,7 +199,7 @@ Field::new('yourdoctrinentityfield')->setOptions(['route' => 'your_route', 'rout
 It is possible to refresh the value of a field in a list/show/sublist after modifying one using the `fieldsToUpdate` method.
 To do this, you need to return an array containing each id of the element you want to refresh and the HTML code contained in that element.
 
-The id of the element contain a part call **yourfieldlabel**, if the label of your field start with 'field.' or 'label.', Crudit automatically remove it.
+The id of the element contain a part call **'yourfieldlabel'**, if the label of your field start with 'field.' or 'label.', Crudit automatically remove it.
 So if you've 'field.toto', 'yourefieldlabel' must be 'toto' but if you've 'text.toto' you'll have 'text.toto'.
 
 ```php
