@@ -1,9 +1,9 @@
 {% block autocomplete_widget %}
     <input
-            type="hidden"
-            id="{{ id }}_items"
-            name="{{ id }}_items"
-            value="{{ value|default('') }}"
+        type="hidden"
+        id="{{ id }}_items"
+        name="{{ id }}_items"
+        value="{{ value|default('') }}"
     >
     <input class="form-control entity-select"
            data-url="{{ url }}"
@@ -12,7 +12,7 @@
            id="{{ id }}"
            name="{{ full_name }}"
            value="{{ value|default('') }}"
-            {{ required ? 'required' }}
+        {{ required ? 'required' }}
     />
 {% endblock %}
 
@@ -23,10 +23,17 @@
             {% for locale in locales %}
                 {% set isActiveTab = (locale == currentlocale) ? 'active' : '' %}
                 <li class="nav-item {{ isActiveTab }}" role="presentation">
-                    <a class="nav-link {{ isActiveTab }}" href="{{ '#' ~ fieldname ~ '_' ~ locale }}"
-                       aria-expanded="true" data-bs-toggle="tab">
+                    <button
+                        class="nav-link {{ isActiveTab }}"
+                        id="{{ fieldname }}_tab_{{ locale }}"
+                        data-bs-toggle="tab"
+                        data-bs-target="#{{ fieldname }}_{{ locale }}"
+                        type="button"
+                        role="tab"
+                        aria-controls="{{ fieldname }}_{{ locale }}"
+                    >
                         {{ tablabels[locale] }}
-                    </a>
+                    </button>
                 </li>
             {% endfor %}
         </ul>
@@ -52,7 +59,7 @@
 
 {% block crudit_file_widget %}
     <div
-            class="{% if download_uri or form.delete is defined %}col-md-9{% else %}col-12 vich-file-full{% endif %} vich-file">
+        class="{% if download_uri or form.delete is defined %}col-md-9{% else %}col-12 vich-file-full{% endif %} vich-file">
         {%- if errors|length > 0 -%}
             {%- set attr = attr|merge({class: (attr.class|default('') ~ ' is-invalid')|trim}) -%}
         {%- endif -%}
@@ -121,9 +128,9 @@
                     }) %}
                 {% endif %}
                 <div
-                        {{ block('widget_container_attributes') }}
-                        data-index="{{ form|length ? (form|last.vars.name + 1) : 0 }}"
-                        data-name="{{ form.vars.prototype.vars.name }}"
+                    {{ block('widget_container_attributes') }}
+                    data-index="{{ form|length ? (form|last.vars.name + 1) : 0 }}"
+                    data-name="{{ form.vars.prototype.vars.name }}"
                 >
                     {% for row in form|filter(child => not child.rendered) %}
                         {% if not loop.first and row|length %}
