@@ -58,7 +58,7 @@ class PeriodeFilterType extends AbstractFilterType
                 case FilterTypeInterface::OPERATOR_INTERVAL:
                     if ($this->data['value'] !== $this->data['to']) {
                         $queryBuilder->andWhere($alias . $column . ' <= :max_' . $paramname);
-                        $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
+                        $queryBuilder->setParameter('max_' . $paramname, $this->data['to'] . ' 23:59:59');
                     }
 
                     break;
