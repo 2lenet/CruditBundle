@@ -48,8 +48,8 @@ class GedmoTranslatableFieldManager
             $translationRepository = $this->getTranslationRepository($entity);
 
             // 'basic' translations (ext_translations table)
-            return \array_map(function ($element) {
-                return \array_shift($element);
+            return \array_map(function ($element) use ($fieldName) {
+                return array_key_exists($fieldName, $element) ? $element[$fieldName] : null;
             }, $translationRepository->findTranslations($entity));
         }
     }
