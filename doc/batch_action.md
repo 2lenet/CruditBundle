@@ -29,7 +29,15 @@ execute:
      */
     public function exporterInterventions(Request $request, ResourceResolver $resolver, Exporter $exporter)
     {
-        $ids = explode(",", $request->get("ids"));
+        if ((bool)$request->query->get('all_page')) {
+            // get data from datasource
+            
+            ...
+        } else {
+            $ids = explode(",", $request->get("ids"));
+            
+            ...
+        }
         
         ...
     }
@@ -68,8 +76,11 @@ In your form you can add all the fields you need, but just 1 is required :
         // All the fields you need
         $builder->add('intervention');
 
-        // The required field
+        // The required fields
         $builder->add('ids', HiddenType::class, [
+            'label' => false
+        ]);
+        $builder->add('all_page', HiddenType::class, [
             'label' => false
         ]);
     }
@@ -87,7 +98,15 @@ Now in your controller you can find all the selected ids and the different value
         $params = $request->request->get('exporter_intervention');
 
         $intervention = $params['intervention'];
-        $ids = explode(',', $params['ids']);
+        if ((bool)$params['all_page']) {
+            // get data from datasource
+            
+            ...
+        } else {
+            $ids = explode(',', $params['ids']);
+            
+            ...
+        }
         
         ...
     }
