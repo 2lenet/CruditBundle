@@ -33,11 +33,11 @@
             <div id="batch-action-page" class="row mt-2 d-none">
                 <div class="col-12">
                     <input type="radio" id="batch-action-this-page" name="batch-action-page-form" value="0" checked>
-                    <label for="batch-action-this-page">Uniquement sur la page courante</label>
+                    <label for="batch-action-this-page">{{ 'crudit.text.current_page'|trans({}, 'LleCruditBundle') }}</label>
                 </div>
                 <div class="col-12">
                     <input type="radio" id="batch-action-all-page" name="batch-action-page-form" value="1">
-                    <label for="batch-action-all-page">Sur toutes les pages</label>
+                    <label for="batch-action-all-page">{{ 'crudit.text.all_page'|trans({}, 'LleCruditBundle') }}</label>
                 </div>
             </div>
         {% endif %}

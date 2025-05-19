@@ -113,3 +113,7 @@ crudit:
             title: "Errore 403"
             text: "Non hai i diritti per accedere a questa pagina. Puoi continuare a navigare usando il link qui sotto."
             link: "Torna al cruscotto"
+
+    text:
+        current_page: "Solo nella pagina corrente"
+        all_page: "In tutte le pagine"
