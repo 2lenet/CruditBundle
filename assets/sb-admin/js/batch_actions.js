@@ -45,13 +45,13 @@ window.addEventListener('load', function () {
 
                     const formAllPage = document.getElementById(form.name + '_all_page');
                     if (formAllPage) {
-                        formAllPage.value = getAllPageValue(batchCheckAll);
+                        formAllPage.value = getAllPageValue(batchActionPage, batchCheckAll);
                     }
                 });
             } else {
                 let url = new URL(event.currentTarget.href);
                 url.searchParams.set('ids', ids);
-                url.searchParams.set('all_page', getAllPageValue(batchCheckAll));
+                url.searchParams.set('all_page', getAllPageValue(batchActionPage, batchCheckAll));
 
                 event.currentTarget.href = url.toString();
             }
@@ -136,10 +136,8 @@ function showBatchActionPage(batchActionPage, batchCheckAll) {
     }
 }
 
-function getAllPageValue(batchCheckAll) {
+function getAllPageValue(batchActionPage, batchCheckAll) {
     let allPage = 0;
-
-    const batchActionPage = document.getElementById('batch-action-page');
     if (batchCheckAll.checked && batchActionPage) {
         if (document.querySelector('input[name="batch-action-page-form"]:checked').value === '1') {
             allPage = 1;
