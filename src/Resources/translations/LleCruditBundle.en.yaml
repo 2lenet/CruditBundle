@@ -114,3 +114,7 @@ crudit:
             title: "403 Error"
             text: "You don't have the rights to access this page. You can continue browsing by using the link below."
             link: "Go back to dashboard"
+
+    text:
+        current_page: "Only on current page"
+        all_page: "On all pages"

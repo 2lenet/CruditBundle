@@ -117,3 +117,7 @@ crudit:
             title: "Erreur 403"
             text: "Vous n'avez pas les droits pour accéder à cette page. Vous pouvez continuer votre navigation en utilisant le lien ci-dessous."
             link: "Retour au tableau de bord"
+
+    text:
+        current_page: "Uniquement sur la page courante"
+        all_page: "Sur toutes les pages"

@@ -114,3 +114,7 @@ crudit:
             title: "Fehler 403"
             text: "Sie haben nicht die Rechte, auf diese Seite zuzugreifen. Sie können Ihre Navigation über den unten stehenden Link fortsetzen."
             link: "Zurück zur Übersicht"
+
+    text:
+        current_page: "Nur auf der aktuellen Seite"
+        all_page: "Auf allen Seiten"
