@@ -163,7 +163,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             $alias = $alias ? $alias . "_" . $field : $field;
 
             if (!in_array($alias, $qb->getAllAliases())) {
-                $qb->join($join . "." . $field, $alias);
+                $qb->leftJoin($join . "." . $field, $alias);
             }
 
             $join = $alias;

@@ -12,6 +12,8 @@ use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Registry\FieldRegistry;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
+use Symfony\Component\TypeInfo\Type\NullableType;
+use Symfony\Component\TypeInfo\Type\ObjectType;
 
 class FieldResolver
 {
@@ -45,9 +47,9 @@ class FieldResolver
 
             foreach ($cascade as $k => $name) {
                 /** @var string $subClass */
-                $types = $this->propertyInfoExtractor->getTypes($subClass, $name);
+                $propertyType = $this->propertyInfoExtractor->getType($subClass, $name);
 
-                if (!$types) {
+                if (!$propertyType) {
                     throw new CruditException(
                         sprintf(
                             "Could not determine type for property '%s' of class '%s'.",
@@ -57,8 +59,6 @@ class FieldResolver
                     );
                 }
 
-                $propertyType = $types[0];
-
                 if ($subResource) {
                     $value = $this->propertyAccessor->getValue($subResource, $name);
                 }
@@ -66,9 +66,19 @@ class FieldResolver
                 // if we are not at the last iteration
                 if (array_key_last($cascade) !== $k) {
                     // it should always be a class
-                    $subClass = $propertyType->isCollection()
-                        ? $propertyType->getCollectionValueTypes()[0]
-                        : $propertyType->getClassName();
+                    if ($propertyType instanceof ObjectType) {
+                        $subClass = $propertyType->getClassName();
+                    } elseif ($propertyType instanceof NullableType) {
+                        $subClass = $propertyType->getWrappedType()->getClassName();
+                    } else {
+                        throw new CruditException(
+                            sprintf(
+                                "Could not determine type for property '%s' of class '%s'.",
+                                $name,
+                                $subClass,
+                            )
+                        );
+                    }
 
                     $subResource = $value;
                 }
