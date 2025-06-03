@@ -29,7 +29,7 @@ $input-height: 42px;
         padding-bottom: 0;
     }
 
-    .form-control:not(.form-check-input), & {
+    .form-control:not(.form-check-input), .form-select:not(.form-check-input), & {
         height: auto;
         min-height: $form-floating-height;
 
@@ -92,7 +92,6 @@ $input-height: 42px;
     & > .choice-tom-select.form-select {
         height: inherit !important;
         padding: 0 !important;
-        border: none !important;
     }
 }
 
