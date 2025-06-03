@@ -65,11 +65,12 @@ class FieldResolver
 
                 // if we are not at the last iteration
                 if (array_key_last($cascade) !== $k) {
-                    // it should always be a class
+                    if ($propertyType instanceof NullableType) {
+                        $propertyType = $propertyType->getWrappedType();
+                    }
+
                     if ($propertyType instanceof ObjectType) {
                         $subClass = $propertyType->getClassName();
-                    } elseif ($propertyType instanceof NullableType) {
-                        $subClass = $propertyType->getWrappedType()->getClassName();
                     } else {
                         throw new CruditException(
                             sprintf(
