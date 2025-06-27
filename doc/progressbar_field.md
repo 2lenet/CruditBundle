@@ -5,7 +5,7 @@ Crudit ProgressBar Field
 To enable the progress bar for a field, you need to set the type:
 
 ```php
-$value = Field::new("value", ProgressField::class);
+$value = Field::new("value", ProgressBarField::class);
 ```
 And it's done !
 
