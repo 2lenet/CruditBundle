@@ -62,8 +62,12 @@
                             {{ form_label(field) }}
                         {% endif %}
                         <div class="px-2">
-                            {{ form_help(field) }}
-                            {{ form_errors(field) }}
+                            {% if field.vars.help is defined %}
+                                {{ form_help(field) }}
+                            {% endif %}
+                            {% if field.vars.errors is defined %}
+                                {{ form_errors(field) }}
+                            {% endif %}
                         </div>
                     </div>
                     {% include '@LleCrudit/brick/form/_tooltip.html.twig' %}
