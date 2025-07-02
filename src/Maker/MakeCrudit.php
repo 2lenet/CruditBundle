@@ -98,7 +98,10 @@ final class MakeCrudit extends AbstractMaker
             $question = new Question($argument->getDescription());
             $question->setAutocompleterValues($entities);
             $value = $io->askQuestion($question);
-            if (!is_a("App\\Entity\\" . $value, CruditEntityInterface::class, true)) {
+            if (
+                class_exists('App\\Entity\\' . $value)
+                && !is_a('App\\Entity\\' . $value, CruditEntityInterface::class, true)
+            ) {
                 throw new CruditException('Entity ' . $value . ' doesn\'t implement CruditEntityInterface.');
             } else {
                 $input->setArgument('entity-class', $value);
@@ -129,8 +132,8 @@ final class MakeCrudit extends AbstractMaker
             $this->entityHelper->getEntitiesForAutocomplete()
         );
 
-        if (strpos($classname, '\\') === false) {
-            $classname = "App\\Entity\\" . $classname;
+        if (class_exists('App\\Entity\\' . $classname)) {
+            $classname = 'App\\Entity\\' . $classname;
         }
 
         $io->text('Create a configurator for ' . $classname);
@@ -241,7 +244,7 @@ final class MakeCrudit extends AbstractMaker
             }
 
             foreach ($metadata->getAssociationNames() as $fieldassoc) {
-                if (!$metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
+                if ($metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
                     $fields[] = Field::new($fieldassoc)->setSortable(true);
                 }
             }
@@ -442,8 +445,8 @@ final class MakeCrudit extends AbstractMaker
         $filtersetClassNameDetails = $generator->createClassNameDetails(
             $shortEntity,
             $this->getStringArgument('namespace', $input) ?
-            'Crudit\Datasource\Filterset\\' . $this->getStringArgument('namespace', $input) . '\\' :
-            'Crudit\Datasource\Filterset\\',
+                'Crudit\Datasource\Filterset\\' . $this->getStringArgument('namespace', $input) . '\\' :
+                'Crudit\Datasource\Filterset\\',
             'FilterSet'
         );
         $generator->generateClass(
