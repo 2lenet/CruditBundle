@@ -99,8 +99,8 @@ final class MakeCrudit extends AbstractMaker
             $question->setAutocompleterValues($entities);
             $value = $io->askQuestion($question);
             if (
-                class_exists("App\\Entity\\" . $value)
-                && !is_a("App\\Entity\\" . $value, CruditEntityInterface::class, true)
+                class_exists('App\\Entity\\' . $value)
+                && !is_a('App\\Entity\\' . $value, CruditEntityInterface::class, true)
             ) {
                 throw new CruditException('Entity ' . $value . ' doesn\'t implement CruditEntityInterface.');
             } else {
@@ -132,8 +132,8 @@ final class MakeCrudit extends AbstractMaker
             $this->entityHelper->getEntitiesForAutocomplete()
         );
 
-        if (class_exists("App\\Entity\\" . $classname)) {
-            $classname = "App\\Entity\\" . $classname;
+        if (class_exists('App\\Entity\\' . $classname)) {
+            $classname = 'App\\Entity\\' . $classname;
         }
 
         $io->text('Create a configurator for ' . $classname);
