@@ -475,10 +475,10 @@ final class MakeCrudit extends AbstractMaker
         if (count(AbstractDoctrineDatasource::getInitSearchFields($entityClass)) == 0) {
             $io->warning("You must set the searchFields property for autocompletion.");
         }
-        $shortEntity = $this->getBasename($this->getStringArgument('entity-class', $input));
+        $shortEntityClass = $this->getBasename($this->getStringArgument('entity-class', $input));
 
         $datasourceClassNameDetails = $generator->createClassNameDetails(
-            $shortEntity,
+            $shortEntityClass,
             $this->getStringArgument('namespace', $input) ?
                 'Crudit\\Datasource\\' . $this->getStringArgument('namespace', $input) . '\\' :
                 'Crudit\\Datasource\\',
@@ -489,8 +489,8 @@ final class MakeCrudit extends AbstractMaker
             $this->getSkeletonTemplate('datasource/DoctrineDatasource.php'),
             [
                 'namespace' => 'App',
-                'entityClass' => $shortEntity,
-                'prefixFilename' => $shortEntity,
+                'entityClass' => $entityClass,
+                'shortEntityClass' => $shortEntityClass,
                 'hasFilterset' => $this->getBoolArgument('filter', $input),
                 'fullEntityClass' => $this->getStringArgument('entity-class', $input),
                 'strictType' => true,
