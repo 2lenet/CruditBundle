@@ -58,6 +58,13 @@ abstract class AbstractAction implements ActionInterface
         return $this->label;
     }
 
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
     public function getPath(): Path
     {
         return $this->path;
