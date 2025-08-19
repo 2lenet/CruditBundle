@@ -1,5 +1,5 @@
 {% set params = action.path.params %}
-{% if view.data.resource and action.setResource is defined%}
+{% if view.data.resource and action.setResource is defined %}
     {% do action.setResource(view.data.resource) %}
 {% endif %}
 

@@ -1,0 +1,23 @@
+{% block links_actions %}
+    {% set has_dropdown = false %}
+
+    {% for action in view.data.actions %}
+        {% if crudit_is_dropdown_action(action) %}
+            {% block dropdown_actions %}
+                {{ include('@LleCrudit/brick/links/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
+            {% endblock %}
+        {% elseif not action.dropdown %}
+            {% block actions %}
+                {{ include('@LleCrudit/brick/links/actions/_actions.html.twig', {action: action, view: view}) }}
+            {% endblock %}
+        {% else %}
+            {% set has_dropdown = true %}
+        {% endif %}
+    {% endfor %}
+
+    {% if has_dropdown %}
+        {% block kebab_dropdown_actions %}
+            {{ include('@LleCrudit/brick/links/actions/_kebab_dropdown_actions.html.twig', {view: view}) }}
+        {% endblock %}
+    {% endif %}
+{% endblock %}
