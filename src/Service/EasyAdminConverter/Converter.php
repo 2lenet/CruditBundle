@@ -31,14 +31,16 @@ class Converter
     public function convert(array $config): iterable
     {
         if (isset($config['entities'])) {
-            foreach ($config['entities'] as $short => $entityConfig) {
+            foreach ($config['entities'] as $entityConfig) {
+                $namespace = explode('\\', $entityConfig['class']);
+                $class = end($namespace);
                 if (isset($entityConfig['filter'])) {
-                    yield from $this->makeFilterSet($entityConfig, $short);
+                    yield from $this->makeFilterSet($entityConfig, $class);
                 }
-                yield from $this->makeDatasource($entityConfig, $short);
-                yield from $this->makeCrudConfig($entityConfig, $short);
-                yield from $this->makeController($entityConfig, $short);
-                yield from $this->makeFormType($entityConfig, $short);
+                yield from $this->makeDatasource($entityConfig, $class);
+                yield from $this->makeCrudConfig($entityConfig, $class);
+                yield from $this->makeController($entityConfig, $class);
+                yield from $this->makeFormType($entityConfig, $class);
             }
         }
 
@@ -106,10 +108,12 @@ class Converter
             [
                 'namespace' => 'App',
                 'prefixFilename' => $prefixFilename,
-                'entityClass' => $shortEntity,
+                'entityClass' => $entityClass,
+                'shortEntityClass' => $shortEntity,
                 'hasFilterset' => isset($entityConfig['filter']),
                 'fullEntityClass' => $entityClass,
                 'strictType' => true,
+                'configSubdirectorie' => '',
             ]
         );
         $this->generator->writeChanges();
@@ -272,6 +276,7 @@ class Converter
                     $listAndItemActions
                 ) ? $listAndItemActions['itemActions'] : [],
                 'showActions' => array_key_exists('showActions', $showActions) ? $showActions['showActions'] : [],
+                'configSubdirectorie' => '',
             ]
         );
 
@@ -298,6 +303,8 @@ class Converter
                 'fullEntityClass' => $entityClass,
                 'prefixFilename' => $prefixFilename,
                 'strictType' => true,
+                'configSubdirectorie' => '',
+                'routeSubdirectorie' => '',
             ]
         );
         $this->generator->writeChanges();

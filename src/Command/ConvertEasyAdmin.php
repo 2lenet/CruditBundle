@@ -6,6 +6,7 @@ use Lle\CruditBundle\Service\EasyAdminConverter\Converter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
@@ -41,7 +42,7 @@ class ConvertEasyAdmin extends Command
         $io = new SymfonyStyle($input, $output);
         $path = $this->kernel->getProjectDir() . self::EASYADMIN_PATH;
 
-        if ($input->hasOption("delete")) {
+        if ($input->getOption("delete")) {
             $this->filesystem->remove(["src/Controller"]);
             $this->filesystem->remove(["src/Crudit"]);
             $this->filesystem->remove(["src/Form"]);
@@ -77,7 +78,7 @@ class ConvertEasyAdmin extends Command
             "delete",
             "d",
             null,
-            "Delete existing Crudit files. Useful if you have to re-run the command."
+            "Delete existing Crudit files. Useful if you have to re-run the command.",
         );
     }
 }

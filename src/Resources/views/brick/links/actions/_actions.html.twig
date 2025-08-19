@@ -5,7 +5,7 @@
 
 {% set id = app.request.attributes.get('id') %}
 {% if id %}
-    {% set params = action.path.params|merge({id: id}) %}
+    {% set params = {id: id}|merge(action.path.params) %}
 {% endif %}
 
 {% if action.modal %}

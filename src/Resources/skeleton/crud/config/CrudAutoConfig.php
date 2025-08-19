@@ -125,9 +125,9 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 <?php } ?>
 <?php if ((isset($listActions) && count($listActions)) || (isset($disabledActions['list']) && count($disabledActions['list']))) { ?>
 
-        public function getListActions(): array
-        {
-            $actions = parent::getListActions();
+    public function getListActions(): array
+    {
+        $actions = parent::getListActions();
 <?php if (isset($disabledActions['list'])) { ?>
 <?php foreach ($disabledActions['list'] as $key => $action) { ?>
 <?php if ($action === 'new') {
@@ -153,9 +153,9 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
 <?php } ?>
 <?php if ((isset($itemActions) && count($itemActions)) || (isset($disabledActions['item']) && count($disabledActions['item']))) { ?>
 
-        public function getItemActions(): array
-        {
-            $actions = parent::getItemActions();
+    public function getItemActions(): array
+    {
+        $actions = parent::getItemActions();
 <?php if (isset($disabledActions['item'])) { ?>
 <?php foreach ($disabledActions['item'] as $key => $action) { ?>
 <?php if ($key === array_key_first($disabledActions['item'])) { ?>
