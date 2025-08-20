@@ -53,7 +53,7 @@ class LinksFactory extends AbstractBasicBrickFactory
 
     private function getItem(LinksConfig $brickConfigurator): ?object
     {
-        $id = $this->getRequest()->get('id');
+        $id = $this->getRequest()->attributes->get('id');
         if ($id) {
             $resource = $brickConfigurator->getDataSource()->get($id);
 
