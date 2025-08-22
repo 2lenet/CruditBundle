@@ -138,10 +138,10 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return "@LleCrudit/filter/type/{$name}_filter.html.twig";
     }
 
-    protected function getQueryParams(QueryBuilder $qb): array
+    protected function getQueryParams(QueryBuilder $qb, ?string $additionnalField = null): array
     {
         // parts (e.g. : user:post:title => [user, post, title]
-        $fields = explode(':', $this->id);
+        $fields = explode(':', $additionnalField ?? $this->id);
 
         // join alias
         $alias = null;

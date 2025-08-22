@@ -12,9 +12,23 @@ use Lle\CruditBundle\Contracts\FilterTypeInterface;
  */
 class StringFilterType extends AbstractFilterType
 {
+    protected array $additionnalFields = [];
+
     public static function new(string $fieldname): self
     {
         return new self($fieldname);
+    }
+
+    public function getAdditionnalFields(): array
+    {
+        return $this->additionnalFields;
+    }
+
+    public function setAdditionnalFields(array $additionnalFields): static
+    {
+        $this->additionnalFields = $additionnalFields;
+
+        return $this;
     }
 
     public function getOperators(): array
@@ -42,6 +56,17 @@ class StringFilterType extends AbstractFilterType
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
+
+        foreach ($this->additionnalFields as $additionnalField) {
+            [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+            $query .= ' OR ' . $this->getPattern(
+                $op,
+                $additionnalColumn,
+                $additionnalAlias,
+                $additionnalColumn,
+                $paramname
+            );
+        }
 
         if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
             $queryBuilder->andWhere($query);
