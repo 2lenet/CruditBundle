@@ -17,6 +17,12 @@
                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                 {{ 'crudit.action.logout'|trans({}, 'LleCruditBundle') }}
             </a>
+            {% if crudit_add_connect_profile_link() %}
+                <a class="dropdown-item cursor-pointer" onclick="window.open('{{ connect_url }}profile', '', 'resizable=no, location=no, top=100, left=100, width=600, height=600, menubar=no, status=no, scrollbars=no, menubar=no')">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    {{ 'crudit.action.profile'|trans(domain='LleCruditBundle') }}
+                </a>
+            {% endif %}
         {% endif %}
     </div>
 </li>

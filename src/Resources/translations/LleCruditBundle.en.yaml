@@ -32,6 +32,7 @@ crudit:
         logout: "Logout"
         batch: "Choose a batch action"
         validate: "Validate"
+        profile: "Profile"
 
     message:
         success: "Success"

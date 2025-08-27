@@ -32,6 +32,7 @@ crudit:
         logout: "Déconnexion"
         batch: "Choisir une action de masse"
         validate: "Valider"
+        profile: "Profil"
 
     message:
         success: "Succès"

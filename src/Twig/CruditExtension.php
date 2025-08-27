@@ -34,6 +34,7 @@ class CruditExtension extends AbstractExtension
             new TwigFunction('crudit_menu_items', [$this, 'menuItems']),
             new TwigFunction('crudit_menu_active', [$this, 'menuIsActive']),
             new TwigFunction('crudit_hide_if_disabled', [$this, 'hideIfDisabled']),
+            new TwigFunction('crudit_add_connect_profile_link', [$this, 'addConnectProfileLink']),
             new TwigFunction('get_workflow_names', $this->getWorkflowNames(...))
         ];
     }
@@ -158,6 +159,11 @@ class CruditExtension extends AbstractExtension
         }
 
         return $hideIfDisabled;
+    }
+
+    public function addConnectProfileLink(): bool
+    {
+        return $this->parameterBag->get('lle_crudit.add_connect_profile_link');
     }
 
     public function getWorkflowNames(object $subject): array
