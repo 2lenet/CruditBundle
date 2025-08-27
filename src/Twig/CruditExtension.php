@@ -163,7 +163,10 @@ class CruditExtension extends AbstractExtension
 
     public function addConnectProfileLink(): bool
     {
-        return $this->parameterBag->get('lle_crudit.add_connect_profile_link');
+        /** @var bool $result */
+        $result = $this->parameterBag->get('lle_crudit.add_connect_profile_link');
+
+        return $result;
     }
 
     public function getWorkflowNames(object $subject): array
