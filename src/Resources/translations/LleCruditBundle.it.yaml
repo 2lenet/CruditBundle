@@ -32,6 +32,7 @@ crudit:
         logout: "Disconnettersi"
         validate: "Convalidare"
         profile: "Profilo"
+        exit: "Uscita"
 
     message:
         success: "Successo"

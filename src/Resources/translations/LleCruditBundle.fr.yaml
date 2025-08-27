@@ -33,6 +33,7 @@ crudit:
         batch: "Choisir une action de masse"
         validate: "Valider"
         profile: "Profil"
+        exit: "Sortir"
 
     message:
         success: "Succès"

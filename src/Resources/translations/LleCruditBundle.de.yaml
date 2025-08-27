@@ -33,6 +33,7 @@ crudit:
         validate: "Valideren"
         batch: "Massenaktion wählen"
         profile: "Profil"
+        exit: "Ausgang"
 
     message:
         success: "Erfolg"

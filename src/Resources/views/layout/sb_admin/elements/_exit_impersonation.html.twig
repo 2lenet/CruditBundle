@@ -1,0 +1,12 @@
+<li class="nav-item">
+    {% if is_granted('IS_IMPERSONATOR') %}
+        <div class="nav-link">
+            <a
+                href="{{ impersonation_exit_path(path(crudit_exit_impersonation_path()) ) }}"
+                class="btn btn-sm btn-primary"
+            >
+                {{ 'crudit.action.exit'|trans(domain='LleCruditBundle') }} {{ app.user }}
+            </a>
+        </div>
+    {% endif %}
+</li>

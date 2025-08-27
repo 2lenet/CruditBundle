@@ -78,6 +78,20 @@ class Configuration implements ConfigurationInterface
             ])
             ->thenInvalid('Invalid value %s')
             ->end();
+        $children
+            ->scalarNode('add_exit_impersonation_button')
+            ->defaultValue(false)
+            ->validate()
+            ->ifNotInArray([
+                true,
+                false,
+            ])
+            ->thenInvalid('Invalid value %s')
+            ->end();
+        $children
+            ->scalarNode('exit_impersonation_path')
+            ->defaultValue('homepage')
+            ->end();
 
         return $treeBuilder;
     }
