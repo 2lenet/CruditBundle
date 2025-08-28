@@ -44,6 +44,9 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->setParameter('lle_crudit.default_number_alignment', $processedConfig['default_number_alignment']);
         $container->setParameter('lle_crudit.hide_if_disabled', $processedConfig['hide_if_disabled']);
         $container->setParameter('lle_crudit.delete_hide_if_disabled', $processedConfig['delete_hide_if_disabled']);
+        $container->setParameter('lle_crudit.add_connect_profile_link', $processedConfig['add_connect_profile_link']);
+        $container->setParameter('lle_crudit.add_exit_impersonation_button', $processedConfig['add_exit_impersonation_button']);
+        $container->setParameter('lle_crudit.exit_impersonation_path', $processedConfig['exit_impersonation_path']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {

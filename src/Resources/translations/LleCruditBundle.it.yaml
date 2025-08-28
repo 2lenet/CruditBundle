@@ -31,6 +31,8 @@ crudit:
         back: "Indietro"
         logout: "Disconnettersi"
         validate: "Convalidare"
+        profile: "Profilo"
+        exit_impersonation: "Esci dall'impersonificazione"
 
     message:
         success: "Successo"

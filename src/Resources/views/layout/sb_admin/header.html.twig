@@ -8,6 +8,9 @@
         <ul class="navbar-nav ms-auto">
             {% include '@LleCrudit/layout/sb_admin/elements/_v_separator.html.twig' %}
             {% include '@LleCrudit/layout/sb_admin/elements/_user.html.twig' %}
+            {% if crudit_add_exit_impersonation_button() %}
+                {% include '@LleCrudit/layout/sb_admin/elements/_exit_impersonation.html.twig' %}
+            {% endif %}
         </ul>
     {% endblock %}
 </nav>

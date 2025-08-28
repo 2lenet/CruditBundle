@@ -32,6 +32,8 @@ crudit:
         logout: "Déconnexion"
         batch: "Choisir une action de masse"
         validate: "Valider"
+        profile: "Profil"
+        exit_impersonation: "Quitter l'impersonation"
 
     message:
         success: "Succès"
