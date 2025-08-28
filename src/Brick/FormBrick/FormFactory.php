@@ -83,10 +83,11 @@ class FormFactory extends AbstractBasicBrickFactory
         $form->handleRequest($this->getRequest());
         if ($this->getRequest()->getMethod() === 'POST' && $form->isSubmitted()) {
             if ($form->isValid()) {
-                $brickConfig->getDataSource()->save($resource);
-                $this->brickResponseCollector->add(
-                    new FlashBrickResponse(FlashBrickResponse::SUCCESS, $brickConfig->getMessageSuccess())
-                );
+                if ($brickConfig->getDataSource()->save($resource)) {
+                    $this->brickResponseCollector->add(
+                        new FlashBrickResponse(FlashBrickResponse::SUCCESS, $brickConfig->getMessageSuccess())
+                    );
+                }
 
                 // if the new entity is from a sublist, use parent entity id
                 if ($brickConfig->isSublist() && $brickConfig->getAssocProperty()) {

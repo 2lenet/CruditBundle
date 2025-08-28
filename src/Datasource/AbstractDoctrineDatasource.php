@@ -306,10 +306,12 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
         return $this;
     }
 
-    public function save(object $resource): void
+    public function save(object $resource): bool
     {
         $this->entityManager->persist($resource);
         $this->entityManager->flush();
+
+        return true;
     }
 
     public function getType(string $property, object $resource): string
@@ -452,7 +454,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         if ($item) {
             $this->fillFromData($item, $data);
-            $this->save($item);
+            if (!$this->save($item)) {
+                return false;
+            }
 
             return true;
         }

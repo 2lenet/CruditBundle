@@ -202,7 +202,12 @@ trait TraitCrudController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            $dataSource->save($item);
+            if (!$dataSource->save($item)) {
+                return new JsonResponse([
+                    "status" => "ko",
+                    "message" => $translator->trans("crudit.flash.error.eip.generic", [], "LleCruditBundle"),
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
             return new JsonResponse([
                 "status" => "ok",

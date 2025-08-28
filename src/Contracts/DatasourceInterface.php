@@ -36,7 +36,7 @@ interface DatasourceInterface
     /** @param string|int $id */
     public function patch($id, array $data): ?object;
 
-    public function save(object $resource): void;
+    public function save(object $resource): bool;
 
     public function getType(string $property, object $resource): string;
 
