@@ -33,7 +33,7 @@ crudit:
         validate: "Valideren"
         batch: "Massenaktion wählen"
         profile: "Profil"
-        exit: "Ausgang"
+        exit_impersonation: "Die Imitation beenden"
 
     message:
         success: "Erfolg"

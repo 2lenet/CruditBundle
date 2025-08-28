@@ -33,7 +33,7 @@ crudit:
         batch: "Choose a batch action"
         validate: "Validate"
         profile: "Profile"
-        exit: "Exit"
+        exit_impersonation: "Exit impersonation"
 
     message:
         success: "Success"
