@@ -75,14 +75,14 @@ use Lle\CruditBundle\Filter\FilterType\WorkflowFilterType;
 class YourCrudFilterset extends AbstractFilterSet
 {
     public function __construct(
-        protected WorkflowInterface $statusStateMachine,
+        protected WorkflowInterface $orderStateMachine,
     ) {
     }
 
     public function getFilters(): array
     {
         return [
-            WorkflowFilterType::new('status', $this->statusStateMachine),
+            WorkflowFilterType::new('status', $this->orderStateMachine),
         ];
     }
 }
