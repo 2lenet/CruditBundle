@@ -8,7 +8,7 @@ How to make filters on lists
 /**
  * @required
  */
-public function setFilterset(CollecteFilterset $filterset)
+public function setFilterset(YourCrudFilterset $filterset)
 {
     $this->filterset = $filterset;
 }
@@ -16,32 +16,81 @@ public function setFilterset(CollecteFilterset $filterset)
 
 > :warning: **The PHPDoc `@required` is mandatory, otherwise the method will be ignored.**
 
-**2. Then, create the file CollecteFilterset.php that you declared as a parameter above**
+**2. Then, create the file `YourCrudFilterset.php` that you declared as a parameter above**
 
-In the getFilters() method, you can declare the desired filters
+In the `getFilters()` method, you can declare the desired filters
 
-      <?php
+```php
+<?php
 
-      namespace App\Crudit\Datasource\Filterset;
+namespace App\Crudit\Datasource\Filterset;
 
-      use Lle\CruditBundle\Datasource\AbstractFilterSet;
-      use Lle\CruditBundle\Filter\FilterType\StringFilterType;
-      use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
-      
-      class CollecteFilterset extends AbstractFilterSet
-      {
-          public function getFilters(): array
-          {
-              return [
-                  StringFilterType::new('numeroFiche'),
-                  NumberFilterType::new('poidsFruit')
-              ];
-          }
-      }
+use Lle\CruditBundle\Datasource\AbstractFilterSet;
+use Lle\CruditBundle\Filter\FilterType\StringFilterType;
+use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
+
+class YourCrudFilterset extends AbstractFilterSet
+{
+    public function getFilters(): array
+    {
+        return [
+            StringFilterType::new('numeroFiche'),
+            NumberFilterType::new('poidsFruit')
+        ];
+    }
+}
+```
+
+For the `EntityFilterType` you must define three parameters => the field, the class and the autocomplete route (data feed):
+
+```php
+<?php
+
+namespace App\Crudit\Datasource\Filterset;
+
+use Lle\CruditBundle\Datasource\AbstractFilterSet;
+use Lle\CruditBundle\Filter\FilterType\EntityFilterType;
+
+class YourCrudFilterset extends AbstractFilterSet
+{
+    public function getFilters(): array
+    {
+        return [
+            EntityFilterType::new('user', User::class, 'app_crudit_user_autocomplete'),
+        ];
+    }
+}
+```
+
+For the `WorkflowFilterType` you must define 2 parameters => the field and the workflow:
+
+```php
+<?php
+
+namespace App\Crudit\Datasource\Filterset;
+
+use Lle\CruditBundle\Datasource\AbstractFilterSet;
+use Lle\CruditBundle\Filter\FilterType\WorkflowFilterType;
+
+class YourCrudFilterset extends AbstractFilterSet
+{
+    public function __construct(
+        protected WorkflowInterface $statusStateMachine,
+    ) {
+    }
+
+    public function getFilters(): array
+    {
+        return [
+            WorkflowFilterType::new('status', $this->statusStateMachine),
+        ];
+    }
+}
+```
 
 **3. (Optional) Changing the amount displayed**
 
-By default, 4 filters are displayed. If you want to show more or less, override getNumberDisplayed in your FilterSet :
+By default, 4 filters are displayed. If you want to show more or less, override `getNumberDisplayed` in your FilterSet :
 
 ```php
 public function getNumberDisplayed(): int
@@ -95,6 +144,56 @@ public function getFilters(): array
 }
 ```
 
+**5. (Optional) Add additionnal fields**
+
+You can configure the filter to search across multiple fields like this (this work for all filter types):
+
+```php
+class YourCrudFilterset extends AbstractFilterSet
+{
+    public function getFilters(): array
+    {
+        return [
+            StringFilterType::new('firstname')
+                ->setAdditionnalFields(['lastname']),
+            EntityFilterType::new('deliveryAddress', Address::class, 'app_crudit_address_autocomplete')
+                ->setAdditionnalFields(['billingAddress']),
+        ];
+    }
+}
+```
+
+**6. (Optional) Add additionnal conditions**
+
+If you need to search data with specific conditions, you can configure the `applyAdditionnalConditions` method on your custom filter:
+
+```php
+class YourCustomFilterType extends EntityFilterType
+{
+    public static function new(string $fieldname): self
+    {
+        return new self($fieldname);
+    }
+
+    public function applyAdditionnalConditions(QueryBuilder $queryBuilder): void
+    {
+        $queryBuilder
+            ->andWhere('root.actif = :actif')
+            ->setParameter('actif', true);
+    }
+
+    public function getStateTemplate(): string
+    {
+        return '@LleCrudit/filter/state/entity_filter.html.twig';
+    }
+
+    public function getTemplate(): string
+    {
+        return '@LleCrudit/filter/type/entity_filter.html.twig';
+    }
+}
+```
+
 **Available filter types :**
 
 - StringFilterType : simple string search
@@ -106,5 +205,4 @@ public function getFilters(): array
 - PeriodeFilterType : date ranges
 - NumberFilterType : simple number search
 - NumberRangeFilterType : number ranges
-- TreeFilterType (still WIP) : for Gedmo trees (to include children)
 - WorkflowFilterType : for Symfony workflows (see Workflow doc)
