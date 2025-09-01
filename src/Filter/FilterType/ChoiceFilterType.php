@@ -5,11 +5,6 @@ namespace Lle\CruditBundle\Filter\FilterType;
 use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
-/**
- * ChoiceFilterType
- *
- * For predefined select fields.
- */
 class ChoiceFilterType extends AbstractFilterType
 {
     protected array $choices;
@@ -27,10 +22,10 @@ class ChoiceFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
-            FilterTypeInterface::OPERATOR_NOT_EQUAL => ['icon' => 'fas fa-not-equal'],
-            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
-            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
+            FilterTypeInterface::OPERATOR_IN => ['icon' => 'fas fa-equals'],
+            FilterTypeInterface::OPERATOR_NOT_IN => ['icon' => 'fas fa-not-equal'],
+            FilterTypeInterface::OPERATOR_IS_NULL => ['icon' => 'far fa-square'],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ['icon' => 'fas fa-square'],
         ];
     }
 
@@ -53,36 +48,27 @@ class ChoiceFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
+        if (!isset($this->data['op'])) {
+            return;
+        }
+
+        $op = $this->data['op'];
+
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
-        $data = [];
-        if (isset($this->data['value']) && $this->data['value'] != '') {
-            $data = explode(',', $this->data['value']);
+        $query = $this->getPattern($op, $column, $alias, $column, $paramname);
+        $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
+
+        if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
+            $queryBuilder->andWhere($query);
+        } elseif (isset($this->data['value']) && $this->data['value'] !== '') {
+            $value = explode(',', $this->data['value']);
+
+            $queryBuilder->andWhere($query);
+            $queryBuilder->setParameter($paramname, $value);
         }
 
-
-        if (isset($this->data["op"])) {
-            switch ($this->data['op']) {
-                case FilterTypeInterface::OPERATOR_IS_NULL:
-                    $queryBuilder->andWhere($alias . $column . ' IS NULL OR ' . $alias . $column . " = '' ");
-                    break;
-                case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
-                    $queryBuilder->andWhere($alias . $column . ' IS NOT NULL OR ' . $alias . $column . " = '' ");
-                    break;
-                case FilterTypeInterface::OPERATOR_NOT_EQUAL:
-                    if (!empty($data)) {
-                        $queryBuilder->andWhere($queryBuilder->expr()->notIn($alias . $column, ':' . $paramname));
-                        $queryBuilder->setParameter($paramname, $data);
-                    }
-                    break;
-                case FilterTypeInterface::OPERATOR_EQUAL:
-                default:
-                    if (!empty($data)) {
-                        $queryBuilder->andWhere($queryBuilder->expr()->in($alias . $column, ':' . $paramname));
-                        $queryBuilder->setParameter($paramname, $data);
-                    }
-            }
-        }
+        $this->applyAdditionnalConditions($queryBuilder);
     }
 
     public function getChoices(): array
