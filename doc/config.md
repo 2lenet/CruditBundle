@@ -29,10 +29,10 @@ twig:
         connect_url: '%env(CONNECT_URL)%'
 ```
 
-![img.png](img/profile_link_button.png)
+![](img/profile_link_button.png)
 
 `add_exit_impersonation_button` add a button to the header if you are impersonating someone.
 
 `exit_impersonation_path` manages the url to which you will be redirected after exiting impersonation (default: `homepage`).
 
-![img.png](img/exit_impersonation_button.png)
+![](img/exit_impersonation_button.png)
