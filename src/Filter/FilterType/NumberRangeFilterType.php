@@ -46,12 +46,12 @@ class NumberRangeFilterType extends AbstractFilterType
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
                             $intervalQuery .= ' OR ' . $this->getPattern(
-                                    FilterTypeInterface::OPERATOR_GREATER_THAN_EQUAL,
-                                    $additionnalColumn,
-                                    $additionnalAlias,
-                                    $additionnalColumn,
-                                    'min_' . $paramname
-                                );
+                                FilterTypeInterface::OPERATOR_GREATER_THAN_EQUAL,
+                                $additionnalColumn,
+                                $additionnalAlias,
+                                $additionnalColumn,
+                                'min_' . $paramname
+                            );
                         }
 
                         $queryBuilder->andWhere($intervalQuery);
@@ -68,12 +68,12 @@ class NumberRangeFilterType extends AbstractFilterType
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
                             $intervalQuery .= ' OR ' . $this->getPattern(
-                                    FilterTypeInterface::OPERATOR_EQUAL,
-                                    $additionnalColumn,
-                                    $additionnalAlias,
-                                    $additionnalColumn,
-                                    'min_' . $paramname
-                                );
+                                FilterTypeInterface::OPERATOR_EQUAL,
+                                $additionnalColumn,
+                                $additionnalAlias,
+                                $additionnalColumn,
+                                'min_' . $paramname
+                            );
                         }
 
                         $queryBuilder->andWhere($intervalQuery);
@@ -101,12 +101,12 @@ class NumberRangeFilterType extends AbstractFilterType
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
                             $intervalQuery .= ' OR ' . $this->getPattern(
-                                    FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL,
-                                    $additionnalColumn,
-                                    $additionnalAlias,
-                                    $additionnalColumn,
-                                    'max_' . $paramname
-                                );
+                                FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL,
+                                $additionnalColumn,
+                                $additionnalAlias,
+                                $additionnalColumn,
+                                'max_' . $paramname
+                            );
                         }
 
                         $queryBuilder->andWhere($intervalQuery);
