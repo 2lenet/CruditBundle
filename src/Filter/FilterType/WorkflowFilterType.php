@@ -45,8 +45,8 @@ class WorkflowFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
-            FilterTypeInterface::OPERATOR_NOT_EQUAL => ['icon' => 'fas fa-not-equal'],
+            FilterTypeInterface::OPERATOR_IN => ['icon' => 'fas fa-equals'],
+            FilterTypeInterface::OPERATOR_NOT_IN => ['icon' => 'fas fa-not-equal'],
             FilterTypeInterface::OPERATOR_IS_NULL => ['icon' => 'far fa-square'],
             FilterTypeInterface::OPERATOR_IS_NOT_NULL => ['icon' => 'fas fa-square'],
         ];
