@@ -46,6 +46,7 @@ All new SCSS files must be imported before the import of Crudit SCSS.
 
 ## Recipes
 
+- [Configurations](doc/config.md)
 - [Setup Webpack Encore](doc/webpack_encore.md)
 - [Create a CRUD](doc/crud.md)
 - [Brick](doc/brick.md)
