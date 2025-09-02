@@ -33,34 +33,58 @@ class PeriodeFilterType extends AbstractFilterType
 
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
-        $query = $this->getPattern($op, $column, $alias, $column, $paramname);
+        $query = $this->getPattern($op, $column, $alias, $column, $paramname) ?? '';
         $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
 
         if (isset($this->data['value']) && $this->data['value']) {
-            switch ($this->data['op']) {
+            switch ($op) {
                 case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($query);
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
                     if (!isset($this->data['to']) || $this->data['value'] !== $this->data['to']) {
-                        $additionnalQuery = '(' . $alias . $column . ' >= :min_' . $paramname . ')';
+                        $intervalQuery = $this->getPattern(
+                            FilterTypeInterface::OPERATOR_GREATER_THAN_EQUAL,
+                            $column,
+                            $alias,
+                            $column,
+                            'min_' . $paramname
+                        );
 
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
-                            $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' >= :min_' . $paramname . ')';
+                            $intervalQuery .= ' OR ' . $this->getPattern(
+                                FilterTypeInterface::OPERATOR_GREATER_THAN_EQUAL,
+                                $additionnalColumn,
+                                $additionnalAlias,
+                                $additionnalColumn,
+                                'min_' . $paramname
+                            );
                         }
 
-                        $queryBuilder->andWhere($additionnalQuery);
+                        $queryBuilder->andWhere($intervalQuery);
                         $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
                     } else {
-                        $additionnalQuery = '(' . $alias . $column . ' LIKE :min_' . $paramname . ')';
+                        $intervalQuery = $this->getPattern(
+                            FilterTypeInterface::OPERATOR_CONTAINS,
+                            $column,
+                            $alias,
+                            $column,
+                            'min_' . $paramname
+                        );
 
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
-                            $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' LIKE :min_' . $paramname . ')';
+                            $intervalQuery .= ' OR ' . $this->getPattern(
+                                FilterTypeInterface::OPERATOR_CONTAINS,
+                                $additionnalColumn,
+                                $additionnalAlias,
+                                $additionnalColumn,
+                                'min_' . $paramname
+                            );
                         }
 
-                        $queryBuilder->andWhere($additionnalQuery);
+                        $queryBuilder->andWhere($intervalQuery);
                         $queryBuilder->setParameter('min_' . $paramname, $this->data['value'] . '%');
                     }
                     break;
@@ -68,20 +92,32 @@ class PeriodeFilterType extends AbstractFilterType
         }
 
         if (isset($this->data['to']) && $this->data['to']) {
-            switch ($this->data['op']) {
+            switch ($op) {
                 case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($query);
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
                     if (!isset($this->data['value']) || $this->data['value'] !== $this->data['to']) {
-                        $additionnalQuery = '(' . $alias . $column . ' <= :max_' . $paramname . ')';
+                        $intervalQuery = $this->getPattern(
+                            FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL,
+                            $column,
+                            $alias,
+                            $column,
+                            'max_' . $paramname
+                        );
 
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
-                            $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' <= :max_' . $paramname . ')';
+                            $intervalQuery .= ' OR ' . $this->getPattern(
+                            FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL,
+                                $additionnalColumn,
+                                $additionnalAlias,
+                                $additionnalColumn,
+                                'max_' . $paramname
+                            );
                         }
 
-                        $queryBuilder->andWhere($additionnalQuery);
+                        $queryBuilder->andWhere($intervalQuery);
                         $queryBuilder->setParameter('max_' . $paramname, $this->data['to'] . ' 23:59:59');
                     }
                     break;

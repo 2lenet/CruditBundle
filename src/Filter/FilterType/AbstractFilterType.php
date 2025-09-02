@@ -189,9 +189,11 @@ abstract class AbstractFilterType implements FilterTypeInterface
                 $pattern = $alias . $col . ' NOT IN (:' . $paramname . ')';
                 break;
             case self::OPERATOR_BEFORE:
+            case self::OPERATOR_LESS_THAN:
                 $pattern = $alias . $col . ' < :' . $paramname;
                 break;
             case self::OPERATOR_AFTER:
+            case self::OPERATOR_GREATER_THAN:
                 $pattern = $alias . $col . ' > :' . $paramname;
                 break;
             case self::OPERATOR_IS_NULL:
@@ -200,29 +202,19 @@ abstract class AbstractFilterType implements FilterTypeInterface
             case self::OPERATOR_IS_NOT_NULL:
                 $pattern = $alias . $col . ' IS NOT NULL AND ' . $alias . $col . ' <> "" ';
                 break;
-            case self::OPERATOR_LESS_THAN:
-                $pattern = $alias . $col . ' < :' . $paramname;
-                break;
             case self::OPERATOR_LESS_THAN_EQUAL:
                 $pattern = $alias . $col . ' <= :' . $paramname;
-                break;
-            case self::OPERATOR_GREATER_THAN:
-                $pattern = $alias . $col . ' > :' . $paramname;
                 break;
             case self::OPERATOR_GREATER_THAN_EQUAL:
                 $pattern = $alias . $col . ' >= :' . $paramname;
                 break;
             case self::OPERATOR_CONTAINS:
+            case self::OPERATOR_STARTS_WITH:
+            case self::OPERATOR_ENDS_WITH:
                 $pattern = $alias . $col . ' LIKE :' . $paramname;
                 break;
             case self::OPERATOR_DOES_NOT_CONTAIN:
                 $pattern = $alias . $col . ' NOT LIKE :' . $paramname;
-                break;
-            case self::OPERATOR_STARTS_WITH:
-                $pattern = $alias . $col . ' LIKE :' . $paramname;
-                break;
-            case self::OPERATOR_ENDS_WITH:
-                $pattern = $alias . $col . ' LIKE :' . $paramname;
                 break;
         }
 
