@@ -43,10 +43,24 @@ class PeriodeFilterType extends AbstractFilterType
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
                     if (!isset($this->data['to']) || $this->data['value'] !== $this->data['to']) {
-                        $queryBuilder->andWhere($alias . $column . ' >= :min_' . $paramname);
+                        $additionnalQuery = '(' . $alias . $column . ' >= :min_' . $paramname . ')';
+
+                        foreach ($this->additionnalFields as $additionnalField) {
+                            [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+                            $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' >= :min_' . $paramname . ')';
+                        }
+
+                        $queryBuilder->andWhere($additionnalQuery);
                         $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
                     } else {
-                        $queryBuilder->andWhere($alias . $column . ' LIKE :min_' . $paramname);
+                        $additionnalQuery = '(' . $alias . $column . ' LIKE :min_' . $paramname . ')';
+
+                        foreach ($this->additionnalFields as $additionnalField) {
+                            [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+                            $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' LIKE :min_' . $paramname . ')';
+                        }
+
+                        $queryBuilder->andWhere($additionnalQuery);
                         $queryBuilder->setParameter('min_' . $paramname, $this->data['value'] . '%');
                     }
                     break;
@@ -60,7 +74,14 @@ class PeriodeFilterType extends AbstractFilterType
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
                     if (!isset($this->data['value']) || $this->data['value'] !== $this->data['to']) {
-                        $queryBuilder->andWhere($alias . $column . ' <= :max_' . $paramname);
+                        $additionnalQuery = '(' . $alias . $column . ' <= :max_' . $paramname . ')';
+
+                        foreach ($this->additionnalFields as $additionnalField) {
+                            [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+                            $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' <= :max_' . $paramname . ')';
+                        }
+
+                        $queryBuilder->andWhere($additionnalQuery);
                         $queryBuilder->setParameter('max_' . $paramname, $this->data['to'] . ' 23:59:59');
                     }
                     break;
