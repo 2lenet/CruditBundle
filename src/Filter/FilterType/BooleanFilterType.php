@@ -37,7 +37,14 @@ class BooleanFilterType extends AbstractFilterType
             $value = $this->data['value'];
 
             if ($op === FilterTypeInterface::OPERATOR_NOT_EQUAL && $value === 'all') {
-                $queryBuilder->andWhere($alias . $column . ' IS NULL');
+                $additionnalQuery = '(' . $alias . $column . ' IS NULL)';
+
+                foreach ($this->additionnalFields as $additionnalField) {
+                    [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+                    $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' IS NULL)';
+                }
+
+                $queryBuilder->andWhere($additionnalQuery);
             } elseif ($value !== 'all') {
                 $queryBuilder->andWhere($query);
                 $queryBuilder->setParameter($paramname, $value === 'true' ? true : false);
