@@ -34,8 +34,15 @@ class NumberRangeFilterType extends AbstractFilterType
                     $queryBuilder->andWhere($query);
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
-                    $queryBuilder->andWhere($alias . $column . ' >= :min_' . $this->id);
-                    $queryBuilder->setParameter('min_' . $this->id, $this->data['value']);
+                    $additionnalQuery = '(' . $alias . $column . ' >= :min_' . $paramname . ')';
+
+                    foreach ($this->additionnalFields as $additionnalField) {
+                        [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+                        $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' >= :min_' . $paramname . ')';
+                    }
+
+                    $queryBuilder->andWhere($additionnalQuery);
+                    $queryBuilder->setParameter('min_' . $paramname, $this->data['value']);
                     break;
             }
         }
@@ -46,8 +53,15 @@ class NumberRangeFilterType extends AbstractFilterType
                     $queryBuilder->andWhere($query);
                     break;
                 case FilterTypeInterface::OPERATOR_INTERVAL:
-                    $queryBuilder->andWhere($alias . $column . ' <= :max_' . $this->id);
-                    $queryBuilder->setParameter('max_' . $this->id, $this->data['to']);
+                    $additionnalQuery = '(' . $alias . $column . ' <= :max_' . $paramname . ')';
+
+                    foreach ($this->additionnalFields as $additionnalField) {
+                        [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+                        $additionnalQuery .= ' OR (' . $additionnalAlias . $additionnalColumn . ' <= :max_' . $paramname . ')';
+                    }
+
+                    $queryBuilder->andWhere($additionnalQuery);
+                    $queryBuilder->setParameter('max_' . $paramname, $this->data['to']);
                     break;
             }
         }
