@@ -146,7 +146,7 @@ public function getFilters(): array
 
 **5. (Optional) Add additionnal fields**
 
-You can configure the filter to search across multiple fields like this (this work for all filter types):
+You can configure the filter to search across multiple fields like this (this works for all filter types):
 
 ```php
 class YourCrudFilterset extends AbstractFilterSet
