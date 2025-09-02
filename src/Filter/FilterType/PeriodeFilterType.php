@@ -109,7 +109,7 @@ class PeriodeFilterType extends AbstractFilterType
                         foreach ($this->additionnalFields as $additionnalField) {
                             [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
                             $intervalQuery .= ' OR ' . $this->getPattern(
-                            FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL,
+                                FilterTypeInterface::OPERATOR_LESS_THAN_EQUAL,
                                 $additionnalColumn,
                                 $additionnalAlias,
                                 $additionnalColumn,
