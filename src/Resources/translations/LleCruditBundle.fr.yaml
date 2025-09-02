@@ -78,6 +78,8 @@ crudit:
             after: "Après"
             before: "Avant"
             interval: "Compris entre"
+            in: "Égal à"
+            notin: "Différent de"
         showMore: "Voir plus de filtres"
         showLess: "Voir moins de filtres"
 

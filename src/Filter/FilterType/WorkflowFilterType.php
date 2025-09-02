@@ -19,57 +19,36 @@ class WorkflowFilterType extends AbstractFilterType
 
     public function apply(QueryBuilder $queryBuilder): void
     {
-        if (!isset($this->data["op"])) {
+        if (!isset($this->data['op'])) {
             return;
         }
 
-        $op = $this->data["op"];
+        $op = $this->data['op'];
 
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
+        $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
 
         if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
             $queryBuilder->andWhere($query);
-        } elseif (
-            isset($this->data["value"])
-            && $this->data["value"]
-        ) {
-            $ids = explode(",", $this->data["value"]);
+        } elseif (isset($this->data['value']) && $this->data['value']) {
+            $value = explode(',', $this->data['value']);
 
-            $queryBuilder->setParameter($paramname, $ids);
+            $queryBuilder->setParameter($paramname, $value);
             $queryBuilder->andWhere($query);
         }
-    }
 
-    private function getPattern(string $op, string $id, string $alias, string $col, string $paramname): ?string
-    {
-        $pattern = null;
-        switch ($op) {
-            case FilterTypeInterface::OPERATOR_IS_NULL:
-                $pattern = $alias . $col . " IS NULL OR " . $alias . $col . " = '' ";
-                break;
-            case FilterTypeInterface::OPERATOR_IS_NOT_NULL:
-                $pattern = $alias . $col . " IS NOT NULL AND " . $alias . $col . " <> '' ";
-                break;
-            case FilterTypeInterface::OPERATOR_EQUAL:
-                $pattern = $alias . $col . " IN (:" . $paramname . ")";
-                break;
-            case FilterTypeInterface::OPERATOR_NOT_EQUAL:
-                $pattern = $alias . $col . " NOT IN (:" . $paramname . ")";
-                break;
-        }
-
-        return $pattern ? "(" . $pattern . ")" : null;
+        $this->applyAdditionnalConditions($queryBuilder);
     }
 
     public function getOperators(): array
     {
         return [
-            FilterTypeInterface::OPERATOR_EQUAL => ["icon" => "fas fa-equals"],
-            FilterTypeInterface::OPERATOR_NOT_EQUAL => ["icon" => "fas fa-not-equal"],
-            FilterTypeInterface::OPERATOR_IS_NULL => ["icon" => "far fa-square"],
-            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ["icon" => "fas fa-square"],
+            FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
+            FilterTypeInterface::OPERATOR_NOT_EQUAL => ['icon' => 'fas fa-not-equal'],
+            FilterTypeInterface::OPERATOR_IS_NULL => ['icon' => 'far fa-square'],
+            FilterTypeInterface::OPERATOR_IS_NOT_NULL => ['icon' => 'fas fa-square'],
         ];
     }
 
@@ -86,10 +65,10 @@ class WorkflowFilterType extends AbstractFilterType
 
     public function isSelected(array $data, string $value): bool
     {
-        if (is_array($data["value"])) {
-            return in_array($value, $data["value"]);
+        if (is_array($data['value'])) {
+            return in_array($value, $data['value']);
         } else {
-            return ($data["value"] === $value);
+            return ($data['value'] === $value);
         }
     }
 
@@ -116,7 +95,7 @@ class WorkflowFilterType extends AbstractFilterType
             }
         }
 
-        $this->data["items"] = json_encode($items);
+        $this->data['items'] = json_encode($items);
 
         return $this;
     }

@@ -75,6 +75,8 @@ crudit:
             after: "After"
             before: "Before"
             interval: "Between"
+            in: "Equal to"
+            notin: "Not equal to"
         showMore: "Show more filters"
         showLess: "Show less filters"
 
