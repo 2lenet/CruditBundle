@@ -197,10 +197,10 @@ abstract class AbstractFilterType implements FilterTypeInterface
                 $pattern = $alias . $col . ' > :' . $paramname;
                 break;
             case self::OPERATOR_IS_NULL:
-                $pattern = $alias . $col . ' IS NULL OR ' . $alias . $col . ' = "" ';
+                $pattern = $alias . $col . ' IS NULL OR ' . $alias . $col . " = '' ";
                 break;
             case self::OPERATOR_IS_NOT_NULL:
-                $pattern = $alias . $col . ' IS NOT NULL AND ' . $alias . $col . ' <> "" ';
+                $pattern = $alias . $col . ' IS NOT NULL AND ' . $alias . $col . " <> '' ";
                 break;
             case self::OPERATOR_LESS_THAN_EQUAL:
                 $pattern = $alias . $col . ' <= :' . $paramname;
