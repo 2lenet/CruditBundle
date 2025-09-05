@@ -38,7 +38,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
                     dataUrl.forEach(url => {
                         if (url['entity'] == shortClass) {
-                            window.location.replace(url['destUrl'] + id);
+                            window.location.replace(url['destUrl'].replace('%20', id));
                         }
                     });
                 }
