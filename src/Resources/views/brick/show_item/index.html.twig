@@ -16,24 +16,39 @@
                     %}
                         <div class="col-sm-12">
                             <div class="card box box-default mb-3">
-                                <div class="card-header">
-                                    <div class="card-title">{{ key|trans }}</div>
+                                <div
+                                    class="card-header{% if view.data.number_field_groups_opened is not null and loop.index > view.data.number_field_groups_opened %} collapsed{% endif %}"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-{{ key }}"
+                                    aria-expanded="{% if view.data.number_field_groups_opened is not null and loop.index > view.data.number_field_groups_opened %}false{% else %}true{% endif %}"
+                                    aria-controls="collapse-{{ key }}"
+                                >
+                                    <div class="card-title">
+                                        <span class="float-start">
+                                            {{ key|trans }}
+                                        </span>
+                                        <span class="btn float-end card-toggle">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        {% for cardField in field %}
-                                            <div class="crudit-field {{ cardField.options.cssClass }}">
-                                                <dl class="row">
-                                                    <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                                                    <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ cardField.field.id|lower }}" class="col-sm-9">
-                                                        {% if cardField.field.path %}<a
-                                                            href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
-                                                            {{ cardField.value |raw }}
-                                                            {% if cardField.field.path %}</a>{% endif %}
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        {% endfor %}
+                                <div id="collapse-{{ key }}" class="collapse{% if view.data.number_field_groups_opened is null or loop.index <= view.data.number_field_groups_opened %} show{% endif %}">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            {% for cardField in field %}
+                                                <div class="crudit-field {{ cardField.options.cssClass }}">
+                                                    <dl class="row">
+                                                        <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
+                                                        <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ cardField.field.id|lower }}" class="col-sm-9">
+                                                            {% if cardField.field.path %}<a
+                                                                href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
+                                                                {{ cardField.value |raw }}
+                                                                {% if cardField.field.path %}</a>{% endif %}
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

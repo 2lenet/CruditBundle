@@ -365,4 +365,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return null;
     }
+
+    public function getShowNumberFieldGroupsOpened(): ?int
+    {
+        return null;
+    }
 }
