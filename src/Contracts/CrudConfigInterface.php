@@ -83,4 +83,6 @@ interface CrudConfigInterface
     public function getListAutoRefresh(): ?int;
 
     public function getShowAutoRefresh(): ?int;
+
+    public function getShowNumberFieldGroupsOpened(): ?int;
 }

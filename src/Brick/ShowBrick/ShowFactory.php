@@ -26,6 +26,7 @@ class ShowFactory extends AbstractBasicBrickFactory
             $data = [
                 'resource' => $this->getResourceView($brickConfigurator),
                 'auto_refresh' => $brickConfigurator->getCrudConfig()->getShowAutoRefresh(),
+                'number_field_groups_opened' => $brickConfigurator->getCrudConfig()->getShowNumberFieldGroupsOpened(),
             ];
             if (method_exists($item, "getCreatedAt")) {
                 $data["createdAt"] = $item->getCreatedAt();

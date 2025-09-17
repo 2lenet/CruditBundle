@@ -262,3 +262,37 @@ public function getShowAutoRefresh(): ?int
     return 60;
 }
 ```
+
+## How to configure field groups in the show brick
+
+If you have a lot of information to put in your show brick, you can divide it into several groups, which will create several expandable elements (open by default).
+
+```php
+public function getFields(string $key): array
+{
+    switch ($key) {
+        case CrudConfigInterface::SHOW:
+            $fields = [
+                'title.group1' => [
+                    $field1,
+                    $field2,
+                    $field3,
+                ],
+                'title.group2' => [
+                    $field4,
+                    $field5,
+                ],
+            ];
+            break;
+    }
+}
+```
+
+You can configure the number of field groups opened by default using the `getShowNumberFieldGroupsOpened` method.
+
+```php
+public function getShowNumberFieldGroupsOpened(): ?int
+{
+    return 2;
+}
+```
