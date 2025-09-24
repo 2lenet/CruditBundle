@@ -174,16 +174,16 @@ class FormFactory extends AbstractBasicBrickFactory
             return $this->urlGenerator->generate(
                 $successRedirectPath->getRoute(),
                 array_merge(
-                    $successRedirectPath->getParams(),
-                    ['id' => $resource->getId()]
+                    ['id' => $resource->getId()],
+                    $successRedirectPath->getParams()
                 )
             );
         } elseif ($afterEditPath = $brickConfig->getCrudConfig()->getAfterEditPath()) {
             return $this->urlGenerator->generate(
                 $afterEditPath->getRoute(),
                 array_merge(
-                    $afterEditPath->getParams(),
-                    ['id' => $resource->getId()]
+                    ['id' => $resource->getId()],
+                    $afterEditPath->getParams()
                 )
             );
         } elseif ($referer = (string)$this->getRequest()->request->get('referer')) {
