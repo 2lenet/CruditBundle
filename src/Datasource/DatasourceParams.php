@@ -58,7 +58,7 @@ class DatasourceParams
         if ($this->limit < 1) {
             return 1;
         }
-        
+
         $rest = $this->count % $this->limit ? 1 : 0;
 
         return intdiv($this->count, $this->limit) + $rest;
