@@ -69,7 +69,7 @@ class DatasourceParams
         if ($this->limit < 1) {
             return 1;
         }
-        
+
         return intdiv($this->offset, $this->limit) + 1;
     }
 
