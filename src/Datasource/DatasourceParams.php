@@ -66,6 +66,10 @@ class DatasourceParams
 
     public function getCurrentPage(): int
     {
+        if ($this->limit < 1) {
+            return 1;
+        }
+        
         return intdiv($this->offset, $this->limit) + 1;
     }
 
@@ -93,7 +97,7 @@ class DatasourceParams
 
     public function isCurrent(int $page): bool
     {
-        return (intdiv($this->offset, $this->limit) + 1) == $page;
+        return $this->getCurrentPage() === $page;
     }
 
     public function getLimit(): int
