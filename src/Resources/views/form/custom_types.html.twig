@@ -117,7 +117,11 @@
                             {% endfor %}
                         </div>
                         <div class="row align-items-start">
-                            {% for child in prototype|filter(child => not child.rendered) %}
+                            {% set form_items = [prototype] %}
+                            {% if prototype.children|length %}
+                                {% set form_items = prototype.children %}
+                            {% endif %}
+                            {% for child in form_items|filter(child => not child.rendered) %}
                                 {{- form_row(child, { label: false }) -}}
                             {% endfor %}
                         </div>
@@ -150,7 +154,11 @@
                             {% endfor %}
                         </div>
                         <div class="row align-items-start">
-                            {% for child in row|filter(child => not child.rendered) %}
+                            {% set form_items = [row] %}
+                            {% if row.children|length %}
+                                {% set form_items = row.children %}
+                            {% endif %}
+                            {% for child in form_items|filter(child => not child.rendered) %}
                                 {{- form_row(child, { label: false }) -}}
                             {% endfor %}
                         </div>
