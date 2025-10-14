@@ -2,14 +2,15 @@
     <div class="col-sm-12 col-md-4" role="status" aria-live="polite">
         {% if view.config.datasource_params.count > 0 %}
             {{ 'crudit.pagination.items'|trans({}, 'LleCruditBundle') }}
-            <b>{{ view.config.datasource_params.from }}  {{ 'crudit.pagination.to'|trans({}, 'LleCruditBundle') }} {{ view.config.datasource_params.to }}</b>  {{ 'crudit.pagination.of'|trans({}, 'LleCruditBundle') }} {{ view.config.datasource_params.count }}
+            <b>{{ view.config.datasource_params.from }} {{ 'crudit.pagination.to'|trans({}, 'LleCruditBundle') }} {{ view.config.datasource_params.to }}</b>
+            {{ 'crudit.pagination.of'|trans({}, 'LleCruditBundle') }} {{ view.config.datasource_params.count }}
         {% else %}
             {{ 'crudit.pagination.noItem'|trans({}, 'LleCruditBundle') }}
         {% endif %}
     </div>
 
     {% if view.config.datasource_params.count > 0 %}
-        {% set showChoicesNbItems = not view.config.choices_nb_items is empty and not (view.config.canModifyNbEntityPerPage is defined and not view.config.canModifyNbEntityPerPage) %}
+        {% set showChoicesNbItems = not view.config.choices_nb_items is empty and not (view.config.canModifyNbEntityPerPage is defined and not view.config.canModifyNbEntityPerPage) and view.config.datasource_params.limit > 1 %}
         <nav class="{{ showChoicesNbItems ? 'col-md-5 col-lg-6' : 'col-md-8' }}" aria-label="navigation">
             <ul class="pagination justify-content-center justify-content-md-start mb-0">
                 {% if view.config.datasource_params.previous %}
