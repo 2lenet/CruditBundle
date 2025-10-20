@@ -40,6 +40,10 @@ class DatasourceParams
 
     public function getTo(): int
     {
+        if ($this->limit < 1) {
+            return $this->count;
+        }
+
         return min($this->offset + $this->limit, $this->count);
     }
 
