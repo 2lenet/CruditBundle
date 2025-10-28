@@ -1,5 +1,16 @@
 {% extends 'base.html.twig' %}
 
+{% block page_title %}
+    {% if app_name is defined %}
+        {{ app_name }}
+    {% else %}
+        CRUD-IT
+    {% endif %}
+    {% if views|length %}
+        - {{ (views|first).config.title|trans({'%entity%':(views|first).data.entity}, (views|first).config.translation_domain) }}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     {% include '@LleCrudit/layout/sb_admin/bricks/_bricks.html.twig' with {'views': views } %}
 {% endblock %}
