@@ -4,14 +4,14 @@
             width: 2.5rem;
             height: 2.5rem;
             margin: 1rem;
-            background-color: fade-out($white, 0.8);
+            background-color: $primary;
             outline: none;
             cursor: pointer;
 
             &::after {
                 content: '\f104';
                 margin-right: 0.1rem;
-                color: fade-out($white, 0.5);
+                color: $white;
                 @include iconsFont;
             }
         }

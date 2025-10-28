@@ -2,6 +2,16 @@
 
 .topbar {
     height: $topbar-base-height;
+    background-color: $ocean-blue;
+
+    #userDropdown {
+        color: $white !important;
+
+        > span {
+            color: $white !important;
+            font-weight: bold;
+        }
+    }
 
     .navbar-search {
         width: 25rem;
