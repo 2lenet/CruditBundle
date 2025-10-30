@@ -7,7 +7,15 @@
         CRUD-IT
     {% endif %}
     {% if views|length %}
-        - {{ (views|first).config.title|trans({'%entity%':(views|first).data.entity}, (views|first).config.translation_domain) }}
+        {% set mainView = views|first %}
+        {% if
+            mainView.config.title is defined
+            and mainView.config.title
+            and mainView.config.translation_domain is defined
+            and mainView.config.translation_domain
+        %}
+            - {{ mainView.config.title|trans({'%entity%': mainView.data.entity|default('')}, mainView.config.translation_domain) }}
+        {% endif %}
     {% endif %}
 {% endblock %}
 
