@@ -12,7 +12,7 @@ $icon-width: 32px;
         background-color: $very-light-gray;
         background-image: initial;
         box-shadow: 5px 0 15px 3px rgba(0,0,0,0.1);
-        z-index: 1500;
+        z-index: 1050;
         @include media('>mobile') {
             width: $sidebar-base-width !important;
         }
@@ -41,7 +41,7 @@ $icon-width: 32px;
         > .nav {
             > .sidebar-divider {
                 margin: 0 1rem 1rem;
-                border-top: 1px solid fade-out($white, 0.5);
+                border-top: 1px solid fade-out($primary, 0.5);
             }
 
             > .sidebar-heading {
