@@ -34,6 +34,12 @@ abstract class AbstractExporter implements ExporterInterface
                         $result = (string)$field->getRawValue();
                     }
                     break;
+                case CurrencyField::class:
+                    $result = $field->getRawValue();
+                    if ($field->getOptions()['isInt'] ?? false) {
+                        $result /= 100;
+                    }
+                    break;
                 default:
                     $result = $field->getRawValue();
             }
