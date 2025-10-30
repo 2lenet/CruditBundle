@@ -14,7 +14,7 @@
             and mainView.config.translation_domain is defined
             and mainView.config.translation_domain
         %}
-            - {{ (views|first).config.title|trans({'%entity%':(views|first).data.entity}, (views|first).config.translation_domain) }}
+            - {{ mainView.config.title|trans({'%entity%': mainView.data.entity|default('')}, mainView.config.translation_domain) }}
         {% endif %}
     {% endif %}
 {% endblock %}
