@@ -5,6 +5,7 @@ namespace Lle\CruditBundle\Exporter;
 use Doctrine\Common\Collections\Collection;
 use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Field\CurrencyField;
 use Lle\CruditBundle\Field\DoctrineEntityField;
 
 abstract class AbstractExporter implements ExporterInterface
