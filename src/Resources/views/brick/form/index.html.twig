@@ -1,4 +1,4 @@
-{% if view.role is not defined or not view.role or is_granted(view.role) %}
+{% if view.role is not defined or not view.role or is_granted(view.role, view.data.resource) %}
     {% set form = view.data.form %}
     {% set currentGroup = 'FIRST' %}
     {% set displayClass = "" %}
