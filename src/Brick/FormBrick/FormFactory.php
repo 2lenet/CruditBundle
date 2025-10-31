@@ -70,6 +70,7 @@ class FormFactory extends AbstractBasicBrickFactory
             ->setData([
                 'title' => $brickConfigurator->getTitle(),
                 'form' => $form->createView(),
+                'resource' => $resource,
                 'options' => $brickConfigurator->getOptions(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'referer' => $referer,
