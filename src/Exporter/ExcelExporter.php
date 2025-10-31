@@ -11,6 +11,7 @@ use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
 use Lle\CruditBundle\Exception\ExporterException;
+use Lle\CruditBundle\Field\TextAreaField;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -46,6 +47,9 @@ class ExcelExporter extends AbstractExporter
         $headersAdded = false;
         $row = 1;
 
+        // used to limit the width of large columns
+        $largeColumns = [];
+
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
             if ($params->getIncludeHeaders() && !$headersAdded) {
@@ -60,7 +64,18 @@ class ExcelExporter extends AbstractExporter
 
             /** @var FieldView $field */
             foreach ($resource->getFields() as $j => $field) {
-                $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
+                $column = Coordinate::stringFromColumnIndex($j + 1);
+                $cell = $column . $row;
+
+                if (
+                    $field->getField()->getType() === TextAreaField::class
+                    || $field->getField()->getType() === 'longtext'
+                    || $field->getField()->getType() === 'text'
+                ) {
+                    // may be a large column, we fix its width.
+                    $largeColumns[] = $column;
+                }
+
                 if (
                     $field->getField()->getType() === DateField::class
                     || $field->getField()->getType() === DateTimeField::class
@@ -93,8 +108,14 @@ class ExcelExporter extends AbstractExporter
             $row++;
         }
 
+        $largeColumns = array_unique($largeColumns);
+
         foreach ($sheet->getColumnIterator("A", $sheet->getHighestColumn()) as $column) {
-            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            if (in_array($column->getColumnIndex(), $largeColumns)) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setWidth(80);
+            } else {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
         }
 
         $path = tempnam(sys_get_temp_dir(), Exporter::EXCEL);
