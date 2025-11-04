@@ -28,8 +28,12 @@ class TabConfig extends AbstractBrickConfig
         return $this->tabs;
     }
 
-    public function add(string $label, BrickConfigInterface $brickConfig, ?string $role = null, ?callable $displayIf): self
-    {
+    public function add(
+        string $label,
+        BrickConfigInterface $brickConfig,
+        ?string $role = null,
+        ?callable $displayIf = null,
+    ): self {
         $this->addTab(Tab::new($label, [$brickConfig])->setRole($role)->setDisplayIf($displayIf));
 
         return $this;
