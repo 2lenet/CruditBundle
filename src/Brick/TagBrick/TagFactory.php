@@ -39,6 +39,7 @@ class TagFactory extends AbstractBasicBrickFactory
                 ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/tag')
                 ->setConfig($config)
                 ->setData([
+                    'resource' => $resource,
                     'tags' => $data['tags'],
                     'currentTags' => $data['currentTags'],
                     'editRoute' => $brickConfigurator->getEditRoute(),

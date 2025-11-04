@@ -9,13 +9,23 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 class BrickView
 {
     private ?string $template;
+
     private array $data;
+
     private array $config = [];
+
     private bool $movable;
+
     private string $id;
+
     protected array $options;
+
     private ?Path $path;
+
     private ?string $role = null;
+
+    /** @var callable|null $displayIf */
+    protected $displayIf = null;
 
     public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])
     {
@@ -25,6 +35,7 @@ class BrickView
         $this->role = $brickConfig->getRole();
         $this->id = $brickConfig->getId();
         $this->options = $brickConfig->getOptions();
+        $this->displayIf = $brickConfig->getDisplayIf();
         $this->setPath(
             $brickConfig->getCrudConfig()->getPath('brickdata', [
                 'idBrick' => $brickConfig->getId(),
@@ -151,5 +162,10 @@ class BrickView
     public function getUrl(array $params): string
     {
         return '';
+    }
+
+    public function isDisplayed(?object $resource = null): bool
+    {
+        return !$this->displayIf || call_user_func($this->displayIf, $resource);
     }
 }

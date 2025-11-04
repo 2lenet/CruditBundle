@@ -34,16 +34,18 @@ class TabFactory extends AbstractBasicBrickFactory
         $tabs = [];
         if ($brickConfigurator instanceof TabConfig) {
             foreach ($brickConfigurator->getTabs() as $k => $tab) {
-                $tabs[$k] = new TabView($tab->getLabel());
-                $tabs[$k]->setRole($tab->getRole());
-                foreach ($tab->getBricks() as $brickConfig) {
-                    $tabs[$k]->add(
-                        $this->brickBuilder->buildBrick(
-                            $brickConfigurator->getCrudConfig(),
-                            $brickConfigurator->getPageKey(),
-                            $brickConfig
-                        )
-                    );
+                if ($tab->isDisplayed($this->getResource($brickConfigurator))) {
+                    $tabs[$k] = new TabView($tab->getLabel());
+                    $tabs[$k]->setRole($tab->getRole());
+                    foreach ($tab->getBricks() as $brickConfig) {
+                        $tabs[$k]->add(
+                            $this->brickBuilder->buildBrick(
+                                $brickConfigurator->getCrudConfig(),
+                                $brickConfigurator->getPageKey(),
+                                $brickConfig
+                            )
+                        );
+                    }
                 }
             }
         }
@@ -56,5 +58,17 @@ class TabFactory extends AbstractBasicBrickFactory
             ->setData([]);
 
         return $view;
+    }
+
+    private function getResource(TabConfig $brickConfigurator): ?object
+    {
+        $datasource = $brickConfigurator->getCrudConfig()->getDatasource();
+
+        $resource = null;
+        if ($this->getRequest()->get('id')) {
+            $resource = $datasource->get($this->getRequest()->get('id'));
+        }
+
+        return $resource;
     }
 }

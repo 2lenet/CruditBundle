@@ -1,6 +1,15 @@
 <div class="row">
     {% for view in views %}
-        {% if view.role == null or is_granted(view.role) %}
+        {% set resource = null %}
+        {% if view.data.resource.resource is defined %}
+            {% set resource = view.data.resource.resource %}
+        {% elseif view.data.entity is defined %}
+            {% set resource = view.data.entity %}
+        {% elseif view.data.resource is defined %}
+            {% set resource = view.data.resource %}
+        {% endif %}
+
+        {% if (view.role == null or is_granted(view.role)) and view.isDisplayed(resource) %}
             <div id="{{ view.id }}" class="{{ view.cssClass }}">
                 {% include view.indexTemplate with { 'view': view } only %}
             </div>

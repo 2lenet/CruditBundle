@@ -12,6 +12,7 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
+use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -40,6 +41,7 @@ class SublistFactory extends AbstractBasicBrickFactory
                 ->setConfig($config)
                 ->setPath($this->getPath($brickConfigurator))
                 ->setData([
+                    'resource' => $this->getResource($brickConfigurator),
                     'lines' => $this->getLines($brickConfigurator),
                     'batch_actions' => [], // to use the same pager template as list
                 ]);
@@ -81,6 +83,24 @@ class SublistFactory extends AbstractBasicBrickFactory
         }
 
         return $lines;
+    }
+
+    private function getResource(SublistConfig $brickConfigurator): object
+    {
+        $datasource = $brickConfigurator->getCrudConfig()->getDatasource();
+
+        $resource = null;
+        if ($this->getRequest()->get('id')) {
+            $resource = $datasource->get($this->getRequest()->get('id'));
+        } else {
+            $resource = $datasource->newInstance();
+        }
+
+        if ($resource === null) {
+            throw new CruditException('Resource not found');
+        }
+
+        return $resource;
     }
 
     /** @return Field[] */
