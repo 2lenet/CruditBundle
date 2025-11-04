@@ -41,7 +41,7 @@
                         {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
                     {% endif %}
 
-                    {% set disabled = action.disabled or not
+                    {% set disabled = action.disabled or not action.isDisplayed(action.resource) or not
                         ((action.path.role is null or is_granted(action.path.role, line.resource))
                         and (action.role is null or is_granted(action.role, line.resource)))
                     %}

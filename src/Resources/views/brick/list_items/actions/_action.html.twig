@@ -13,7 +13,7 @@
                 data-bs-target="#modal-confirm"
                 data-confirm-link="{{ path(action.path.route, params) }}"
                 data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans }}"
-            {% elseif not action.disabled %}
+            {% elseif not disabled %}
                 {% if action.url %}
                     href="{{ absolute_url(action.url) }}"
                 {% else %}

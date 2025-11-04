@@ -15,8 +15,9 @@
                             {% set form = batch_action.form %}
                         {% endif %}
                         {% if
-                            (action.path.role is null or is_granted(action.path.role))
-                            and (action.role is null or is_granted(action.role))
+                            not action.isDisplayed
+                            or ((action.path.role is null or is_granted(action.path.role))
+                            and (action.role is null or is_granted(action.role)))
                         %}
                             {% if action.template %}
                                 {% include action.template %}
@@ -52,8 +53,9 @@
                 {% endif %}
 
                 {% if
-                    (action.path.role is null or is_granted(action.path.role))
-                    and (action.role is null or is_granted(action.role))
+                    action.isDisplayed
+                    or ((action.path.role is null or is_granted(action.path.role))
+                    and (action.role is null or is_granted(action.role)))
                 %}
                     {% if action.modal %}
                         {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}

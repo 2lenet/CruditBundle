@@ -38,6 +38,9 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?string $template = null;
 
+    /** @var callable|null $displayCallable */
+    protected $displayCallable = null;
+
     public function __construct(string $label)
     {
         $this->label = $label;
@@ -225,6 +228,18 @@ abstract class AbstractAction implements ActionInterface
     public function setTemplate(?string $template): static
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function isDisplayed(?object $resource = null): bool
+    {
+        return !$this->displayCallable || call_user_func($this->displayCallable, $resource);
+    }
+
+    public function setDisplayCallable(?callable $displayCallable = null): self
+    {
+        $this->displayCallable = $displayCallable;
 
         return $this;
     }

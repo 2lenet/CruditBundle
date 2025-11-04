@@ -4,7 +4,7 @@
             class="{{ action.cssClass ?? 'dropdown-item crudit-action' }} {% if disabled %}disabled{% endif %}"
             {% if action.modal %}
                 data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-            {% elseif not action.disabled %}
+            {% elseif not disabled %}
                 href="{{ action.url ?? path(action.path.route, params) }}"
             {% endif %}
 
