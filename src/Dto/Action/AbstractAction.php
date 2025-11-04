@@ -38,8 +38,8 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?string $template = null;
 
-    /** @var callable|null $displayCallable */
-    protected $displayCallable = null;
+    /** @var callable|null $displayIf */
+    protected $displayIf = null;
 
     public function __construct(string $label)
     {
@@ -234,12 +234,12 @@ abstract class AbstractAction implements ActionInterface
 
     public function isDisplayed(?object $resource = null): bool
     {
-        return !$this->displayCallable || call_user_func($this->displayCallable, $resource);
+        return !$this->displayIf || call_user_func($this->displayIf, $resource);
     }
 
-    public function setDisplayIf(?callable $displayCallable = null): self
+    public function setDisplayIf(?callable $displayIf = null): self
     {
-        $this->displayCallable = $displayCallable;
+        $this->displayIf = $displayIf;
 
         return $this;
     }
