@@ -89,7 +89,7 @@ If you want to add a role for your action:
 
 You can add conditions to actions, using the resource or not, in order to decide whether to display the action based on the data.
 
-To do this, simply use the method `setDisplayCallable`:
+To do this, simply use the method `setDisplayIf`:
 
 ```php
 $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
@@ -99,7 +99,7 @@ $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
 )
     ->setCssClass('btn btn-primary btn-sm crudit-action')
     ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW))
-    ->setDisplayCallable(fn(Resource $resource) => $resource->isActive());
+    ->setDisplayIf(fn(Resource $resource) => $resource->isActive());
 ```
 
 ## Write actions that will be executed in your crud

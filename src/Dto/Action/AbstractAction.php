@@ -237,7 +237,7 @@ abstract class AbstractAction implements ActionInterface
         return !$this->displayCallable || call_user_func($this->displayCallable, $resource);
     }
 
-    public function setDisplayCallable(?callable $displayCallable = null): self
+    public function setDisplayIf(?callable $displayCallable = null): self
     {
         $this->displayCallable = $displayCallable;
 
