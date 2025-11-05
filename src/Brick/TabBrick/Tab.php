@@ -66,7 +66,7 @@ class Tab
         return $this;
     }
 
-    public function isDisplayed(?object $resource): bool
+    public function isDisplayed(mixed $resource = null): bool
     {
         return !$this->displayIf || call_user_func($this->displayIf, $resource);
     }
