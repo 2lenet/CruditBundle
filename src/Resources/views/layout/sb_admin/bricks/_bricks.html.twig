@@ -1,11 +1,11 @@
 <div class="row">
     {% for view in views %}
         {% set resource = null %}
-        {% if view.data.resource.resource is defined %}
+        {% if view.data.resource.resource is defined and view.data.resource.resource %}
             {% set resource = view.data.resource.resource %}
-        {% elseif view.data.entity is defined %}
+        {% elseif view.data.entity is defined and view.data.entity %}
             {% set resource = view.data.entity %}
-        {% elseif view.data.resource is defined %}
+        {% elseif view.data.resource is defined and view.data.resource %}
             {% set resource = view.data.resource %}
         {% endif %}
 
