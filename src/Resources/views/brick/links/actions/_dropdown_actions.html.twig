@@ -1,5 +1,6 @@
 {% set disabled =
     dropdown_action.disabled
+    or not dropdown_action.isDisplayed
     or not(dropdown_action.role is null or is_granted(dropdown_action.role, view.data.resource))
 %}
 
@@ -47,7 +48,7 @@
                             {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
                         {% endif %}
 
-                        {% set disabled = action.disabled or not
+                        {% set disabled = action.disabled or not action.isDisplayed(action.resource|default(null)) or not
                             ((action.path.role is null or is_granted(action.path.role, view.data.resource))
                             and (action.role is null or is_granted(action.role, view.data.resource)))
                         %}
