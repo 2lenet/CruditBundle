@@ -8,7 +8,7 @@ In your CrudConfig:
 public function getTabs(): array
 {
     return [
-        "tab.name" => [Brick::new()]
+        'tab.name' => [Brick::new()]
     ];
 }
 ```
@@ -39,7 +39,7 @@ use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 public function getTabs(): array
 {
     return [
-        "tab.history" => [
+        'tab.history' => [
             HistoryConfig::new()
         ]
     ];
@@ -56,25 +56,46 @@ Just add a array with the datasource and the getter method to retrieve the entit
 exemple
 
 ```php
-            "tab.history" => [
-                HistoryConfig::new(["otherEntities"=>[
-                    ["datasource"=>$this->depistageL1Datasource, "method"=>"getDepistageL1"],
-                    ["datasource"=>$this->depistageL2Datasource, "method"=>"getDepistageL2"],
-                    ["datasource"=>$this->bdiDatasource, "method"=>"getBdi"],
-                    ["datasource"=>$this->l2IADatasource, "method"=>"getL2IA"]
-                ]]),
+'tab.history' => [
+    HistoryConfig::new(['otherEntities' => [
+        ['datasource' => $this->depistageL1Datasource, 'method' => 'getDepistageL1'],
+        ['datasource' => $this->depistageL2Datasource, 'method' => 'getDepistageL2'],
+        ['datasource' => $this->bdiDatasource, 'method' => 'getBdi'],
+        ['datasource' => $this->l2IADatasource, 'method' => 'getL2IA']
+    ]]),
+]
 ```
 
 ## Roles
 
 If you want to limit your tab to a role you can pass a third parameter to the addTabs function like this
 
-```php 
+```php
 $tabConf = TabConfig::new();
-$tabConf->adds('tab.commandes', [
-SublistConfig::new('client', $this->commandeCrudConfig)
-->setFields($this->commandeCrudConfig->getFields(self::INDEX))], "ROLE_TEST")
-;
+$tabConf->adds('tab.subResource', [
+    SublistConfig::new('resource', $this->subResourceCrudConfig)
+        ->setFields($this->subResourceCrudConfig->getFields(CrudConfigInterface::INDEX))
+], 'ROLE_TEST');
+```
+
+## How to display the tab under certain conditions
+
+You can add conditions to the tab, using the resource or not, in order to decide whether to display the tab based on the data.
+
+To do this, simply use the method `setDisplayIf`:
+
+```php
+$tabConf = TabConfig::new();
+$tabConf->adds('tab.subResource', [
+    SublistConfig::new('subResourceField', $this->subResourceCrudConfig)
+        ->setFields($this->subResourceCrudConfig->getFields(CrudConfigInterface::INDEX))
+        ->setActions($this->subResourceCrudConfig->getItemActions()),
+    FormConfig::new()
+        ->setForm(SubResourceSublistType::class)
+        ->setSublist('subResourceField')
+        ->setDatasource($this->subResourceCrudConfig->getDatasource())
+        ->setSuccessRedirectPath($this->getPath(CrudConfigInterface::SHOW)),
+], 'ROLE_RESOURCE_TAB_SUBRESOURCE', fn(Resource $resource) => $resource->isActive());
 ```
 
 ## Sublists

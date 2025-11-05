@@ -51,7 +51,18 @@
                             show active
                         {% endif %}">
                     {% for view in tab.views %}
-                        {% include view.indexTemplate with { 'view': view, 'tab': tab } only %}
+                        {% set resource = null %}
+                        {% if view.data.resource.resource is defined %}
+                            {% set resource = view.data.resource.resource %}
+                        {% elseif view.data.entity is defined %}
+                            {% set resource = view.data.entity %}
+                        {% elseif view.data.resource is defined %}
+                            {% set resource = view.data.resource %}
+                        {% endif %}
+
+                        {% if view.isDisplayed(resource) %}
+                            {% include view.indexTemplate with { 'view': view, 'tab': tab } only %}
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% endif %}

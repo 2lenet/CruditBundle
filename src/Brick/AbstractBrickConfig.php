@@ -12,11 +12,19 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class AbstractBrickConfig implements BrickConfigInterface
 {
     protected CrudConfigInterface $crudConfig;
+
     protected string $pageKey;
+
     protected string $id;
+
     protected array $options = [];
+
     private ?string $role = null;
+
     private ?string $template = null;
+
+    /** @var callable|null $displayIf */
+    protected $displayIf = null;
 
     public function getPageKey(): string
     {
@@ -107,6 +115,18 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setTemplate(?string $template): BrickConfigInterface
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function getDisplayIf(): ?callable
+    {
+        return $this->displayIf;
+    }
+
+    public function setDisplayIf(?callable $displayIf): BrickConfigInterface
+    {
+        $this->displayIf = $displayIf;
 
         return $this;
     }

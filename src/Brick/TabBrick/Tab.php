@@ -10,8 +10,13 @@ class Tab
 {
     /** @var BrickConfigInterface[] */
     private array $bricks;
+
     private string $label;
+
     private ?string $role = null;
+
+    /** @var callable|null $displayIf */
+    protected $displayIf = null;
 
     private function __construct(array $bricks)
     {
@@ -57,6 +62,18 @@ class Tab
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function isDisplayed(?object $resource): bool
+    {
+        return !$this->displayIf || call_user_func($this->displayIf, $resource);
+    }
+
+    public function setDisplayIf(?callable $displayIf): self
+    {
+        $this->displayIf = $displayIf;
 
         return $this;
     }
