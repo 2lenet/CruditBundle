@@ -41,9 +41,8 @@ class NumberFilterType extends AbstractFilterType
 
         if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
             $queryBuilder->andWhere($query);
-        } elseif (isset($this->data['value']) && $this->data['value']) {
-            $value = $this->data['value'];
-
+        } elseif (isset($this->data['value']) && $this->data['value'] !== "") {
+            $value = (int)$this->data['value'];
             $queryBuilder->andWhere($query);
             $queryBuilder->setParameter($paramname, $value);
         }
