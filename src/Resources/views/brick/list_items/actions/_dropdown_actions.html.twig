@@ -46,7 +46,7 @@
                         and (action.role is null or is_granted(action.role, line.resource)))
                     %}
 
-                    {% if action.isDisplayed(action.resource) and not (disabled and (crudit_hide_if_disabled(action) or action.hideIfDisabled)) %}
+                    {% if action.isDisplayed(action.resource) and not (disabled and crudit_hide_if_disabled(action)) %}
                         {% block dropdown_actions_item %}
                             <li>
                                     {% if action.template %}

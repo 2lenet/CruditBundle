@@ -32,7 +32,7 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?string $role = null;
 
-    protected bool $hideIfDisabled = false;
+    protected ?bool $hideIfDisabled = null;
 
     protected bool $dropdown = false;
 
@@ -196,12 +196,12 @@ abstract class AbstractAction implements ActionInterface
         return $this;
     }
 
-    public function getHideIfDisabled(): bool
+    public function getHideIfDisabled(): ?bool
     {
         return $this->hideIfDisabled;
     }
 
-    public function setHideIfDisabled(bool $hideIfDisabled): static
+    public function setHideIfDisabled(?bool $hideIfDisabled): static
     {
         $this->hideIfDisabled = $hideIfDisabled;
 
