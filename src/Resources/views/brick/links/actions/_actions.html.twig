@@ -17,7 +17,7 @@
     and (action.role is null or is_granted(action.role, view.data.resource)))
 %}
 
-{% if not (disabled and (crudit_hide_if_disabled(action) or action.hideIfDisabled or action.isDisplayed(action.resource|default(null)))) %}
+{% if action.isDisplayed(action.resource|default(null)) and not (disabled and (crudit_hide_if_disabled(action) or action.hideIfDisabled)) %}
     {% block actions_item %}
         <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
             {% if action.template %}

@@ -55,9 +55,9 @@ interface ActionInterface
 
     public function setRole(string $role): static;
 
-    public function getHideIfDisabled(): ?bool;
+    public function getHideIfDisabled(): bool;
 
-    public function setHideIfDisabled(?bool $hideIfDisabled): static;
+    public function setHideIfDisabled(bool $hideIfDisabled): static;
 
     public function getTemplate(): ?string;
 
