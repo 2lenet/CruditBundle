@@ -25,6 +25,9 @@
 </tr>
 {% if view.data.totals %}
     <tr>
+        {% if has_batch %}
+            <td></td>
+        {% endif %}
         {% for field in view.config.fields %}
             {% set match = false %}
             {% for total in view.data.totals %}
@@ -45,6 +48,9 @@
                 <td></td>
             {% endif %}
         {% endfor %}
+        {% if hasActions %}
+            <td></td>
+        {% endif %}
     </tr>
 {% endif %}
 </tfoot>

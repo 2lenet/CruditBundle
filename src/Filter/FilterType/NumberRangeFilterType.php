@@ -28,7 +28,7 @@ class NumberRangeFilterType extends AbstractFilterType
         $query = $this->getPattern($op, $column, $alias, $column, $paramname) ?? '';
         $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
 
-        if (isset($this->data['value']) && $this->data['value']) {
+        if (isset($this->data['value']) && $this->data['value'] !== '') {
             switch ($op) {
                 case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($query);
@@ -83,7 +83,7 @@ class NumberRangeFilterType extends AbstractFilterType
             }
         }
 
-        if (isset($this->data['to']) && $this->data['to']) {
+        if (isset($this->data['to']) && $this->data['to'] !== '') {
             switch ($op) {
                 case FilterTypeInterface::OPERATOR_IS_NULL:
                     $queryBuilder->andWhere($query);
