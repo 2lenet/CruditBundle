@@ -1,3 +1,7 @@
 {% if view.role is not defined or not view.role or is_granted(view.role) %}
+    {% if view.data.title is defined %}
+        <h2 class="{% if view.data.cssTitle is defined %}{{ view.data.cssTitle }}{% endif %}">{{ view.data.title|trans }}</h2>
+        <hr/>
+    {% endif %}
     {% include view.config.template with {'resource':view.data.resource} %}
 {% endif %}

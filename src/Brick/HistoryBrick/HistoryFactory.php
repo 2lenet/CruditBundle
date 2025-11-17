@@ -40,6 +40,8 @@ class HistoryFactory extends AbstractBasicBrickFactory
             ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
             ->setData([
                 "history" => $this->getLogEntries($brickConfigurator),
+                'title' => $brickConfigurator->getTitle(),
+                'cssTitle' => $brickConfigurator->getCssTitle(),
             ])
             ->setConfig($brickConfigurator->getConfig($this->getRequest()));
 
