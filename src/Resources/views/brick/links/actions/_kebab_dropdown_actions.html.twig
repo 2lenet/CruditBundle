@@ -27,7 +27,7 @@
                         and (action.role is null or is_granted(action.role, view.data.resource)))
                     %}
 
-                    {% if not (disabled and crudit_hide_if_disabled(action)) %}
+                    {% if not (disabled and (crudit_hide_if_disabled(action) or action.hideIfDisabled)) %}
                         {% block kebab_dropdown_actions_item %}
                             <li>
                                 {% if action.template %}
