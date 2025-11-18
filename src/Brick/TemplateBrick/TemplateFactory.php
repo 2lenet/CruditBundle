@@ -26,7 +26,7 @@ class TemplateFactory extends AbstractBasicBrickFactory
             ->setData([
                 'resource' => $this->getResourceView($brickConfigurator),
                 'title' => $brickConfigurator->getTitle(),
-                'cssTitle' => $brickConfigurator->getCssTitle(),
+                'titleCss' => $brickConfigurator->getTitleCss(),
             ]);
 
         return $view;

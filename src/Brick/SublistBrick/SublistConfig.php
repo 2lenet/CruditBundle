@@ -75,7 +75,7 @@ class SublistConfig extends AbstractBrickConfig
             'batch_actions' => [],
             'name' => $this->subCrudConfig->getName(),
             'title' => $this->getTitle(),
-            'cssTitle' => $this->getCssTitle(),
+            'titleCss' => $this->getTitleCss(),
             'datasource_params' => $this->getDatasourceParams(),
             'detail' => null,
             'hidden_action' => false,

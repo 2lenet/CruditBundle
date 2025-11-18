@@ -1,7 +1,7 @@
 <div class="card shadow mb-4">
     <div class="card-body">
         {% if view.data.title is defined %}
-            <h2 class="{% if view.data.cssTitle is defined %}{{ view.data.cssTitle }}{% endif %}">{{ view.data.title|trans }}</h2>
+            <h2 class="{% if view.data.titleCss is defined %}{{ view.data.titleCss }}{% endif %}">{{ view.data.title|trans }}</h2>
             <hr/>
         {% endif %}
         {% for key, tag in view.data.tags %}

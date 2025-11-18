@@ -17,7 +17,7 @@
         </div>
         <div class="card-body">
             {% if view.config.title is defined %}
-                <h2 class="{% if view.config.cssTitle is defined %}{{ view.config.cssTitle }}{% endif %}">{{ view.config.title|trans }}</h2>
+                <h2 class="{% if view.config.titleCss is defined %}{{ view.config.titleCss }}{% endif %}">{{ view.config.title|trans }}</h2>
                 <hr/>
             {% endif %}
             <div class="table-responsive crudit-sublist">

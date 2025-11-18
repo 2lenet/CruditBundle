@@ -28,7 +28,7 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
 
     private ?string $title = null;
 
-    private ?string $cssTitle = null;
+    private ?string $titleCss = null;
 
     public function getPageKey(): string
     {
@@ -147,14 +147,14 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
         return $this;
     }
 
-    public function getCssTitle(): ?string
+    public function getTitleCss(): ?string
     {
-        return $this->cssTitle;
+        return $this->titleCss;
     }
 
-    public function setCssTitle(string $cssTitle): self
+    public function setTitleCss(string $titleCss): self
     {
-        $this->cssTitle = $cssTitle;
+        $this->titleCss = $titleCss;
 
         return $this;
     }

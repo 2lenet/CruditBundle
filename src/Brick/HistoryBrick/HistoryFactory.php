@@ -42,7 +42,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 ->setData([
                     "history" => $this->getLogEntries($brickConfigurator),
                     'title' => $brickConfigurator->getTitle(),
-                    'cssTitle' => $brickConfigurator->getCssTitle(),
+                    'titleCss' => $brickConfigurator->getTitleCss(),
                 ])
                 ->setConfig($brickConfigurator->getConfig($this->getRequest()));
         }

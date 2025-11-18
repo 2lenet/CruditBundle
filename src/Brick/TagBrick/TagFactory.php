@@ -45,7 +45,7 @@ class TagFactory extends AbstractBasicBrickFactory
                     'editRoute' => $brickConfigurator->getEditRoute(),
                     'editRole' => $brickConfigurator->getEditRole(),
                     'title' => $brickConfigurator->getTitle(),
-                    'cssTitle' => $brickConfigurator->getCssTitle(),
+                    'titleCss' => $brickConfigurator->getTitleCss(),
                 ]);
         }
 
