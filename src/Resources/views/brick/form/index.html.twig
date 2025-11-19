@@ -8,14 +8,13 @@
         {%  set formClass="crudit-horizontal" %}
     {% endif %}
     <div class="card mb-4 {{ formClass }}">
+    <div class="card-body">
     {% if view.data.title %}
         {% block form_title %}
-            <div class="card-header">
-                <h6 class="mb-0 fw-bold {% if view.data.titleCss %} {{ view.data.titleCss }} {% endif %}">{{ view.data.title|trans }}</h6>
-            </div>
+            <h2 class="{% if view.data.titleCss %}{{ view.data.titleCss }}{% endif %}">{{ view.data.title|trans }}</h2>
+            <hr/>
         {% endblock %}
     {% endif %}
-    <div class="card-body">
     {% set id = form.vars.name %}
 
     {% set form_attributes =  {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'} %}
