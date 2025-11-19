@@ -36,12 +36,16 @@ class HistoryFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         $view = new BrickView($brickConfigurator);
-        $view
-            ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
-            ->setData([
-                "history" => $this->getLogEntries($brickConfigurator),
-            ])
-            ->setConfig($brickConfigurator->getConfig($this->getRequest()));
+        if ($brickConfigurator instanceof HistoryConfig) {
+            $view
+                ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
+                ->setData([
+                    "history" => $this->getLogEntries($brickConfigurator),
+                    'title' => $brickConfigurator->getTitle(),
+                    'titleCss' => $brickConfigurator->getTitleCss(),
+                ])
+                ->setConfig($brickConfigurator->getConfig($this->getRequest()));
+        }
 
         return $view;
     }

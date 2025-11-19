@@ -69,6 +69,7 @@ class FormFactory extends AbstractBasicBrickFactory
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
                 'title' => $brickConfigurator->getTitle(),
+                'titleCss' => $brickConfigurator->getTitleCss(),
                 'form' => $form->createView(),
                 'resource' => $resource,
                 'options' => $brickConfigurator->getOptions(),
