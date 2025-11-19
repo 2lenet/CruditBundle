@@ -8,10 +8,10 @@
         {%  set formClass="crudit-horizontal" %}
     {% endif %}
     <div class="card mb-4 {{ formClass }}">
-    {% if view.data.title is defined and view.data.title != '' %}
+    {% if view.data.title %}
         {% block form_title %}
             <div class="card-header">
-                <h6 class="mb-0 fw-bold">{{ view.data.title|trans }}</h6>
+                <h6 class="mb-0 fw-bold {% if view.data.titleCss %} {{ view.data.titleCss }} {% endif %}">{{ view.data.title|trans }}</h6>
             </div>
         {% endblock %}
     {% endif %}
