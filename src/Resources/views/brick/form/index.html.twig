@@ -9,9 +9,11 @@
     {% endif %}
     <div class="card mb-4 {{ formClass }}">
     <div class="card-body">
-    {% if view.data.title %}
+    {% if view.data.title is defined and view.data.title %}
         {% block form_title %}
-            <h2 class="{% if view.data.titleCss %}{{ view.data.titleCss }}{% endif %}">{{ view.data.title|trans }}</h2>
+            <h2 class="{% if view.data.titleCss is defined and view.data.titleCss %}{{ view.data.titleCss }}{% endif %}">
+                {{ view.data.title|trans }}
+            </h2>
             <hr/>
         {% endblock %}
     {% endif %}
