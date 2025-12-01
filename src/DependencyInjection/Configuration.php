@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\DependencyInjection;
 
 use Lle\CruditBundle\Field\AbstractField;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -13,6 +14,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('lle_crudit');
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
         $children = $rootNode->children();
         $children
@@ -94,7 +96,7 @@ class Configuration implements ConfigurationInterface
             ->end();
         $children
             ->scalarNode('generate_default_role')
-            ->defaultFalse()
+            ->defaultValue(false)
             ->validate()
             ->ifNotInArray([
                 true,
