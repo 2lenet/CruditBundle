@@ -35,7 +35,7 @@ class TemplateFactory extends AbstractBasicBrickFactory
     private function getResourceView(TemplateConfig $brickConfigurator): ?ResourceView
     {
         if ($this->getRequest()->query->has('id') || $this->getRequest()->attributes->has('id')) {
-            $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+            $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->attributes->get('id'));
             if ($resource) {
                 return $this->resourceResolver->resolve(
                     $resource,

@@ -27,7 +27,7 @@ class BrickView
     /** @var callable|null $displayIf */
     protected $displayIf = null;
 
-    public function __construct(BrickConfigInterface $brickConfig, string $template = null, array $data = [])
+    public function __construct(BrickConfigInterface $brickConfig, ?string $template = null, array $data = [])
     {
         $this->template = $template;
         $this->data = $data;
