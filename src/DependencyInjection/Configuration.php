@@ -92,6 +92,16 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('exit_impersonation_path')
             ->defaultValue('homepage')
             ->end();
+        $children
+            ->scalarNode('generate_default_role')
+            ->defaultFalse()
+            ->validate()
+            ->ifNotInArray([
+                true,
+                false,
+            ])
+            ->thenInvalid('Invalid value %s')
+            ->end();
 
         return $treeBuilder;
     }
