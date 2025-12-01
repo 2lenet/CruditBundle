@@ -13,27 +13,27 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface CrudConfigInterface
 {
-    public const string INDEX = 'INDEX';
-    public const string SHOW = 'SHOW';
-    public const string EDIT = 'EDIT';
-    public const string NEW = 'NEW';
-    public const string DELETE = 'DELETE';
-    public const string EXPORT = 'EXPORT';
+    public const INDEX = 'INDEX';
+    public const SHOW = 'SHOW';
+    public const EDIT = 'EDIT';
+    public const NEW = 'NEW';
+    public const DELETE = 'DELETE';
+    public const EXPORT = 'EXPORT';
 
-    public const string ACTION_LIST = 'list';
-    public const string ACTION_SHOW = 'show';
-    public const string ACTION_EDIT = 'edit';
-    public const string ACTION_ADD = 'add';
-    public const string ACTION_DELETE = 'delete';
-    public const string ACTION_EXPORT = 'export';
+    public const ACTION_LIST = 'list';
+    public const ACTION_SHOW = 'show';
+    public const ACTION_EDIT = 'edit';
+    public const ACTION_ADD = 'add';
+    public const ACTION_DELETE = 'delete';
+    public const ACTION_EXPORT = 'export';
 
-    public const string AVERAGE = 'AVG';
-    public const string COUNT = 'COUNT';
-    public const string SUM = 'SUM';
+    public const AVERAGE = 'AVG';
+    public const COUNT = 'COUNT';
+    public const SUM = 'SUM';
 
-    public const string EXPRESSION = 'EXPRESSION';
+    public const EXPRESSION = 'EXPRESSION';
 
-    public const array BASIC_FIELDS_KEYS = [
+    public const BASIC_FIELDS_KEYS = [
         CrudConfigInterface::INDEX,
         CrudConfigInterface::SHOW,
         CrudConfigInterface::EDIT,
@@ -41,9 +41,9 @@ interface CrudConfigInterface
         CrudConfigInterface::DELETE,
         CrudConfigInterface::EXPORT,
     ];
-    public const array ADDITIONAL_FIELDS_KEYS = [];
+    public const ADDITIONAL_FIELDS_KEYS = [];
 
-    public const array BASIC_ACTIONS_KEYS = [
+    public const BASIC_ACTIONS_KEYS = [
         CrudConfigInterface::INDEX => CrudConfigInterface::ACTION_LIST,
         CrudConfigInterface::ACTION_SHOW => CrudConfigInterface::ACTION_SHOW,
         CrudConfigInterface::ACTION_EDIT => CrudConfigInterface::ACTION_EDIT,

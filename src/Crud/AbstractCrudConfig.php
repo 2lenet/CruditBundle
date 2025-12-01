@@ -322,8 +322,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getRoleTab(string $label): string
     {
          return sprintf(
-             'ROLE_%s_%s_%s', $this->getName(),
-             'TAB', strtoupper(str_replace('tab.', '', $label))
+             'ROLE_%s_%s_%s',
+             $this->getName(),
+             'TAB',
+             strtoupper(str_replace('tab.', '', $label))
          );
     }
 
@@ -333,7 +335,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $brickClassPart = explode('\\', $brickClass);
 
         return sprintf(
-            'ROLE_%s_%s_%s', $this->getName(),
+            'ROLE_%s_%s_%s',
+            $this->getName(),
             strtoupper(str_replace('Config', '', end($brickClassPart))),
             strtoupper(str_replace('tab.', '', $label))
         );
