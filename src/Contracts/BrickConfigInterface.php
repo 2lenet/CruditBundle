@@ -41,4 +41,6 @@ interface BrickConfigInterface
     public function setTemplate(?string $template): self;
 
     public function getDisplayIf(): ?callable;
+
+    public function getTitle(): ?string;
 }
