@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Contracts;
 
+use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\ExportParams;
@@ -85,4 +86,11 @@ interface CrudConfigInterface
     public function getShowAutoRefresh(): ?int;
 
     public function getShowNumberFieldGroupsOpened(): ?int;
+<<<<<<< Updated upstream
+=======
+
+    public function setParameterBag(ParameterBagInterface $parameterBag): void;
+
+    public function getTabConfig(): ?TabConfig;
+>>>>>>> Stashed changes
 }
