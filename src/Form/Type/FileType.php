@@ -27,8 +27,8 @@ class FileType extends VichFileType
         StorageInterface $storage,
         UploadHandler $handler,
         PropertyMappingFactory $factory,
-        PropertyAccessorInterface $propertyAccessor = null,
         RequestStack $requestStack,
+        ?PropertyAccessorInterface $propertyAccessor = null,
     ) {
         parent::__construct($storage, $handler, $factory, $propertyAccessor);
 

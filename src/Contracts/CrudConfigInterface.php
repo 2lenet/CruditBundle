@@ -8,27 +8,50 @@ use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\ExportParams;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 interface CrudConfigInterface
 {
-    public const INDEX = "INDEX";
-    public const SHOW = "SHOW";
-    public const EDIT = "EDIT";
-    public const NEW = "NEW";
-    public const DELETE = "DELETE";
-    public const EXPORT = "EXPORT";
-    public const ACTION_LIST = "list";
-    public const ACTION_SHOW = "show";
-    public const ACTION_EDIT = "edit";
-    public const ACTION_ADD = "add";
-    public const ACTION_DELETE = "delete";
-    public const ACTION_EXPORT = "export";
-    public const AVERAGE = "AVG";
-    public const COUNT = "COUNT";
-    public const SUM = "SUM";
-    public const EXPRESSION = "EXPRESSION";
+    public const INDEX = 'INDEX';
+    public const SHOW = 'SHOW';
+    public const EDIT = 'EDIT';
+    public const NEW = 'NEW';
+    public const DELETE = 'DELETE';
+    public const EXPORT = 'EXPORT';
+
+    public const ACTION_LIST = 'list';
+    public const ACTION_SHOW = 'show';
+    public const ACTION_EDIT = 'edit';
+    public const ACTION_ADD = 'add';
+    public const ACTION_DELETE = 'delete';
+    public const ACTION_EXPORT = 'export';
+
+    public const AVERAGE = 'AVG';
+    public const COUNT = 'COUNT';
+    public const SUM = 'SUM';
+
+    public const EXPRESSION = 'EXPRESSION';
+
+    public const BASIC_FIELDS_KEYS = [
+        CrudConfigInterface::INDEX,
+        CrudConfigInterface::SHOW,
+        CrudConfigInterface::EDIT,
+        CrudConfigInterface::NEW,
+        CrudConfigInterface::DELETE,
+        CrudConfigInterface::EXPORT,
+    ];
+    public const ADDITIONAL_FIELDS_KEYS = [];
+
+    public const BASIC_ACTIONS_KEYS = [
+        CrudConfigInterface::INDEX => CrudConfigInterface::ACTION_LIST,
+        CrudConfigInterface::ACTION_SHOW => CrudConfigInterface::ACTION_SHOW,
+        CrudConfigInterface::ACTION_EDIT => CrudConfigInterface::ACTION_EDIT,
+        CrudConfigInterface::NEW => CrudConfigInterface::ACTION_ADD,
+        CrudConfigInterface::ACTION_DELETE => CrudConfigInterface::ACTION_DELETE,
+        CrudConfigInterface::ACTION_EXPORT => CrudConfigInterface::ACTION_EXPORT,
+    ];
 
     public function getFields(string $key): array;
 
@@ -86,11 +109,8 @@ interface CrudConfigInterface
     public function getShowAutoRefresh(): ?int;
 
     public function getShowNumberFieldGroupsOpened(): ?int;
-<<<<<<< Updated upstream
-=======
 
     public function setParameterBag(ParameterBagInterface $parameterBag): void;
 
     public function getTabConfig(): ?TabConfig;
->>>>>>> Stashed changes
 }
