@@ -22,7 +22,7 @@ class ShowFactory extends AbstractBasicBrickFactory
         $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof ShowConfig) {
             /** @var object $item */
-            $item = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+            $item = $brickConfigurator->getDataSource()->get($this->getRequest()->attributes->get('id'));
             $data = [
                 'resource' => $this->getResourceView($brickConfigurator),
                 'auto_refresh' => $brickConfigurator->getCrudConfig()->getShowAutoRefresh(),
@@ -57,7 +57,7 @@ class ShowFactory extends AbstractBasicBrickFactory
 
     private function getResourceView(ShowConfig $brickConfigurator): ?ResourceView
     {
-        $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->get('id'));
+        $resource = $brickConfigurator->getDataSource()->get($this->getRequest()->attributes->get('id'));
         if ($resource) {
             return $this->resourceResolver->resolve(
                 $resource,

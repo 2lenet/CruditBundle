@@ -59,7 +59,7 @@ class SublistConfig extends AbstractBrickConfig
     public function getConfig(Request $request): array
     {
         $sessionKey = $this->crudConfig->getDatasourceParamsKey()
-            . "_sublist_" . $this->subCrudConfig->getName() . $request->get("id");
+            . "_sublist_" . $this->subCrudConfig->getName() . $request->attributes->get("id");
 
         $subDatasourceParams = $this->subCrudConfig->getDatasourceParams($request, $sessionKey);
 
@@ -124,7 +124,7 @@ class SublistConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function add(string $name, string $type = null, array $options = []): self
+    public function add(string $name, ?string $type = null, array $options = []): self
     {
         return $this->addField(Field::new($name, $type, $options));
     }

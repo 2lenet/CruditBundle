@@ -19,13 +19,13 @@ class TagFactory extends AbstractBasicBrickFactory
         $view = new BrickView($brickConfigurator);
         if ($brickConfigurator instanceof TagConfig) {
             $config = $brickConfigurator->getConfig($this->getRequest());
-            $objectId = $this->getRequest()->get('id');
+            $objectId = $this->getRequest()->attributes->get('id');
             $resource = $brickConfigurator->getDatasource()->get($objectId);
             if (!$resource) {
                 throw new CruditException(
                     sprintf(
                         "Resource %s of class %s not found",
-                        $this->getRequest()->get("id", "NO_ID"),
+                        $this->getRequest()->attributes->get("id", "NO_ID"),
                         $brickConfigurator->getDatasource()->getClassName()
                     )
                 );

@@ -53,7 +53,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
     private function getLogEntries(BrickConfigInterface $brickConfigurator): array
     {
         $mainDatasource = $brickConfigurator->getDataSource();
-        $mainId = $this->getRequest()->get("id");
+        $mainId = $this->getRequest()->attributes->get("id");
         /** @var object $item */
         $item = $mainDatasource->get($mainId);
         $logs = $this->getLogEntriesDatasource($item);

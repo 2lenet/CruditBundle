@@ -11,6 +11,7 @@ use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
+use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
@@ -24,12 +25,16 @@ use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Exporter\ExportParams;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Service\Attribute\Required;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
     protected DatasourceInterface $datasource;
+
+    protected ParameterBagInterface $parameterBag;
 
     abstract public function getFields(string $key): array;
 
@@ -145,7 +150,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
             'action.list',
-            $this->getPath(CrudConfigInterface::INDEX),
+            $this->getPath(),
             Icon::new('list')
         )
             ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
@@ -181,27 +186,27 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         // this session will be reset when the filters are reset (see Lle\CruditBundle\Filter\FilterState)
         $sessionKey = $sessionKey ?? $this->getDatasourceParamsKey();
         $params = $request->getSession()->get($sessionKey, [
-            "limit" => $this->getNbItems(),
-            "offset" => 0,
-            "sorts" => $this->getDefaultSort(),
+            'limit' => $this->getNbItems(),
+            'offset' => 0,
+            'sorts' => $this->getDefaultSort(),
         ]);
 
         /** @var string $name */
         $name = $this->getName();
-        $limit = $request->query->get(strtolower($name) . "_limit");
+        $limit = $request->query->get(strtolower($name) . '_limit');
         if ($limit !== null) {
-            $params["limit"] = max((int)$limit, 1);
+            $params['limit'] = max((int)$limit, 1);
         }
 
-        $offset = $request->query->get(strtolower($name) . "_offset");
+        $offset = $request->query->get(strtolower($name) . '_offset');
         if ($offset !== null) {
-            $params["offset"] = max((int)$offset, 0);
+            $params['offset'] = max((int)$offset, 0);
         }
 
-        $sortField = $request->query->get(strtolower($name) . "_sort", null);
-        $sortOrder = $request->query->get(strtolower($name) . "_sort_order", null);
+        $sortField = $request->query->get(strtolower($name) . '_sort');
+        $sortOrder = $request->query->get(strtolower($name) . '_sort_order');
         if ($sortField !== null) {
-            $params["sorts"] = [[$sortField, $sortOrder]];
+            $params['sorts'] = [[$sortField, $sortOrder]];
         }
 
         $request->getSession()->set($sessionKey, $params);
@@ -211,7 +216,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getDatasourceParamsKey(): string
     {
-        return strtolower("crudit_datasourceparams_" . $this->getName());
+        return strtolower('crudit_datasourceparams_' . $this->getName());
     }
 
     public function getController(): ?string
@@ -223,7 +228,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $className = get_class($this);
 
-        return strtoupper(str_replace("CrudConfig", "", (substr($className, strrpos($className, '\\') + 1))));
+        return strtoupper(str_replace('CrudConfig', '', (substr($className, strrpos($className, '\\') + 1))));
     }
 
     public function getTitle(string $key): ?string
@@ -231,7 +236,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         /** @var string $name */
         $name = $this->getName();
 
-        return "crud.title." . strtolower($key) . "." . strtolower($name);
+        return 'crud.title.' . strtolower($key) . '.' . strtolower($name);
     }
 
     public function getPath(string $context = self::INDEX, array $params = []): Path
@@ -257,18 +262,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $showBricks = [];
         $showBricks[] = LinksConfig::new(['title' => $this->getTitle('show')])->setActions($this->getShowActions());
         $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
-        $tabs = $this->getTabs();
+        $tabs = $this->getTabConfig();
         if ($tabs) {
-            $tabConf = TabConfig::new();
-
-            // additional tabs
-            foreach ($tabs as $label => $bricks) {
-                if (!is_array($bricks)) {
-                    $bricks = [$bricks];
-                }
-                $tabConf->adds($label, $bricks);
-            }
-            $showBricks[] = $tabConf;
+            $showBricks[] = $tabs;
         }
 
         return [
@@ -278,21 +274,75 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
                 LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::EDIT))
-                    ->setCancelPath($this->getPath(CrudConfigInterface::INDEX)),
+                    ->setCancelPath($this->getPath()),
             ],
             CrudConfigInterface::NEW => [
                 LinksConfig::new(['title' => $this->getTitle('new')]),
                 FormConfig::new()
                     ->setForm($this->getFormType(CrudConfigInterface::NEW))
-                    ->setCancelPath($this->getPath(CrudConfigInterface::INDEX)),
+                    ->setCancelPath($this->getPath()),
             ],
         ];
     }
 
+    public function getTabConfig(): ?TabConfig
+    {
+        $tabs = $this->getTabs();
+        if ($tabs) {
+            $tabConf = TabConfig::new();
+
+            // additional tabs
+            foreach ($tabs as $label => $bricks) {
+                if (!is_array($bricks)) {
+                    $bricks = [$bricks];
+                }
+
+                if ($this->mustGenerateDefaultRole()) {
+                    foreach ($bricks as $brick) {
+                        if (!$brick->getRole()) {
+                            $brick->setRole($this->getRoleBrick($brick, $label));
+                        }
+                    }
+
+                    $tabConf->adds($label, $bricks, $this->getRoleTab($label));
+                } else {
+                    $tabConf->adds($label, $bricks);
+                }
+            }
+
+            return $tabConf;
+        }
+
+        return null;
+    }
+
+    public function getRoleTab(string $label): string
+    {
+         return sprintf(
+             'ROLE_%s_%s_%s',
+             $this->getName(),
+             'TAB',
+             strtoupper(str_replace('tab.', '', $label))
+         );
+    }
+
+    public function getRoleBrick(BrickConfigInterface $brick, string $label): string
+    {
+        $brickClass = get_class($brick);
+        $brickClassPart = explode('\\', $brickClass);
+
+        return sprintf(
+            'ROLE_%s_%s_%s',
+            $this->getName(),
+            strtoupper(str_replace('Config', '', end($brickClassPart))),
+            strtoupper(str_replace('tab.', '', $label))
+        );
+    }
+
     public function getTabs(): array
     {
-        if (is_subclass_of($this->datasource->getClassName(), "Gedmo\Loggable\Loggable")) {
-            return ["tab.history" => HistoryConfig::new()];
+        if (is_subclass_of($this->datasource->getClassName(), 'Gedmo\Loggable\Loggable')) {
+            return ['tab.history' => HistoryConfig::new()];
         }
 
         return [];
@@ -310,7 +360,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return count($fields) > 0 ? [
             [
                 $fields[0]->getName(),
-                "ASC",
+                'ASC',
             ],
         ] : [];
     }
@@ -369,5 +419,16 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function getShowNumberFieldGroupsOpened(): ?int
     {
         return null;
+    }
+
+    #[Required]
+    public function setParameterBag(ParameterBagInterface $parameterBag): void
+    {
+        $this->parameterBag = $parameterBag;
+    }
+
+    public function mustGenerateDefaultRole(): bool
+    {
+        return (bool)$this->parameterBag->get('lle_crudit.generate_default_role');
     }
 }

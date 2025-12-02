@@ -25,7 +25,7 @@ class DataCollector extends BaseDataCollector
         $this->data = [];
     }
 
-    public function collect(Request $request, Response $response, \Throwable $exception = null): void
+    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
         $entities = [];
         $metas = $this->em->getMetadataFactory()->getAllMetadata();
