@@ -262,7 +262,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $showBricks = [];
         $showBricks[] = LinksConfig::new(['title' => $this->getTitle('show')])->setActions($this->getShowActions());
         $showBricks[] = ShowConfig::new()->addFields($this->getFields(CrudConfigInterface::SHOW));
-        $tabs = $this->getTabConfig()
+        $tabs = $this->getTabConfig();
         if ($tabs) {
             $showBricks[] = $tabs;
         }
