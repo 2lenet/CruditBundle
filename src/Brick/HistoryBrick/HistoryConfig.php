@@ -28,7 +28,7 @@ class HistoryConfig extends AbstractBrickConfig
     {
         return $this->logEntryClassName;
     }
-    
+
     /**
      * @param class-string<object>|null $className
      * @return $this
