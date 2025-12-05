@@ -56,17 +56,20 @@ class HistoryFactory extends AbstractBasicBrickFactory
         $mainId = $this->getRequest()->get("id");
         /** @var object $item */
         $item = $mainDatasource->get($mainId);
-        $logs = $this->getLogEntriesDatasource($item, $brickConfigurator);
-        $options = $brickConfigurator->getOptions();
-        if (array_key_exists('otherEntities', $options)) {
-            foreach ($options['otherEntities'] as $ds) {
-                $method = $ds["method"];
-                $obj = $item->$method();
-                if ($obj !== null) {
-                    $subId = (string)$obj->getId();
-                    $subitem = $ds["datasource"]->get($subId);
-                    $logs2 = $this->getLogEntriesDatasource($subitem);
-                    $logs = array_merge($logs, $logs2);
+        $logs = [];
+        if ($brickConfigurator instanceof HistoryConfig) {
+            $logs = $this->getLogEntriesDatasource($item, $brickConfigurator);
+            $options = $brickConfigurator->getOptions();
+            if (array_key_exists('otherEntities', $options)) {
+                foreach ($options['otherEntities'] as $ds) {
+                    $method = $ds["method"];
+                    $obj = $item->$method();
+                    if ($obj !== null) {
+                        $subId = (string)$obj->getId();
+                        $subitem = $ds["datasource"]->get($subId);
+                        $logs2 = $this->getLogEntriesDatasource($subitem, $brickConfigurator);
+                        $logs = array_merge($logs, $logs2);
+                    }
                 }
             }
         }
@@ -81,6 +84,8 @@ class HistoryFactory extends AbstractBasicBrickFactory
     private function getLogEntriesDatasource(object $item, HistoryConfig $config): array
     {
         /** @var LogEntry $item */
+
+        /** @var class-string<object> $logClass */
         $logClass = $config->getLogEntryClassName() ?? LogEntry::class;
         $logs = $this->em
             ->getRepository($logClass)
