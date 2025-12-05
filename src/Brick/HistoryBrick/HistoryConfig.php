@@ -8,7 +8,7 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 
 class HistoryConfig extends AbstractBrickConfig
 {
-    private string $logEntryClassName;
+    private ?string $logEntryClassName = null;
 
     public static function new(array $options = []): self
     {
