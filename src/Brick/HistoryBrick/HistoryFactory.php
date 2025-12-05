@@ -56,17 +56,20 @@ class HistoryFactory extends AbstractBasicBrickFactory
         $mainId = $this->getRequest()->attributes->get("id");
         /** @var object $item */
         $item = $mainDatasource->get($mainId);
-        $logs = $this->getLogEntriesDatasource($item);
-        $options = $brickConfigurator->getOptions();
-        if (array_key_exists('otherEntities', $options)) {
-            foreach ($options['otherEntities'] as $ds) {
-                $method = $ds["method"];
-                $obj = $item->$method();
-                if ($obj !== null) {
-                    $subId = (string)$obj->getId();
-                    $subitem = $ds["datasource"]->get($subId);
-                    $logs2 = $this->getLogEntriesDatasource($subitem);
-                    $logs = array_merge($logs, $logs2);
+        $logs = [];
+        if ($brickConfigurator instanceof HistoryConfig) {
+            $logs = $this->getLogEntriesDatasource($item, $brickConfigurator);
+            $options = $brickConfigurator->getOptions();
+            if (array_key_exists('otherEntities', $options)) {
+                foreach ($options['otherEntities'] as $ds) {
+                    $method = $ds["method"];
+                    $obj = $item->$method();
+                    if ($obj !== null) {
+                        $subId = (string)$obj->getId();
+                        $subitem = $ds["datasource"]->get($subId);
+                        $logs2 = $this->getLogEntriesDatasource($subitem, $brickConfigurator);
+                        $logs = array_merge($logs, $logs2);
+                    }
                 }
             }
         }
@@ -78,13 +81,14 @@ class HistoryFactory extends AbstractBasicBrickFactory
         return $logs;
     }
 
-    private function getLogEntriesDatasource(object $item): array
+    private function getLogEntriesDatasource(object $item, HistoryConfig $config): array
     {
         /** @var LogEntry $item */
-        $logs = $this->em
-            ->getRepository(LogEntry::class)
-            ->getLogEntries($item);
 
+        /** @var class-string<object> $logClass */
+        $logClass = $config->getLogEntryClassName() ?? LogEntry::class;
+        // @phpstan-ignore-next-line
+        $logs = $this->em->getRepository($logClass)->getLogEntries($item);
         $metadata = $this->em->getClassMetadata(get_class($item));
         $history = [];
 
@@ -134,7 +138,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 }
                 $history[] = [
                     "log" => $log,
-                    "entity" => basename(str_replace('\\', '/', get_class($item))),
+                    "entity" => basename(str_replace('\\', '/', $log->getObjectClass())),
                     "data" => $data,
                 ];
             }
