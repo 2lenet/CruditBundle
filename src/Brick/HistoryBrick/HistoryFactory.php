@@ -134,7 +134,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 }
                 $history[] = [
                     "log" => $log,
-                    "entity" => basename(str_replace('\\', '/', get_class($item))),
+                    "entity" => basename(str_replace('\\', '/', $log->getObjectClass())),
                     "data" => $data,
                 ];
             }
