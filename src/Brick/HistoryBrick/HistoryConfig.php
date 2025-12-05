@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\HistoryBrick;
 
+use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 
 class HistoryConfig extends AbstractBrickConfig
@@ -20,6 +21,7 @@ class HistoryConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
+    /** @return class-string<object> */
     public function getLogEntryClassName(): ?string
     {
         return $this->logEntryClassName;
