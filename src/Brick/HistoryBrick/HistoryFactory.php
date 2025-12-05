@@ -87,10 +87,8 @@ class HistoryFactory extends AbstractBasicBrickFactory
 
         /** @var class-string<object> $logClass */
         $logClass = $config->getLogEntryClassName() ?? LogEntry::class;
-        
         // @phpstan-ignore-next-line
         $logs = $this->em->getRepository($logClass)->getLogEntries($item);
-    
         $metadata = $this->em->getClassMetadata(get_class($item));
         $history = [];
 
