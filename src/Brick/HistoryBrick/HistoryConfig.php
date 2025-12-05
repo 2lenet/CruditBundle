@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\HistoryBrick;
 
-use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
 
 class HistoryConfig extends AbstractBrickConfig
 {
+    /**
+     * @var class-string<object>|null
+     */
     private ?string $logEntryClassName = null;
 
     public static function new(array $options = []): self
@@ -21,7 +23,7 @@ class HistoryConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    /** @return class-string<object> */
+    /** @return class-string<object>|null */
     public function getLogEntryClassName(): ?string
     {
         return $this->logEntryClassName;
