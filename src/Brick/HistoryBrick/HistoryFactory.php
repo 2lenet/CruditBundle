@@ -53,10 +53,10 @@ class HistoryFactory extends AbstractBasicBrickFactory
     private function getLogEntries(BrickConfigInterface $brickConfigurator): array
     {
         $mainDatasource = $brickConfigurator->getDataSource();
-        $mainId = $this->getRequest()->attributes->get("id");
+        $mainId = $this->getRequest()->get("id");
         /** @var object $item */
         $item = $mainDatasource->get($mainId);
-        $logs = $this->getLogEntriesDatasource($item);
+        $logs = $this->getLogEntriesDatasource($item, $brickConfigurator);
         $options = $brickConfigurator->getOptions();
         if (array_key_exists('otherEntities', $options)) {
             foreach ($options['otherEntities'] as $ds) {
@@ -78,11 +78,12 @@ class HistoryFactory extends AbstractBasicBrickFactory
         return $logs;
     }
 
-    private function getLogEntriesDatasource(object $item): array
+    private function getLogEntriesDatasource(object $item, HistoryConfig $config): array
     {
         /** @var LogEntry $item */
+        $logClass = $config->getLogEntryClassName() ?? LogEntry::class;
         $logs = $this->em
-            ->getRepository(LogEntry::class)
+            ->getRepository($logClass)
             ->getLogEntries($item);
 
         $metadata = $this->em->getClassMetadata(get_class($item));
