@@ -33,7 +33,7 @@ class HistoryConfig extends AbstractBrickConfig
      * @param class-string<object>|null $className
      * @return $this
      */
-    public function setLogEntryClassName(string $className): self
+    public function setLogEntryClassName(?string $className): self
     {
         $this->logEntryClassName = $className;
 
