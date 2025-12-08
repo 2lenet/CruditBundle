@@ -95,7 +95,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
         foreach ($logs as $log) {
             if ($log->getData()) {
                 $data = [];
-
+                $metadata = $this->em->getClassMetadata($log->getObjectClass());
                 foreach ($log->getData() as $property => $value) {
                     $type = $metadata->getTypeOfField($property);
                     $result = $value;
