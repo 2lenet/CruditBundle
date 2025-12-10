@@ -12,6 +12,7 @@ import './scroll-to-top';
 import './sidebar';
 import './tag';
 import './form_collection';
+import './ckeditor';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {
