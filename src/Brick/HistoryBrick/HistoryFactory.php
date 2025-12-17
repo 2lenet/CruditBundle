@@ -120,6 +120,8 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         $result = $value ? $value->format("d/m/Y") : "";
                     } elseif ($type === "datetime" || $value instanceof \DateTime) {
                         $result = $value ? $value->format("d/m/Y H:i:s") : "";
+                    } elseif ($type === "time") {
+                        $result = $value ? $value->format("H:i:s") : "";
                     } elseif (is_array($value)) {
                         $result = implode(", ", $value);
                     }
