@@ -1,5 +1,5 @@
 {% set active = crudit_menu_active(element, app.request) %}
-<li class="nav-item sidebar-item {% if elementType == 'sidebar-item' %}{{ element.cssClass }}{% endif %} {% if active %}active{% endif %}">
+<li class="nav-item sidebar-item {{ element.cssClass }} {% if active %}active{% endif %}">
     {% if element.path %}
         {% set path = path(element.path.route, element.path.params) %}
     {% endif %}
