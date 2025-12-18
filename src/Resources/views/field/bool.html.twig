@@ -14,8 +14,13 @@
     </div>
 {% else %}
     {% if value == true %}
-        {{ 'crudit.yes'|trans({}, 'LleCruditBundle') }}
+        <span class="badge text-bg-success bg-success text-white" style="width: 50px;">
+            {{ 'crudit.yes'|trans({}, 'LleCruditBundle') }}
+        </span>
     {% elseif value is same as(false) or (not value and options.nullToFalse == true) %}
-        {{ 'crudit.no'|trans({}, 'LleCruditBundle') }}
+        <span class="badge text-bg-danger bg-danger text-white" style="width: 50px;">
+            {{ 'crudit.no'|trans({}, 'LleCruditBundle') }}
+        </span>
+    {% endif %}
     {% endif %}
 {% endif %}

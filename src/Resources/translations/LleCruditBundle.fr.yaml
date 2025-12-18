@@ -88,8 +88,8 @@ crudit:
         no: "Non"
         all: "Tous"
 
-    yes: "Oui"
-    no: "Non"
+    yes: "OUI"
+    no: "NON"
     by: "par"
 
     history:

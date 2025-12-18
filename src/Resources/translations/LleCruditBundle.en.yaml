@@ -85,8 +85,8 @@ crudit:
         no: "No"
         all: "All"
 
-    yes: "Yes"
-    no: "No"
+    yes: "YES"
+    no: "NO"
     by: "by"
 
     history:
