@@ -8,8 +8,8 @@ use Lle\CruditBundle\Dto\Icon;
 
 class ExternalLinkElement extends AbstractLayoutElement
 {
-    public const TYPE_HEADER = 'header';
-    public const TYPE_BODY = 'body';
+    public const string TYPE_HEADER = 'header';
+    public const string TYPE_BODY = 'body';
 
     protected string $type;
 
@@ -20,8 +20,6 @@ class ExternalLinkElement extends AbstractLayoutElement
     protected ?string $url;
 
     protected ?string $target;
-
-    protected ?string $cssClass = null;
 
     public static function new(
         string $libelle,

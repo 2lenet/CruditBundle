@@ -10,8 +10,8 @@ use Lle\CruditBundle\Dto\Path;
 
 class LinkElement extends AbstractLayoutElement
 {
-    public const TYPE_HEADER = 'header';
-    public const TYPE_BODY = 'body';
+    public const string TYPE_HEADER = 'header';
+    public const string TYPE_BODY = 'body';
 
     protected string $type;
 
@@ -23,8 +23,6 @@ class LinkElement extends AbstractLayoutElement
 
     /** @var Badge[] */
     protected array $badges = [];
-
-    protected ?string $cssClass = null;
 
     /** @var LinkElement[] */
     protected array $children = [];
