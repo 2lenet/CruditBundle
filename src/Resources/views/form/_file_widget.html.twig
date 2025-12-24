@@ -1,4 +1,4 @@
-{%- set display_preview = image_uri is not null and (image_uri matches '/.*\.(png|jpg|jpeg|gif|svg|webp)$/' or image_uri starts with '/') and filename is defined -%}
+{%- set display_preview = image_uri is defined and image_uri is not null and (image_uri matches '/.*\.(png|jpg|jpeg|gif|svg|webp)$/' or image_uri starts with '/') and filename is defined -%}
 
 <div class="d-block {% if display_preview %}col-md-9{% else %}col-12{% endif %}">
     <div
