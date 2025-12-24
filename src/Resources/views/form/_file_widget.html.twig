@@ -1,4 +1,4 @@
-{%- set display_preview = image_uri is not null and (image_uri matches '/.*\.(png|jpg|jpeg|gif|svg|webp)$/' or image_uri starts with '/') -%}
+{%- set display_preview = image_uri is not null and (image_uri matches '/.*\.(png|jpg|jpeg|gif|svg|webp)$/' or image_uri starts with '/') and filename is defined -%}
 
 <div class="d-block {% if display_preview %}col-md-9{% else %}col-12{% endif %}">
     <div
@@ -9,16 +9,14 @@
         {{- form_widget(form.file, {attr: attr}) -}}
     </div>
 
-    {%- if download_uri -%}
+    {%- if download_uri and filename is defined -%}
         <div class="d-flex mt-1">
             <i class="fas fa-download mt-1 text-primary"></i>&nbsp;
             <a class="d-block text-nowrap"
                href="{{ asset_helper is same as(true) ? asset(download_uri) : download_uri }}" download>
                 {{ translation_domain is same as(false) ? download_label : download_label|trans({}, translation_domain) }}
-                {% if filename is defined %}
-                    &nbsp;:&nbsp;
-                    {{ filename|lower }}
-                {% endif %}
+                &nbsp;:&nbsp;
+                {{ filename|lower }}
             </a>
         </div>
     {%- endif -%}
