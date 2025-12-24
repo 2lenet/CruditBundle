@@ -59,16 +59,18 @@ class FileType extends VichFileType
                 $view->vars['image_uri'] = $filePath;
             }
 
-            $filename = substr((string)$filePath, strrpos((string)$filePath, '/') + 1);
+            if ($filePath) {
+                $filename = substr((string)$filePath, strrpos((string)$filePath, '/') + 1);
 
-            /** @var int $pos */
-            $pos = strrpos($filename, '-');
+                /** @var int $pos */
+                $pos = strrpos($filename, '-');
 
-            $filename = substr($filename, 0, $pos) . '.' . substr(
-                $filename,
-                strrpos($filename, '.') + 1
-            );
-            $view->vars['filename'] = $filename;
+                $filename = substr($filename, 0, $pos) . '.' . substr(
+                    $filename,
+                    strrpos($filename, '.') + 1,
+                );
+                $view->vars['filename'] = $filename;
+            }
         }
     }
 
