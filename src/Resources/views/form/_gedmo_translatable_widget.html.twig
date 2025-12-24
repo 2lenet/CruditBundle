@@ -1,0 +1,32 @@
+{% set fieldname = form.vars.name %}
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs" role="tablist">
+        {% for locale in locales %}
+            {% set isActiveTab = (locale == currentlocale) ? 'active' : '' %}
+            <li class="nav-item {{ isActiveTab }}" role="presentation">
+                <button
+                    class="nav-link {{ isActiveTab }}"
+                    id="{{ fieldname }}_tab_{{ locale }}"
+                    data-bs-toggle="tab"
+                    data-bs-target="#{{ fieldname }}_{{ locale }}"
+                    type="button"
+                    role="tab"
+                    aria-controls="{{ fieldname }}_{{ locale }}"
+                >
+                    {{ tablabels[locale] }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for locale in locales %}
+            {% set isActiveTabContent = (locale == currentlocale) ? 'active' : '' %}
+            <div id="{{ fieldname ~ '_' ~ locale }}" class="tab-pane {{ isActiveTabContent }}" role="tabpanel">
+                <div class="form-floating">
+                    {{ form_widget(attribute(form, locale), {'attr': {'class': 'form-control', 'placeholder': '', 'autocomplete': 'new-password'}}) }}
+                    {{ form_label(form) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
