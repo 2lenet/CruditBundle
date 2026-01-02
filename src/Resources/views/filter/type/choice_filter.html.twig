@@ -3,7 +3,7 @@
 {% block input %}
     {% set items = [] %}
     {% for key, choice in filtertype.choices %}
-        {% set item = [{'id': choice, 'text': key|trans}] %}
+        {% set item = [{'id': choice, 'text': key|trans(domain=view.config.translation_domain)}] %}
         {% set items = items|merge(item) %}
     {% endfor %}
 
