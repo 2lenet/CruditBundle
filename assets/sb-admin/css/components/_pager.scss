@@ -1,0 +1,15 @@
+.page-item {
+    &.active {
+        a {
+            background-color: $dark;
+            color: $white;
+            border-color: $dark;
+        }
+    }
+
+    a {
+        background-color: $white;
+        color: $dark;
+        border-color: $gray-300;
+    }
+}

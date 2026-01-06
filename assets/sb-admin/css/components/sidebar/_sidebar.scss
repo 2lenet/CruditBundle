@@ -9,7 +9,7 @@ $icon-width: 32px;
         overflow-x: hidden;
         overflow-y: auto;
         scrollbar-width: thin;
-        background-color: $very-light-gray;
+        background-color: $sidebar-bg-color;
         background-image: initial;
         box-shadow: 5px 0 15px 3px rgba(0,0,0,0.1);
         z-index: 1050;
@@ -23,7 +23,7 @@ $icon-width: 32px;
             font-size: 1rem;
             font-weight: 800;
             padding: 1rem;
-            color: $dark-gray;
+            color: $sidebar-color;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 0.05rem;
@@ -41,7 +41,7 @@ $icon-width: 32px;
         > .nav {
             > .sidebar-divider {
                 margin: 0 1rem 1rem;
-                border-top: 1px solid fade-out($primary, 0.5);
+                border-top: 1px solid fade-out($sidebar-divider-border-top-color, 0.5);
             }
 
             > .sidebar-heading {
@@ -58,17 +58,17 @@ $icon-width: 32px;
                 &:hover,
                 &:active,
                 &:focus {
-                    background-color: $light-gray;
-                    color: $dark-gray;
+                    background-color: $sidebar-bg-event-color;
+                    color: $sidebar-color;
                 }
 
                 &.active {
-                    background-color: $light-gray;
-                    color: $dark-gray;
+                    background-color: $sidebar-bg-event-color;
+                    color: $sidebar-color;
                 }
 
                 .nav-link {
-                    color: $dark-gray;
+                    color: $sidebar-color;
                     font-weight: bold;
                 }
             }
@@ -83,11 +83,11 @@ $icon-width: 32px;
 
                 > .nav-link {
                     width: $sidebar-base-width;
-                    color: $dark-gray;
+                    color: $sidebar-color;
                     font-weight: bold;
 
                     &:after {
-                        color: $dark-gray;
+                        color: $sidebar-color;
                     }
 
                     img {
@@ -104,7 +104,7 @@ $icon-width: 32px;
 
                         > i {
                             margin-right: 0.25rem;
-                            color: $dark-gray;
+                            color: $sidebar-color;
                             font-size: 0.85rem;
                         }
                     }
@@ -114,7 +114,7 @@ $icon-width: 32px;
                             content: '\f105';
                             width: 1rem;
                             float: right;
-                            color: $dark-gray;
+                            color: $sidebar-color;
                             border: 0;
                             text-align: center;
                             vertical-align: 0;
@@ -131,7 +131,7 @@ $icon-width: 32px;
                 > .collapsing {
                     > ul > li > .nav-link {
                         width: $sidebar-base-width;
-                        color: $dark-gray;
+                        color: $sidebar-color;
 
                         img {
                             height: $icon-width;
@@ -151,7 +151,7 @@ $icon-width: 32px;
                                 content: '\f105';
                                 width: 1rem;
                                 float: right;
-                                color: $dark-gray;
+                                color: $sidebar-color;
                                 border: 0;
                                 text-align: center;
                                 vertical-align: 0;
