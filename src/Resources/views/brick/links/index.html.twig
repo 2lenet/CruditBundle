@@ -1,5 +1,5 @@
 <nav class="navbar navbar-light bg-light mb-2 px-2 shadow">
-    <h4 class="navbar-brand text-primary mb-0 text-wrap {% if view.data.resource.getCssClass is defined %}{{ view.data.resource.getCssClass }}{% endif %}">
+    <h4 class="navbar-brand text-dark mb-0 text-wrap {% if view.data.resource.getCssClass is defined %}{{ view.data.resource.getCssClass }}{% endif %}">
         {{ view.config.title|trans({'%entity%': view.data.entity}, view.config.translation_domain) }}
     </h4>
     <div class="position-relative d-inline-flex">

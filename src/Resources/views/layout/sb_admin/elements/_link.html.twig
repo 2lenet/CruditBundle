@@ -1,6 +1,6 @@
 {% if element.children|length %}
     {% set active = crudit_menu_active(element, app.request) %}
-    <li class="nav-item">
+    <li class="nav-item {{ element.cssClass|default('') }}">
         {% apply spaceless %}
             <button
                 class="btn btn-toggle nav-link text-start collapsed sidebar-item {% if active %}active{% endif %}"

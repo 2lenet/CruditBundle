@@ -1,4 +1,4 @@
-<li class="sidebar-heading">
+<li class="sidebar-heading {{ element.cssClass|default('') }}">
     <span class="show-toggle">{{ element.libelle|trans() }}</span>
 </li>
 {% if element.children %}

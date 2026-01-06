@@ -4,14 +4,14 @@
             width: 2.5rem;
             height: 2.5rem;
             margin: 1rem;
-            background-color: $primary;
+            background-color: $sidebar-toggle-bg-color;
             outline: none;
             cursor: pointer;
 
             &::after {
                 content: '\f104';
                 margin-right: 0.1rem;
-                color: $white;
+                color: $sidebar-toggle-color;
                 @include iconsFont;
             }
         }

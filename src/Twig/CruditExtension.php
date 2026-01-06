@@ -68,7 +68,7 @@ class CruditExtension extends AbstractExtension
         }
 
         if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
-            $currentRoute = $request->get('_route');
+            $currentRoute = $request->attributes->get('_route');
             $linkRoute = $item->getPath()->getRoute();
             $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
                 (int)strrpos($currentRoute, '_') :
@@ -81,7 +81,7 @@ class CruditExtension extends AbstractExtension
                 (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
                 (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
         } elseif ($item->getPath() !== null && $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
-            return $item->getPath()->getParams()['resource'] === $request->get('resource');
+            return $item->getPath()->getParams()['resource'] === $request->attributes->get('resource');
         }
 
         return false;

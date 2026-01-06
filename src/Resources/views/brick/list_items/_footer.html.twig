@@ -24,13 +24,14 @@
     {% endif %}
 </tr>
 {% if view.data.totals %}
+    {% set totals = view.data.totals %}
     <tr>
         {% if has_batch %}
             <td></td>
         {% endif %}
         {% for field in view.config.fields %}
             {% set match = false %}
-            {% for total in view.data.totals %}
+            {% for key, total in totals %}
                 {% if field.id == total.field.id %}
                     {% set match = true %}
                     <td>
@@ -42,6 +43,7 @@
                         </a>
                         {% endif %}
                     </td>
+                    {% set totals = totals|filter((v, k) => k != key) %}
                 {% endif %}
             {% endfor %}
             {% if not match %}
@@ -52,5 +54,15 @@
             <td></td>
         {% endif %}
     </tr>
+    {% if totals|length %}
+        {% set nbCols = view.config.fields|length + (has_batch ? 1 : 0) + (hasActions ? 1 : 0) %}
+        <tr>
+            <td colspan="{{ nbCols + 1 }}" class="text-end">
+                {% for total in totals %}
+                    <div class="d-flex justify-content-end"><div>{{ total.field.label|trans }}:&nbsp;</div>{{ total.value|raw }}</div>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endif %}
 {% endif %}
 </tfoot>

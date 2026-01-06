@@ -9,6 +9,9 @@ We have three configurations for managing the alignment of numbers with three po
 - `default_integer_alignment`
 - `default_number_alignment`
 
+If you want to have roles on all your bricks (sublist, form, template, etc.), you can add the following configuration:
+- `generate_default_role`
+
 **2. Actions**
 
 There are two different configurations for managing the display of actions (possible values: true/false):

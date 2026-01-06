@@ -27,7 +27,14 @@
                         and (action.role is null or is_granted(action.role, view.data.resource)))
                     %}
 
-                    {% if action.isDisplayed(action.resource|default(null)) and not (disabled and crudit_hide_if_disabled(action)) %}
+                    {% set isDisplayed = false %}
+                    {% if action.resource is defined %}
+                        {% set isDisplayed = action.isDisplayed(action.resource) %}
+                    {% else %}
+                        {% set isDisplayed = action.isDisplayed(null) %}
+                    {% endif %}
+
+                    {% if isDisplayed and not (disabled and crudit_hide_if_disabled(action)) %}
                         {% block kebab_dropdown_actions_item %}
                             <li>
                                 {% if action.template %}

@@ -41,8 +41,8 @@ abstract class AbstractBasicBrickFactory implements BrickInterface
     {
         $parameters = [];
         foreach ($this->getRequestParametersScop() as $keyName) {
-            if ($this->getRequest()->get($keyName)) {
-                $parameters[$keyName] = $this->getRequest()->get($keyName);
+            if ($this->getRequest()->attributes->get($keyName)) {
+                $parameters[$keyName] = $this->getRequest()->attributes->get($keyName);
             }
         }
 

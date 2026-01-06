@@ -2,13 +2,12 @@
 
 .topbar {
     height: $topbar-base-height;
-    background-color: $ocean-blue;
+    background-color: $topbar-bg-color;
 
     #userDropdown {
-        color: $white !important;
+        color: $topbar-color;
 
         > span {
-            color: $white !important;
             font-weight: bold;
         }
     }
@@ -85,8 +84,8 @@
         overflow: hidden;
 
         .dropdown-header {
-            background-color: $primary;
-            border: 1px solid $primary;
+            background-color: $topbar-dropdown-header-bg-color;
+            border: 1px solid $topbar-dropdown-header-border-color;
             padding-top: 0.75rem;
             padding-bottom: 0.75rem;
             color: $white;

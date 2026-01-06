@@ -146,7 +146,7 @@ class ListConfig extends AbstractBrickConfig
         return $this;
     }
 
-    public function add(string $name, string $type = null, array $options = []): self
+    public function add(string $name, ?string $type = null, array $options = []): self
     {
         return $this->addField(Field::new($name, $type, $options));
     }

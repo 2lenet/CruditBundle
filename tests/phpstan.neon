@@ -13,5 +13,8 @@ parameters:
         - ../tests
     excludePaths:
         - '../src/Resources/skeleton'
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics

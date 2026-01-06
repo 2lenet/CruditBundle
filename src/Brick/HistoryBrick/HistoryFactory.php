@@ -36,12 +36,16 @@ class HistoryFactory extends AbstractBasicBrickFactory
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
         $view = new BrickView($brickConfigurator);
-        $view
-            ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
-            ->setData([
-                "history" => $this->getLogEntries($brickConfigurator),
-            ])
-            ->setConfig($brickConfigurator->getConfig($this->getRequest()));
+        if ($brickConfigurator instanceof HistoryConfig) {
+            $view
+                ->setTemplate($brickConfigurator->getTemplate() ?? "@LleCrudit/brick/history")
+                ->setData([
+                    "history" => $this->getLogEntries($brickConfigurator),
+                    'title' => $brickConfigurator->getTitle(),
+                    'titleCss' => $brickConfigurator->getTitleCss(),
+                ])
+                ->setConfig($brickConfigurator->getConfig($this->getRequest()));
+        }
 
         return $view;
     }
@@ -49,20 +53,23 @@ class HistoryFactory extends AbstractBasicBrickFactory
     private function getLogEntries(BrickConfigInterface $brickConfigurator): array
     {
         $mainDatasource = $brickConfigurator->getDataSource();
-        $mainId = $this->getRequest()->get("id");
+        $mainId = $this->getRequest()->attributes->get("id");
         /** @var object $item */
         $item = $mainDatasource->get($mainId);
-        $logs = $this->getLogEntriesDatasource($item);
-        $options = $brickConfigurator->getOptions();
-        if (array_key_exists('otherEntities', $options)) {
-            foreach ($options['otherEntities'] as $ds) {
-                $method = $ds["method"];
-                $obj = $item->$method();
-                if ($obj !== null) {
-                    $subId = (string)$obj->getId();
-                    $subitem = $ds["datasource"]->get($subId);
-                    $logs2 = $this->getLogEntriesDatasource($subitem);
-                    $logs = array_merge($logs, $logs2);
+        $logs = [];
+        if ($brickConfigurator instanceof HistoryConfig) {
+            $logs = $this->getLogEntriesDatasource($item, $brickConfigurator);
+            $options = $brickConfigurator->getOptions();
+            if (array_key_exists('otherEntities', $options)) {
+                foreach ($options['otherEntities'] as $ds) {
+                    $method = $ds["method"];
+                    $obj = $item->$method();
+                    if ($obj !== null) {
+                        $subId = (string)$obj->getId();
+                        $subitem = $ds["datasource"]->get($subId);
+                        $logs2 = $this->getLogEntriesDatasource($subitem, $brickConfigurator);
+                        $logs = array_merge($logs, $logs2);
+                    }
                 }
             }
         }
@@ -74,20 +81,21 @@ class HistoryFactory extends AbstractBasicBrickFactory
         return $logs;
     }
 
-    private function getLogEntriesDatasource(object $item): array
+    private function getLogEntriesDatasource(object $item, HistoryConfig $config): array
     {
         /** @var LogEntry $item */
-        $logs = $this->em
-            ->getRepository(LogEntry::class)
-            ->getLogEntries($item);
 
+        /** @var class-string<object> $logClass */
+        $logClass = $config->getLogEntryClassName() ?? LogEntry::class;
+        // @phpstan-ignore-next-line
+        $logs = $this->em->getRepository($logClass)->getLogEntries($item);
         $metadata = $this->em->getClassMetadata(get_class($item));
         $history = [];
 
         foreach ($logs as $log) {
             if ($log->getData()) {
                 $data = [];
-
+                $metadata = $this->em->getClassMetadata($log->getObjectClass());
                 foreach ($log->getData() as $property => $value) {
                     $type = $metadata->getTypeOfField($property);
                     $result = $value;
@@ -106,11 +114,13 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         } else {
                             $result = "?";
                         }
-                    } elseif ($type === "boolean") {
+                    } elseif ($type === "boolean" || is_bool($value)) {
                         $result = $value ? "crudit.boolean.yes" : "crudit.boolean.no";
                     } elseif ($type === "date") {
                         $result = $value ? $value->format("d/m/Y") : "";
-                    } elseif ($type === "datetime") {
+                    } elseif ($type === "time") {
+                        $result = $value ? $value->format("H:i:s") : "";
+                    } elseif ($type === "datetime" || $value instanceof \DateTime) {
                         $result = $value ? $value->format("d/m/Y H:i:s") : "";
                     } elseif (is_array($value)) {
                         $result = implode(", ", $value);
@@ -130,7 +140,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 }
                 $history[] = [
                     "log" => $log,
-                    "entity" => basename(str_replace('\\', '/', get_class($item))),
+                    "entity" => basename(str_replace('\\', '/', $log->getObjectClass())),
                     "data" => $data,
                 ];
             }

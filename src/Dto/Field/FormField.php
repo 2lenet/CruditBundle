@@ -10,7 +10,7 @@ class FormField
     private ?string $type = 'text';
     private array $options = [];
 
-    public static function new(string $name, string $type = null, array $options = []): self
+    public static function new(string $name, ?string $type = null, array $options = []): self
     {
         return (new self($name))
             ->setType($type)

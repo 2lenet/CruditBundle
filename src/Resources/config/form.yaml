@@ -35,6 +35,10 @@ services:
         autowire: true
         tags:
             - { name: form.type, alias: crudit_cron_expression }
+    Lle\CruditBundle\Form\Type\CKEditorType:
+        autowire: true
+        tags:
+            - { name: form.type, alias: crudit_ckeditor }
     Lle\CruditBundle\Form\Extension\TooltipExtension:
         tags:
             - { name: form.type_extension }

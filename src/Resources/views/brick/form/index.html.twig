@@ -8,14 +8,15 @@
         {%  set formClass="crudit-horizontal" %}
     {% endif %}
     <div class="card mb-4 {{ formClass }}">
-    {% if view.data.title is defined and view.data.title != '' %}
+    <div class="card-body">
+    {% if view.data.title is defined and view.data.title %}
         {% block form_title %}
-            <div class="card-header">
-                <h6 class="mb-0 fw-bold">{{ view.data.title|trans }}</h6>
-            </div>
+            <h2 class="{% if view.data.titleCss is defined and view.data.titleCss %}{{ view.data.titleCss }}{% endif %}">
+                {{ view.data.title|trans }}
+            </h2>
+            <hr/>
         {% endblock %}
     {% endif %}
-    <div class="card-body">
     {% set id = form.vars.name %}
 
     {% set form_attributes =  {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'} %}
@@ -48,7 +49,7 @@
             {% if field.vars.name != '_token' %}
                 <div class="{{ displayClass }} position-relative {{ field.vars.attr.class|default('') }}">
                     <div
-                        class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row flex-row-reverse align-items-start{% endif %}"
+                        class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row{% endif %}"
                         {% if
                             (field.vars.tooltip is defined and field.vars.tooltip)
                             or (field.vars.tooltip_html is defined and field.vars.tooltip_html)

@@ -16,6 +16,19 @@ Options :
 | route    | null     | if you want to customize the autocomplete route |
 | url      | null     | if you want to customize the autocomplete url   |
 
+### FileType
+
+The `Lle\CruditBundle\Form\Type\FileType` allows you to create a file input with an interface to show or delete the current file.
+
+Here's a working example:
+```php
+$builder->add('documentFile', FileType::class, [
+    'allow_delete' => true,
+    'download_route' => 'app_crudit_entity_download', // Your own route to download the file
+    'image_route' => 'app_crudit_entity_downloadthumbnail', // Your own route to get the file (or the thumbnail)
+]);
+```
+
 ### Markdown
 
 The [Lle\CruditBundle\Form\Type\MarkdownType](markdown.md#markdowntype) allows you to create a Markdown editor textarea.

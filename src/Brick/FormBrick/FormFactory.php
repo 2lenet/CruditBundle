@@ -69,6 +69,7 @@ class FormFactory extends AbstractBasicBrickFactory
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
                 'title' => $brickConfigurator->getTitle(),
+                'titleCss' => $brickConfigurator->getTitleCss(),
                 'form' => $form->createView(),
                 'resource' => $resource,
                 'options' => $brickConfigurator->getOptions(),
@@ -133,8 +134,8 @@ class FormFactory extends AbstractBasicBrickFactory
         $datasource = $brickConfigurator->getCrudConfig()->getDatasource();
 
         $resource = null;
-        if ($this->getRequest()->get('id')) {
-            $resource = $datasource->get($this->getRequest()->get('id'));
+        if ($this->getRequest()->attributes->get('id')) {
+            $resource = $datasource->get($this->getRequest()->attributes->get('id'));
         } else {
             $resource = $datasource->newInstance();
         }
