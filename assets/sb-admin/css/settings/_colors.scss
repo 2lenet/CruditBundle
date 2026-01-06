@@ -11,11 +11,10 @@ $gray-800: #5A5C69 !default;
 $gray-900: #3A3B45 !default;
 $black: #000000 !default;
 
-$primary: #333333 !default;
-$ocean-blue: #0077A8 !default;
-$very-light-gray: #F5F5F5 !default;
-$light-gray: #DCDCDC !default;
-$dark-gray: #444444 !default;
+$body-color: #333333 !default;
+
+$primary: #0077A8 !default;
+$dark: #333333 !default;
 
 $blue: #4E73DF !default;
 $indigo: #6610F2 !default;
@@ -31,3 +30,17 @@ $cyan: #36B9CC !default;
 // Custom Colors
 $brand-google: #EA4335 !default;
 $brand-facebook: #3B5998 !default;
+
+// Topbar
+$topbar-bg-color: #0077A8 !default;
+$topbar-color: #FFFFFF !default;
+$topbar-dropdown-header-bg-color: #333333 !default;
+$topbar-dropdown-header-border-color: #333333 !default;
+
+// Sidebar
+$sidebar-bg-color: #F5F5F5 !default;
+$sidebar-color: #444444 !default;
+$sidebar-bg-event-color: #DCDCDC !default;
+$sidebar-toggle-bg-color: #333333 !default;
+$sidebar-toggle-color: #FFFFFF !default;
+$sidebar-divider-border-top-color: #333333 !default;
