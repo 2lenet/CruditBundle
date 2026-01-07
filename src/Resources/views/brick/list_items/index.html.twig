@@ -11,11 +11,11 @@
         {% include('@LleCrudit/brick/list_items/actions/_batch_actions.html.twig') %}
     </div>
 
-    <div class="card-body">
+    <div class="card-body p-0">
         <div class="table-responsive crudit-list">
             <table id="{{ view.id }}_table" class="table table-sm table-hover">
                 {% if not view.options.noHeader|default(false) %}
-                    <thead class="thead-light">
+                    <thead class="table-active">
                     <tr>
                         {% if has_batch %}
                             <th>
@@ -30,48 +30,9 @@
                                 (field.role is defined and field.role is not null and is_granted(field.role))
                             %}
                                 {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                                    <th class="{{ field.options.tableCssClass|default('text-nowrap') }}">
-                                        {{ field.label|trans(domain=view.config.translation_domain) }}
-                                        {% if field.sortable %}
-                                            {% set name = view.config.name|lower %}
-                                            {% set merge_params = {
-                                                (name ~ '_sort'): field.options.sortProperty ?? field.name,
-                                                (name ~ '_sort_order'): 'asc'
-                                            } %}
-                                            {% set params = app.request.session.get('crudit_datasourceparams_' ~ name) %}
-                                            {% set sorts = params.sorts ?? [
-                                                [app.request.query.get(name ~ '_sort_order'), app.request.query.get(name ~ '_sort')]
-                                            ] %}
-
-                                            {% set order = sorts|first|last %}
-                                            {% set sorted = (sorts|first|first == field.options.sortProperty ?? field.name) %}
-
-                                            {% set icon = 'fa-sort' %}
-                                            {% if sorted %}
-                                                {% set icon = 'fa-sort-up' %}
-                                            {% endif %}
-                                            {% if sorted and order|lower == 'asc' %}
-                                                {% set icon = 'fa-sort-down' %}
-                                                {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                            {% endif %}
-                                            {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                            {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) %}
-                                            {% if field.info is defined and field.info %}
-                                                <i
-                                                    class="fas fa-info-circle"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom"
-                                                    data-bs-custom-class="custom-tooltip"
-                                                    data-bs-title="{{ field.info|trans }}"
-                                                ></i>
-                                            {% endif %}
-                                            <span>
-                                                <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                                    <i class="fas {{ icon }}"></i>
-                                                </a>
-                                            </span>
-                                        {% endif %}
-                                    </th>
+                                    {% block heading_cell %}
+                                        {{ include('@LleCrudit/brick/list_items/_heading_cell.html.twig') }}
+                                    {% endblock %}
                                 {% endif %}
                             {% endif %}
                         {% endfor %}

@@ -1,8 +1,25 @@
 .table-responsive {
     overflow-x: auto;
 
+    thead {
+        height:45px;
+        min-height:45px;
+    }
+
     th {
+        font-size: $table-th-font-size;
         vertical-align: middle;
+        &:hover,
+        &:active {
+            background-color: $table-th-hover-bg-color;
+        }
+
+        &.sortable {
+            cursor: pointer;
+        }
+        &.active {
+            background-color: $table-th-active-bg-color;
+        }
     }
 
     img,
