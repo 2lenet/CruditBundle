@@ -26,7 +26,7 @@
 {% set parameters = app.request.query.all()|merge(merge_params) %}
 {% set url = app.request.pathinfo ~ '?' ~ (parameters|url_encode) %}
 
-<th class="{{ field.options.tableCssClass|default('h-100 px-2 text-nowrap') }} {% if sorted %}active{% endif %} {% if field.sortable %}sortable{% endif %}">
+<th class="{{ field.options.tableCssClass|default('h-100 px-2 text-nowrap') }} {% if sorted and field.sortable %}active{% endif %} {% if field.sortable %}sortable{% endif %}">
     {% if field.sortable %}
         <a href="{{ url }}" class="text-decoration-none">
             <i class="fas fa-sm {{ icon ~ ' ' ~ icon_class }}"></i>
