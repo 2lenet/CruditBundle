@@ -14,7 +14,7 @@
                         field.field.role is not defined or field.field.role is null or
                         (field.field.role is defined and field.field.role is not null and is_granted(field.field.role))
                     %}
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 col-md-{{ 12 / view.config['number_cards'] }}">
                             <div class="card box box-default mb-3">
                                 <div
                                     class="card-header{% if view.data.number_field_groups_opened is not null and loop.index > view.data.number_field_groups_opened %} collapsed{% endif %}"

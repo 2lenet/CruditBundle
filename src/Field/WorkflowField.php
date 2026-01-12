@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Field;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Twig\Environment;
 
@@ -11,9 +12,9 @@ class WorkflowField extends AbstractField
 {
     private ?string $name;
 
-    public function __construct(Environment $twig, ?string $name = null)
+    public function __construct(Environment $twig, ParameterBagInterface $parameterBag, ?string $name = null)
     {
-        parent::__construct($twig);
+        parent::__construct($twig, $parameterBag);
         $this->name = $name;
     }
 
