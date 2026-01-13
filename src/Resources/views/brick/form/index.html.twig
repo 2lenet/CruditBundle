@@ -30,6 +30,7 @@
     {% if view.data.referer is defined and view.data.referer %}
         <input type="hidden" name="referer" value="{{ view.data.referer }}">
     {% endif %}
+    <div class="row">
     {% for field in form.getIterator() %}
         {% if field.vars.isGroup is defined and field.vars.isGroup %}
             {% do field.setRendered %} {# To avoid rendering at the end of the form, fields that have already been rendered in groups #}
@@ -47,7 +48,8 @@
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                <div class="{{ displayClass }} position-relative {{ field.vars.attr.class|default('') }}">
+                <div class="{% if view.data.css_class_form is defined %}{{ view.data.css_class_form }} {% endif %}
+                            {{ displayClass }} position-relative {{ field.vars.attr.class|default('') }}">
                     <div
                         class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row{% endif %}"
                         {% if
@@ -76,6 +78,7 @@
             {% endif %}
         {% endif %}
     {% endfor %}
+            </div>
     {% if currentGroup != 'FIRST' %}
         </div>
         </fieldset>

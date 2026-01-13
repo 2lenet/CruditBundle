@@ -431,4 +431,9 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return (bool)$this->parameterBag->get('lle_crudit.generate_default_role');
     }
+
+    public function getCssClassColumnForm(): string
+    {
+        return (string)$this->parameterBag->get('lle_crudit.css_class_form');
+    }
 }
