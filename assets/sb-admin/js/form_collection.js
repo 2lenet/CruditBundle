@@ -62,6 +62,7 @@ function addFormToCollection(e) {
 
 function addTagFormDeleteLink(item) {
     let removeFormButton = document.createElement('button');
+    removeFormButton.type = 'button';
     let icon = document.createElement('i');
     icon.classList = 'fa fa-trash pe-none';
 
