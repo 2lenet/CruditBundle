@@ -151,9 +151,10 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
             'action.list',
             $this->getPath(),
-            Icon::new('list')
+            Icon::new('arrow-circle-left')
         )
             ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
+            ->setTemplate('@LleCrudit/brick/show_item/action/_list.html.twig')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
@@ -273,14 +274,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             CrudConfigInterface::EDIT => [
                 LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
-                    ->setForm($this->getFormType(CrudConfigInterface::EDIT))
-                    ->setCancelPath($this->getPath()),
+                    ->setForm($this->getFormType(CrudConfigInterface::EDIT)),
             ],
             CrudConfigInterface::NEW => [
                 LinksConfig::new(['title' => $this->getTitle('new')]),
                 FormConfig::new()
-                    ->setForm($this->getFormType(CrudConfigInterface::NEW))
-                    ->setCancelPath($this->getPath()),
+                    ->setForm($this->getFormType(CrudConfigInterface::NEW)),
             ],
         ];
     }
