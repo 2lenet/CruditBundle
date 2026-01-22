@@ -2,7 +2,6 @@
 
 namespace Lle\CruditBundle\EventListener;
 
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class KernelRequestListener
