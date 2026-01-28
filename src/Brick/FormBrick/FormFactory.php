@@ -74,6 +74,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'resource' => $resource,
                 'options' => $brickConfigurator->getOptions(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
+                'default_path' => $brickConfigurator->getCrudConfig()->getPath(),
                 'referer' => $referer,
             ]);
 
@@ -188,7 +189,7 @@ class FormFactory extends AbstractBasicBrickFactory
                     $afterEditPath->getParams()
                 )
             );
-        } elseif ($referer = (string)$this->getRequest()->request->get('referer')) {
+        } elseif ($referer = (string)$this->getRequest()->getSession()->get('lle_crudit_referer')) {
             return $referer;
         } else {
             return $this->urlGenerator->generate(

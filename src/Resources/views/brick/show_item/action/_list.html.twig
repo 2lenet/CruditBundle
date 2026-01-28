@@ -1,0 +1,37 @@
+{% block list_action %}
+    <a
+        {% block attributes %}
+            rel="noreferrer"
+            class="
+                {{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action' }}
+                {% if disabled %} disabled{% endif %}
+            "
+            {% if action.modal %}
+                data-bs-toggle="modal"
+                data-bs-target="#modal_{{ action.id }}"
+            {% elseif action.confirmModal %}
+                data-bs-toggle="modal"
+                data-bs-target="#modal-confirm"
+                data-confirm-link="{{ path(action.path.route, params) }}"
+                data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans(domain=view.config.translation_domain) }}"
+            {% elseif not disabled %}
+                {% if app.session.get('lle_crudit_referer') %}
+                    href="{{ app.session.get('lle_crudit_referer') }}"
+                {% else %}
+                    href="{{ action.url ?? path(action.path.route, params) }}"
+                {% endif %}
+            {% endif %}
+
+            {% if action.target is defined and action.target %}
+                target="{{ action.target }}"
+            {% endif %}
+        {% endblock %}
+    >
+        {% if action.icon %}
+            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
+        {% endif %}
+        {% if not action.hideLabel %}
+            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
+        {% endif %}
+    </a>
+{% endblock %}

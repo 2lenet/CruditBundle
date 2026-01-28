@@ -86,10 +86,15 @@
     {% block form_buttons %}
         <div class="d-flex">
             {% if view.data.cancel_path %}
-                <a class="btn btn-danger" href="{{ path(view.data.cancel_path.route, view.data.cancel_path.params) }}">
-                    {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
-                </a>
+                {% set cancelHref = path(view.data.cancel_path.route, view.data.cancel_path.params) %}
+            {% elseif app.session.get('lle_crudit_referer') %}
+                {% set cancelHref = app.session.get('lle_crudit_referer') %}
+            {% else %}
+                {% set cancelHref = path(view.data.default_path.route) %}
             {% endif %}
+            <a class="btn btn-danger" href="{{ cancelHref }}">
+                {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
+            </a>
             <button class="ms-auto btn btn-primary" type="submit">
                 {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
             </button>
