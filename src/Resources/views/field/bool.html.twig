@@ -4,7 +4,7 @@
 %}
     {% set edit_url = path(view.field.options['edit_route'], {'id': resource.id}) %}
     <div class="crudit-eip" data-field="{{ view.field.id }}" data-edit_url="{{ edit_url }}">
-        <div class="form-check form-switch">
+        <div class="form-check form-switch {% if options.reverseColors %}form-switch--reverse-colors{% endif %}">
             <input
                 class="form-check-input crudit-eip-input crudit-eip-submit"
                 type="checkbox"
@@ -13,13 +13,20 @@
         </div>
     </div>
 {% else %}
+    {% set yes_cssclass = 'text-bg-success bg-success' %}
+    {% set no_cssclass = 'text-bg-danger bg-danger' %}
+    {% if options.reverseColors %}
+        {% set yes_cssclass = 'text-bg-danger bg-danger' %}
+        {% set no_cssclass = 'text-bg-success bg-success' %}
+    {% endif %}
+
     {% if value == true %}
-        <span class="badge text-bg-success bg-success text-white" style="width: 50px;">
-            {{ 'crudit.yes'|trans({}, 'LleCruditBundle') }}
+        <span class="badge badge-boolean text-white {{ yes_cssclass }}">
+            {{ 'crudit.boolean.yes'|trans({}, 'LleCruditBundle') }}
         </span>
     {% elseif value is same as(false) or (not value and options.nullToFalse == true) %}
-        <span class="badge text-bg-danger bg-danger text-white" style="width: 50px;">
-            {{ 'crudit.no'|trans({}, 'LleCruditBundle') }}
+        <span class="badge badge-boolean text-white {{ no_cssclass }}">
+            {{ 'crudit.boolean.no'|trans({}, 'LleCruditBundle') }}
         </span>
     {% endif %}
 {% endif %}
