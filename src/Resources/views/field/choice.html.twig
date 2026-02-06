@@ -1,0 +1,52 @@
+{% if
+    (view.field.editInPlace and view.field.options['editRole'] is not defined)
+    or (view.field.editInPlace and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
+%}
+    {% if view.field.options['edit_route'] is defined and view.field.options['edit_route'] %}
+        {% set editUrl = path(view.field.options['edit_route'], {'id': resource.id}) %}
+    {% else %}
+        {% set editUrl = path(resource|get_crudit_routename_key_object('editdata', {'id': resource.id}), {'id': resource.id}) %}
+    {% endif %}
+    {% if value is not same as (null) %}
+        {% set selectedItem = [{
+            id : value,
+            text : value
+        }]|json_encode %}
+    {% endif %}
+
+    <div class="crudit-eip" data-field="{{ view.field.name }}" data-edit_url="{{ editUrl }}">
+        <form class="form-inline d-none">
+            <div class="control-group form-group d-flex justify-content-around align-items-center">
+                <select
+                    id="input-choice-{{ view.field.name }}_{{ resource.id }}"
+                    class="form-control form-control-sm crudit-eip-input"
+                    style="min-width: 150px;"
+                    {% if view.options.required is defined and view.options.required is same as(true) %} required {% endif %}
+                >
+
+                    {% if view.options.required is not defined or view.options.required is same as(false) %}
+                        <option selected> </option>
+                    {% endif %}
+                    {% for key,label in view.options.choices %}
+                        <option value="{{ label }}"{% if value is same as (label) %} selected {% endif %}>
+                            {{ key|trans }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="btn-group btn-group-sm ms-2">
+                    <button type="button" class="btn btn-primary crudit-eip-submit">
+                        <i class="fa fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-default crudit-eip-cancel">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="editable-error-block help-block" style="display: none;">
+            </div>
+        </form>
+        <div class="crudit-eip-value">{{ value }}</div>
+    </div>
+{% else %}
+    {{ value }}
+{% endif %}
