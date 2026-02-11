@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\SublistBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
-use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceFilter;
 use Lle\CruditBundle\Datasource\DatasourceParams;
