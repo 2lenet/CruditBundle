@@ -406,6 +406,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return [];
     }
 
+    public function getSublistTotalFields() : array
+    {
+        return [];
+    }
+
     public function getListAutoRefresh(): ?int
     {
         return null;
