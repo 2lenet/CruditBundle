@@ -23,7 +23,7 @@
 
     .topbar-divider {
         width: 0;
-        border-right: 1px solid $border-color;
+        border-right: 1px solid $topbar-divider-border-colors;
         height: calc(#{$topbar-base-height} - 2rem);
         margin: auto 1rem;
     }
