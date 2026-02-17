@@ -142,6 +142,42 @@
                         </tr>
                     {% endfor %}
                     </tbody>
+                    {% if view.data.totals is defined and view.data.totals %}
+                        {% set totals = view.data.totals %}
+                        <tr>
+                            {% for field in view.config.fields %}
+                                {% set match = false %}
+                                {% for key, total in totals %}
+                                    {% if field.id == total.field.id %}
+                                        {% set match = true %}
+                                        <td>
+                                            {% if total.field.path %}
+                                            <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
+                                                {% endif %}
+                                                {{ total.value|raw }}
+                                                {% if total.field.path %}
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                        {% set totals = totals|filter((v, k) => k != key) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if not match %}
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% if totals|length %}
+                            {% set nbCols = view.config.fields|length %}
+                            <tr>
+                                <td colspan="{{ nbCols + 1 }}" class="text-end">
+                                    {% for total in totals %}
+                                        <div class="d-flex justify-content-end"><div>{{ total.field.label|trans }}:&nbsp;</div>{{ total.value|raw }}</div>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %}
                 </table>
             </div>
         </div>
