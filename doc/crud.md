@@ -169,6 +169,7 @@ To use them, use the constants defined in the `CrudConfigInterface` file.
 
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**
 
+You can also use totals on your sublist by adding `getSubListTotalFields` method to the CruditConfig file.
 ## Configure route for DoctrineEntityField
 
 To configure route for DoctrineEntityField, you must set the `route` options:
