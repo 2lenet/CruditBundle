@@ -33,7 +33,7 @@ services:
         arguments: ['@twig', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\WorkflowField:
-        arguments: ['@twig','@parameter_bag']
+        arguments: ['@twig','', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\MarkdownField:
         arguments: ['@twig','@parameter_bag']
