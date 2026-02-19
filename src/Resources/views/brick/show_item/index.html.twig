@@ -37,7 +37,7 @@
                                         <div class="row">
                                             {% for cardField in field %}
                                                 <div class="crudit-field {% if cardField.options.cssClassIsCustom %} {{ cardField.options.cssClass }}
-                                                    {% elseif view.config['css_class_column_card'] %} {{ view.config['css_class_column_card'] }} {% else %}
+                                                    {% elseif view.config['css_class_columns_card'] %} {{ view.config['css_class_columns_card'] }} {% else %}
                                                       {{ cardField.options.cssClass }} {% endif %}">
                                                     <dl class="row">
                                                         <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
