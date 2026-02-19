@@ -36,7 +36,9 @@
                                     <div class="card-body">
                                         <div class="row">
                                             {% for cardField in field %}
-                                                <div class="crudit-field {{ cardField.options.cssClass }}">
+                                                <div class="crudit-field {% if cardField.options.cssClassIsCustom %} {{ cardField.options.cssClass }}
+                                                    {% elseif view.config['css_class_column_card'] %} {{ view.config['css_class_column_card'] }} {% else %}
+                                                      {{ cardField.options.cssClass }} {% endif %}">
                                                     <dl class="row">
                                                         <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
                                                         <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ cardField.field.id|lower }}" class="col-sm-9">

@@ -59,7 +59,9 @@ abstract class AbstractField implements FieldInterface
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         $optionsResolver->setDefaults([
-            "cssClass" => $this->parameterBag->get('lle_crudit.css_class'),
+            "cssClass" => $this->parameterBag->get('lle_crudit.css_class_columns_show'),
+            //utilise pour les fields  dans card
+            "cssClassIsCustom" => false,
             "tableCssClass" => "text-nowrap",
             "edit_route" => null,
             "sortProperty" => null,

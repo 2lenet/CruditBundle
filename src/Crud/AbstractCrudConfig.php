@@ -437,8 +437,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return 1;
     }
 
-    public function getCssClassColumnsByCard(): string
+    public function getCssClassColumnsByCard(): ?string
     {
-        return 'col-12 col-md-6';
+        return null;
     }
 }

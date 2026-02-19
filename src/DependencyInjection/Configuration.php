@@ -103,8 +103,8 @@ class Configuration implements ConfigurationInterface
                     ->thenInvalid('Invalid value %s')
                 ->end()
             ->end()
-            ->scalarNode('css_class')
-            ->defaultValue('col-12 col-md-6 col-lg-4')
+            ->scalarNode('css_class_columns_show')
+                ->defaultValue('col-sm-12 col-md-6 col-lg-4')
             ->end();
 
         return $treeBuilder;
