@@ -75,7 +75,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'options' => $brickConfigurator->getOptions(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'referer' => $referer,
-                'css_class_form' => $brickConfigurator->getCrudConfig()->getCssClassColumnForm(),
+                'css_class_columns_form' => $brickConfigurator->getCrudConfig()->getCssClassColumnsForm(),
             ]);
 
         return $view;
