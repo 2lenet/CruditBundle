@@ -434,6 +434,6 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
     public function getCssClassColumnsForm(): string
     {
-        return $this->parameterBag->get('lle_crudit.css_class_columns_form');
+        return (string)$this->parameterBag->get('lle_crudit.css_class_columns_form');
     }
 }
