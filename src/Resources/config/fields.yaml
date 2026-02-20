@@ -56,3 +56,6 @@ services:
     Lle\CruditBundle\Field\CKEditorField:
         arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
+    Lle\CruditBundle\Field\ChoiceField:
+        arguments: ['@twig','@parameter_bag']
+        tags: ['crudit.field']
