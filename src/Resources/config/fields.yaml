@@ -1,61 +1,61 @@
 services:
     Lle\CruditBundle\Field\TextAreaField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\DateTimeField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\DateField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\TextField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\NumberField:
         arguments: ['@twig', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\DoctrineEntityField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\BooleanField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\FormatField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\EmailField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\TelephoneField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\IntegerField:
         arguments: ['@twig', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\WorkflowField:
-        arguments: ['@twig']
+        arguments: ['@twig','', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\MarkdownField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\CurrencyField:
         arguments: ['@twig', '@request_stack', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\JsonField:
-        arguments: ['@twig', '@request_stack']
+        arguments: ['@twig', '@parameter_bag' ,'@request_stack']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\ColorField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\UrlField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\ProgressBarField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\CKEditorField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\ChoiceField:
-        arguments: ['@twig']
+        arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']

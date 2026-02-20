@@ -14,7 +14,7 @@
                         field.field.role is not defined or field.field.role is null or
                         (field.field.role is defined and field.field.role is not null and is_granted(field.field.role))
                     %}
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 col-md-{{ 12 / view.config['number_cards'] }}">
                             <div class="card box box-default mb-3">
                                 <div
                                     class="card-header{% if view.data.number_field_groups_opened is not null and loop.index > view.data.number_field_groups_opened %} collapsed{% endif %}"
@@ -36,7 +36,9 @@
                                     <div class="card-body">
                                         <div class="row">
                                             {% for cardField in field %}
-                                                <div class="crudit-field {{ cardField.options.cssClass }}">
+                                                <div class="crudit-field {% if cardField.options.cssClassIsCustom %} {{ cardField.options.cssClass }}
+                                                    {% elseif view.config['css_class_columns_card'] %} {{ view.config['css_class_columns_card'] }} {% else %}
+                                                      {{ cardField.options.cssClass }} {% endif %}">
                                                     <dl class="row">
                                                         <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
                                                         <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ cardField.field.id|lower }}" class="col-sm-9">

@@ -16,7 +16,7 @@ class CurrencyField extends AbstractField
         private RequestStack $requestStack,
         protected ParameterBagInterface $parameterBag,
     ) {
-        parent::__construct($twig);
+        parent::__construct($twig, $this->parameterBag);
     }
 
     public function support(string $type): bool
