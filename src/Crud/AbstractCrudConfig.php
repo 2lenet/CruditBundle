@@ -365,6 +365,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         ] : [];
     }
 
+    public function getDefaultAutocompleteSort(): ?array
+    {
+        return null;
+    }
+
     public function getExportParams(string $format): ExportParams
     {
         return ExportParams::new()
