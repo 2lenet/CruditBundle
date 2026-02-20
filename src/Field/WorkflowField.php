@@ -12,7 +12,7 @@ class WorkflowField extends AbstractField
 {
     private ?string $name;
 
-    public function __construct(Environment $twig, ParameterBagInterface $parameterBag, ?string $name = null)
+    public function __construct(Environment $twig, ?string $name = null, ParameterBagInterface $parameterBag)
     {
         parent::__construct($twig, $parameterBag);
         $this->name = $name;
