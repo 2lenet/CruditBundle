@@ -25,6 +25,15 @@ That's it! Several files have been created:
     }
 ```
 
+## How to change the default sorting of your autocomplete route
+
+```php
+public function getDefaultAutocompleteSort(): ?array
+{
+    return [['label', 'ASC']];
+}
+```
+
 ## How to configure the choices of the number of items to display:
 
 ```php
