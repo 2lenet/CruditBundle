@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Brick\SublistBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceFilter;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
@@ -112,9 +113,11 @@ class SublistFactory extends AbstractBasicBrickFactory
 
     private function getTotals(SublistConfig $brickConfigurator): array
     {
+        /** @var CrudConfigInterface $crudConfig */
         $crudConfig = $brickConfigurator->getSubCrudConfig();
 
         if (count($crudConfig->getSublistTotalFields()) > 0) {
+            /** @var DatasourceParams $dsParams */
             $dsParams = $brickConfigurator->getDatasourceParams();
             $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
             /** @var array $totalByField */
