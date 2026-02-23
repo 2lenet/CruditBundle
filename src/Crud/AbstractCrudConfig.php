@@ -432,7 +432,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return (bool)$this->parameterBag->get('lle_crudit.generate_default_role');
     }
 
-    public function getNumberCards(): int
+    public function getNumberCardsPerRow(): int
     {
         return 1;
     }
