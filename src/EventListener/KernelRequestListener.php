@@ -5,6 +5,7 @@ namespace Lle\CruditBundle\EventListener;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
+// This listener allows you to manage your browsing history.
 class KernelRequestListener
 {
     public function __construct(
@@ -17,6 +18,7 @@ class KernelRequestListener
         // Ignore AJAX calls and referrers not related to documents
         if (
             $event->getRequest()->isXmlHttpRequest()
+            || $event->getRequest()->attributes->get('_stateless') === true
             || $event->getRequest()->headers->get('sec-fetch-dest') !== 'document'
         ) {
             return;

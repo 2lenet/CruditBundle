@@ -87,8 +87,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('arrow-circle-left')
         )
             ->setCssClass('btn btn-sm btn-secondary mt-2 ms-1 mt-md-0 crudit-action')
-            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig')
-            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
+            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig');
 
         $actions[CrudConfigInterface::ACTION_ADD] = ListAction::new(
             'action.add',
