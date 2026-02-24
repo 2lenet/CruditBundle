@@ -12,7 +12,7 @@
     {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
 {% endif %}
 
-{% if action.label === constant('Lle\\CruditBundle\\Contracts\\CrudConfigInterface::LABEL_ACTION_LIST') %}
+{% if action.label == constant('Lle\\CruditBundle\\Contracts\\CrudConfigInterface::LABEL_ACTION_LIST') %}
     {% set disabled = action.disabled %}
 {% else %}
     {% set disabled = action.disabled or not
