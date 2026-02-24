@@ -9,7 +9,6 @@ use Lle\CruditBundle\Brick\BrickResponse\FlashBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
