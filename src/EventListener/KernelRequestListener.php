@@ -2,25 +2,59 @@
 
 namespace Lle\CruditBundle\EventListener;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class KernelRequestListener
 {
+    public function __construct(
+        protected ParameterBagInterface $parameterBag,
+    ) {
+    }
+
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (!$event->getRequest()->headers->has('referer')) {
-            $session = $event->getRequest()->getSession();
-            $session->remove('lle_crudit_referer');
-
+        // Ignore AJAX calls and referrers not related to documents
+        if (
+            $event->getRequest()->isXmlHttpRequest()
+            || $event->getRequest()->headers->get('sec-fetch-dest') !== 'document'
+        ) {
             return;
         }
 
         $referer = $event->getRequest()->headers->get('referer');
-        $host = $event->getRequest()->headers->get('host');
         $requestUri = $event->getRequest()->getUri();
-        if ($referer && !str_ends_with($referer, $host . $requestUri)) {
-            $session = $event->getRequest()->getSession();
-            $session->set('lle_crudit_referer', $referer);
+        $requestMethod = $event->getRequest()->getMethod();
+
+        // Ignore routes defined in the configuration
+        /** @var array $ignoredRoutes */
+        $ignoredRoutes = $this->parameterBag->get('lle_crudit.ignore_referer_routes');
+        if (array_any($ignoredRoutes, fn($ignoredRoute) => preg_match($ignoredRoute, $referer))) {
+            return;
+        }
+
+        $session = $event->getRequest()->getSession();
+        $cruditReferer = json_decode($session->get('lle_crudit_referers'), true);
+
+        // Remove the last referer if it's the current one
+        if ($cruditReferer && end($cruditReferer) === $requestUri) {
+            array_pop($cruditReferer);
+
+            $session->set('lle_crudit_referers', json_encode($cruditReferer));
+        } elseif (
+            $requestMethod !== 'POST'
+            && !$event->getRequest()->isXmlHttpRequest()
+            && (!$cruditReferer || end($cruditReferer) !== $referer)
+            && $referer !== $requestUri
+        ) {
+            $cruditReferer[] = $referer;
+
+            // Keep only the last 20 referers
+            while (count($cruditReferer) > 20) {
+                array_shift($cruditReferer);
+            }
+
+            $session->set('lle_crudit_referers', json_encode($cruditReferer));
         }
     }
 }

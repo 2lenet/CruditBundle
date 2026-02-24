@@ -173,6 +173,8 @@ class FormFactory extends AbstractBasicBrickFactory
 
     private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
+        $cruditReferers = json_decode($this->getRequest()->getSession()->get('lle_crudit_referers'), true);
+
         if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
             return $this->urlGenerator->generate(
                 $successRedirectPath->getRoute(),
@@ -189,11 +191,11 @@ class FormFactory extends AbstractBasicBrickFactory
                     $afterEditPath->getParams()
                 )
             );
-        } elseif ($referer = (string)$this->getRequest()->getSession()->get('lle_crudit_referer')) {
-            return $referer;
+        } elseif (count($cruditReferers)) {
+            return end($cruditReferers);
         } else {
             return $this->urlGenerator->generate(
-                $brickConfig->getCrudConfig()->getPath(CrudConfigInterface::INDEX)->getRoute()
+                $brickConfig->getCrudConfig()->getPath()->getRoute()
             );
         }
     }

@@ -85,10 +85,12 @@
 
     {% block form_buttons %}
         <div class="d-flex">
+            {% set cruditReferers = app.session.get('lle_crudit_referers')|json_decode %}
+
             {% if view.data.cancel_path %}
                 {% set cancelHref = path(view.data.cancel_path.route, view.data.cancel_path.params) %}
-            {% elseif app.session.get('lle_crudit_referer') %}
-                {% set cancelHref = app.session.get('lle_crudit_referer') %}
+            {% elseif cruditReferers|length %}
+                {% set cancelHref = cruditReferers|last %}
             {% else %}
                 {% set cancelHref = path(view.data.default_path.route) %}
             {% endif %}

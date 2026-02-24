@@ -102,6 +102,11 @@ class Configuration implements ConfigurationInterface
                     ])
                     ->thenInvalid('Invalid value %s')
                 ->end()
+            ->end()
+            ->arrayNode('ignore_referer_routes')
+                ->acceptAndWrap(['string'])
+                ->scalarPrototype()
+                ->end()
             ->end();
 
         return $treeBuilder;

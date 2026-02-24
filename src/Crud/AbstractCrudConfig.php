@@ -81,9 +81,15 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
 
-        /**
-         * Create new resource action
-         */
+        $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
+            'action.list',
+            $this->getPath('homepage'),
+            Icon::new('arrow-circle-left')
+        )
+            ->setCssClass('btn btn-sm btn-secondary mt-2 ms-1 mt-md-0 crudit-action')
+            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig')
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
+
         $actions[CrudConfigInterface::ACTION_ADD] = ListAction::new(
             'action.add',
             $this->getPath(CrudConfigInterface::NEW),
@@ -92,9 +98,6 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::NEW));
 
-        /**
-         * Export filtered list action
-         */
         $actions[CrudConfigInterface::ACTION_EXPORT] = ListAction::new(
             'action.export',
             $this->getPath(CrudConfigInterface::EXPORT),
@@ -154,7 +157,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             Icon::new('arrow-circle-left')
         )
             ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
-            ->setTemplate('@LleCrudit/brick/show_item/action/_list.html.twig')
+            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
