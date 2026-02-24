@@ -81,7 +81,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
 
-        $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
+        $actions[CrudConfigInterface::LABEL_ACTION_LIST] = ListAction::new(
             'action.list',
             $this->getPath('homepage'),
             Icon::new('arrow-circle-left')
@@ -150,7 +150,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
 
-        $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
+        $actions[CrudConfigInterface::LABEL_ACTION_LIST] = ItemAction::new(
             'action.list',
             $this->getPath(),
             Icon::new('arrow-circle-left')
