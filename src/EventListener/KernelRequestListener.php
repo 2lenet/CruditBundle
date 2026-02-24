@@ -36,7 +36,7 @@ class KernelRequestListener
         }
 
         $session = $event->getRequest()->getSession();
-        $cruditReferer = json_decode($session->get('lle_crudit_referers'), true);
+        $cruditReferer = json_decode($session->get('lle_crudit_referers', ''), true);
 
         // Remove the last referer if it's the current one
         if ($cruditReferer && end($cruditReferer) === $requestUri) {

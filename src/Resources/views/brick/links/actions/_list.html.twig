@@ -1,5 +1,5 @@
 {% block list_action %}
-    {% set cruditReferers = app.session.get('lle_crudit_referers')|json_decode %}
+    {% set cruditReferers = app.session.get('lle_crudit_referers', '')|json_decode %}
     {% if not cruditReferers|length %}
         {% set disabled = disabled or not
             ((action.path.role is null or is_granted(action.path.role, view.data.resource))

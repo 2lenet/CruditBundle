@@ -83,7 +83,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
             CrudConfigInterface::LABEL_ACTION_LIST,
-            $this->getPath('homepage'),
+            $this->getPath(),
             Icon::new('arrow-circle-left')
         )
             ->setCssClass('btn btn-sm btn-secondary mt-2 ms-1 mt-md-0 crudit-action')

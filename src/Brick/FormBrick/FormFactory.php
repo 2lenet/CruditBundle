@@ -172,7 +172,7 @@ class FormFactory extends AbstractBasicBrickFactory
 
     private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
-        $cruditReferers = json_decode($this->getRequest()->getSession()->get('lle_crudit_referers'), true);
+        $cruditReferers = json_decode($this->getRequest()->getSession()->get('lle_crudit_referers', ''), true);
 
         if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
             return $this->urlGenerator->generate(
