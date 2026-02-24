@@ -84,8 +84,8 @@ crudit:
         no: "No"
         all: "Tutti"
 
-    yes: "SI"
-    no: "NO"
+    yes: "Sì"
+    no: "No"
     by: "da"
 
     history:

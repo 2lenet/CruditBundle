@@ -86,6 +86,8 @@ interface CrudConfigInterface
 
     public function getDefaultSort(): array;
 
+    public function getDefaultAutocompleteSort(): ?array;
+
     public function getExportParams(string $format): ExportParams;
 
     public function getAfterEditPath(): ?Path;

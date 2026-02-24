@@ -24,6 +24,7 @@ class BooleanField extends AbstractField
         $optionResolver->setDefaults([
             'nullToFalse' => false,
             'edit_route' => null,
+            'reverseColors' => false,
         ]);
     }
 }

@@ -50,7 +50,9 @@ function addFormToCollection(e) {
 
     if (collectionHolder.childElementCount > 1) {
         // > 1 because there's the labels row
-        collectionHolder.appendChild(document.createElement('hr'));
+        let horizontalLine = document.createElement('hr');
+        horizontalLine.classList = 'mt-0 mb-2';
+        collectionHolder.appendChild(horizontalLine);
     }
     collectionHolder.appendChild(item);
     addTagFormDeleteLink(collectionHolder.lastChild);

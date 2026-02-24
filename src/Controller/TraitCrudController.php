@@ -147,7 +147,7 @@ trait TraitCrudController
 
         $items = $dataSource->autocompleteQuery(
             urldecode($request->query->get("q", "")),
-            $this->config->getDefaultSort(),
+            $this->config->getDefaultAutocompleteSort() ?? $this->config->getDefaultSort(),
             $rqParams
         );
 

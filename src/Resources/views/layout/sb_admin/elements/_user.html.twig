@@ -1,7 +1,7 @@
 <li class="nav-item dropdown no-arrow">
     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
        aria-haspopup="true" aria-expanded="false">
-        <span class="me-2 d-none d-lg-inline text-white fw-bold small">
+        <span class="me-2 d-none d-lg-inline fw-bold small">
             {% block user %}
                 {% if app.user %}
                     {{ app.user }}
@@ -14,12 +14,12 @@
     <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in" aria-labelledby="userDropdown">
         {% if app.user %}
             <a class="dropdown-item" href="{{ path("logout") }}">
-                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-white fw-bold"></i>
+                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 fw-bold"></i>
                 {{ 'crudit.action.logout'|trans({}, 'LleCruditBundle') }}
             </a>
             {% if crudit_add_connect_profile_link() %}
                 <a class="dropdown-item cursor-pointer" onclick="window.open('{{ connect_url }}profile', '', 'resizable=no, location=no, top=100, left=100, width=600, height=600, menubar=no, status=no, scrollbars=no, menubar=no')">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-white fw-bold"></i>
+                    <i class="fas fa-user fa-sm fa-fw mr-2 fw-bold"></i>
                     {{ 'crudit.action.profile'|trans(domain='LleCruditBundle') }}
                 </a>
             {% endif %}

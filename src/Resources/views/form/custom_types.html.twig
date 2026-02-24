@@ -28,15 +28,15 @@
                     {% set prototype_rendered %}
                         <div class="row crudit-collection-ignore">
                             {% for column in prototype %}
-                                <div class="{{ column.vars.row_attr.class|default('col') }}">
+                                {%- if column.vars.label is not same as(false) -%}
+                                    <div class="{{ column.vars.row_attr.class|default('col') }}">
                                     <label {% with { attr: column.vars.label_attr } %}{{ block('attributes') }}{% endwith %}>
-                                        {%- if column.vars.label is not same as(false) -%}
                                             {% with { label: column.vars.label, translation_domain: column.vars.translation_domain} %}
                                                 {{- block('form_label_content') -}}
                                             {% endwith %}
-                                        {%- endif -%}
                                     </label>
                                 </div>
+                                {%- endif -%}
                             {% endfor %}
                         </div>
                         <div class="row align-items-start">
