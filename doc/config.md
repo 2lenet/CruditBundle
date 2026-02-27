@@ -39,3 +39,13 @@ twig:
 `exit_impersonation_path` manages the url to which you will be redirected after exiting impersonation (default: `homepage`).
 
 ![](img/exit_impersonation_button.png)
+
+`ignore_referer_routes` allow you to configure routes that will not be saved in the user's navigation session.
+
+The value is an array of regexes matching the routes
+
+```yaml
+ignore_referer_routes:
+    - /\/admin\/[0-9]+/
+    - /\/login
+```

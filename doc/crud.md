@@ -25,6 +25,15 @@ That's it! Several files have been created:
     }
 ```
 
+## How to change the default sorting of your autocomplete route
+
+```php
+public function getDefaultAutocompleteSort(): ?array
+{
+    return [['label', 'ASC']];
+}
+```
+
 ## How to configure the choices of the number of items to display:
 
 ```php
@@ -169,6 +178,7 @@ To use them, use the constants defined in the `CrudConfigInterface` file.
 
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**
 
+You can also use totals on your sublist by adding `getSubListTotalFields` method to the CruditConfig file.
 ## Configure route for DoctrineEntityField
 
 To configure route for DoctrineEntityField, you must set the `route` options:

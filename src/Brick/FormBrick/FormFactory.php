@@ -9,7 +9,6 @@ use Lle\CruditBundle\Brick\BrickResponse\FlashBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -74,6 +73,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'resource' => $resource,
                 'options' => $brickConfigurator->getOptions(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
+                'default_path' => $brickConfigurator->getCrudConfig()->getPath(),
                 'referer' => $referer,
             ]);
 
@@ -172,6 +172,8 @@ class FormFactory extends AbstractBasicBrickFactory
 
     private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
+        $cruditReferers = json_decode($this->getRequest()->getSession()->get('lle_crudit_referers', ''), true);
+
         if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
             return $this->urlGenerator->generate(
                 $successRedirectPath->getRoute(),
@@ -188,11 +190,11 @@ class FormFactory extends AbstractBasicBrickFactory
                     $afterEditPath->getParams()
                 )
             );
-        } elseif ($referer = (string)$this->getRequest()->request->get('referer')) {
-            return $referer;
+        } elseif (count($cruditReferers)) {
+            return end($cruditReferers);
         } else {
             return $this->urlGenerator->generate(
-                $brickConfig->getCrudConfig()->getPath(CrudConfigInterface::INDEX)->getRoute()
+                $brickConfig->getCrudConfig()->getPath()->getRoute()
             );
         }
     }
