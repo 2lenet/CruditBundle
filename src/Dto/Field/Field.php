@@ -119,6 +119,13 @@ class Field
         return $this;
     }
 
+    public function cssClassIsCustom(?bool $custom): self
+    {
+        $this->options["cssClassIsCustom"] = $custom;
+
+        return $this;
+    }
+
     public function hasCascade(): bool
     {
         return \str_contains($this->getName(), '.');
