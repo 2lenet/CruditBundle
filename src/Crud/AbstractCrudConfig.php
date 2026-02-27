@@ -81,9 +81,14 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         $actions = [];
 
-        /**
-         * Create new resource action
-         */
+        $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
+            CrudConfigInterface::LABEL_ACTION_LIST,
+            $this->getPath(),
+            Icon::new('arrow-circle-left')
+        )
+            ->setCssClass('btn btn-sm btn-secondary mt-2 ms-1 mt-md-0 crudit-action')
+            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig');
+
         $actions[CrudConfigInterface::ACTION_ADD] = ListAction::new(
             'action.add',
             $this->getPath(CrudConfigInterface::NEW),
@@ -92,9 +97,6 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::NEW));
 
-        /**
-         * Export filtered list action
-         */
         $actions[CrudConfigInterface::ACTION_EXPORT] = ListAction::new(
             'action.export',
             $this->getPath(CrudConfigInterface::EXPORT),
@@ -149,11 +151,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions = [];
 
         $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
-            'action.list',
+            CrudConfigInterface::LABEL_ACTION_LIST,
             $this->getPath(),
-            Icon::new('list')
+            Icon::new('arrow-circle-left')
         )
             ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
+            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
@@ -273,14 +276,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             CrudConfigInterface::EDIT => [
                 LinksConfig::new(['title' => $this->getTitle('edit')]),
                 FormConfig::new()
-                    ->setForm($this->getFormType(CrudConfigInterface::EDIT))
-                    ->setCancelPath($this->getPath()),
+                    ->setForm($this->getFormType(CrudConfigInterface::EDIT)),
             ],
             CrudConfigInterface::NEW => [
                 LinksConfig::new(['title' => $this->getTitle('new')]),
                 FormConfig::new()
-                    ->setForm($this->getFormType(CrudConfigInterface::NEW))
-                    ->setCancelPath($this->getPath()),
+                    ->setForm($this->getFormType(CrudConfigInterface::NEW)),
             ],
         ];
     }
@@ -407,6 +408,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     }
 
     public function getTotalFields(): array
+    {
+        return [];
+    }
+
+    public function getSublistTotalFields(): array
     {
         return [];
     }

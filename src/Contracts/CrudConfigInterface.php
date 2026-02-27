@@ -28,6 +28,8 @@ interface CrudConfigInterface
     public const ACTION_DELETE = 'delete';
     public const ACTION_EXPORT = 'export';
 
+    public const LABEL_ACTION_LIST = 'action.list';
+
     public const AVERAGE = 'AVG';
     public const COUNT = 'COUNT';
     public const SUM = 'SUM';
@@ -115,4 +117,6 @@ interface CrudConfigInterface
     public function setParameterBag(ParameterBagInterface $parameterBag): void;
 
     public function getTabConfig(): ?TabConfig;
+
+    public function getSublistTotalFields(): array;
 }

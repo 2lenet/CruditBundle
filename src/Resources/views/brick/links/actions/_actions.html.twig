@@ -12,10 +12,14 @@
     {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
 {% endif %}
 
-{% set disabled = action.disabled or not
-    ((action.path.role is null or is_granted(action.path.role, view.data.resource))
-    and (action.role is null or is_granted(action.role, view.data.resource)))
-%}
+{% if action.label == constant('Lle\\CruditBundle\\Contracts\\CrudConfigInterface::LABEL_ACTION_LIST') %}
+    {% set disabled = action.disabled %}
+{% else %}
+    {% set disabled = action.disabled or not
+        ((action.path.role is null or is_granted(action.path.role, view.data.resource))
+        and (action.role is null or is_granted(action.role, view.data.resource)))
+    %}
+{% endif %}
 
 {% set isDisplayed = false %}
 {% if action.resource is defined %}

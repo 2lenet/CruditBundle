@@ -3,3 +3,8 @@ services:
         arguments: ['@Lle\CruditBundle\Filter\FilterState']
         tags:
             - { name: kernel.event_listener, event: kernel.controller }
+
+    Lle\CruditBundle\EventListener\KernelRequestListener:
+        arguments: ['@parameter_bag']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
