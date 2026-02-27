@@ -117,4 +117,6 @@ interface CrudConfigInterface
     public function setParameterBag(ParameterBagInterface $parameterBag): void;
 
     public function getTabConfig(): ?TabConfig;
+
+    public function getSublistTotalFields(): array;
 }
