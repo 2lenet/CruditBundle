@@ -39,7 +39,6 @@ class Field
     /** @var callable|null $editableIf */
     protected $editableIf = null;
 
-
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
         $this->name = $name;
