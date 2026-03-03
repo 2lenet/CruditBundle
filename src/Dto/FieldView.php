@@ -16,6 +16,8 @@ class FieldView
     private ?object $resource = null;
     private ?object $parentResource = null;
     private ?CrudConfigInterface $config = null;
+    /** @var callable|null $editableIf */
+    protected $editableIf = null;
 
     public function __construct(Field $field, mixed $value)
     {
@@ -91,5 +93,10 @@ class FieldView
         $this->config = $config;
 
         return $this;
+    }
+
+    public function isEditable(mixed $resource = null): bool
+    {
+        return !$this->field->getEditableIf() || call_user_func($this->field->getEditableIf(), $resource);
     }
 }
