@@ -92,4 +92,9 @@ class FieldView
 
         return $this;
     }
+
+    public function isEditable(mixed $resource = null): bool
+    {
+        return !$this->field->getEditableIf() || call_user_func($this->field->getEditableIf(), $resource);
+    }
 }
