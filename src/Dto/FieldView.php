@@ -16,8 +16,6 @@ class FieldView
     private ?object $resource = null;
     private ?object $parentResource = null;
     private ?CrudConfigInterface $config = null;
-    /** @var callable|null $editableIf */
-    protected $editableIf = null;
 
     public function __construct(Field $field, mixed $value)
     {
