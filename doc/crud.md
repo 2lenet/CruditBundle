@@ -113,7 +113,7 @@ $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
 
 You can configure editable conditions on ```lle\src\Dto\Field``` by adding 
 ```php
- Field::new()->setEditInPlace(true)->setIsEditable(callback) 
+ Field::new()->setEditInPlace(true)->setEditableIf(callback) 
 ```
 
 ## Write actions that will be executed in your crud
