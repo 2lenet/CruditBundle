@@ -11,7 +11,6 @@ use Lle\CruditBundle\Filter\FilterType\AbstractFilterType;
 <?php foreach ($uses as $use) { ?>
 use <?= $use ?>;
 <?php } ?>
-
 class <?= $prefixFilename ?>FilterSet extends AbstractFilterSet
 {
     /**
