@@ -13,7 +13,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\SublistBrick\SublistFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Registry\FieldRegistry']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\TabBrick\TabFactory:
