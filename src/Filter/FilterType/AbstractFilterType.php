@@ -148,7 +148,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
     protected function getQueryParams(QueryBuilder $qb, ?string $additionnalField = null): array
     {
         // parts (e.g. : user:post:title => [user, post, title]
-        $fields = explode(':', $additionnalField ?? $this->id);
+        $fields = explode(':', $additionnalField ?? $this->columnName);
 
         // join alias
         $alias = null;
