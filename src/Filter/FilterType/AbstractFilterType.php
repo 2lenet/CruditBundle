@@ -70,6 +70,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->id;
     }
 
+    public function setId(string $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
      * Returns empty string if no alias, otherwise make sure the alias has just one '.' after it.
      */
