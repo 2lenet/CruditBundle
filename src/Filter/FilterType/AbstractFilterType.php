@@ -193,7 +193,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
                 $pattern = $alias . $col . ' IN (:' . $paramname . ')';
                 break;
             case self::OPERATOR_NOT_IN:
-                $pattern = $alias . $col . ' NOT IN (:' . $paramname . ')';
+                $pattern = $alias . $col . ' IS NULL OR ' . $alias . $col . ' NOT IN (:' . $paramname . ')';
                 break;
             case self::OPERATOR_BEFORE:
             case self::OPERATOR_LESS_THAN:
