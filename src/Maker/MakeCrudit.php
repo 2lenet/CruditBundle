@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Maker;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\ClassMetadata as OrmClassMetadata;
-use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Lle\CruditBundle\Contracts\CruditEntityInterface;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Lle\CruditBundle\Dto\Field\Field;
@@ -232,7 +231,7 @@ final class MakeCrudit extends AbstractMaker
     {
         $fields = [];
 
-        /** @var OrmClassMetadata $metadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
         foreach ($metadata->getFieldNames() as $fieldname) {
             if ($fieldname === "id") {
@@ -243,7 +242,7 @@ final class MakeCrudit extends AbstractMaker
         }
 
         foreach ($metadata->getAssociationNames() as $fieldassoc) {
-            if ($metadata->getAssociationMapping($fieldassoc)['type'] & OrmClassMetadata::TO_ONE) {
+            if ($metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadata::TO_ONE) {
                 $fields[] = Field::new($fieldassoc)->setSortable(true);
             }
         }
@@ -255,10 +254,10 @@ final class MakeCrudit extends AbstractMaker
     {
         $tabs = [];
 
-        /** @var OrmClassMetadata $metadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
         foreach ($metadata->getAssociationNames() as $associationName) {
-            if ($metadata->getAssociationMapping($associationName)['type'] & OrmClassMetadata::TO_MANY) {
+            if ($metadata->getAssociationMapping($associationName)['type'] & ClassMetadata::TO_MANY) {
                 $tabs['sublist'][] = [
                     'type' => 'sublist',
                     'label' => 'tab.' . strtolower($associationName),
@@ -275,7 +274,7 @@ final class MakeCrudit extends AbstractMaker
     {
         $filters = [];
 
-        /** @var OrmClassMetadata $metadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
         foreach ($metadata->getFieldNames() as $fieldname) {
             if ($fieldname === "id") {
@@ -292,7 +291,7 @@ final class MakeCrudit extends AbstractMaker
         return $filters;
     }
 
-    public function getFilterType(OrmClassMetadata $metadata, string $property): array
+    public function getFilterType(ClassMetadata $metadata, string $property): array
     {
         $fields = explode(".", $property);
         $multiLevelProperty = str_replace(".", ":", $property);
@@ -309,13 +308,13 @@ final class MakeCrudit extends AbstractMaker
                     break;
                 }
 
-                /** @var OrmClassMetadata $metadata */
+                /** @var ClassMetadata $metadata */
                 $association = $metadata->getAssociationMapping($field);
                 $metadata = $this->entityHelper->getMetadata($association["targetEntity"]);
             }
         }
 
-        /** @var OrmClassMetadata $metadata */
+        /** @var ClassMetadata $metadata */
         if ($metadata->hasAssociation($property)) {
             $mapping = $metadata->getAssociationMapping($property);
 
