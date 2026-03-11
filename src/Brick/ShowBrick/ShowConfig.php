@@ -66,6 +66,7 @@ class ShowConfig extends AbstractBrickConfig
             'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
             'number_cards_per_row' => $this->getCrudConfig()->getNumberCardsPerRow(),
             'css_class_columns_card' => $this->getCrudConfig()->getCssClassColumnsByCard(),
+            'css_class_columns_show' => $this->getCrudConfig()->getCssClassColumnsShow(),
         ];
     }
 

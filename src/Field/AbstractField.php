@@ -60,7 +60,7 @@ abstract class AbstractField implements FieldInterface
     {
         $optionsResolver->setDefaults([
             "cssClass" => $this->parameterBag->get('lle_crudit.css_class_columns_show'),
-            //utilise pour les fields  dans card
+            //used for card's fields
             "cssClassIsCustom" => false,
             "tableCssClass" => "text-nowrap",
             "edit_route" => null,
