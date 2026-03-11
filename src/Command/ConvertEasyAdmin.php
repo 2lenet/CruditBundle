@@ -71,7 +71,7 @@ class ConvertEasyAdmin extends Command
         return Command::SUCCESS;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption(
             "delete",

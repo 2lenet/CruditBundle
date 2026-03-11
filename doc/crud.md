@@ -111,6 +111,11 @@ $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
     ->setDisplayIf(fn(Resource $resource) => $resource->isActive());
 ```
 
+You can configure editable conditions on ```lle\src\Dto\Field``` by adding 
+```php
+ Field::new()->setEditInPlace(true)->setEditableIf(callback) 
+```
+
 ## Write actions that will be executed in your crud
 
 When we declare a new action in our page, we indicate the path of our method. This method must be in

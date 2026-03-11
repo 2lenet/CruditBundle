@@ -15,7 +15,6 @@ use Lle\CruditBundle\Service\GedmoTranslatableFieldManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType as ParentType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -63,7 +62,7 @@ class GedmoTranslatableType extends AbstractType
         );
         // submit
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($locales, $defaultLocale) {
-            /** @var Form $form */
+            /** @var FormInterface $form */
             $form = $event->getForm();
             $this->translatablefieldmanager->persistTranslations($form, $locales, $defaultLocale);
         });

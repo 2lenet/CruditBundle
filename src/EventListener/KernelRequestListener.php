@@ -28,11 +28,13 @@ class KernelRequestListener
         $requestUri = $event->getRequest()->getUri();
         $requestMethod = $event->getRequest()->getMethod();
 
-        // Ignore routes defined in the configuration
-        /** @var array $ignoredRoutes */
-        $ignoredRoutes = $this->parameterBag->get('lle_crudit.ignore_referer_routes');
-        if (array_any($ignoredRoutes, fn($ignoredRoute) => preg_match($ignoredRoute, $referer))) {
-            return;
+        if ($referer) {
+            // Ignore routes defined in the configuration
+            /** @var array $ignoredRoutes */
+            $ignoredRoutes = $this->parameterBag->get('lle_crudit.ignore_referer_routes');
+            if (array_any($ignoredRoutes, fn($ignoredRoute) => (bool)preg_match($ignoredRoute, $referer))) {
+                return;
+            }
         }
 
         $session = $event->getRequest()->getSession();

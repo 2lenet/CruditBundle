@@ -9,7 +9,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 class EntityToIdTransformer implements DataTransformerInterface
 {
     private EntityManagerInterface $em;
-    private ?string $class;
+    private ?string $class = null;
     private bool $multiple = false;
 
     public function __construct(EntityManagerInterface $em)

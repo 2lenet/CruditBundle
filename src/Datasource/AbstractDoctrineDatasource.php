@@ -6,7 +6,7 @@ namespace Lle\CruditBundle\Datasource;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
@@ -111,7 +111,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
                 if (
                     $metadata->hasAssociation($filter->getField())
-                    && $metadata->getAssociationMapping($filter->getField())["type"] === ClassMetadataInfo::MANY_TO_MANY
+                    && $metadata->getAssociationMapping($filter->getField())["type"] === ClassMetadata::MANY_TO_MANY
                 ) {
                     // it's a ManyToMany, we need to join.
                     $joinAlias = $alias . "_" . $filter->getField();
@@ -177,7 +177,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
         if (
             $metadata->hasAssociation($field)
-            && ($metadata->getAssociationMapping($field)["type"] & ClassMetadataInfo::TO_MANY)
+            && ($metadata->getAssociationMapping($field)["type"] & ClassMetadata::TO_MANY)
         ) {
             $alias = $alias . "_" . $field;
             $qb->leftJoin("$join.$field", $alias);
@@ -408,7 +408,10 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
                         $className
                     )->associationMappings;
 
-                    $value = $this->entityManager->getReference($associations[$field]["targetEntity"], $value);
+                    /** @var class-string $entityName */
+                    $entityName = $associations[$field]["targetEntity"];
+
+                    $value = $this->entityManager->getReference($entityName, $value);
                 } else {
                     $fields = $this->entityManager->getClassMetadata($className);
                     $type = $fields->fieldMappings[$field]['type'];

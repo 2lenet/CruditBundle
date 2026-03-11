@@ -113,7 +113,9 @@ class FormFactory extends AbstractBasicBrickFactory
                 ['allow_extra_fields' => true]
             );
             foreach ($brickConfigurator->getFields() as $field) {
-                $formBuilder->add($field->getName(), $field->getType(), $field->getOptions());
+                /** @var class-string<FormTypeInterface>|null $type */
+                $type = $field->getType();
+                $formBuilder->add($field->getName(), $type, $field->getOptions());
             }
 
             return $formBuilder->getForm();

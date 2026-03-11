@@ -11,11 +11,11 @@ use Lle\CruditBundle\Filter\FilterType\AbstractFilterType;
 <?php foreach ($uses as $use) { ?>
 use <?= $use ?>;
 <?php } ?>
-/**
-* @return array<int, AbstractFilterType>
-*/
 class <?= $prefixFilename ?>FilterSet extends AbstractFilterSet
 {
+    /**
+     * @return AbstractFilterType[]
+     */
     public function getFilters(): array
     {
         return [

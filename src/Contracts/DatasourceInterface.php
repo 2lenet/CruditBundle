@@ -54,6 +54,6 @@ interface DatasourceInterface
 
     public function getTotals(?DatasourceParams $requestParams, array $fields): iterable;
 
-    /** @return iterable{tags: iterable, currentTags: iterable} */
+    /** @return array{tags: iterable, currentTags: iterable} */
     public function getTags(object $resource): iterable;
 }

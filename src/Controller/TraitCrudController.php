@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
@@ -135,8 +135,8 @@ trait TraitCrudController
     {
         $dataSource = $this->config->getDatasource();
         $res = [];
-        $offset = intval($request->get('offset', 0));
-        $limit = intval($request->get('limit', 0));
+        $offset = $request->query->getInt('offset');
+        $limit = $request->query->getInt('limit');
 
         $rqParams = new DatasourceParams(
             $limit,
@@ -278,7 +278,7 @@ trait TraitCrudController
             }
         }
 
-        $format = $request->get("format", "csv");
+        $format = $request->query->get("format", "csv");
         $params = $this->config->getExportParams($format);
 
         $path = $exporter->export(
@@ -304,55 +304,11 @@ trait TraitCrudController
         return $response;
     }
 
-    #[Route('/api/{pageKey}')]
-    public function api(Request $request): Response
-    {
-        $views = $this->getBrickBuilder()->build($this->config, $request->get('pageKey'));
-
-        return new JsonResponse($this->getSerializer()->normalize($views));
-    }
-
-    #[Route('/brick/{idBrick}.{_format}', format: 'json', requirements: ['_format' => 'html|json'])]
-    public function brick(Request $request): Response
-    {
-        $view = $this->getBrickBuilder()->getView(
-            $this->config,
-            $request->get('idBrick')
-        );
-        if ($request->get('_format') === 'json') {
-            return new JsonResponse($this->getSerializer()->normalize($view));
-        } else {
-            return $this->render($view->getIndexTemplate(), ['view' => $view]);
-        }
-    }
-
-    #[Route('/brick/data/{idBrick}')]
-    public function brickData(Request $request): Response
-    {
-        $view = $this->getBrickBuilder()->getView(
-            $this->config,
-            $request->get('idBrick')
-        );
-
-        return new JsonResponse($this->getSerializer()->normalize($view->getData()));
-    }
-
-    #[Route('/brick/config/{idBrick}')]
-    public function brickConfig(Request $request): Response
-    {
-        $view = $this->getBrickBuilder()->getView(
-            $this->config,
-            $request->get('idBrick')
-        );
-
-        return new JsonResponse($this->getSerializer()->normalize($view->getConfig()));
-    }
-
     #[Route('/workflow/{id}')]
     public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
     {
-        $transition = $request->get("transition");
-        $workflowName = $request->get("name");
+        $transition = $request->query->get("transition");
+        $workflowName = $request->query->get("name");
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
 
@@ -378,8 +334,8 @@ trait TraitCrudController
         $dataSource = $this->config->getDatasource();
         $resource = null;
 
-        if ($request->get("id")) {
-            $resource = $dataSource->get($request->get("id"));
+        if ($request->attributes->get("id")) {
+            $resource = $dataSource->get($request->attributes->get("id"));
         } elseif ($allowCreate) {
             $resource = $dataSource->newInstance();
         }

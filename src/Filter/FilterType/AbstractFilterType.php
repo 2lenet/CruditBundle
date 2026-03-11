@@ -70,6 +70,13 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->id;
     }
 
+    public function setId(string $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
      * Returns empty string if no alias, otherwise make sure the alias has just one '.' after it.
      */
@@ -141,7 +148,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
     protected function getQueryParams(QueryBuilder $qb, ?string $additionnalField = null): array
     {
         // parts (e.g. : user:post:title => [user, post, title]
-        $fields = explode(':', $additionnalField ?? $this->id);
+        $fields = explode(':', $additionnalField ?? $this->columnName);
 
         // join alias
         $alias = null;
@@ -172,7 +179,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         ];
     }
 
-    public function getPattern(string $op, string $id, string $alias, string $col, string $paramname): ?string
+    public function getPattern(string $op, string $id, string $alias, string $col, string $paramname): string
     {
         $pattern = null;
         switch ($op) {
@@ -186,7 +193,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
                 $pattern = $alias . $col . ' IN (:' . $paramname . ')';
                 break;
             case self::OPERATOR_NOT_IN:
-                $pattern = $alias . $col . ' NOT IN (:' . $paramname . ')';
+                $pattern = $alias . $col . ' IS NULL OR ' . $alias . $col . ' NOT IN (:' . $paramname . ')';
                 break;
             case self::OPERATOR_BEFORE:
             case self::OPERATOR_LESS_THAN:
@@ -218,7 +225,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
                 break;
         }
 
-        return $pattern ? '(' . $pattern . ')' : null;
+        return $pattern ? '(' . $pattern . ')' : '';
     }
 
     public function applyAdditionnalFields(
