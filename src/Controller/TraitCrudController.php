@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
@@ -135,8 +135,8 @@ trait TraitCrudController
     {
         $dataSource = $this->config->getDatasource();
         $res = [];
-        $offset = intval($request->get('offset', 0));
-        $limit = intval($request->get('limit', 0));
+        $offset = $request->query->getInt('offset');
+        $limit = $request->query->getInt('limit');
 
         $rqParams = new DatasourceParams(
             $limit,
