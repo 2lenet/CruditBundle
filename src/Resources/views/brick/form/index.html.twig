@@ -48,7 +48,7 @@
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                <div class=" {{ displayClass }} position-relative {% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }} {% else %} {{ view.data.css_class_columns_form }} {% endif %}">
+                <div class="{{ displayClass }} position-relative {% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }} {% else %} {{ view.data.css_class_columns_form }} {% endif %}">
                     <div
                         class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row{% endif %}"
                         {% if
