@@ -14,7 +14,7 @@ class IntegerField extends AbstractField
         Environment $twig,
         protected ParameterBagInterface $parameterBag,
     ) {
-        parent::__construct($twig);
+        parent::__construct($twig, $this->parameterBag);
     }
 
     public function support(string $type): bool

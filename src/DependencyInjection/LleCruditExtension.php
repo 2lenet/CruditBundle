@@ -49,6 +49,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->setParameter('lle_crudit.exit_impersonation_path', $processedConfig['exit_impersonation_path']);
         $container->setParameter('lle_crudit.generate_default_role', $processedConfig['generate_default_role']);
         $container->setParameter('lle_crudit.ignore_referer_routes', $processedConfig['ignore_referer_routes']);
+        $container->setParameter('lle_crudit.css_class_columns_show', $processedConfig['css_class_columns_show']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {
