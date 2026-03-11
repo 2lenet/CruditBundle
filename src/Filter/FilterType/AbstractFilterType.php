@@ -179,7 +179,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
         ];
     }
 
-    public function getPattern(string $op, string $id, string $alias, string $col, string $paramname): ?string
+    public function getPattern(string $op, string $id, string $alias, string $col, string $paramname): string
     {
         $pattern = null;
         switch ($op) {
@@ -225,7 +225,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
                 break;
         }
 
-        return $pattern ? '(' . $pattern . ')' : null;
+        return $pattern ? '(' . $pattern . ')' : '';
     }
 
     public function applyAdditionnalFields(

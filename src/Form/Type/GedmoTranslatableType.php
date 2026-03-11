@@ -63,7 +63,7 @@ class GedmoTranslatableType extends AbstractType
         );
         // submit
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($locales, $defaultLocale) {
-            /** @var Form $form */
+            /** @var FormInterface $form */
             $form = $event->getForm();
             $this->translatablefieldmanager->persistTranslations($form, $locales, $defaultLocale);
         });

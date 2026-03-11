@@ -2,7 +2,7 @@
 
 namespace Lle\CruditBundle\Service\EasyAdminConverter;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Maker\MakeCrudit;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -56,7 +56,7 @@ class Converter
         $shortEntity = $this->getShortEntityName($entityClass);
 
         $filters = [];
-        /** @var ClassMetadataInfo $metadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->doctrineHelper->getMetadata($entityClass);
         foreach ($entityConfig['filter']['fields'] as $filter) {
             $filters[] = $this->cruditMaker->getFilterType($metadata, $filter['property']);
@@ -458,7 +458,7 @@ class Converter
         foreach ($entityConfig['show']['fields'] as $field) {
             if (is_array($field) && isset($field['type'])) {
                 if ($field['type'] === 'sublist') {
-                    /** @var ClassMetadataInfo $metadata */
+                    /** @var ClassMetadata $metadata */
                     $metadata = $this->doctrineHelper->getMetadata($entityConfig['class']);
                     // 'No mapping found for field ...' => your sublist property does not exist
 

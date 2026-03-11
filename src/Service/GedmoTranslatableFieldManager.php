@@ -8,6 +8,7 @@ use Doctrine\ORM\Query as Query;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Gedmo\Translatable\TranslatableListener as TranslatableListener;
 use Symfony\Component\Form\Form as Form;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess as PropertyAccess;
 
 class GedmoTranslatableFieldManager
@@ -30,11 +31,7 @@ class GedmoTranslatableFieldManager
 
     private function getTranslations(object $entity, string $fieldName): array
     {
-        if (
-            \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) && \is_callable(
-                [$entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET]
-            )
-        ) {
+        if (\method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET)) {
             $translations = [];
             foreach ($entity->getTranslations() as $translation) {
                 if ($translation->getField() == $fieldName) {
@@ -102,7 +99,7 @@ class GedmoTranslatableFieldManager
     }
 
     // UPDATE
-    public function persistTranslations(Form $form, array $locales, string $defaultLocale): void
+    public function persistTranslations(FormInterface $form, array $locales, string $defaultLocale): void
     {
         /** @var object $entity */
         $entity = $form->getParent()?->getData();
@@ -114,8 +111,7 @@ class GedmoTranslatableFieldManager
                 // personal
                 if (
                     \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_GET) &&
-                    \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET) &&
-                    \is_callable([$entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET])
+                    \method_exists($entity, self::GEDMO_PERSONAL_TRANSLATIONS_SET)
                 ) {
                     $translationClassName = $this->getPersonalTranslationClassName($entity);
                     $needAddTranslation = true;

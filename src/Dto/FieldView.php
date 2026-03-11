@@ -32,7 +32,7 @@ class FieldView
 
     public function setParentResource(?object $resource): self
     {
-        $this->resource = $resource;
+        $this->parentResource = $resource;
 
         return $this;
     }

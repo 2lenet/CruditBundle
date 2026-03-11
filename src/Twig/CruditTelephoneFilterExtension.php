@@ -107,7 +107,7 @@ class CruditTelephoneFilterExtension extends AbstractExtension
                     $indicator = substr($telephone, 0, $i);
                     $currentLen = (string)($lenTel - $i);
                     if (key_exists($indicator, self::FORMATS) && key_exists($currentLen, self::FORMATS[$indicator])) {
-                        $mask = self::FORMATS[$indicator][$currentLen];
+                        $mask = self::FORMATS[$indicator][$currentLen] ?? null;
                     }
                     $i--;
                 }

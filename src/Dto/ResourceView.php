@@ -42,13 +42,9 @@ class ResourceView
         if ($fieldName === 'id') {
             return $this->getId();
         }
+
         $keys = explode(':', $fieldName);
-        if (!isset($keys[0])) {
-            return null;
-        }
-
         $fieldName = $keys[0];
-
         unset($keys[0]);
 
         foreach ($this->fields as $field) {

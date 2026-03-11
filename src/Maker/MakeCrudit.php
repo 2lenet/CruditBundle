@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Maker;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata as OrmClassMetadata;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Lle\CruditBundle\Contracts\CruditEntityInterface;
 use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
@@ -232,21 +232,19 @@ final class MakeCrudit extends AbstractMaker
     {
         $fields = [];
 
-        /** @var ClassMetadataInfo $metadata */
+        /** @var OrmClassMetadata $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
-        if ($metadata instanceof ClassMetadata) {
-            foreach ($metadata->getFieldNames() as $fieldname) {
-                if ($fieldname === "id") {
-                    continue;
-                }
-
-                $fields[] = Field::new($fieldname);
+        foreach ($metadata->getFieldNames() as $fieldname) {
+            if ($fieldname === "id") {
+                continue;
             }
 
-            foreach ($metadata->getAssociationNames() as $fieldassoc) {
-                if ($metadata->getAssociationMapping($fieldassoc)['type'] & ClassMetadataInfo::TO_ONE) {
-                    $fields[] = Field::new($fieldassoc)->setSortable(true);
-                }
+            $fields[] = Field::new($fieldname);
+        }
+
+        foreach ($metadata->getAssociationNames() as $fieldassoc) {
+            if ($metadata->getAssociationMapping($fieldassoc)['type'] & OrmClassMetadata::TO_ONE) {
+                $fields[] = Field::new($fieldassoc)->setSortable(true);
             }
         }
 
@@ -257,18 +255,16 @@ final class MakeCrudit extends AbstractMaker
     {
         $tabs = [];
 
-        /** @var ClassMetadataInfo $metadata */
+        /** @var OrmClassMetadata $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
-        if ($metadata instanceof ClassMetadata) {
-            foreach ($metadata->getAssociationNames() as $associationName) {
-                if ($metadata->getAssociationMapping($associationName)['type'] & ClassMetadataInfo::TO_MANY) {
-                    $tabs['sublist'][] = [
-                        'type' => 'sublist',
-                        'label' => 'tab.' . strtolower($associationName),
-                        'property' => lcfirst($this->getBasename($entityClass)),
-                        'linkedEntity' => $this->getBasename($metadata->getAssociationMapping($associationName)['targetEntity']),
-                    ];
-                }
+        foreach ($metadata->getAssociationNames() as $associationName) {
+            if ($metadata->getAssociationMapping($associationName)['type'] & OrmClassMetadata::TO_MANY) {
+                $tabs['sublist'][] = [
+                    'type' => 'sublist',
+                    'label' => 'tab.' . strtolower($associationName),
+                    'property' => lcfirst($this->getBasename($entityClass)),
+                    'linkedEntity' => $this->getBasename($metadata->getAssociationMapping($associationName)['targetEntity']),
+                ];
             }
         }
 
@@ -279,26 +275,24 @@ final class MakeCrudit extends AbstractMaker
     {
         $filters = [];
 
-        /** @var ClassMetadataInfo $metadata */
+        /** @var OrmClassMetadata $metadata */
         $metadata = $this->entityHelper->getMetadata($entityClass);
-        if ($metadata instanceof ClassMetadata) {
-            foreach ($metadata->getFieldNames() as $fieldname) {
-                if ($fieldname === "id") {
-                    continue;
-                }
-
-                $filters[] = $this->getFilterType($metadata, $fieldname);
+        foreach ($metadata->getFieldNames() as $fieldname) {
+            if ($fieldname === "id") {
+                continue;
             }
 
-            foreach ($metadata->getAssociationNames() as $fieldassoc) {
-                $filters[] = $this->getFilterType($metadata, $fieldassoc);
-            }
+            $filters[] = $this->getFilterType($metadata, $fieldname);
+        }
+
+        foreach ($metadata->getAssociationNames() as $fieldassoc) {
+            $filters[] = $this->getFilterType($metadata, $fieldassoc);
         }
 
         return $filters;
     }
 
-    public function getFilterType(ClassMetadataInfo $metadata, string $property): array
+    public function getFilterType(OrmClassMetadata $metadata, string $property): array
     {
         $fields = explode(".", $property);
         $multiLevelProperty = str_replace(".", ":", $property);
@@ -315,13 +309,13 @@ final class MakeCrudit extends AbstractMaker
                     break;
                 }
 
-                /** @var ClassMetadataInfo $metadata */
+                /** @var OrmClassMetadata $metadata */
                 $association = $metadata->getAssociationMapping($field);
                 $metadata = $this->entityHelper->getMetadata($association["targetEntity"]);
             }
         }
 
-        /** @var ClassMetadataInfo $metadata */
+        /** @var OrmClassMetadata $metadata */
         if ($metadata->hasAssociation($property)) {
             $mapping = $metadata->getAssociationMapping($property);
 

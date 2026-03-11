@@ -3,7 +3,7 @@
 namespace Lle\CruditBundle\Form;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
-use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
+use Vich\UploaderBundle\Mapping\Attribute\UploadableField;
 
 class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 {
@@ -187,8 +187,6 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                 return $this->cache[$class] = [$em->getClassMetadata($class), $name];
             } catch (MappingException $e) {
                 // not an entity or mapped super class
-            } catch (LegacyMappingException $e) {
-                // not an entity or mapped super class, using Doctrine ORM 2.2
             }
         }
 
@@ -215,7 +213,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             return null;
         }
 
-        /** @var ClassMetadataInfo $classMetadata */
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $classMetadatas[0];
 
         // Check whether the field exists and is nullable or not
@@ -256,7 +254,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         /** @var array $ret */
         $ret = $this->getMetadata($class);
         if ($ret) {
-            /** @var ClassMetadataInfo $classMetadata */
+            /** @var ClassMetadata $classMetadata */
             $classMetadata = $ret[0];
 
             if (isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {
@@ -283,7 +281,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         /** @var array $ret */
         $ret = $this->getMetadata($class);
         if ($ret) {
-            /** @var ClassMetadataInfo $classMetadata */
+            /** @var ClassMetadata $classMetadata */
             $classMetadata = $ret[0];
 
             if (isset($classMetadata->fieldMappings[$property]) && !$classMetadata->hasAssociation($property)) {

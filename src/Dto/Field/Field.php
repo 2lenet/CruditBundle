@@ -24,7 +24,7 @@ class Field
 
     private ?string $template = null;
 
-    private ?int $ruptGroup = 0;
+    private int $ruptGroup = 0;
 
     private ?string $role = null;
 

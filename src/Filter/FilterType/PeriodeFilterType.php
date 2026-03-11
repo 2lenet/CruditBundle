@@ -33,7 +33,7 @@ class PeriodeFilterType extends AbstractFilterType
 
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
-        $query = $this->getPattern($op, $column, $alias, $column, $paramname) ?? '';
+        $query = $this->getPattern($op, $column, $alias, $column, $paramname);
         $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
 
         if (isset($this->data['value']) && $this->data['value']) {

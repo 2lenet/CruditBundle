@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TitleConfig extends AbstractBrickConfig
 {
-    private ?DatasourceInterface $datasource;
+    private ?DatasourceInterface $datasource = null;
 
     public function setCrudConfig(CrudConfigInterface $crudConfig): self
     {
