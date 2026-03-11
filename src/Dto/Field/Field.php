@@ -24,7 +24,7 @@ class Field
 
     private ?string $template = null;
 
-    private ?int $ruptGroup = 0;
+    private int $ruptGroup = 0;
 
     private ?string $role = null;
 
@@ -35,6 +35,9 @@ class Field
     private bool $multiple = false;
 
     private ?string $info = null;
+
+    /** @var callable|null $editableIf */
+    protected $editableIf = null;
 
     public function __construct(string $name, ?string $type = null, array $options = [])
     {
@@ -90,6 +93,18 @@ class Field
     public function setEditInPlace(bool $editInPlace): self
     {
         $this->editInPlace = $editInPlace;
+
+        return $this;
+    }
+
+    public function getEditableIf(): ?callable
+    {
+        return $this->editableIf;
+    }
+
+    public function setEditableIf(?callable $editableIf): self
+    {
+        $this->editableIf = $editableIf;
 
         return $this;
     }

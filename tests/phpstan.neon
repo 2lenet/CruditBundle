@@ -18,3 +18,8 @@ parameters:
             identifier: missingType.iterableValue
         -
             identifier: missingType.generics
+        -
+            identifier: trait.unused
+            paths:
+                - ../src/Controller/TraitCrudController.php
+                - ../src/Test/

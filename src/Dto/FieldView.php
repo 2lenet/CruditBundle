@@ -32,7 +32,7 @@ class FieldView
 
     public function setParentResource(?object $resource): self
     {
-        $this->resource = $resource;
+        $this->parentResource = $resource;
 
         return $this;
     }
@@ -91,5 +91,10 @@ class FieldView
         $this->config = $config;
 
         return $this;
+    }
+
+    public function isEditable(mixed $resource = null): bool
+    {
+        return !$this->field->getEditableIf() || call_user_func($this->field->getEditableIf(), $resource);
     }
 }

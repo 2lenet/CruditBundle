@@ -15,7 +15,6 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('lle_crudit');
         $rootNode = $treeBuilder->getRootNode();
         $children = $rootNode->children();
-        /** @phpstan-ignore-next-line */
         $children
             ->scalarNode('default_currency_alignment')
                 ->defaultValue('right')
