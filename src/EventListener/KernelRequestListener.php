@@ -47,6 +47,7 @@ class KernelRequestListener
             $session->set('lle_crudit_referers', json_encode($cruditReferer));
         } elseif (
             $requestMethod !== 'POST'
+            && $referer
             && (!$cruditReferer || end($cruditReferer) !== $referer)
             && $referer !== $requestUri
         ) {
