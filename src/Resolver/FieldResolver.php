@@ -95,8 +95,7 @@ class FieldResolver
         }
 
         $fieldView = (new FieldView($field, $value))
-            ->setResource($resource)
-            ->setParentResource($subResource)
+            ->setResource($subResource)
             ->setConfig($crudConfig);
 
         return $this->fieldRegistry->get($type)

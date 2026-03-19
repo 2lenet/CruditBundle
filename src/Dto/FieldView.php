@@ -14,7 +14,6 @@ class FieldView
     private ?string $stringValue;
     private mixed $options;
     private ?object $resource = null;
-    private ?object $parentResource = null;
     private ?CrudConfigInterface $config = null;
 
     public function __construct(Field $field, mixed $value)
@@ -30,21 +29,9 @@ class FieldView
         return $this;
     }
 
-    public function setParentResource(?object $resource): self
-    {
-        $this->parentResource = $resource;
-
-        return $this;
-    }
-
     public function getResource(): ?object
     {
         return $this->resource;
-    }
-
-    public function getParentResource(): ?object
-    {
-        return $this->parentResource;
     }
 
     public function setStringValue(?string $stringValue): self
