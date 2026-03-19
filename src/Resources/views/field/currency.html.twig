@@ -2,8 +2,8 @@
     {% set value =  value / 100 %}
 {% endif %}
 {% if
-    (view.field.editInPlace and view.isEditable(resource) and view.field.options['editRole'] is not defined)
-    or (view.field.editInPlace and view.isEditable(resource) and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
+    (view.field.editInPlace and (view.isEditable is not defined or view.isEditable(resource)) and view.field.options['editRole'] is not defined)
+    or (view.field.editInPlace and (view.isEditable is not defined or view.isEditable(resource)) and view.field.options['editRole'] is defined and is_granted(view.field.options['editRole'], resource))
 %}
     {% set edit_url = path(view.field.options['edit_route'], {
         id: resource.id,
