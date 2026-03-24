@@ -124,6 +124,13 @@ class GedmoTranslatableFieldManager
                     if ($needAddTranslation && $value !== null) {
                         $entity->addTranslation(new $translationClassName($locale, $fieldName, $value));
                     }
+
+                    if ($locale === $defaultLocale) {
+                        // we need to set the translation content in the entity when the translated locale is the default locale
+                        // because gedmo uses the entity content when the locale is the defaut locale
+                        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+                        $propertyAccessor->setValue($entity, $fieldName, $value);
+                    }
                 } else {
                     /** @var TranslationRepository $translationRepository */
                     $translationRepository = $this->getTranslationRepository($entity);
