@@ -7,7 +7,6 @@ use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 trait TestHelperTrait
 {
@@ -21,7 +20,6 @@ trait TestHelperTrait
         /** @var RouterInterface $router */
         $router = static::getContainer()->get(RouterInterface::class);
         $this->router = $router;
-        $this->stopwatch = new Stopwatch();
 
         $this->loginUser();
     }
@@ -64,13 +62,7 @@ trait TestHelperTrait
         }
 
         $url = $this->router->generate($element->getPath()->getRoute(), $element->getPath()->getParams());
-        $this->stopwatch->start($url);
         $this->client->request('GET', $url);
-        $this->stopwatch->stop($url);
-        $e = $this->stopwatch->getEvent($url); // dumps e.g. '4.50 MiB - 26 ms'
-        if ($e->getDuration() > 500) {
-            $this->addWarning("page > 500ms " . $url . " " . $e->getDuration() . "ms");
-        }
         $code = $this->client->getResponse()->getStatusCode();
         if ($code != '200') {
             echo($this->client->getResponse()->getStatusCode());
@@ -99,13 +91,7 @@ trait TestHelperTrait
         foreach ($elements as $element) {
             foreach ($element->parentNode->attributes as $attribute) {
                 if ($attribute->nodeName === 'href') {
-                    $this->stopwatch->start($attribute->value);
                     $this->client->request('GET', $attribute->value);
-                    $this->stopwatch->stop($attribute->value);
-                    $e = $this->stopwatch->getEvent($attribute->value); // dumps e.g. '4.50 MiB - 26 ms'
-                    if ($e->getDuration() > 500) {
-                        $this->addWarning("page > 500ms " . $attribute->value . " " . $e->getDuration() . "ms");
-                    }
                     $code = $this->client->getResponse()->getStatusCode();
 
                     if ($code != '200') {
