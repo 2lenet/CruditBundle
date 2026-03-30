@@ -15,7 +15,7 @@ class DateFilterType extends AbstractFilterType
     public function getOperators(): array
     {
         return [
-            FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
+            FilterTypeInterface::OPERATOR_CONTAINS => ['icon' => 'fas fa-equals'],
             FilterTypeInterface::OPERATOR_BEFORE => ['icon' => 'fas fa-less-than'],
             FilterTypeInterface::OPERATOR_AFTER => ['icon' => 'fas fa-greater-than'],
         ];
