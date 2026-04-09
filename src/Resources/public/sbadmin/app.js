@@ -3423,7 +3423,7 @@ function initTomSelect() {
       labelField: 'text',
       searchField: 'text',
       maxOptions: 2000,
-      maxItems: select.dataset.maxitems,
+      maxItems: parseInt(select.dataset.maxitems),
       preload: true,
       options: inioptions,
       plugins: ['virtual_scroll', 'remove_button'],
@@ -3484,6 +3484,9 @@ function initTomSelect() {
         loading_more: function loading_more() {
           return "<div class=\"loading-more-results py-2 d-flex align-items-center\"><div class=\"spinner\"></div> Chargement en cours</div>";
         },
+        item: function item(data, escape) {
+          return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
+        },
         no_more_results: function no_more_results() {
           return '';
         }
@@ -3493,7 +3496,7 @@ function initTomSelect() {
   // Normal select
   document.querySelectorAll('input.tom-select:not(.tomselected)').forEach(function (select) {
     var settings = {
-      maxItems: select.dataset.maxitems,
+      maxItems: parseInt(select.dataset.maxitems),
       plugins: ['remove_button'],
       valueField: 'id',
       labelField: 'text',
@@ -3520,6 +3523,11 @@ function initTomSelect() {
       onItemAdd: function onItemAdd() {
         select.parentElement.querySelector('.ts-control > input').value = '';
         select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+      },
+      render: {
+        item: function item(data, escape) {
+          return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
+        }
       }
     };
     if (select.dataset.options !== undefined) {
@@ -3596,6 +3604,11 @@ function initChoiceTomSelect() {
   document.querySelectorAll('select.choice-tom-select:not(.tomselected)').forEach(function (select) {
     new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, {
       plugins: ['remove_button'],
+      render: {
+        item: function item(data, escape) {
+          return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
+        }
+      },
       onItemAdd: function onItemAdd() {
         select.parentElement.querySelector('.ts-control > input').value = '';
         select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
@@ -3677,7 +3690,9 @@ function addFormToCollection(e) {
   });
   if (collectionHolder.childElementCount > 1) {
     // > 1 because there's the labels row
-    collectionHolder.appendChild(document.createElement('hr'));
+    var horizontalLine = document.createElement('hr');
+    horizontalLine.classList = 'mt-0 mb-2';
+    collectionHolder.appendChild(horizontalLine);
   }
   collectionHolder.appendChild(item);
   addTagFormDeleteLink(collectionHolder.lastChild);
@@ -3687,6 +3702,7 @@ function addFormToCollection(e) {
 }
 function addTagFormDeleteLink(item) {
   var removeFormButton = document.createElement('button');
+  removeFormButton.type = 'button';
   var icon = document.createElement('i');
   icon.classList = 'fa fa-trash pe-none';
   removeFormButton.appendChild(icon);
