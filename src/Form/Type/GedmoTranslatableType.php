@@ -38,7 +38,7 @@ class GedmoTranslatableType extends AbstractType
         TranslatorInterface $translator,
     ) {
         $this->defaultLocale = $defaultLocale;
-        $this->locales = (\count($locales) <= 1) ? ['fr', 'en', 'de'] : $locales;
+        $this->locales = (\count($locales) < 1) ? ['fr', 'en', 'de'] : $locales;
         $this->translatablefieldmanager = $translatableFieldManager;
         $this->currentLocale = $translator->getLocale();
     }
