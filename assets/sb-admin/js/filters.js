@@ -11,7 +11,7 @@ export function initTomSelect() {
                 labelField: 'text',
                 searchField: 'text',
                 maxOptions: 2000,
-                maxItems: select.dataset.maxitems,
+                maxItems: parseInt(select.dataset.maxitems),
                 preload: true,
                 options: inioptions,
                 plugins: [
@@ -74,6 +74,9 @@ export function initTomSelect() {
                     loading_more() {
                         return `<div class="loading-more-results py-2 d-flex align-items-center"><div class="spinner"></div> Chargement en cours</div>`;
                     },
+                    item: function (data, escape) {
+                        return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
+                    },
                     no_more_results() {
                         return '';
                     },
@@ -84,7 +87,7 @@ export function initTomSelect() {
     // Normal select
     document.querySelectorAll('input.tom-select:not(.tomselected)').forEach(select => {
         const settings = {
-            maxItems: select.dataset.maxitems,
+            maxItems: parseInt(select.dataset.maxitems),
             plugins: [
                 'remove_button',
             ],
@@ -111,6 +114,11 @@ export function initTomSelect() {
             onItemAdd() {
                 select.parentElement.querySelector('.ts-control > input').value = '';
                 select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+            },
+            render: {
+                item: function (data, escape) {
+                    return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
+                },
             },
         };
 

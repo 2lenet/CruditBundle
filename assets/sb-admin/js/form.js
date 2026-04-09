@@ -9,6 +9,11 @@ export function initChoiceTomSelect() {
                 plugins: [
                     'remove_button',
                 ],
+                render: {
+                    item: function(data, escape) {
+                        return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
+                    },
+                },
                 onItemAdd() {
                     select.parentElement.querySelector('.ts-control > input').value = '';
                     select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
