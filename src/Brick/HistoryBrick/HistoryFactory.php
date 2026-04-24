@@ -93,8 +93,8 @@ class HistoryFactory extends AbstractBasicBrickFactory
         $history = [];
 
         foreach ($logs as $log) {
+            $data = [];
             if ($log->getData()) {
-                $data = [];
                 /** @var class-string $objectClass */
                 $objectClass = $log->getObjectClass();
                 $metadata = $this->em->getClassMetadata($objectClass);
@@ -140,12 +140,12 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         ]);
                     }
                 }
-                $history[] = [
-                    "log" => $log,
-                    "entity" => basename(str_replace('\\', '/', $log->getObjectClass())),
-                    "data" => $data,
-                ];
             }
+            $history[] = [
+                "log" => $log,
+                "entity" => basename(str_replace('\\', '/', $log->getObjectClass())),
+                "data" => $data,
+            ];
         }
 
         return $history;
