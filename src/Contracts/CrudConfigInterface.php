@@ -124,7 +124,7 @@ interface CrudConfigInterface
 
     public function getNumberCardsPerRow(): int;
 
-    public function getCssClassColumnsByCard(): string;
+    public function getCssClassColumnsCard(): string;
 
     public function getCssClassColumnsShow(): string;
 }
