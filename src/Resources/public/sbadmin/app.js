@@ -3886,13 +3886,14 @@ window.addEventListener('DOMContentLoaded', function () {
       firstUrl: function firstUrl(query) {
         var urls = {};
         dataUrl.forEach(function (url) {
+          var _url$limit;
           var entity = url['entity'];
           var params = new URLSearchParams({
             q: query,
-            limit: url['limit'],
+            limit: (_url$limit = url['limit']) !== null && _url$limit !== void 0 ? _url$limit : 0,
             offset: 0
           });
-          if (Object.keys(url)[0] == 'url') {
+          if ('url' in url) {
             urls[entity] = url['url'] + '?' + params.toString();
           } else {
             urls[entity] = '/' + url['entity'] + '/autocomplete?' + params.toString();

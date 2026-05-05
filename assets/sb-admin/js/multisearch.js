@@ -54,11 +54,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     let entity = url['entity'];
                     let params = new URLSearchParams({
                         q: query,
-                        limit: url['limit'],
+                        limit: url['limit'] ?? 0,
                         offset: 0,
                     });
 
-                    if (Object.keys(url)[0] == 'url') {
+                    if ('url' in url) {
                         urls[entity] = url['url'] + '?' + params.toString();
                     } else {
                         urls[entity] = '/' + url['entity'] + '/autocomplete?' + params.toString();
