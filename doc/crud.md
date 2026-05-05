@@ -41,6 +41,16 @@ public function getDefaultAutocompleteSort(): ?array
   {
       return [15, 30, 45, 60];
   }
+  
+  
+```
+
+## How to configure cssClass for a field in a card:
+
+Use `setCardCssClass` on a field to apply a CSS class to it in the card view.
+
+```php
+Field::new('myField')->setCardCssClass('col-md-6');
 ```
 
 ## How to add actions:
@@ -111,7 +121,7 @@ $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
     ->setDisplayIf(fn(Resource $resource) => $resource->isActive());
 ```
 
-You can configure editable conditions on ```lle\src\Dto\Field``` by adding 
+You can configure editable conditions on ```lle\src\Dto\Field``` by adding
 ```php
  Field::new()->setEditInPlace(true)->setEditableIf(callback) 
 ```
