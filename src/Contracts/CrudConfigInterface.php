@@ -119,4 +119,12 @@ interface CrudConfigInterface
     public function getTabConfig(): ?TabConfig;
 
     public function getSublistTotalFields(): array;
+
+    public function getCssClassColumnsForm(): string;
+
+    public function getNumberCardsPerRow(): int;
+
+    public function getCssClassColumnsByCard(): string;
+
+    public function getCssClassColumnsShow(): string;
 }

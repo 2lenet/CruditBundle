@@ -30,3 +30,4 @@ jobs:
                 with:
                     configuration: tests/phpstan.neon
                     memory_limit: 256M
+                    php_version: ${{ matrix.php_version }}
