@@ -9,6 +9,20 @@ We have three configurations for managing the alignment of numbers with three po
 - `default_integer_alignment`
 - `default_number_alignment`
 
+We have four configurations for columns/card display :
+- `css_class_columns_form` — CSS class applied to each field column in form view
+- `css_class_columns_show` — CSS class applied to each field column in show view
+- `css_class_columns_card` — CSS class applied to each field column in card view
+- `number_cards_per_row` — number of cards displayed per row
+
+```yaml
+lle_crudit:
+    css_class_columns_form: 'col-sm-12 col-md-6'
+    css_class_columns_show: 'col-sm-12 col-md-6'
+    css_class_columns_card: 'col-sm-12 col-md-4'
+    number_cards_per_row: 3
+```
+
 If you want to have roles on all your bricks (sublist, form, template, etc.), you can add the following configuration:
 - `generate_default_role`
 
