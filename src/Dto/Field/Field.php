@@ -134,6 +134,13 @@ class Field
         return $this;
     }
 
+    public function setCardCssClass(?string $cardCssClass): self
+    {
+        $this->options["cardCssClass"] = $cardCssClass;
+
+        return $this;
+    }
+
     public function hasCascade(): bool
     {
         return \str_contains($this->getName(), '.');
