@@ -75,6 +75,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'default_path' => $brickConfigurator->getCrudConfig()->getPath(),
                 'referer' => $referer,
+                'css_class_columns_form' => $brickConfigurator->getCrudConfig()->getCssClassColumnsForm(),
             ]);
 
         return $view;
@@ -113,9 +114,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 ['allow_extra_fields' => true]
             );
             foreach ($brickConfigurator->getFields() as $field) {
-                /** @var class-string<FormTypeInterface>|null $type */
-                $type = $field->getType();
-                $formBuilder->add($field->getName(), $type, $field->getOptions());
+                $formBuilder->add($field->getName(), $field->getType(), $field->getOptions());
             }
 
             return $formBuilder->getForm();

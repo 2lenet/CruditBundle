@@ -106,6 +106,9 @@ class Configuration implements ConfigurationInterface
                 ->acceptAndWrap(['string'])
                 ->scalarPrototype()
                 ->end()
+            ->end()
+            ->scalarNode('css_class_columns_form')
+                ->defaultValue('col-sm-12 col-md-6 col-lg-4')
             ->end();
 
         return $treeBuilder;
