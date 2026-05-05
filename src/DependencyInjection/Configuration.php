@@ -109,6 +109,15 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('css_class_columns_form')
                 ->defaultValue('col-sm-12 col-md-6 col-lg-4')
+            ->end()
+            ->scalarNode('css_class_columns_show')
+                ->defaultValue('col-sm-12 col-md-6 col-lg-4')
+            ->end()
+            ->scalarNode('css_class_columns_card')
+                ->defaultValue('col-sm-12 col-md-6 col-lg-4')
+            ->end()
+            ->scalarNode('number_cards_per_row')
+                ->defaultValue(1)
             ->end();
 
         return $treeBuilder;

@@ -447,4 +447,19 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     {
         return (string)$this->parameterBag->get('lle_crudit.css_class_columns_form');
     }
+
+    public function getNumberCardsPerRow(): int
+    {
+        return (int)$this->parameterBag->get('lle_crudit.number_cards_per_row');
+    }
+
+    public function getCssClassColumnsByCard(): string
+    {
+        return (string)$this->parameterBag->get('lle_crudit.css_class_columns_card');
+    }
+
+    public function getCssClassColumnsShow(): string
+    {
+        return (string)$this->parameterBag->get('lle_crudit.css_class_columns_show');
+    }
 }
