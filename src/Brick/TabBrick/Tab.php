@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\TabBrick;
 
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class Tab
 {
@@ -17,6 +18,9 @@ class Tab
 
     /** @var callable|null $displayIf */
     protected $displayIf = null;
+
+    /** @var callable|null $displayIfByRequest */
+    protected $displayIfByRequest = null;
 
     private function __construct(array $bricks)
     {
@@ -71,9 +75,21 @@ class Tab
         return !$this->displayIf || call_user_func($this->displayIf, $resource);
     }
 
+    public function isDisplayedByRequest(?Request $request = null): bool
+    {
+        return !$this->displayIfByRequest || call_user_func($this->displayIfByRequest, $request);
+    }
+
     public function setDisplayIf(?callable $displayIf): self
     {
         $this->displayIf = $displayIf;
+
+        return $this;
+    }
+
+    public function setDisplayIfByRequest(?callable $displayIfByRequest): self
+    {
+        $this->displayIfByRequest = $displayIfByRequest;
 
         return $this;
     }

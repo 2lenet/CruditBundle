@@ -60,7 +60,7 @@
                             {% set resource = view.data.resource %}
                         {% endif %}
 
-                        {% if view.isDisplayed(resource) %}
+                        {% if view.isDisplayed(resource) and view.isDisplayedByRequest(app.request) %}
                             {% include view.indexTemplate with { 'view': view, 'tab': tab } only %}
                         {% endif %}
                     {% endfor %}

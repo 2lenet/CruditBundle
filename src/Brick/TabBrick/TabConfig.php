@@ -33,16 +33,32 @@ class TabConfig extends AbstractBrickConfig
         BrickConfigInterface $brickConfig,
         ?string $role = null,
         ?callable $displayIf = null,
+        ?callable $displayIfByRequest = null,
     ): self {
-        $this->addTab(Tab::new($label, [$brickConfig])->setRole($role)->setDisplayIf($displayIf));
+        $this->addTab(
+            Tab::new($label, [$brickConfig])
+                ->setRole($role)
+                ->setDisplayIf($displayIf)
+                ->setDisplayIfByRequest($displayIfByRequest)
+        );
 
         return $this;
     }
 
     /** @param BrickConfigInterface[] $bricksConfig */
-    public function adds(string $label, array $bricksConfig, ?string $role = null, ?callable $displayIf = null): self
-    {
-        $this->addTab(Tab::new($label, $bricksConfig)->setRole($role)->setDisplayIf($displayIf));
+    public function adds(
+        string $label,
+        array $bricksConfig,
+        ?string $role = null,
+        ?callable $displayIf = null,
+        ?callable $displayIfByRequest = null
+    ): self {
+        $this->addTab(
+            Tab::new($label, $bricksConfig)
+                ->setRole($role)
+                ->setDisplayIf($displayIf)
+                ->setDisplayIfByRequest($displayIfByRequest)
+        );
 
         return $this;
     }
