@@ -13,13 +13,14 @@ $indexBricks[] = ListConfig::new()
 
 ## How to display the brick under certain conditions
 
-You can add conditions to the brick, using the resource or not, in order to decide whether to display the brick based on the data.
+You can add conditions to the brick, using the resource or the request, in order to decide whether to display the brick based on the data or the request.
 
-To do this, simply use the method `setDisplayIf`:
+To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request):
 
 ```php
 SublistConfig::new('subResourceField', $this->subResourceCrudConfig)
     ->setFields($this->subResourceCrudConfig->getFields(CrudConfigInterface::INDEX))
     ->setActions($this->subResourceCrudConfig->getItemActions())
     ->setDisplayIf(fn(Resource $resource) => $resource->isActive())
+    ->setDisplayIfByRequest(fn(Request $request) => $request->query->has('actif'))
 ```

@@ -80,9 +80,9 @@ $tabConf->adds('tab.subResource', [
 
 ## How to display the tab under certain conditions
 
-You can add conditions to the tab, using the resource or not, in order to decide whether to display the tab based on the data.
+You can add conditions to the tab, using the resource or not, in order to decide whether to display the tab based on the data or the request.
 
-To do this, simply use the method `setDisplayIf`:
+To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request):
 
 ```php
 $tabConf = TabConfig::new();
@@ -95,7 +95,7 @@ $tabConf->adds('tab.subResource', [
         ->setSublist('subResourceField')
         ->setDatasource($this->subResourceCrudConfig->getDatasource())
         ->setSuccessRedirectPath($this->getPath(CrudConfigInterface::SHOW)),
-], 'ROLE_RESOURCE_TAB_SUBRESOURCE', fn(Resource $resource) => $resource->isActive());
+], 'ROLE_RESOURCE_TAB_SUBRESOURCE', fn(Resource $resource) => $resource->isActive(), fn(Request $request) => $request->query->has('actif'));
 ```
 
 ## Sublists

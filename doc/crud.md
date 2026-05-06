@@ -96,9 +96,9 @@ If you want to add a role for your action:
 
 ## How to display the action under certain conditions
 
-You can add conditions to actions, using the resource or not, in order to decide whether to display the action based on the data.
+You can add conditions to actions, using the resource or not, in order to decide whether to display the action based on the data or the request.
 
-To do this, simply use the method `setDisplayIf`:
+To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request):
 
 ```php
 $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
@@ -108,7 +108,8 @@ $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
 )
     ->setCssClass('btn btn-primary btn-sm crudit-action')
     ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW))
-    ->setDisplayIf(fn(Resource $resource) => $resource->isActive());
+    ->setDisplayIf(fn(Resource $resource) => $resource->isActive())
+    ->setDisplayIfByRequest(fn(Request $request) => $request->query->has('actif'));
 ```
 
 You can configure editable conditions on ```lle\src\Dto\Field``` by adding 
