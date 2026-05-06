@@ -35,10 +35,11 @@ class TabConfig extends AbstractBrickConfig
         ?callable $displayIf = null,
         ?callable $displayIfByRequest = null,
     ): self {
-        $this->addTab(Tab::new($label, [$brickConfig])
-            ->setRole($role)
-            ->setDisplayIf($displayIf)
-            ->setDisplayIfByRequest($displayIfByRequest)
+        $this->addTab(
+            Tab::new($label, [$brickConfig])
+                ->setRole($role)
+                ->setDisplayIf($displayIf)
+                ->setDisplayIfByRequest($displayIfByRequest)
         );
 
         return $this;
@@ -52,10 +53,11 @@ class TabConfig extends AbstractBrickConfig
         ?callable $displayIf = null,
         ?callable $displayIfByRequest = null
     ): self {
-        $this->addTab(Tab::new($label, $bricksConfig)
-            ->setRole($role)
-            ->setDisplayIf($displayIf)
-            ->setDisplayIfByRequest($displayIfByRequest)
+        $this->addTab(
+            Tab::new($label, $bricksConfig)
+                ->setRole($role)
+                ->setDisplayIf($displayIf)
+                ->setDisplayIfByRequest($displayIfByRequest)
         );
 
         return $this;
