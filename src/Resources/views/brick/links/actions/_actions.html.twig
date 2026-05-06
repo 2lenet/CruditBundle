@@ -21,12 +21,7 @@
     %}
 {% endif %}
 
-{% set isDisplayed = false %}
-{% if action.resource is defined %}
-    {% set isDisplayed = action.isDisplayed(action.resource) %}
-{% else %}
-    {% set isDisplayed = action.isDisplayed(null) %}
-{% endif %}
+{% set isDisplayed = action.isDisplayed(action.resource is defined ? action.resource : null) and action.isDisplayedByRequest(app.request) %}
 
 {% if isDisplayed and not (disabled and crudit_hide_if_disabled(action)) %}
     {% block actions_item %}

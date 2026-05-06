@@ -26,6 +26,9 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     /** @var callable|null $displayIf */
     protected $displayIf = null;
 
+    /** @var callable|null $displayIfByRequest */
+    protected $displayIfByRequest = null;
+
     private ?string $title = null;
 
     private ?string $titleCss = null;
@@ -131,6 +134,18 @@ abstract class AbstractBrickConfig implements BrickConfigInterface
     public function setDisplayIf(?callable $displayIf): BrickConfigInterface
     {
         $this->displayIf = $displayIf;
+
+        return $this;
+    }
+
+    public function getDisplayIfByRequest(): ?callable
+    {
+        return $this->displayIfByRequest;
+    }
+
+    public function setDisplayIfByRequest(?callable $displayIfByRequest): BrickConfigInterface
+    {
+        $this->displayIfByRequest = $displayIfByRequest;
 
         return $this;
     }

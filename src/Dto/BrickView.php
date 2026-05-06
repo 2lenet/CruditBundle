@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Dto;
 
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class BrickView
 {
@@ -27,6 +28,9 @@ class BrickView
     /** @var callable|null $displayIf */
     protected $displayIf = null;
 
+    /** @var callable|null $displayIfByRequest */
+    protected $displayIfByRequest = null;
+
     public function __construct(BrickConfigInterface $brickConfig, ?string $template = null, array $data = [])
     {
         $this->template = $template;
@@ -36,6 +40,7 @@ class BrickView
         $this->id = $brickConfig->getId();
         $this->options = $brickConfig->getOptions();
         $this->displayIf = $brickConfig->getDisplayIf();
+        $this->displayIfByRequest = $brickConfig->getDisplayIfByRequest();
         $this->setPath(
             $brickConfig->getCrudConfig()->getPath('brickdata', [
                 'idBrick' => $brickConfig->getId(),
@@ -167,5 +172,10 @@ class BrickView
     public function isDisplayed(mixed $resource = null): bool
     {
         return !$this->displayIf || call_user_func($this->displayIf, $resource);
+    }
+
+    public function isDisplayedByRequest(?Request $request = null): bool
+    {
+        return !$this->displayIfByRequest || call_user_func($this->displayIfByRequest, $request);
     }
 }

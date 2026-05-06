@@ -42,5 +42,7 @@ interface BrickConfigInterface
 
     public function getDisplayIf(): ?callable;
 
+    public function getDisplayIfByRequest(): ?callable;
+
     public function getTitle(): ?string;
 }
