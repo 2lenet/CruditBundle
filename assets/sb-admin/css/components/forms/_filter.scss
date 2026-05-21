@@ -59,6 +59,16 @@ $input-group-prepend-length: 60px;
                 }
             }
 
+            &.multi {
+                height: auto;
+
+                & .ts-control {
+                    position: relative;
+                    height: auto;
+                    flex-wrap: wrap;
+                }
+            }
+
             &.ts-dropdown {
                 left: -#{$input-group-prepend-length};
                 min-width: min(400px, 75vw);
