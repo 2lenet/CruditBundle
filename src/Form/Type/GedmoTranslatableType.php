@@ -87,6 +87,7 @@ class GedmoTranslatableType extends AbstractType
         // template vars
         $view->vars['locales'] = $this->locales;
         $view->vars['currentlocale'] = $this->currentLocale;
+        $view->vars['defaultlocale'] = $this->defaultLocale;
         $view->vars['tablabels'] = $this->getTabLabels();
     }
 

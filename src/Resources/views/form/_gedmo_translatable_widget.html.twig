@@ -26,6 +26,11 @@
                     {{ form_widget(attribute(form, locale), {'attr': {'class': 'form-control', 'placeholder': '', 'autocomplete': 'new-password'}}) }}
                     {{ form_label(form) }}
                 </div>
+                {% if locale == defaultlocale and not form.submitted and attribute(form, locale).vars.data is empty %}
+                    <div class="form-text text-warning">
+                        {{ crudit_gedmo_default_locale_helper() }}
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
