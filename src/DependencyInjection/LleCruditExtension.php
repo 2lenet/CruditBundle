@@ -19,6 +19,62 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class LleCruditExtension extends Extension implements ExtensionInterface
 {
+    private const DEFAULT_ICONS = [
+        // Common UI
+        'search' => 'fas fa-search',
+        'plus' => 'fas fa-plus',
+        'minus' => 'fas fa-minus',
+        'check' => 'fas fa-check',
+        'close' => 'fa fa-close',
+        'window_close' => 'fa fa-window-close',
+        'download' => 'fas fa-download',
+        'info' => 'fas fa-info-circle',
+        'warning' => 'fas fa-exclamation-triangle',
+        'kebab' => 'fas fa-ellipsis-v',
+        'user' => 'fas fa-user',
+        'bell' => 'fas fa-bell',
+        'envelope' => 'fas fa-envelope',
+        'external_link' => 'fas fa-external-link-alt',
+        'bars' => 'fa fa-bars',
+        'sign_out' => 'fas fa-sign-out-alt',
+        'arrow_right' => 'fas fa-arrow-right',
+        'clock' => 'far fa-clock',
+        'exchange' => 'fa fa-exchange',
+        'folder_plus' => 'fas fa-folder-plus',
+        'file' => 'fas fa-file-alt',
+        'donate' => 'fas fa-donate',
+        'filter' => 'fa fa-filter',
+        'angle_up' => 'fas fa-angle-up',
+        'chevron_up' => 'fa fa-chevron-up',
+        'chevron_down' => 'fa fa-chevron-down',
+        // Pager
+        'pager_first' => 'fa fa-angle-double-left',
+        'pager_prev' => 'fa fa-angle-left',
+        'pager_next' => 'fa fa-angle-right',
+        'pager_last' => 'fa fa-angle-double-right',
+        // Sort
+        'sort' => 'fas fa-sort',
+        'sort_up' => 'fas fa-sort-up',
+        'sort_down' => 'fas fa-sort-down',
+        // Filter operators
+        'op_equal' => 'fas fa-equals',
+        'op_not_equal' => 'fas fa-not-equal',
+        'op_less_than' => 'fas fa-less-than',
+        'op_less_than_equal' => 'fas fa-less-than-equal',
+        'op_greater_than' => 'fas fa-greater-than',
+        'op_greater_than_equal' => 'fas fa-greater-than-equal',
+        'op_interval' => 'fas fa-arrows-alt-h',
+        'op_is_null' => 'far fa-square',
+        'op_is_not_null' => 'fas fa-square',
+        'op_contains' => 'fa fa-text-width',
+        'op_starts_with' => 'far fa-caret-square-right',
+        'op_ends_with' => 'far fa-caret-square-left',
+        'op_in' => 'fas fa-equals',
+        'op_not_in' => 'fas fa-not-equal',
+        'op_before' => 'fas fa-less-than',
+        'op_after' => 'fas fa-greater-than',
+    ];
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -53,6 +109,10 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         $container->setParameter('lle_crudit.css_class_columns_show', $processedConfig['css_class_columns_show']);
         $container->setParameter('lle_crudit.css_class_columns_card', $processedConfig['css_class_columns_card']);
         $container->setParameter('lle_crudit.number_cards_per_row', $processedConfig['number_cards_per_row']);
+        $container->setParameter(
+            'lle_crudit.icons',
+            array_merge(self::DEFAULT_ICONS, $processedConfig['icons'] ?? [])
+        );
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {

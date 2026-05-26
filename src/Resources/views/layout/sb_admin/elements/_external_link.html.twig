@@ -13,7 +13,7 @@
         <span>
             {{ element.libelle|trans }}
             {% if element.target == '_blank' %}
-                &nbsp;<i class="fas fa-external-link-alt external-link"></i>
+                &nbsp;<i class="{{ crudit_icon('external_link') }} external-link"></i>
             {% endif %}
         </span>
     </a>

@@ -21,7 +21,7 @@
                     <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
                 {% endfor %}
                 {% if element.target is defined and element.target %}
-                    &nbsp;<i class="fas fa-external-link-alt external-link"></i>
+                    &nbsp;<i class="{{ crudit_icon('external_link') }} external-link"></i>
                 {% endif %}
             </span>
         </a>
