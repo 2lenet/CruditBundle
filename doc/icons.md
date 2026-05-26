@@ -142,14 +142,17 @@ When you build actions, layout elements, etc. from PHP, use the `Icon` DTO:
 use Lle\CruditBundle\Dto\Icon;
 
 Icon::new('search');                          // <i class="fa fa-search">
-Icon::new('search', Icon::TYPE_FAS);          // <i class="fas fa-search">
-Icon::new('user', Icon::TYPE_FAR);            // <i class="far fa-user">
-Icon::new('github', Icon::TYPE_FAB);          // <i class="fab fa-github">
-Icon::new('search', Icon::TYPE_BI);           // <i class="bi bi-search">
 Icon::new('logo.png', Icon::TYPE_IMG);        // <img src="logo.png">
+
+// Any other pack: the prefix is required as the third argument.
+Icon::new('search', 'fas', 'fa');             // <i class="fas fa-search">
+Icon::new('user', 'far', 'fa');               // <i class="far fa-user">
+Icon::new('github', 'fab', 'fa');             // <i class="fab fa-github">
+Icon::new('search', 'bi', 'bi');              // <i class="bi bi-search">
+Icon::new('home', 'my-pack', 'icon');         // <i class="my-pack icon-home">
 ```
 
-Supported types: `TYPE_FA`, `TYPE_FAS`, `TYPE_FAR`, `TYPE_FAB`, `TYPE_BI`,
-`TYPE_IMG`. If your pack uses an unusual prefix you can also pass it
-explicitly as the third argument: `Icon::new('home', 'my-pack', 'icon')` →
-`my-pack icon-home`.
+Supported built-in types: `TYPE_FA` (default) and `TYPE_IMG`. When you switch
+to another icon pack — any value other than `TYPE_FA`/`TYPE_IMG` — you must
+pass the class prefix used by that pack as the third constructor argument.
+Omitting it throws an `InvalidArgumentException`.
