@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BrickBuilder
 {
-    /** @var BrickView[] */
-    private array $bricks = [];
     private BrickProvider $brickProvider;
 
     public function __construct(
@@ -39,13 +37,13 @@ class BrickBuilder
     /** @return BrickView[] */
     public function build(CrudConfigInterface $crudConfig, string $pageKey): array
     {
-        $bricks = $crudConfig->getBrickConfigs();
-        foreach ($bricks[$pageKey] as $k => $brickConfig) {
+        $bricks = [];
+        foreach ($crudConfig->getBrickConfigs()[$pageKey] as $k => $brickConfig) {
             $this->init($crudConfig, $pageKey, $k, $brickConfig);
-            $this->bricks[] = $this->buildBrick($crudConfig, $pageKey, $brickConfig);
+            $bricks[] = $this->buildBrick($crudConfig, $pageKey, $brickConfig);
         }
 
-        return $this->bricks;
+        return $bricks;
     }
 
     public function buildBrick(
@@ -84,3 +82,4 @@ class BrickBuilder
     {
     }
 }
+

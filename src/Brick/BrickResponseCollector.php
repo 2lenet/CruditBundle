@@ -23,8 +23,11 @@ class BrickResponseCollector
 
     public function handle(Request $request, Response $response): Response
     {
+        $responses = $this->responses;
+        $this->responses = [];
+
         $redirect = [];
-        foreach ($this->responses as $brickRespons) {
+        foreach ($responses as $brickRespons) {
             if ($brickRespons->isRedirect()) {
                 $redirect[] = $brickRespons;
             }
@@ -37,3 +40,4 @@ class BrickResponseCollector
         return $response;
     }
 }
+

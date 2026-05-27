@@ -105,8 +105,10 @@ class HistoryFactory extends AbstractBasicBrickFactory
                     if ($metadata->hasAssociation($property) && is_array($value) && $value) {
                         $type = $metadata->isSingleValuedAssociation($property) ? "single_assoc" : "multi_assoc";
                         $association = $metadata->getAssociationMapping($property);
+                        /** @var class-string $targetEntity */
+                        $targetEntity = $association['targetEntity'];
 
-                        $subItem = $this->em->getRepository($association["targetEntity"])->findOneBy($value);
+                        $subItem = $this->em->getRepository($targetEntity)->findOneBy($value);
                         if ($subItem) {
                             $class = get_class($subItem);
                             /** @var \Stringable $subItem */
