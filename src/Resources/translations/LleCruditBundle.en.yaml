@@ -124,4 +124,4 @@ crudit:
         all_page: "On all pages"
 
     gedmo_translatable:
-        default_locale_helper: "Please fill in the default translation:"
+        default_locale_helper: "Data is always required for the following language:"
