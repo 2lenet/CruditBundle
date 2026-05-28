@@ -75,6 +75,12 @@ services:
         autowire: true
         tags: [twig.extension]
 
+    Lle\CruditBundle\Twig\GedmoTranslatableExtension:
+        arguments:
+            - '%kernel.default_locale%'
+            - '@Symfony\Contracts\Translation\TranslatorInterface'
+        tags: [twig.extension]
+
     # OVERRIDE DoctrineGuesser to add labels "field.[fieldname]" on all form type
     # And guess the good type
 

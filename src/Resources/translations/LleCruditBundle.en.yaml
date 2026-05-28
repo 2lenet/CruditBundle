@@ -122,3 +122,6 @@ crudit:
     text:
         current_page: "Only on current page"
         all_page: "On all pages"
+
+    gedmo_translatable:
+        default_locale_helper: "Data is always required for the following language:"
