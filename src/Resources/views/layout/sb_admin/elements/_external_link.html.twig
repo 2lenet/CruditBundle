@@ -8,7 +8,7 @@
         {% if element.icon and element.icon.img %}
             <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans }}"/>
         {% elseif element.icon %}
-            <i class="nav-icon {{ element.icon.cssClass }}"></i>
+            <i class="nav-icon {{ crudit_icon(element.icon) }}"></i>
         {% endif %}
         <span>
             {{ element.libelle|trans }}

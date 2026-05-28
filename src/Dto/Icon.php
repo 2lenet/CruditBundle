@@ -9,6 +9,7 @@ class Icon
     public const TYPE_FA = 'fa';
     public const TYPE_FAR = 'far';
     public const TYPE_IMG = 'img';
+    public const TYPE_LOGICAL = 'logical';
 
     private const FA_FAMILY = [self::TYPE_FA, self::TYPE_FAR];
 
@@ -21,9 +22,19 @@ class Icon
         return new self($icon, $type, $prefix);
     }
 
+    public static function logical(string $key): self
+    {
+        return new self($key, self::TYPE_LOGICAL);
+    }
+
     public function __construct(string $icon, string $type = self::TYPE_FA, ?string $prefix = null)
     {
-        if (!in_array($type, self::FA_FAMILY, true) && $type !== self::TYPE_IMG && $prefix === null) {
+        if (
+            !in_array($type, self::FA_FAMILY, true)
+            && $type !== self::TYPE_IMG
+            && $type !== self::TYPE_LOGICAL
+            && $prefix === null
+        ) {
             throw new \InvalidArgumentException(sprintf(
                 'Icon prefix is required when using a custom icon pack ("%s"). '
                 . 'Pass it as the third argument: new Icon($name, "%s", "your-prefix").',
@@ -58,7 +69,7 @@ class Icon
 
     public function getCssClass(): string
     {
-        if ($this->isImg()) {
+        if ($this->isImg() || $this->isLogical()) {
             return '';
         }
 
@@ -68,5 +79,10 @@ class Icon
     public function isImg(): bool
     {
         return ($this->getType() === static::TYPE_IMG);
+    }
+
+    public function isLogical(): bool
+    {
+        return ($this->getType() === static::TYPE_LOGICAL);
     }
 }

@@ -84,7 +84,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
             CrudConfigInterface::LABEL_ACTION_LIST,
             $this->getPath(),
-            Icon::new('arrow-circle-left')
+            Icon::logical('arrow_circle_left')
         )
             ->setCssClass('btn btn-sm btn-secondary mt-2 ms-1 mt-md-0 crudit-action')
             ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig');
@@ -92,7 +92,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_ADD] = ListAction::new(
             'action.add',
             $this->getPath(CrudConfigInterface::NEW),
-            Icon::new('plus')
+            Icon::logical('plus')
         )
             ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::NEW));
@@ -100,7 +100,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_EXPORT] = ListAction::new(
             'action.export',
             $this->getPath(CrudConfigInterface::EXPORT),
-            Icon::new('file-export')
+            Icon::logical('export')
         )
             ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-export-action')
             ->setModal('@LleCrudit/modal/_export.html.twig')
@@ -121,7 +121,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
             'action.show',
             $this->getPath(CrudConfigInterface::SHOW),
-            Icon::new('search')
+            Icon::logical('show')
         )
             ->setCssClass('btn btn-primary btn-sm crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW));
@@ -129,7 +129,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
-            Icon::new('edit')
+            Icon::logical('edit')
         )
             ->setCssClass('btn btn-secondary btn-sm crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
@@ -137,7 +137,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
-            Icon::new('trash-alt')
+            Icon::logical('delete')
         )
             ->setCssClass('btn btn-danger btn-sm crudit-action')
             ->setConfirmModal(true)
@@ -153,7 +153,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
             CrudConfigInterface::LABEL_ACTION_LIST,
             $this->getPath(),
-            Icon::new('arrow-circle-left')
+            Icon::logical('arrow_circle_left')
         )
             ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
             ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig')
@@ -162,7 +162,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
             'action.edit',
             $this->getPath(CrudConfigInterface::EDIT),
-            Icon::new('edit')
+            Icon::logical('edit')
         )
             ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
@@ -170,7 +170,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
-            Icon::new('trash-alt')
+            Icon::logical('delete')
         )
             ->setCssClass('btn btn-danger btn-sm ms-1 crudit-action')
             ->setConfirmModal(true)

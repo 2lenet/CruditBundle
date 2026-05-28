@@ -14,7 +14,7 @@
         {% endblock %}
     >
         {% if action.icon %}
-            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
+            {% block icon %}<i class="{{ crudit_icon(action.icon) }}"></i>{% endblock %}
         {% endif %}
         {% if not action.hideLabel %}
             {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}

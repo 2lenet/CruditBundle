@@ -87,7 +87,7 @@
                         {% endfor %}
                         <div class="col-12 mb-2 flex-nowrap">
                             <button type="submit" class="btn btn-sm btn-primary">
-                                <i class="fas fa-check"></i>&nbsp;
+                                <i class="{{ crudit_icon('check') }}"></i>&nbsp;
                                 {{ 'crudit.action.validate'|trans({}, 'LleCruditBundle') }}
                                 {% if action and action.label is defined and action.label is not null %}&nbsp;"{{ action.label|trans }}"{% endif %}
                             </button>

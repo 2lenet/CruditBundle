@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
+use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Registry\IconRegistry;
 use Lle\CruditBundle\Registry\MenuRegistry;
@@ -44,8 +45,24 @@ class CruditExtension extends AbstractExtension
         ];
     }
 
-    public function getIcon(string $name): string
+    public function getIcon(string|Icon|null $name): string
     {
+        if ($name === null) {
+            return '';
+        }
+
+        if ($name instanceof Icon) {
+            if ($name->isImg()) {
+                return '';
+            }
+
+            if ($name->isLogical()) {
+                return $this->iconRegistry->get($name->getIcon());
+            }
+
+            return $name->getCssClass();
+        }
+
         return $this->iconRegistry->get($name);
     }
 

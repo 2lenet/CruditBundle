@@ -38,6 +38,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         'bars' => 'fa fa-bars',
         'sign_out' => 'fas fa-sign-out-alt',
         'arrow_right' => 'fas fa-arrow-right',
+        'arrow_circle_left' => 'fa fa-arrow-circle-left',
         'clock' => 'far fa-clock',
         'exchange' => 'fa fa-exchange',
         'folder_plus' => 'fas fa-folder-plus',
@@ -47,6 +48,11 @@ class LleCruditExtension extends Extension implements ExtensionInterface
         'angle_up' => 'fas fa-angle-up',
         'chevron_up' => 'fa fa-chevron-up',
         'chevron_down' => 'fa fa-chevron-down',
+        // Default action icons (used by AbstractCrudConfig)
+        'edit' => 'fa fa-edit',
+        'delete' => 'fa fa-trash-alt',
+        'show' => 'fa fa-search',
+        'export' => 'fa fa-file-export',
         // Pager
         'pager_first' => 'fa fa-angle-double-left',
         'pager_prev' => 'fa fa-angle-left',
