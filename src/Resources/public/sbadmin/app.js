@@ -3473,19 +3473,66 @@ function setupOverflowCounter(tomselect, originalInput) {
     });
   };
   var update = function update() {
-    // Re-place counter in case TomSelect reordered children
     placeCounter();
-    var overflow = tomselect.items.length - 1;
-    if (overflow > 0) {
-      counter.textContent = '+' + overflow;
-      counter.hidden = false;
-    } else {
+    var items = Array.from(control.querySelectorAll(':scope > .item'));
+    if (items.length === 0) {
       counter.hidden = true;
       popover.hidden = true;
+      return;
+    }
+
+    // Show all items at natural width, render counter with worst-case label
+    // so its reserved width is accounted for during measurement.
+    items.forEach(function (el) {
+      el.style.display = '';
+      el.style.flexShrink = '0';
+    });
+    counter.textContent = '+' + Math.max(items.length - 1, 1);
+    counter.hidden = false;
+    var cs = window.getComputedStyle(control);
+    var paddingRight = parseFloat(cs.paddingRight) || 0;
+    var gap = parseFloat(cs.columnGap) || parseFloat(cs.gap) || 4;
+    var controlContentRight = control.getBoundingClientRect().right - paddingRight;
+    var counterWidth = counter.offsetWidth;
+    var limit = controlContentRight - counterWidth - gap;
+    var hidden = 0;
+    items.forEach(function (el, idx) {
+      if (idx === 0) {
+        // First chip is always visible — if it's too wide, the CSS
+        // ellipsis on .item-text handles the truncation.
+        return;
+      }
+      var rect = el.getBoundingClientRect();
+      if (rect.right > limit) {
+        el.style.display = 'none';
+        hidden++;
+      }
+    });
+
+    // Restore default flex-shrink so the lone visible chip can ellipsis
+    items.forEach(function (el) {
+      el.style.flexShrink = '';
+    });
+    if (hidden === 0) {
+      counter.hidden = true;
+      popover.hidden = true;
+    } else {
+      counter.textContent = '+' + hidden;
     }
     if (!popover.hidden) {
       renderPopover();
     }
+  };
+  var scheduled = false;
+  var scheduleUpdate = function scheduleUpdate() {
+    if (scheduled) {
+      return;
+    }
+    scheduled = true;
+    window.requestAnimationFrame(function () {
+      scheduled = false;
+      update();
+    });
   };
   counter.addEventListener('mousedown', function (e) {
     // Stop TomSelect from grabbing focus and opening its own dropdown
@@ -3510,8 +3557,22 @@ function setupOverflowCounter(tomselect, originalInput) {
       popover.hidden = true;
     }
   });
-  tomselect.on('item_add', update);
-  tomselect.on('item_remove', update);
+  tomselect.on('item_add', scheduleUpdate);
+  tomselect.on('item_remove', scheduleUpdate);
+  tomselect.on('change', scheduleUpdate);
+  window.addEventListener('resize', scheduleUpdate);
+  if (typeof ResizeObserver !== 'undefined') {
+    var firstObserverCall = true;
+    var observer = new ResizeObserver(function () {
+      // Skip the initial fire — `update()` below already runs once.
+      if (firstObserverCall) {
+        firstObserverCall = false;
+        return;
+      }
+      scheduleUpdate();
+    });
+    observer.observe(control);
+  }
   update();
 }
 function initTomSelect() {

@@ -51,10 +51,11 @@ $input-group-prepend-length: 60px;
                 border-bottom-left-radius: 0;
 
                 .item {
-                    flex-shrink: 0;
+                    flex-shrink: 1;
+                    min-width: 0;
                     display: inline-flex;
                     align-items: center;
-                    max-width: calc(100% - 70px);
+                    max-width: 100%;
                     margin: 0;
                     padding: 2px 6px;
                     background: $gray-200;
@@ -76,11 +77,6 @@ $input-group-prepend-length: 60px;
                         text-overflow: ellipsis;
                         white-space: nowrap;
                     }
-                }
-
-                // Compact single-line: only first chip visible, others summarized by the counter
-                .item ~ .item {
-                    display: none;
                 }
 
                 input {
