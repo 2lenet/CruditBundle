@@ -1,11 +1,127 @@
 import TomSelect from 'tom-select';
 
+function setupOverflowCounter(tomselect, originalInput) {
+    const formFloating = originalInput.closest('.form-floating');
+    if (!formFloating) {
+        return;
+    }
+    const prepend = formFloating.previousElementSibling;
+    if (!prepend || !prepend.classList.contains('input-group-prepend')) {
+        return;
+    }
+
+    const wrapper = tomselect.wrapper;
+    const control = wrapper.querySelector('.ts-control');
+    if (!control) {
+        return;
+    }
+
+    const counter = document.createElement('button');
+    counter.type = 'button';
+    counter.className = 'ts-overflow-counter';
+    counter.hidden = true;
+    counter.setAttribute('aria-label', 'Voir les éléments sélectionnés');
+
+    const popover = document.createElement('div');
+    popover.className = 'ts-overflow-popover';
+    popover.hidden = true;
+    formFloating.appendChild(popover);
+
+    const placeCounter = () => {
+        const searchInput = control.querySelector(':scope > input');
+        if (searchInput) {
+            control.insertBefore(counter, searchInput);
+        } else {
+            control.appendChild(counter);
+        }
+    };
+    placeCounter();
+
+    const renderPopover = () => {
+        popover.innerHTML = '';
+        tomselect.items.forEach((id) => {
+            const option = tomselect.options[id];
+            if (!option) {
+                return;
+            }
+            const row = document.createElement('div');
+            row.className = 'ts-overflow-row';
+
+            const text = document.createElement('span');
+            text.className = 'ts-overflow-text';
+            text.textContent = option[tomselect.settings.labelField] || option.text || id;
+
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'ts-overflow-remove';
+            remove.setAttribute('aria-label', 'Retirer');
+            remove.textContent = '×';
+            remove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tomselect.removeItem(id);
+            });
+
+            row.appendChild(text);
+            row.appendChild(remove);
+            popover.appendChild(row);
+        });
+    };
+
+    const update = () => {
+        // Re-place counter in case TomSelect reordered children
+        placeCounter();
+
+        const overflow = tomselect.items.length - 1;
+        if (overflow > 0) {
+            counter.textContent = '+' + overflow;
+            counter.hidden = false;
+        } else {
+            counter.hidden = true;
+            popover.hidden = true;
+        }
+
+        if (!popover.hidden) {
+            renderPopover();
+        }
+    };
+
+    counter.addEventListener('mousedown', (e) => {
+        // Stop TomSelect from grabbing focus and opening its own dropdown
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    counter.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (popover.hidden) {
+            renderPopover();
+            popover.hidden = false;
+        } else {
+            popover.hidden = true;
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (popover.hidden) {
+            return;
+        }
+        if (!popover.contains(e.target) && e.target !== counter) {
+            popover.hidden = true;
+        }
+    });
+
+    tomselect.on('item_add', update);
+    tomselect.on('item_remove', update);
+
+    update();
+}
+
 export function initTomSelect() {
     document.querySelectorAll('input.entity-select:not(.tomselected)').forEach(select => {
         const dataurl = select.dataset.url;
         const inioptions = JSON.parse(select.dataset.options);
 
-        new TomSelect('#' + select.id,
+        const ts = new TomSelect('#' + select.id,
             {
                 valueField: 'id',
                 labelField: 'text',
@@ -83,6 +199,8 @@ export function initTomSelect() {
                 },
             },
         );
+
+        setupOverflowCounter(ts, select);
     });
     // Normal select
     document.querySelectorAll('input.tom-select:not(.tomselected)').forEach(select => {
@@ -126,7 +244,8 @@ export function initTomSelect() {
             settings.options = JSON.parse(select.dataset.options);
         }
 
-        new TomSelect('#' + select.id, settings);
+        const ts = new TomSelect('#' + select.id, settings);
+        setupOverflowCounter(ts, select);
     });
 }
 

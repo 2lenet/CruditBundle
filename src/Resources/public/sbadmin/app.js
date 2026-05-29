@@ -3414,11 +3414,111 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var tom_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tom-select */ "./node_modules/tom-select/dist/esm/tom-select.complete.js");
 
+function setupOverflowCounter(tomselect, originalInput) {
+  var formFloating = originalInput.closest('.form-floating');
+  if (!formFloating) {
+    return;
+  }
+  var prepend = formFloating.previousElementSibling;
+  if (!prepend || !prepend.classList.contains('input-group-prepend')) {
+    return;
+  }
+  var wrapper = tomselect.wrapper;
+  var control = wrapper.querySelector('.ts-control');
+  if (!control) {
+    return;
+  }
+  var counter = document.createElement('button');
+  counter.type = 'button';
+  counter.className = 'ts-overflow-counter';
+  counter.hidden = true;
+  counter.setAttribute('aria-label', 'Voir les éléments sélectionnés');
+  var popover = document.createElement('div');
+  popover.className = 'ts-overflow-popover';
+  popover.hidden = true;
+  formFloating.appendChild(popover);
+  var placeCounter = function placeCounter() {
+    var searchInput = control.querySelector(':scope > input');
+    if (searchInput) {
+      control.insertBefore(counter, searchInput);
+    } else {
+      control.appendChild(counter);
+    }
+  };
+  placeCounter();
+  var renderPopover = function renderPopover() {
+    popover.innerHTML = '';
+    tomselect.items.forEach(function (id) {
+      var option = tomselect.options[id];
+      if (!option) {
+        return;
+      }
+      var row = document.createElement('div');
+      row.className = 'ts-overflow-row';
+      var text = document.createElement('span');
+      text.className = 'ts-overflow-text';
+      text.textContent = option[tomselect.settings.labelField] || option.text || id;
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'ts-overflow-remove';
+      remove.setAttribute('aria-label', 'Retirer');
+      remove.textContent = '×';
+      remove.addEventListener('click', function (e) {
+        e.stopPropagation();
+        tomselect.removeItem(id);
+      });
+      row.appendChild(text);
+      row.appendChild(remove);
+      popover.appendChild(row);
+    });
+  };
+  var update = function update() {
+    // Re-place counter in case TomSelect reordered children
+    placeCounter();
+    var overflow = tomselect.items.length - 1;
+    if (overflow > 0) {
+      counter.textContent = '+' + overflow;
+      counter.hidden = false;
+    } else {
+      counter.hidden = true;
+      popover.hidden = true;
+    }
+    if (!popover.hidden) {
+      renderPopover();
+    }
+  };
+  counter.addEventListener('mousedown', function (e) {
+    // Stop TomSelect from grabbing focus and opening its own dropdown
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  counter.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (popover.hidden) {
+      renderPopover();
+      popover.hidden = false;
+    } else {
+      popover.hidden = true;
+    }
+  });
+  document.addEventListener('click', function (e) {
+    if (popover.hidden) {
+      return;
+    }
+    if (!popover.contains(e.target) && e.target !== counter) {
+      popover.hidden = true;
+    }
+  });
+  tomselect.on('item_add', update);
+  tomselect.on('item_remove', update);
+  update();
+}
 function initTomSelect() {
   document.querySelectorAll('input.entity-select:not(.tomselected)').forEach(function (select) {
     var dataurl = select.dataset.url;
     var inioptions = JSON.parse(select.dataset.options);
-    new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, {
+    var ts = new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, {
       valueField: 'id',
       labelField: 'text',
       searchField: 'text',
@@ -3492,6 +3592,7 @@ function initTomSelect() {
         }
       }
     });
+    setupOverflowCounter(ts, select);
   });
   // Normal select
   document.querySelectorAll('input.tom-select:not(.tomselected)').forEach(function (select) {
@@ -3533,7 +3634,8 @@ function initTomSelect() {
     if (select.dataset.options !== undefined) {
       settings.options = JSON.parse(select.dataset.options);
     }
-    new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, settings);
+    var ts = new tom_select__WEBPACK_IMPORTED_MODULE_0__["default"]('#' + select.id, settings);
+    setupOverflowCounter(ts, select);
   });
 }
 window.addEventListener('DOMContentLoaded', function () {
