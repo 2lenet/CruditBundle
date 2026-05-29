@@ -26,11 +26,6 @@ $input-group-prepend-length: 60px;
             border-bottom-left-radius: 0;
         }
 
-        .form-control:not(:last-of-type) {
-            border-right: none;
-            border-radius: 0;
-        }
-
         .entity-select, .tom-select, .choice-tom-select {
             &.multi {
                 height: $form-floating-height;
