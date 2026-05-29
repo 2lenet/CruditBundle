@@ -65,7 +65,8 @@
         "symfony/maker-bundle": "^1.0"
     },
     "conflict": {
-        "phpoffice/phpspreadsheet": "<1.30.3"
+        "phpoffice/phpspreadsheet": "<1.30.3",
+        "twig/twig": "<3.26.0"
     },
     "autoload": {
         "psr-4": {
