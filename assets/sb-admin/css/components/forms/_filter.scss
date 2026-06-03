@@ -123,6 +123,28 @@ $input-group-prepend-length: 60px;
             }
         }
 
+        // TomSelect (entity / choice / workflow filters) hides the native
+        // <input> and strips its `placeholder` attribute, which makes
+        // Bootstrap's `:not(:placeholder-shown) ~ label` rule float the label
+        // even when nothing is selected. Drive the floating behaviour from
+        // TomSelect's own state classes instead, so the placeholder matches the
+        // text/date filters: full size and centred like them when empty, floated
+        // once the field actually has items or gains focus.
+        &:has(.ts-wrapper:not(.has-items):not(.focus)) > label {
+            color: $body-color;
+            transform: none;
+
+            &::after {
+                content: none;
+            }
+        }
+
+        &:has(.ts-wrapper.has-items) > label,
+        &:has(.ts-wrapper.focus) > label {
+            color: rgba(var(--#{$prefix}body-color-rgb), $form-floating-label-opacity);
+            transform: $form-floating-label-transform;
+        }
+
         .ts-overflow-popover {
             position: absolute;
             top: calc(100% + 4px);
