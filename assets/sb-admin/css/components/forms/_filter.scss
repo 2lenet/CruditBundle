@@ -131,7 +131,6 @@ $input-group-prepend-length: 60px;
         // text/date filters: full size and centred like them when empty, floated
         // once the field actually has items or gains focus.
         &:has(.ts-wrapper:not(.has-items):not(.focus)) > label {
-            color: $body-color;
             transform: none;
 
             &::after {
