@@ -122,5 +122,8 @@ crudit:
         current_page: "Solo nella pagina corrente"
         all_page: "In tutte le pagine"
 
+    rupture:
+        null_label: "%field% vuoto"
+
     gedmo_translatable:
         default_locale_helper: "È sempre richiesto un dato per la seguente lingua:"

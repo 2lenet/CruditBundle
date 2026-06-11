@@ -192,6 +192,27 @@ public function getTotalFields(): array
 You can choose between 3 types of totals, `AVERAGE`, `SUM` and `COUNT`.
 To use them, use the constants defined in the `CrudConfigInterface` file.
 
+For computed totals that combine several columns, use `EXPRESSION` and provide a raw DQL expression:
+
+```php
+public function getTotalFields(): array
+{
+    return [
+        'totalHt' => [
+            'type' => CrudConfigInterface::SUM,
+            'field' => Field::new('totalHt', 'currency'),
+        ],
+        'margeBrute' => [
+            'type' => CrudConfigInterface::EXPRESSION,
+            'expression' => 'SUM(root.totalHt) - SUM(root.totalFournisseur)',
+            'field' => Field::new('margeBrute', 'currency'),
+        ],
+    ];
+}
+```
+
+`EXPRESSION` totals are also computed per group when `withSubtotals()` is used.
+
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**
 
 You can also use totals on your sublist by adding `getSubListTotalFields` method to the CruditConfig file.
@@ -338,4 +359,108 @@ public function getShowNumberFieldGroupsOpened(): ?int
 {
     return 2;
 }
+```
+
+## How to group rows in your list (rupture)
+
+It is possible to visually group list rows by a field value using `setRuptGroup`. Two levels are supported.
+
+```php
+public function getFields(string $key): array
+{
+    switch ($key) {
+        case CrudConfigInterface::INDEX:
+            $fields = [
+                Field::new('groupField')->setRuptGroup(1),
+                Field::new('subGroupField')->setRuptGroup(2),
+                Field::new('fieldA'),
+                Field::new('fieldB'),
+            ];
+            break;
+    }
+}
+```
+
+The list is automatically sorted by rupture fields first (level 1, then level 2), regardless of their position in `getFields`. Any other sort configured on the list applies within the groups.
+
+A group header row is always displayed, even when a group continues from the previous page.
+
+> :warning: **Rupture fields must be database-mapped properties or Doctrine relations. Computed PHP methods are not supported.**
+
+## How to group rows by a date part (year, month, day…)
+
+When the rupture field is a date, use `setRuptDateFormat` to define the grouping granularity. This method accepts a PHP date format string and is used for SQL `GROUP BY` computation and for comparing successive rows to detect group changes.
+
+```php
+Field::new('yourDateField')->setRuptGroup(1)->setRuptDateFormat('Y-m'),  // group by month
+Field::new('yourDateField')->setRuptGroup(1)->setRuptDateFormat('Y'),    // group by year
+Field::new('yourDateField')->setRuptGroup(1)->setRuptDateFormat('Y-m-d'),// group by day
+```
+
+Supported format characters: `Y`, `y`, `m`, `n`, `d`, `j`, `H`, `h`, `i`, `s`. Literal separators (`-`, `/`, ` `, `:`) are passed through as-is.
+
+To control how the date appears in the rupture header row, use `setRuptDateDisplayFormat`. It also accepts a PHP date format string and is applied only to the header label — it has no effect on SQL grouping or data cells.
+
+```php
+Field::new('yourDateField')
+    ->setRuptGroup(1)
+    ->setRuptDateFormat('Y-m')           // group by month (SQL + row comparison)
+    ->setRuptDateDisplayFormat('m/Y'),   // display as "06/2026" in the header
+```
+
+> :warning: **If `setRuptDateDisplayFormat` is not set, the header falls back to the field's normal rendered value.**
+
+## How to customise the rupture header row
+
+### CSS class
+
+Use `setRuptCssClass` to apply Bootstrap (or custom) CSS classes to the rupture header `<tr>`. The default is no extra class.
+
+```php
+Field::new('groupField')->setRuptGroup(1)->setRuptCssClass('bg-info text-center'),
+```
+
+### Show the field as a regular column too
+
+By default the rupture field is hidden from the data rows (it only appears as a group header). Use `setRuptHideFromList(false)` to keep it visible as a normal column as well.
+
+```php
+Field::new('groupField')->setRuptGroup(1)->setRuptHideFromList(false),
+```
+
+### Label for null values
+
+When the field value is `null`, the header displays `"{field label} empty"` using the translation key `crudit.rupture.null_label`. Override this with `setRuptNullLabel`:
+
+```php
+Field::new('groupField')->setRuptGroup(1)->setRuptNullLabel('my.custom.translation.key'),
+```
+
+## How to add subtotals per rupture group
+
+When `getTotalFields` is defined, you can also display subtotals for each level-1 rupture group by adding `withSubtotals()` to the rupture field.
+
+```php
+Field::new('groupField')->setRuptGroup(1)->withSubtotals(),
+```
+
+The subtotals use the same fields defined in `getTotalFields`. They are computed via a single SQL `GROUP BY` query and are therefore accurate across all pages, not just the visible page.
+
+A subtotal row is displayed at the end of each group. If a group spans multiple pages, the same global subtotal is repeated on each page.
+
+> :warning: **`withSubtotals()` only works on level-1 rupture fields. Level-2 rupture groups do not have subtotals.**
+
+> :warning: **The datasource must extend `AbstractDoctrineDatasource` for subtotals to be available.**
+
+### Complete example
+
+```php
+Field::new('dateCommandeClient')
+    ->setRuptGroup(1)
+    ->setRuptDateFormat('Y-m')
+    ->setRuptDateDisplayFormat('m/Y')
+    ->setRuptHideFromList(false)
+    ->setRuptCssClass('bg-info text-center')
+    ->setRuptNullLabel('my.custom.null_key')   // optional
+    ->withSubtotals(),
 ```

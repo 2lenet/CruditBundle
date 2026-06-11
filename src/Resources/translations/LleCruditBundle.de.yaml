@@ -123,5 +123,8 @@ crudit:
         current_page: "Nur auf der aktuellen Seite"
         all_page: "Auf allen Seiten"
 
+    rupture:
+        null_label: "%field% leer"
+
     gedmo_translatable:
         default_locale_helper: "Für die folgende Sprache sind immer Daten erforderlich:"
