@@ -573,7 +573,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         $parts = explode('.', $fieldPath);
         $field = array_pop($parts);
 
-        if ($field === null) {
+        if ($field === '') {
             return ["root.$fieldPath", "root.$fieldPath"];
         }
 
