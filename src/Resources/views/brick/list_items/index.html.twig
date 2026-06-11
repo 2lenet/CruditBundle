@@ -25,15 +25,10 @@
                             </th>
                         {% endif %}
                         {% for field in view.config.fields %}
-                            {% if
-                                field.role is not defined or field.role is null or
-                                (field.role is defined and field.role is not null and is_granted(field.role))
-                            %}
-                                {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role == null or is_granted(field.role)) %}
-                                    {% block heading_cell %}
-                                        {{ include('@LleCrudit/brick/list_items/_heading_cell.html.twig') }}
-                                    {% endblock %}
-                                {% endif %}
+                            {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                {% block heading_cell %}
+                                    {{ include('@LleCrudit/brick/list_items/_heading_cell.html.twig') }}
+                                {% endblock %}
                             {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
@@ -70,7 +65,7 @@
                                 {% if has_batch %}<td></td>{% endif %}
                                 {% set groupTotals = view.data.grouped_totals[currentGroup] %}
                                 {% for field in view.config.fields %}
-                                    {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role == null or is_granted(field.role)) %}
+                                    {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
                                         {% set match = false %}
                                         {% for key, total in groupTotals %}
                                             {% if field.id == total.field.id %}
@@ -103,21 +98,16 @@
                             <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" autocomplete="off"/></td>
                         {% endif %}
                         {% for column in line.fields %}
-                            {% if
-                                column.field.role is not defined or column.field.role is null or
-                                (column.field.role is defined and column.field.role is not null and is_granted(column.field.role))
-                            %}
-                                {% if column.field.ruptGroup == 0 or not column.field.ruptHideFromList %}
-                                    <td id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
-                                        {% if column.field.path %}
-                                        <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
-                                            {% endif %}
-                                            {{ column.value|raw }}
-                                            {% if column.field.path %}
-                                        </a>
+                            {% if (column.field.ruptGroup == 0 or not column.field.ruptHideFromList) and (column.field.role is null or is_granted(column.field.role)) %}
+                                <td id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
+                                    {% if column.field.path %}
+                                    <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
                                         {% endif %}
-                                    </td>
-                                {% endif %}
+                                        {{ column.value|raw }}
+                                        {% if column.field.path %}
+                                    </a>
+                                    {% endif %}
+                                </td>
                             {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
@@ -132,7 +122,7 @@
                         {% if has_batch %}<td></td>{% endif %}
                         {% set groupTotals = view.data.grouped_totals[currentGroup] %}
                         {% for field in view.config.fields %}
-                            {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role == null or is_granted(field.role)) %}
+                            {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
                                 {% set match = false %}
                                 {% for key, total in groupTotals %}
                                     {% if field.id == total.field.id %}

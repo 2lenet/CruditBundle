@@ -233,7 +233,7 @@ class Field
         return $this;
     }
 
-    public function getRuptGroup(): ?int
+    public function getRuptGroup(): int
     {
         return $this->ruptGroup;
     }

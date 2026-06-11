@@ -489,10 +489,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         $qb->setParameter('_matching_ids', $matchingIds);
 
         foreach ($fields as $field => $data) {
-            $expression = $data['type'] . '(root.' . $field . ')';
-            if ($data['type'] === CrudConfigInterface::EXPRESSION) {
-                $expression = $data['expression'];
-            }
+            $expression = $this->buildAggregateExpression($field, $data);
             if ($field === array_key_first($fields)) {
                 $qb->select($expression);
             } else {
@@ -530,7 +527,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
         $qb = $repository->createQueryBuilder('root');
-        $qb->andWhere('root.id IN(:_matching_ids)');
+        $qb->andWhere('root.id IN (:_matching_ids)');
         $qb->setParameter('_matching_ids', $matchingIds);
 
         [$selectExpr, $groupByExpr] = $this->buildRuptGroupExpression($qb, $ruptFieldPath, $ruptDateFormat);
@@ -539,12 +536,7 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
 
         $i = 1;
         foreach ($fields as $field => $data) {
-            $expression = $data['type'] . '(root.' . $field . ')';
-            if ($data['type'] === CrudConfigInterface::EXPRESSION) {
-                $expression = $data['expression'];
-            }
-
-            $qb->addSelect($expression . ' AS _agg_' . $i);
+            $qb->addSelect($this->buildAggregateExpression($field, $data) . ' AS _agg_' . $i);
             $i++;
         }
 
@@ -565,6 +557,15 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         }
 
         return $result;
+    }
+
+    private function buildAggregateExpression(string $field, array $data): string
+    {
+        if ($data['type'] === CrudConfigInterface::EXPRESSION) {
+            return $data['expression'];
+        }
+
+        return $data['type'] . '(root.' . $field . ')';
     }
 
     /** @return array{0: string, 1: string} */

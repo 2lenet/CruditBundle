@@ -159,16 +159,7 @@ class ListFactory extends AbstractBasicBrickFactory
     {
         $displayFormat = $field->getRuptDateDisplayFormat();
         if ($displayFormat !== null) {
-            $accessor = PropertyAccess::createPropertyAccessor();
-            $value = $resource;
-
-            foreach (explode('.', $field->getName()) as $part) {
-                if (!is_object($value)) {
-                    return '';
-                }
-                $value = $accessor->getValue($value, $part);
-            }
-
+            $value = $this->resolveNestedValue($resource, $field->getName());
             if ($value instanceof \DateTimeInterface) {
                 return $value->format($displayFormat);
             }
@@ -210,8 +201,7 @@ class ListFactory extends AbstractBasicBrickFactory
         $remainingSorts = array_values(array_filter(
             $dsParams->getSorts(),
             static fn(mixed $sort): bool => !is_array($sort)
-                || !isset($sort[0])
-                || !in_array((string) $sort[0], $ruptFieldNamesToFilter, true)
+                || !in_array((string) ($sort[0] ?? ''), $ruptFieldNamesToFilter, true)
         ));
 
         $dsParams->setSorts(array_merge($ruptSorts, $remainingSorts));
@@ -242,25 +232,36 @@ class ListFactory extends AbstractBasicBrickFactory
 
     protected function resolveGroupKey(object $resource, Field $field): string
     {
-        $accessor = PropertyAccess::createPropertyAccessor();
-        $value = $resource;
+        $value = $this->resolveNestedValue($resource, $field->getName());
 
-        foreach (explode('.', $field->getName()) as $part) {
-            if (!is_object($value)) {
-                return '';
-            }
-            $value = $accessor->getValue($value, $part);
+        if ($value === null) {
+            return '';
         }
 
         if ($value instanceof \DateTimeInterface) {
             return $value->format($field->getRuptDateFormat() ?? 'Y-m-d H:i:s');
         }
 
+        $accessor = PropertyAccess::createPropertyAccessor();
         if (is_object($value) && $accessor->isReadable($value, 'id')) {
             return (string) $accessor->getValue($value, 'id');
         }
 
         return is_scalar($value) ? (string) $value : '';
+    }
+
+    private function resolveNestedValue(object $resource, string $fieldName): mixed
+    {
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $value = $resource;
+        foreach (explode('.', $fieldName) as $part) {
+            if (!is_object($value)) {
+                return null;
+            }
+            $value = $accessor->getValue($value, $part);
+        }
+
+        return $value;
     }
 
     protected function getTotals(ListConfig $brickConfigurator): array
@@ -273,18 +274,7 @@ class ListFactory extends AbstractBasicBrickFactory
             /** @var array $totalByField */
             $totalByField = $brickConfigurator->getDatasource()->getTotals($dsParams, $crudConfig->getTotalFields());
 
-            $i = 0;
-            $fieldViews = [];
-            foreach ($crudConfig->getTotalFields() as $field) {
-                $i++;
-                $fieldView = new FieldView($field['field'], $totalByField[$i]);
-                $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
-                    $fieldView,
-                    $totalByField[$i]
-                );
-            }
-
-            return $fieldViews;
+            return $this->buildTotalFieldViews($crudConfig->getTotalFields(), $totalByField);
         }
 
         return [];
@@ -324,20 +314,27 @@ class ListFactory extends AbstractBasicBrickFactory
 
         $result = [];
         foreach ($rawGrouped as $groupKey => $rawTotals) {
-            $i = 0;
-            $fieldViews = [];
-            foreach ($crudConfig->getTotalFields() as $field) {
-                $i++;
-                $fieldView = new FieldView($field['field'], $rawTotals[$i]);
-                $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
-                    $fieldView,
-                    $rawTotals[$i]
-                );
-            }
-            $result[(string) $groupKey] = $fieldViews;
+            $result[(string) $groupKey] = $this->buildTotalFieldViews($crudConfig->getTotalFields(), $rawTotals);
         }
 
         return $result;
+    }
+
+    /** @return FieldView[] */
+    private function buildTotalFieldViews(array $totalFields, array $rawTotals): array
+    {
+        $i = 0;
+        $fieldViews = [];
+        foreach ($totalFields as $field) {
+            $i++;
+            $fieldView = new FieldView($field['field'], $rawTotals[$i]);
+            $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
+                $fieldView,
+                $rawTotals[$i]
+            );
+        }
+
+        return $fieldViews;
     }
 
     /** @return Field[] */
