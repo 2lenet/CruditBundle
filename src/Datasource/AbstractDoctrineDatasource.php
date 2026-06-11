@@ -485,8 +485,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
         $qb = $repository->createQueryBuilder('root');
-        $qb->andWhere('root.id IN (:_matching_ids)');
-        $qb->setParameter('_matching_ids', $matchingIds);
+        $qb
+            ->andWhere('root.id IN (:_matching_ids)')
+            ->setParameter('_matching_ids', $matchingIds);
 
         foreach ($fields as $field => $data) {
             $expression = $this->buildAggregateExpression($field, $data);
@@ -527,8 +528,9 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
         $qb = $repository->createQueryBuilder('root');
-        $qb->andWhere('root.id IN (:_matching_ids)');
-        $qb->setParameter('_matching_ids', $matchingIds);
+        $qb
+            ->andWhere('root.id IN (:_matching_ids)')
+            ->setParameter('_matching_ids', $matchingIds);
 
         [$selectExpr, $groupByExpr] = $this->buildRuptGroupExpression($qb, $ruptFieldPath, $ruptDateFormat);
 
