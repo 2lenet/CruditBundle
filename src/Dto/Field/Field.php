@@ -26,6 +26,20 @@ class Field
 
     private int $ruptGroup = 0;
 
+    private ?string $ruptDateFormat = null;
+
+    private ?string $ruptDateDisplayFormat = null;
+
+    private bool $ruptSubtotals = false;
+
+    private bool $ruptSortPriority = false;
+
+    private bool $ruptHideFromList = true;
+
+    private ?string $ruptNullLabel = null;
+
+    private string $ruptCssClass = '';
+
     private ?string $role = null;
 
     private bool $editInPlace = false;
@@ -221,7 +235,7 @@ class Field
         return $this;
     }
 
-    public function getRuptGroup(): ?int
+    public function getRuptGroup(): int
     {
         return $this->ruptGroup;
     }
@@ -229,6 +243,90 @@ class Field
     public function setRuptGroup(int $ruptGroup): self
     {
         $this->ruptGroup = $ruptGroup;
+
+        return $this;
+    }
+
+    public function getRuptDateFormat(): ?string
+    {
+        return $this->ruptDateFormat;
+    }
+
+    public function setRuptDateFormat(string $format): self
+    {
+        $this->ruptDateFormat = $format;
+
+        return $this;
+    }
+
+    public function getRuptDateDisplayFormat(): ?string
+    {
+        return $this->ruptDateDisplayFormat;
+    }
+
+    public function setRuptDateDisplayFormat(string $format): self
+    {
+        $this->ruptDateDisplayFormat = $format;
+
+        return $this;
+    }
+
+    public function isRuptHideFromList(): bool
+    {
+        return $this->ruptHideFromList;
+    }
+
+    public function setRuptHideFromList(bool $hide): self
+    {
+        $this->ruptHideFromList = $hide;
+
+        return $this;
+    }
+
+    public function getRuptNullLabel(): ?string
+    {
+        return $this->ruptNullLabel;
+    }
+
+    public function setRuptNullLabel(string $label): self
+    {
+        $this->ruptNullLabel = $label;
+
+        return $this;
+    }
+
+    public function getRuptCssClass(): string
+    {
+        return $this->ruptCssClass;
+    }
+
+    public function setRuptCssClass(string $cssClass): self
+    {
+        $this->ruptCssClass = $cssClass;
+
+        return $this;
+    }
+
+    public function hasSubtotals(): bool
+    {
+        return $this->ruptSubtotals;
+    }
+
+    public function withSubtotals(): self
+    {
+        $this->ruptSubtotals = true;
+
+        return $this;
+    }
+
+    public function isRuptSortPriority(): bool
+    {
+        return $this->ruptSortPriority;
+    }
+
+    public function withRuptSortPriority(): self
+    {
+        $this->ruptSortPriority = true;
 
         return $this;
     }

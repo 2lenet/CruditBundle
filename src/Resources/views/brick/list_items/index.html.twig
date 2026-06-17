@@ -25,15 +25,10 @@
                             </th>
                         {% endif %}
                         {% for field in view.config.fields %}
-                            {% if
-                                field.role is not defined or field.role is null or
-                                (field.role is defined and field.role is not null and is_granted(field.role))
-                            %}
-                                {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                                    {% block heading_cell %}
-                                        {{ include('@LleCrudit/brick/list_items/_heading_cell.html.twig') }}
-                                    {% endblock %}
-                                {% endif %}
+                            {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                {% block heading_cell %}
+                                    {{ include('@LleCrudit/brick/list_items/_heading_cell.html.twig') }}
+                                {% endblock %}
                             {% endif %}
                         {% endfor %}
                         {% if view.config.actions|length %}
@@ -61,45 +56,49 @@
                 {% endif %}
 
                 <tbody>
-                {% set ruptval1 = '' %}
-                {% set ruptval2 = '' %}
+                {% set currentGroup = null %}
+                {% set nbCols = view.config.fields|length + (has_batch ? 1 : 0) + (hasActions is defined and hasActions ? 1 : 0) %}
                 {% for line in view.data.lines %}
-                    {% set line_opened = 0 %}
-                    {% for column in line.fields %}
-                        {% if
-                            column.field.role is not defined or column.field.role is null or
-                            (column.field.role is defined and column.field.role is not null and is_granted(column.field.role))
-                        %}
-                            {# RUPTURE NIVEAU 1 #}
-                            {% if column.field.ruptGroup == 1 %}
-                                {% if ruptval1 != column.value %}
-                                    <tr>
-                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
-                                    </tr>
-                                    {% set ruptval2 = '' %}
-                                {% endif %}
-                                {% set ruptval1 = column.value %}
-                            {% endif %}
-
-                            {# RUPTURE NIVEAU 2 #}
-                            {% if column.field.ruptGroup == 2 %}
-                                {% if ruptval2 != column.value %}
-                                    <tr>
-                                        <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
-                                    </tr>
-                                {% endif %}
-                                {% set ruptval2 = column.value %}
-                            {% endif %}
-
-                            {% if column.field.ruptGroup == 0 %}
-                                {% if line_opened == 0 %}
-                                    <tr id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
-                                    {% set line_opened = 1 %}
-                                    {% if has_batch %}
-                                        <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox"
-                                                   autocomplete="off"/></td>
+                    {% if line.ruptGroup1 is not null %}
+                        {% if currentGroup is not null and view.data.grouped_totals[currentGroup] is defined %}
+                            <tr class="table-secondary fw-bold">
+                                {% if has_batch %}<td></td>{% endif %}
+                                {% set groupTotals = view.data.grouped_totals[currentGroup] %}
+                                {% for field in view.config.fields %}
+                                    {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                        {% set match = false %}
+                                        {% for key, total in groupTotals %}
+                                            {% if field.id == total.field.id %}
+                                                {% set match = true %}
+                                                <td>{{ total.value|raw }}</td>
+                                                {% set groupTotals = groupTotals|filter((v, k) => k != key) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not match %}<td></td>{% endif %}
                                     {% endif %}
-                                {% endif %}
+                                {% endfor %}
+                                {% if hasActions is defined and hasActions %}<td></td>{% endif %}
+                            </tr>
+                        {% endif %}
+
+                        <tr{% if line.ruptGroup1.cssClass %} class="{{ line.ruptGroup1.cssClass }}"{% endif %}>
+                            <th colspan="{{ nbCols }}">{{ line.ruptGroup1.display|raw }}</th>
+                        </tr>
+                        {% set currentGroup = line.ruptGroup1.key %}
+                    {% endif %}
+
+                    {% if line.ruptGroup2 is not null %}
+                        <tr{% if line.ruptGroup2.cssClass %} class="{{ line.ruptGroup2.cssClass }}"{% endif %}>
+                            <th colspan="{{ nbCols }}">{{ line.ruptGroup2.display|raw }}</th>
+                        </tr>
+                    {% endif %}
+
+                    <tr id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                        {% if has_batch %}
+                            <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" autocomplete="off"/></td>
+                        {% endif %}
+                        {% for column in line.fields %}
+                            {% if (column.field.ruptGroup == 0 or not column.field.ruptHideFromList) and (column.field.role is null or is_granted(column.field.role)) %}
                                 <td id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
                                     {% if column.field.path %}
                                     <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.getLinkId(column.field.linkId)})) }}">
@@ -110,13 +109,35 @@
                                     {% endif %}
                                 </td>
                             {% endif %}
+                        {% endfor %}
+                        {% if view.config.actions|length %}
+                            {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
                         {% endif %}
-                    {% endfor %}
-                    {% if view.config.actions|length %}
-                        {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
-                    {% endif %}
                     </tr>
+
                 {% endfor %}
+
+                {% if currentGroup is not null and view.data.grouped_totals[currentGroup] is defined %}
+                    <tr class="table-secondary fw-bold">
+                        {% if has_batch %}<td></td>{% endif %}
+                        {% set groupTotals = view.data.grouped_totals[currentGroup] %}
+                        {% for field in view.config.fields %}
+                            {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                {% set match = false %}
+                                {% for key, total in groupTotals %}
+                                    {% if field.id == total.field.id %}
+                                        {% set match = true %}
+                                        <td>{{ total.value|raw }}</td>
+                                        {% set groupTotals = groupTotals|filter((v, k) => k != key) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if not match %}<td></td>{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if hasActions is defined and hasActions %}<td></td>{% endif %}
+                    </tr>
+                {% endif %}
+
                 </tbody>
                 {% include '@LleCrudit/brick/list_items/_footer.html.twig' with {'view': view} %}
             </table>
