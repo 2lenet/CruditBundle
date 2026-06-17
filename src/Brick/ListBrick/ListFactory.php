@@ -204,7 +204,9 @@ class ListFactory extends AbstractBasicBrickFactory
                 || !in_array((string) ($sort[0] ?? ''), $ruptFieldNamesToFilter, true)
         ));
 
-        $dsParams->setSorts(array_merge($ruptSorts, $remainingSorts));
+        $dsParams->setSorts($rupt1->isRuptSortPriority()
+            ? array_merge($ruptSorts, $remainingSorts)
+            : array_merge($remainingSorts, $ruptSorts));
     }
 
     protected function buildRuptSortExpr(Field $field): string

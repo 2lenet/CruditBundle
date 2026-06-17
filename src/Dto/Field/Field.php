@@ -32,6 +32,8 @@ class Field
 
     private bool $ruptSubtotals = false;
 
+    private bool $ruptSortPriority = false;
+
     private bool $ruptHideFromList = true;
 
     private ?string $ruptNullLabel = null;
@@ -313,6 +315,18 @@ class Field
     public function withSubtotals(): self
     {
         $this->ruptSubtotals = true;
+
+        return $this;
+    }
+
+    public function isRuptSortPriority(): bool
+    {
+        return $this->ruptSortPriority;
+    }
+
+    public function withRuptSortPriority(): self
+    {
+        $this->ruptSortPriority = true;
 
         return $this;
     }

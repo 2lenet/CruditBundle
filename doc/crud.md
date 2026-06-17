@@ -198,14 +198,14 @@ For computed totals that combine several columns, use `EXPRESSION` and provide a
 public function getTotalFields(): array
 {
     return [
-        'totalHt' => [
+        'totalAmount' => [
             'type' => CrudConfigInterface::SUM,
-            'field' => Field::new('totalHt', 'currency'),
+            'field' => Field::new('totalAmount', 'currency'),
         ],
-        'margeBrute' => [
+        'grossMargin' => [
             'type' => CrudConfigInterface::EXPRESSION,
-            'expression' => 'SUM(root.totalHt) - SUM(root.totalFournisseur)',
-            'field' => Field::new('margeBrute', 'currency'),
+            'expression' => 'SUM(root.totalAmount) - SUM(root.supplierCost)',
+            'field' => Field::new('grossMargin', 'currency'),
         ],
     ];
 }
@@ -381,7 +381,7 @@ public function getFields(string $key): array
 }
 ```
 
-The list is automatically sorted by rupture fields first (level 1, then level 2), regardless of their position in `getFields`. Any other sort configured on the list applies within the groups.
+Any sort configured on the list (user click or `getDefaultSort`) takes priority over the rupture sort by default. The rupture sort is appended after the existing sorts to guarantee consistent visual grouping within pages. See `withRuptSortPriority()` below if you need the rupture to always be the primary sort.
 
 A group header row is always displayed, even when a group continues from the previous page.
 
@@ -436,6 +436,19 @@ When the field value is `null`, the header displays `"{field label} empty"` usin
 Field::new('groupField')->setRuptGroup(1)->setRuptNullLabel('my.custom.translation.key'),
 ```
 
+## How to give the rupture sort priority over other sorts
+
+By default, user-defined sorts (column clicks, `getDefaultSort`) take precedence and the rupture sort is appended after them. Use `withRuptSortPriority()` on the rupture field to invert this: the rupture becomes the primary sort and existing sorts apply within each group.
+
+```php
+Field::new('orderDate')
+    ->setRuptGroup(1)
+    ->setRuptDateFormat('Y-m')
+    ->withRuptSortPriority(),   // rupture is always the first ORDER BY
+```
+
+Without this option the rupture sort is appended last, so clicking a column header re-orders within the current groups but the groups themselves may not remain contiguous if the column sort conflicts with the rupture field.
+
 ## How to add subtotals per rupture group
 
 When `getTotalFields` is defined, you can also display subtotals for each level-1 rupture group by adding `withSubtotals()` to the rupture field.
@@ -455,12 +468,13 @@ A subtotal row is displayed at the end of each group. If a group spans multiple 
 ### Complete example
 
 ```php
-Field::new('dateCommandeClient')
+Field::new('orderDate')
     ->setRuptGroup(1)
     ->setRuptDateFormat('Y-m')
     ->setRuptDateDisplayFormat('m/Y')
     ->setRuptHideFromList(false)
     ->setRuptCssClass('bg-info text-center')
     ->setRuptNullLabel('my.custom.null_key')   // optional
+    ->withRuptSortPriority()                   // optional — rupture sorts before any other sort
     ->withSubtotals(),
 ```
