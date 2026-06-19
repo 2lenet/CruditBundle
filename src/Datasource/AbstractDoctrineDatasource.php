@@ -478,16 +478,16 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
     {
         $matchingIds = $this->getFilteredIds($requestParams);
 
-        if (empty($matchingIds)) {
-            return [];
-        }
-
         /** @var EntityRepository $repository */
         $repository = $this->getRepository();
         $qb = $repository->createQueryBuilder('root');
-        $qb
-            ->andWhere('root.id IN (:_matching_ids)')
-            ->setParameter('_matching_ids', $matchingIds);
+
+        if (empty($matchingIds)) {
+            $qb->andWhere('root.id IS NULL');
+        } else {
+            $qb->andWhere('root.id IN (:_matching_ids)')
+                ->setParameter('_matching_ids', $matchingIds);
+        }
 
         foreach ($fields as $field => $data) {
             $expression = $this->buildAggregateExpression($field, $data);
