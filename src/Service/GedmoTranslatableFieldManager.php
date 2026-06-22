@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query as Query;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
-use Gedmo\Translatable\TranslatableListener as TranslatableListener;
+use Gedmo\Translatable\TranslatableListener;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess as PropertyAccess;
 
@@ -16,11 +16,10 @@ class GedmoTranslatableFieldManager
     public const GEDMO_TRANSLATION_WALKER = 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker';
     public const GEDMO_PERSONAL_TRANSLATIONS_GET = 'getTranslations';
     public const GEDMO_PERSONAL_TRANSLATIONS_SET = 'addTranslation';
-    protected EntityManagerInterface $em;
 
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
+    public function __construct(
+        protected EntityManagerInterface $em,
+        protected TranslatableListener $translatableListener) {
     }
 
     public function getTranslationRepository(object $entity): EntityRepository
@@ -121,6 +120,7 @@ class GedmoTranslatableFieldManager
                             $needAddTranslation = false;
                         }
                     }
+
                     if ($needAddTranslation && $value !== null) {
                         $entity->addTranslation(new $translationClassName($locale, $fieldName, $value));
                     }
@@ -140,5 +140,10 @@ class GedmoTranslatableFieldManager
                 }
             }
         }
+
+        // After setting entity field for the default locale, tell Gedmo to process this
+        // entity in the default locale during flush. Without this, Gedmo reads entity field
+        // and overwrites the current request locale's translation with the default locale value.
+        $this->translatableListener->setTranslatableLocale($defaultLocale);
     }
 }
