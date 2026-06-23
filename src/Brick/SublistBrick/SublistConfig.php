@@ -187,7 +187,7 @@ class SublistConfig extends AbstractBrickConfig
             return false;
         }
 
-        $sorts = $this->getDatasourceParams()->getSorts();
+        $sorts = $this->getDatasourceParams()?->getSorts();
         $primarySort = $sorts[0] ?? null;
         $primarySortField = is_array($primarySort) ? $primarySort[0] : $primarySort;
         $primarySortDir = is_array($primarySort) ? strtoupper($primarySort[1] ?? 'ASC') : 'ASC';
