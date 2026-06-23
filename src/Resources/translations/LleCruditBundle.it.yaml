@@ -122,6 +122,9 @@ crudit:
         current_page: "Solo nella pagina corrente"
         all_page: "In tutte le pagine"
 
+    sortable:
+        handle: "Trascina per riordinare"
+
     rupture:
         null_label: "%field% vuoto"
 

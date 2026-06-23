@@ -644,4 +644,18 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
     {
         return ['tags' => [], 'currentTags' => []];
     }
+
+    public function applySort(array $ids, string $sortField): void
+    {
+        $accessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($ids as $position => $id) {
+            $entity = $this->get($id);
+            if ($entity !== null) {
+                $accessor->setValue($entity, $sortField, $position);
+            }
+        }
+
+        $this->entityManager->flush();
+    }
 }

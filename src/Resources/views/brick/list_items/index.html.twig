@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% set has_batch = view.data.batch_actions|length %}
+{% set is_sortable = view.config.sortable and is_granted('ROLE_' ~ view.config.name ~ '_EDIT') %}
 <div class="card shadow mb-4">
     <div class="card-header py-1">
         {% include('@LleCrudit/brick/list_items/_pager.html.twig') %}
@@ -13,7 +14,7 @@
 
     <div class="card-body p-0">
         <div class="table-responsive crudit-list">
-            <table id="{{ view.id }}_table" class="table table-sm table-hover">
+            <table id="{{ view.id }}_table" class="table table-sm table-hover{% if is_sortable %} crudit-sortable{% endif %}"{% if is_sortable %} data-sort-url="{{ path(view.config.sort_url.route) }}"{% endif %}>
                 {% if not view.options.noHeader|default(false) %}
                     <thead class="table-active">
                     <tr>
@@ -23,6 +24,9 @@
                                     <input type="checkbox" id="crudit-batch-check-all" autocomplete="off">
                                 </span>
                             </th>
+                        {% endif %}
+                        {% if is_sortable %}
+                            <th></th>
                         {% endif %}
                         {% for field in view.config.fields %}
                             {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
@@ -57,12 +61,13 @@
 
                 <tbody>
                 {% set currentGroup = null %}
-                {% set nbCols = view.config.fields|length + (has_batch ? 1 : 0) + (hasActions is defined and hasActions ? 1 : 0) %}
+                {% set nbCols = view.config.fields|length + (has_batch ? 1 : 0) + (hasActions is defined and hasActions ? 1 : 0) + (is_sortable ? 1 : 0) %}
                 {% for line in view.data.lines %}
                     {% if line.ruptGroup1 is not null %}
                         {% if currentGroup is not null and view.data.grouped_totals[currentGroup] is defined %}
                             <tr class="table-secondary fw-bold">
                                 {% if has_batch %}<td></td>{% endif %}
+                                {% if is_sortable %}<td></td>{% endif %}
                                 {% set groupTotals = view.data.grouped_totals[currentGroup] %}
                                 {% for field in view.config.fields %}
                                     {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
@@ -93,9 +98,12 @@
                         </tr>
                     {% endif %}
 
-                    <tr id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                    <tr id="{{ 'list-' ~ view.config.name|lower ~ '-' ~ line.id }}" data-id="{{ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
                         {% if has_batch %}
                             <td><input class="crudit-batch-check" data-id="{{ line.id }}" type="checkbox" autocomplete="off"/></td>
+                        {% endif %}
+                        {% if is_sortable %}
+                            <td><i class="fas fa-grip-vertical crudit-sortable-handle" style="cursor:grab"></i></td>
                         {% endif %}
                         {% for column in line.fields %}
                             {% if (column.field.ruptGroup == 0 or not column.field.ruptHideFromList) and (column.field.role is null or is_granted(column.field.role)) %}
@@ -120,6 +128,7 @@
                 {% if currentGroup is not null and view.data.grouped_totals[currentGroup] is defined %}
                     <tr class="table-secondary fw-bold">
                         {% if has_batch %}<td></td>{% endif %}
+                        {% if is_sortable %}<td></td>{% endif %}
                         {% set groupTotals = view.data.grouped_totals[currentGroup] %}
                         {% for field in view.config.fields %}
                             {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}

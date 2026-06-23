@@ -126,6 +126,9 @@ crudit:
         current_page: "Uniquement sur la page courante"
         all_page: "Sur toutes les pages"
 
+    sortable:
+        handle: "Glisser pour réordonner"
+
     rupture:
         null_label: "%field% vide"
 

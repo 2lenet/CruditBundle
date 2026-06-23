@@ -123,6 +123,9 @@ crudit:
         current_page: "Nur auf der aktuellen Seite"
         all_page: "Auf allen Seiten"
 
+    sortable:
+        handle: "Zum Neuanordnen ziehen"
+
     rupture:
         null_label: "%field% leer"
 

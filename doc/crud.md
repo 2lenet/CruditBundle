@@ -478,3 +478,100 @@ Field::new('orderDate')
     ->withRuptSortPriority()                   // optional — rupture sorts before any other sort
     ->withSubtotals(),
 ```
+
+## How to enable drag-to-sort on a list
+
+Crudit provides a built-in drag-and-drop reordering feature for list bricks, powered by [SortableJS](https://sortablejs.com). When enabled, a drag handle appears as the first column of the table. Dropping a row sends the new order to the server and persists it immediately.
+
+### 1. Add a position field to your entity
+
+Your entity must expose a field (typically `position`) with a getter and a setter:
+
+```php
+#[ORM\Column(type: 'integer', nullable: true)]
+private ?int $position = null;
+
+public function getPosition(): ?int
+{
+    return $this->position;
+}
+
+public function setPosition(?int $position): void
+{
+    $this->position = $position;
+}
+```
+
+Don't forget to generate and run the corresponding Doctrine migration.
+
+### 2. Enable sortable in the CrudConfig
+
+Override `getSortableField()` in your `CrudConfig` to return the name of the position field:
+
+```php
+public function getSortableField(): string
+{
+    return 'position';
+}
+```
+
+That's all that is required. The `/sort` route is automatically exposed by `TraitCrudController`, and the drag handle column is rendered automatically in the list template.
+
+### 3. Sort the list by position by default (required)
+
+Override `getDefaultSort()` in your `CrudConfig` so rows always appear in the saved order:
+
+```php
+public function getDefaultSort(): array
+{
+    return [['position', 'ASC']];
+}
+```
+
+> :warning: **The drag handle is only displayed when the list is currently sorted by the sortable field in ascending order (ASC) as the primary sort. If the user sorts by another column, or sorts by the position field in descending order, the handle disappears automatically. This is a safety measure: saving a descending order would persist positions in reverse, and saving after sorting by another field would produce an incoherent order.**
+
+### 4. Customize the sort URL (optional)
+
+By default the sort endpoint is `/{your-crud-prefix}/sort`. If you need to point to a different route, override `getSortableUrl()` in your `CrudConfig`:
+
+```php
+use Lle\CruditBundle\Dto\Path;
+
+public function getSortableUrl(): Path
+{
+    return Path::new('app_custom_sort_route');
+}
+```
+
+> :warning: **The sort action checks the `ROLE_{NAME}_EDIT` permission. Make sure this role is granted to users who should be allowed to reorder items.**
+
+> :warning: **Drag-to-sort is not compatible with active filters or multi-page pagination: the saved position reflects the visual order of the current page only. It is recommended to disable filters and set a high enough page size when using this feature.**
+
+### Using drag-to-sort on a sublist
+
+The sortable feature also works on sublist bricks. It requires two things:
+
+1. `getSortableField()` configured on the child `CrudConfig` (same as for a standalone list)
+2. `withSortable()` called explicitly on the `SublistConfig`
+
+The `SublistConfig` then reads the sort field and the sort URL automatically from the child `CrudConfig`.
+
+```php
+// ParentCrudConfig.php
+SublistConfig::new('parent', $childCrudConfig)
+    ->setFields($this->getFields(CrudConfigInterface::SHOW))
+    ->setActions($this->getItemActions())
+    ->withSortable(),
+```
+
+```php
+// ChildCrudConfig.php
+public function getSortableField(): string
+{
+    return 'position';
+}
+```
+
+> :warning: **Drag-to-sort on a sublist is only meaningful when the position field is scoped to the parent entity — i.e. each parent owns its own ordered set of children. If the position is global across all parents, reordering from one parent's sublist would corrupt the order of the others.**
+
+Example of a correct setup: a `Section` entity has a `position` field and belongs to a `Page`. Each `Page` has its own sections in its own order. Reordering sections from one page's sublist has no effect on another page's sections.
