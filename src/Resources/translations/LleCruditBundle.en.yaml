@@ -123,6 +123,9 @@ crudit:
         current_page: "Only on current page"
         all_page: "On all pages"
 
+    sortable:
+        handle: "Drag to reorder"
+
     rupture:
         null_label: "%field% empty"
 

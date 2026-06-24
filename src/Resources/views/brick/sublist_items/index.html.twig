@@ -15,7 +15,8 @@
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
             {% endif %}
         </div>
-        <div class="card-body">
+        {% set is_sortable = view.config.sortable and is_granted('ROLE_' ~ view.config.name ~ '_EDIT') %}
+    <div class="card-body">
             {% if view.config.title is defined and view.config.title %}
                 <h2 class="{% if view.config.titleCss is defined and view.config.titleCss %}{{ view.config.titleCss }}{% endif %}">
                     {{ view.config.title|trans }}
@@ -23,10 +24,13 @@
                 <hr/>
             {% endif %}
             <div class="table-responsive crudit-sublist">
-                <table id="{{ view.id }}_table" class="table table-sm table-hover">
+                <table id="{{ view.id }}_table" class="table table-sm table-hover{% if is_sortable %} crudit-sortable{% endif %}"{% if is_sortable %} data-sort-url="{{ path(view.config.sort_url.route) }}"{% endif %}>
                     {% if not view.options.noHeader|default(false) %}
                         <thead class="thead-light">
                         <tr>
+                            {% if is_sortable %}
+                                <th></th>
+                            {% endif %}
                             {% for field in view.config.fields %}
                                 {% if
                                     field.role is not defined or field.role is null or
@@ -122,7 +126,10 @@
 
                                 {% if column.field.ruptGroup == 0 %}
                                     {% if loop.first %}
-                                        <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                                        <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" data-id="{{ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                                        {% if is_sortable %}
+                                            <td><i class="fas fa-grip-vertical crudit-sortable-handle" style="cursor:grab"></i></td>
+                                        {% endif %}
                                     {% endif %}
                                     <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
                                         {% if column.field.path %}
@@ -145,6 +152,7 @@
                     {% if view.data.totals is defined and view.data.totals %}
                         {% set totals = view.data.totals %}
                         <tr>
+                            {% if is_sortable %}<td></td>{% endif %}
                             {% for field in view.config.fields %}
                                 {% set match = false %}
                                 {% for key, total in totals %}
@@ -168,7 +176,7 @@
                             {% endfor %}
                         </tr>
                         {% if totals|length %}
-                            {% set nbCols = view.config.fields|length %}
+                            {% set nbCols = view.config.fields|length + (is_sortable ? 1 : 0) %}
                             <tr>
                                 <td colspan="{{ nbCols + 1 }}" class="text-end">
                                     {% for total in totals %}

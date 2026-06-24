@@ -75,6 +75,8 @@ class ListConfig extends AbstractBrickConfig
         // beurk
         $this->setDatasourceParams($this->getCrudConfig()->getDatasourceParams($request));
 
+        $sortable = $this->isSortableActive();
+
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
@@ -86,9 +88,28 @@ class ListConfig extends AbstractBrickConfig
             'hidden_action' => false,
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
+            'sortable' => $sortable,
+            'sort_url' => $sortable
+                ? ($this->getCrudConfig()->getSortableUrl() ?? $this->getCrudConfig()->getPath(CrudConfigInterface::SORT))
+                : null,
             'choices_nb_items' => $this->getCrudConfig()->getChoicesNbItems(),
             'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
         ];
+    }
+
+    private function isSortableActive(): bool
+    {
+        $sortableField = $this->getCrudConfig()->getSortableField();
+        if ($sortableField === null) {
+            return false;
+        }
+
+        $sorts = $this->getDatasourceParams()->getSorts();
+        $primarySort = $sorts[0] ?? null;
+        $primarySortField = is_array($primarySort) ? $primarySort[0] : $primarySort;
+        $primarySortDir = is_array($primarySort) ? strtoupper($primarySort[1] ?? 'ASC') : 'ASC';
+
+        return $primarySortField === $sortableField && $primarySortDir === 'ASC';
     }
 
     /** @return Field[] */

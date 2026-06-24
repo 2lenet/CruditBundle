@@ -130,6 +130,26 @@ trait TraitCrudController
         return $this->redirectToRoute($this->config->getRootRoute() . "_index");
     }
 
+    #[Route('/sort', methods: ['POST'])]
+    public function sort(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EDIT');
+
+        $sortField = $this->config->getSortableField();
+        if ($sortField === null) {
+            return new JsonResponse(['status' => 'ko'], Response::HTTP_FORBIDDEN);
+        }
+
+        $ids = json_decode($request->getContent(), true);
+        if (!is_array($ids)) {
+            return new JsonResponse(['sattus' => 'ko'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->config->getDatasource()->applySort($ids, $sortField);
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
     #[Route('/autocomplete')]
     public function autocomplete(Request $request): Response
     {

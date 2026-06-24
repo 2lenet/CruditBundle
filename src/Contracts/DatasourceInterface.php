@@ -56,4 +56,6 @@ interface DatasourceInterface
 
     /** @return array{tags: iterable, currentTags: iterable} */
     public function getTags(object $resource): iterable;
+
+    public function applySort(array $ids, string $sortField): void;
 }

@@ -417,6 +417,16 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return [];
     }
 
+    public function getSortableField(): ?string
+    {
+        return null;
+    }
+
+    public function getSortableUrl(): ?Path
+    {
+        return null;
+    }
+
     public function getListAutoRefresh(): ?int
     {
         return null;

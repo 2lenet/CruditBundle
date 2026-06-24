@@ -13,6 +13,7 @@ import './sidebar';
 import './tag';
 import './form_collection';
 import './ckeditor';
+import './sortable';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {

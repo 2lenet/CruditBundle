@@ -22,6 +22,7 @@ class SublistConfig extends AbstractBrickConfig
     private ?DatasourceParams $datasourceParams = null;
     private string $className;
     private string $fieldname;
+    private bool $sortable = false;
     protected CrudConfigInterface $subCrudConfig;
 
     public function __construct(string $fieldname, CrudConfigInterface $subCrudConfig, array $options = [])
@@ -69,6 +70,8 @@ class SublistConfig extends AbstractBrickConfig
 
         $this->setDatasourceParams($subDatasourceParams);
 
+        $sortable = $this->isSortableActive();
+
         return [
             'fields' => $this->getFields(),
             'actions' => $this->getActions(),
@@ -81,6 +84,10 @@ class SublistConfig extends AbstractBrickConfig
             'hidden_action' => false,
             'bulk' => false,
             'sort' => ['name' => 'id', 'direction' => 'ASC'],
+            'sortable' => $sortable,
+            'sort_url' => $sortable
+                ? ($this->subCrudConfig->getSortableUrl() ?? $this->subCrudConfig->getPath(CrudConfigInterface::SORT))
+                : null,
             'canModifyNbEntityPerPage' => false,
             'choices_nb_items' => $this->subCrudConfig->getChoicesNbItems(),
             'translation_domain' => $this->getCrudConfig()->getTranslationDomain(),
@@ -165,6 +172,27 @@ class SublistConfig extends AbstractBrickConfig
         $this->fieldname = $fieldname;
 
         return $this;
+    }
+
+    public function withSortable(): self
+    {
+        $this->sortable = true;
+
+        return $this;
+    }
+
+    private function isSortableActive(): bool
+    {
+        if (!$this->sortable || $this->subCrudConfig->getSortableField() === null) {
+            return false;
+        }
+
+        $sorts = $this->getDatasourceParams()?->getSorts();
+        $primarySort = $sorts[0] ?? null;
+        $primarySortField = is_array($primarySort) ? $primarySort[0] : $primarySort;
+        $primarySortDir = is_array($primarySort) ? strtoupper($primarySort[1] ?? 'ASC') : 'ASC';
+
+        return $primarySortField === $this->subCrudConfig->getSortableField() && $primarySortDir === 'ASC';
     }
 
     public function getSubCrudConfig(): CrudConfigInterface
