@@ -504,6 +504,8 @@ public function setPosition(?int $position): void
 
 Don't forget to generate and run the corresponding Doctrine migration.
 
+> :warning: **Do not add a unique constraint on the position field.** During a reorder operation, positions are updated one row at a time, which means two rows may temporarily share the same value. A unique constraint would cause a database error mid-save.
+
 ### 2. Enable sortable in the CrudConfig
 
 Override `getSortableField()` in your `CrudConfig` to return the name of the position field:

@@ -10,14 +10,19 @@ window.addEventListener('load', () => {
             handle: '.crudit-sortable-handle',
             animation: 150,
             onUpdate: () => {
-                const ids = [];
-                tbody.querySelectorAll('tr[data-id]').forEach((tr) => {
-                    ids.push(tr.dataset.id);
-                });
+                const rows = [...tbody.querySelectorAll('tr[data-id]')];
+                const ids = rows.map((tr) => tr.dataset.id);
+
                 fetch(sortUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(ids),
+                }).then((response) => {
+                    if (!response.ok) {
+                        rows.forEach((tr) => tbody.appendChild(tr));
+                    }
+                }).catch(() => {
+                    rows.forEach((tr) => tbody.appendChild(tr));
                 });
             },
         });

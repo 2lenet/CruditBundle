@@ -141,6 +141,9 @@ trait TraitCrudController
         }
 
         $ids = json_decode($request->getContent(), true);
+        if (!is_array($ids)) {
+            return new JsonResponse(['sattus' => 'ko'], Response::HTTP_BAD_REQUEST);
+        }
 
         $this->config->getDatasource()->applySort($ids, $sortField);
 

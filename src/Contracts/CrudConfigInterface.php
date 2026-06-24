@@ -20,7 +20,7 @@ interface CrudConfigInterface
     public const NEW = 'NEW';
     public const DELETE = 'DELETE';
     public const EXPORT = 'EXPORT';
-    public const SORT = 'sort';
+    public const SORT = 'SORT';
 
     public const ACTION_LIST = 'list';
     public const ACTION_SHOW = 'show';
