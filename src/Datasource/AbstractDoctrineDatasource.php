@@ -244,21 +244,20 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
 
     public function initializeAutocompleteQueryBuilder(QueryBuilder $qb, string $queryTerm): QueryBuilder
     {
-        $orStatements = $qb->expr()->orX();
-        foreach ($this->getAutoCompleteSearchFields() as $field) {
-            $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal('%' . $queryTerm . '%'))
-            );
+        $terms = array_filter(explode(' ', $queryTerm));
 
-            // allow null if the user didn't type anything
-            if (!$queryTerm) {
-                $orStatements->add(
-                    $qb->expr()->isNull('root.' . $field)
-                );
+        foreach ($terms as $key => $term) {
+            $parts = [];
+            foreach ($this->getAutoCompleteSearchFields() as $field) {
+                $param = 'autocomplete_' . $key . '_' . str_replace('.', '_', $field);
+                $parts[] = 'root.' . $field . ' LIKE :' . $param;
+                $qb->setParameter($param, '%' . $term . '%');
+            }
+
+            if ($parts) {
+                $qb->andWhere(implode(' OR ', $parts));
             }
         }
-
-        $qb->andWhere($orStatements);
 
         return $qb;
     }
