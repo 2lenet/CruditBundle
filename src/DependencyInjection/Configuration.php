@@ -118,6 +118,12 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('number_cards_per_row')
                 ->defaultValue(1)
+            ->end()
+            ->arrayNode('icons')
+                ->info('Override individual icons (logical name => CSS class). Unset keys keep their FA default.')
+                ->normalizeKeys(false)
+                ->useAttributeAsKey('name')
+                ->scalarPrototype()->end()
             ->end();
 
         return $treeBuilder;

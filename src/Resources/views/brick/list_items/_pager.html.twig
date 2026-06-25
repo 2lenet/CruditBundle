@@ -21,7 +21,7 @@
                         <a class="page-link" href="{{ url }}"
                            title="{{ 'crudit.pagination.firstPage'|trans({}, 'LleCruditBundle') }}"
                            aria-label="{{ 'crudit.pagination.first'|trans({}, 'LleCruditBundle') }}">
-                            <i class="fa fa-angle-double-left"></i>
+                            <i class="{{ crudit_icon('pager_first') }}"></i>
                         </a>
                     </li>
                     {% set merge_params = {(view.config.name|lower~'_offset'): view.config.datasource_params.limit*(view.config.datasource_params.currentPage-2)} %}
@@ -31,7 +31,7 @@
                         <a class="page-link" href="{{ url }}"
                            title="{{ 'crudit.pagination.previousPage'|trans({}, 'LleCruditBundle') }}"
                            aria-label="{{ 'crudit.pagination.previous'|trans({}, 'LleCruditBundle') }}">
-                            <i class="fa fa-angle-left"></i>
+                            <i class="{{ crudit_icon('pager_prev') }}"></i>
                         </a>
                     </li>
                 {% endif %}
@@ -57,7 +57,7 @@
                         <a class="page-link" href="{{ url }}"
                            title="{{ 'crudit.pagination.nextPage'|trans({}, 'LleCruditBundle') }}"
                            aria-label="{{ 'crudit.pagination.next'|trans({}, 'LleCruditBundle') }}">
-                            <i class="fa fa-angle-right"></i>
+                            <i class="{{ crudit_icon('pager_next') }}"></i>
                         </a>
                     </li>
                     {% set merge_params = {(view.config.name|lower~'_offset'): ((view.config.datasource_params.count/view.config.datasource_params.limit)|round(0, 'ceil')-1)*view.config.datasource_params.limit} %}
@@ -67,7 +67,7 @@
                         <a class="page-link" href="{{ url }}"
                            title="{{ 'crudit.pagination.lastPage'|trans({}, 'LleCruditBundle') }}"
                            aria-label="{{ 'crudit.pagination.last'|trans({}, 'LleCruditBundle') }}">
-                            <i class="fa fa-angle-double-right"></i>
+                            <i class="{{ crudit_icon('pager_last') }}"></i>
                         </a>
                     </li>
                 {% endif %}

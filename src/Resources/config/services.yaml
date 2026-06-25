@@ -50,6 +50,10 @@ services:
         arguments:
             - !tagged_iterator crudit.menu
 
+    Lle\CruditBundle\Registry\IconRegistry:
+        arguments:
+            $icons: '%lle_crudit.icons%'
+
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
             - '@Lle\CruditBundle\Registry\MenuRegistry'
@@ -57,6 +61,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@parameter_bag'
             - '@workflow.registry'
+            - '@Lle\CruditBundle\Registry\IconRegistry'
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:

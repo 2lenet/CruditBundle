@@ -11,7 +11,7 @@
                 {% for entry in view.data.history %}
                     <div class="card-timeline">
                         <div class="card-timeline-icon">
-                            <i class="fas fa-user"></i>
+                            <i class="{{ crudit_icon('user') }}"></i>
                         </div>
 
                         <div class="card mb-3">
@@ -31,17 +31,17 @@
                                         <span class="me-4 fw-bold">{{ entry.log.username }}</span>
                                     </div>
                                     <div class="col-xl-2">
-                                    <span><i class="far fa-clock"></i>&nbsp;
+                                    <span><i class="{{ crudit_icon('clock') }}"></i>&nbsp;
                                         {{ entry.log.loggedAt|date('d/m/Y H:i') }}
                                     </span>
                                     </div>
                                     <div class="col-lg-5">
                                         {% set count =  entry.data|length %}
-                                        <i class="fa fa-exchange"></i> {{ 'crudit.field.modification'|trans({'%count%': count}, domain='LleCruditBundle') }}
+                                        <i class="{{ crudit_icon('exchange') }}"></i> {{ 'crudit.field.modification'|trans({'%count%': count}, domain='LleCruditBundle') }}
                                     </div>
                                     <div class="col-md-1">
                                     <span class="btn float-end card-toggle">
-                                    <i class="fa fa-chevron-down"></i>
+                                    <i class="{{ crudit_icon('chevron_down') }}"></i>
                                     </span>
                                     </div>
                                 </div>
@@ -53,7 +53,7 @@
                                             <tr>
                                                 <td>{{ ('field.' ~ (property|replace({'.': '_'})|lower))|trans(domain=view.config.translation_domain) }}</td>
                                                 <td>
-                                                    <i class="fas fa-arrow-right mx-2"></i>
+                                                    <i class="{{ crudit_icon('arrow_right') }} mx-2"></i>
                                                 </td>
                                                 <td>
                                                     {% if value.type == 'boolean' %}
@@ -87,7 +87,7 @@
 
                 <div class="card-timeline">
                     <div class="card-timeline-icon">
-                        <i class="fas fa-folder-plus"></i>
+                        <i class="{{ crudit_icon('folder_plus') }}"></i>
                     </div>
                 </div>
             {% else %}

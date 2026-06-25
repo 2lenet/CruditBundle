@@ -14,7 +14,7 @@
                 data-bs-toggle="dropdown"
             >
                 {% if dropdown_action.icon %}
-                    <i class="{{ dropdown_action.icon.cssClass }}"></i>
+                    <i class="{{ crudit_icon(dropdown_action.icon) }}"></i>
                 {% endif %}
                 {% if not action.hideLabel and not action.icon %}
                     {{ dropdown_action.label|trans(domain=view.config.translation_domain) }}
