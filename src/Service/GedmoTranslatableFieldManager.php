@@ -19,7 +19,7 @@ class GedmoTranslatableFieldManager
 
     public function __construct(
         protected EntityManagerInterface $em,
-        protected TranslatableListener $translatableListener) {
+        protected ?TranslatableListener $translatableListener = null) {
     }
 
     public function getTranslationRepository(object $entity): EntityRepository
@@ -144,6 +144,6 @@ class GedmoTranslatableFieldManager
         // After setting entity field for the default locale, tell Gedmo to process this
         // entity in the default locale during flush. Without this, Gedmo reads entity field
         // and overwrites the current request locale's translation with the default locale value.
-        $this->translatableListener->setTranslatableLocale($defaultLocale);
+        $this->translatableListener?->setTranslatableLocale($defaultLocale);
     }
 }

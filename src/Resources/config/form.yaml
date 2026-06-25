@@ -11,7 +11,7 @@ services:
     Lle\CruditBundle\Service\GedmoTranslatableFieldManager:
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@stof_doctrine_extensions.listener.translatable"
+            - "@?stof_doctrine_extensions.listener.translatable"
     Lle\CruditBundle\Form\Type\GedmoTranslatableType:
         arguments:
             - '%kernel.default_locale%'
