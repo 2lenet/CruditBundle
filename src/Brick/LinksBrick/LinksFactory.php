@@ -7,7 +7,6 @@ namespace Lle\CruditBundle\Brick\LinksBrick;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
-use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -54,11 +53,10 @@ class LinksFactory extends AbstractBasicBrickFactory
         $backUrl = $this->navigationStack->peek();
         $actions = $brickConfig->getActions();
 
-        // Resolve the back URL for "back to list" actions (ListAction on list pages, ItemAction on show pages)
+        // Resolve the back URL for "back to list" actions (covers ListAction on list pages and ItemAction on show pages)
         foreach ($actions as $action) {
             if (
-                $action instanceof AbstractAction
-                && $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST
+                $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST
                 && $action->getUrl() === null
                 && $backUrl !== null
             ) {
