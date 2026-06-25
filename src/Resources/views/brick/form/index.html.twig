@@ -86,7 +86,7 @@
         <div class="d-flex">
             {% if view.data.cancel_path %}
                 {% set cancelHref = path(view.data.cancel_path.route, view.data.cancel_path.params) %}
-            {% elseif view.data.back_url %}
+            {% elseif view.data.back_url is defined and view.data.back_url %}
                 {% set cancelHref = view.data.back_url %}
             {% else %}
                 {% set cancelHref = path(view.data.default_path.route) %}
