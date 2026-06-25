@@ -12,6 +12,7 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Lle\CruditBundle\Service\NavigationStack;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -22,28 +23,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FormFactory extends AbstractBasicBrickFactory
 {
-    private FormFactoryInterface $formFactory;
-
-    private BrickResponseCollector $brickResponseCollector;
-
-    private UrlGeneratorInterface $urlGenerator;
-
-    protected PropertyAccessorInterface $propertyAccessor;
-
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
-        FormFactoryInterface $formFactory,
-        BrickResponseCollector $brickResponseCollector,
-        UrlGeneratorInterface $urlGenerator,
-        PropertyAccessorInterface $propertyAccessor,
+        protected FormFactoryInterface $formFactory,
+        protected BrickResponseCollector $brickResponseCollector,
+        protected UrlGeneratorInterface $urlGenerator,
+        protected PropertyAccessorInterface $propertyAccessor,
+        protected NavigationStack $navigationStack,
     ) {
         parent::__construct($resourceResolver, $requestStack);
-
-        $this->formFactory = $formFactory;
-        $this->brickResponseCollector = $brickResponseCollector;
-        $this->urlGenerator = $urlGenerator;
-        $this->propertyAccessor = $propertyAccessor;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -53,9 +42,6 @@ class FormFactory extends AbstractBasicBrickFactory
 
     public function buildView(BrickConfigInterface $brickConfigurator): BrickView
     {
-        $request = $this->requestStack->getMainRequest();
-        $referer = $request?->headers->get('referer');
-
         /** @var FormConfig $brickConfigurator */
         $resource = $this->getResource($brickConfigurator);
 
@@ -74,7 +60,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 'options' => $brickConfigurator->getOptions(),
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'default_path' => $brickConfigurator->getCrudConfig()->getPath(),
-                'referer' => $referer,
+                'back_url' => $this->navigationStack->peek(),
                 'css_class_columns_form' => $brickConfigurator->getCrudConfig()->getCssClassColumnsForm(),
             ]);
 
@@ -174,8 +160,6 @@ class FormFactory extends AbstractBasicBrickFactory
 
     private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
-        $cruditReferers = json_decode($this->getRequest()->getSession()->get('lle_crudit_referers', ''), true);
-
         if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
             return $this->urlGenerator->generate(
                 $successRedirectPath->getRoute(),
@@ -184,7 +168,9 @@ class FormFactory extends AbstractBasicBrickFactory
                     $successRedirectPath->getParams()
                 )
             );
-        } elseif ($afterEditPath = $brickConfig->getCrudConfig()->getAfterEditPath()) {
+        }
+
+        if ($afterEditPath = $brickConfig->getCrudConfig()->getAfterEditPath()) {
             return $this->urlGenerator->generate(
                 $afterEditPath->getRoute(),
                 array_merge(
@@ -192,12 +178,9 @@ class FormFactory extends AbstractBasicBrickFactory
                     $afterEditPath->getParams()
                 )
             );
-        } elseif (count($cruditReferers)) {
-            return end($cruditReferers);
-        } else {
-            return $this->urlGenerator->generate(
-                $brickConfig->getCrudConfig()->getPath()->getRoute()
-            );
         }
+
+        return $this->navigationStack->peek()
+            ?? $this->urlGenerator->generate($brickConfig->getCrudConfig()->getPath()->getRoute());
     }
 }

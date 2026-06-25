@@ -27,9 +27,6 @@
 
     {{ form_start(form, {'attr': form_attributes}) }}
     {{ form_errors(form) }}
-    {% if view.data.referer is defined and view.data.referer %}
-        <input type="hidden" name="referer" value="{{ view.data.referer }}">
-    {% endif %}
     <div class="row">
     {% for field in form.getIterator() %}
         {% if field.vars.isGroup is defined and field.vars.isGroup %}
@@ -87,12 +84,10 @@
 
     {% block form_buttons %}
         <div class="d-flex">
-            {% set cruditReferers = app.session.get('lle_crudit_referers', '')|json_decode %}
-
             {% if view.data.cancel_path %}
                 {% set cancelHref = path(view.data.cancel_path.route, view.data.cancel_path.params) %}
-            {% elseif cruditReferers|length %}
-                {% set cancelHref = cruditReferers|last %}
+            {% elseif view.data.back_url %}
+                {% set cancelHref = view.data.back_url %}
             {% else %}
                 {% set cancelHref = path(view.data.default_path.route) %}
             {% endif %}

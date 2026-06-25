@@ -2,34 +2,42 @@
 
 namespace Lle\CruditBundle\EventListener;
 
+use Lle\CruditBundle\Service\NavigationStack;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-// This listener allows you to manage your browsing history.
 class KernelRequestListener
 {
     public function __construct(
         protected ParameterBagInterface $parameterBag,
+        protected NavigationStack $navigationStack,
     ) {
     }
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        // Ignore AJAX calls and referrers not related to documents
+        $request = $event->getRequest();
+        $secFetchDest = $request->headers->get('sec-fetch-dest');
+        $accept = $request->headers->get('Accept', '');
+
+        // A real page navigation sends Accept: text/html (all browsers).
+        // sec-fetch-dest: document is preferred when available (modern browsers),
+        // but falls back to the Accept header to support Safari < 16.4 and other clients.
+        $isDocumentRequest = $secFetchDest === 'document'
+            || ($secFetchDest === null && str_contains($accept, 'text/html'));
+
         if (
-            $event->getRequest()->isXmlHttpRequest()
-            || $event->getRequest()->attributes->get('_stateless') === true
-            || $event->getRequest()->headers->get('sec-fetch-dest') !== 'document'
+            !$isDocumentRequest
+            || $request->isXmlHttpRequest()
+            || $request->attributes->get('_stateless') === true
         ) {
             return;
         }
 
-        $referer = $event->getRequest()->headers->get('referer');
-        $requestUri = $event->getRequest()->getUri();
-        $requestMethod = $event->getRequest()->getMethod();
+        $referer = $request->headers->get('referer');
+        $requestUri = $request->getUri();
 
         if ($referer) {
-            // Ignore routes defined in the configuration
             /** @var array $ignoredRoutes */
             $ignoredRoutes = $this->parameterBag->get('lle_crudit.ignore_referer_routes');
             if (array_any($ignoredRoutes, fn($ignoredRoute) => (bool)preg_match($ignoredRoute, $referer))) {
@@ -37,28 +45,12 @@ class KernelRequestListener
             }
         }
 
-        $session = $event->getRequest()->getSession();
-        $cruditReferer = json_decode($session->get('lle_crudit_referers', ''), true);
-
-        // Remove the last referer if it's the current one
-        if ($cruditReferer && end($cruditReferer) === $requestUri) {
-            array_pop($cruditReferer);
-
-            $session->set('lle_crudit_referers', json_encode($cruditReferer));
-        } elseif (
-            $requestMethod !== 'POST'
-            && $referer
-            && (!$cruditReferer || end($cruditReferer) !== $referer)
-            && $referer !== $requestUri
-        ) {
-            $cruditReferer[] = $referer;
-
-            // Keep only the last 20 referers
-            while (count($cruditReferer) > 20) {
-                array_shift($cruditReferer);
+        // If the current URL is already the last stack entry, the user navigated back — pop it.
+        // Otherwise, push the referer (the page we just came from) onto the stack.
+        if (!$this->navigationStack->removeIfLast($requestUri)) {
+            if ($request->getMethod() !== 'POST' && $referer && $referer !== $requestUri) {
+                $this->navigationStack->push($referer);
             }
-
-            $session->set('lle_crudit_referers', json_encode($cruditReferer));
         }
     }
 }

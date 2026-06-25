@@ -6,11 +6,24 @@ namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
+use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\BrickView;
+use Lle\CruditBundle\Resolver\ResourceResolver;
+use Lle\CruditBundle\Service\NavigationStack;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class LinksFactory extends AbstractBasicBrickFactory
 {
+    public function __construct(
+        ResourceResolver $resourceResolver,
+        RequestStack $requestStack,
+        protected NavigationStack $navigationStack,
+    ) {
+        parent::__construct($resourceResolver, $requestStack);
+    }
+
     public function support(BrickConfigInterface $brickConfigurator): bool
     {
         return (LinksConfig::class === get_class($brickConfigurator));
@@ -38,12 +51,25 @@ class LinksFactory extends AbstractBasicBrickFactory
 
     public function getActions(LinksConfig $brickConfig): array
     {
+        $backUrl = $this->navigationStack->peek();
         $actions = $brickConfig->getActions();
+
+        // Resolve the back URL for "back to list" actions (ListAction on list pages, ItemAction on show pages)
+        foreach ($actions as $action) {
+            if (
+                $action instanceof AbstractAction
+                && $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST
+                && $action->getUrl() === null
+                && $backUrl !== null
+            ) {
+                $action->setUrl($backUrl);
+            }
+        }
+
         if ($brickConfig->hasBack()) {
             $action = ListAction::new('crudit.action.back', $brickConfig->getCrudConfig()->getPath());
-            $url = $this->getRequest()->headers->get('referer');
-            if ($url !== null) {
-                $action->setUrl($url);
+            if ($backUrl !== null) {
+                $action->setUrl($backUrl);
             }
             $actions[] = $action;
         }

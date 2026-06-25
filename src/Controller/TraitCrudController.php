@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Service\NavigationStack;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
@@ -109,19 +110,21 @@ trait TraitCrudController
         $dataSource = $this->config->getDatasource();
         $dataSource->delete($dataSource->getIdentifier($resource));
 
-        $referer = $request->headers->get('referer');
-        if ($referer && str_contains($referer, 'show')) {
+        $stack = json_decode($request->getSession()->get(NavigationStack::SESSION_KEY, '[]'), true) ?? [];
+        $backUrl = !empty($stack) ? end($stack) : null;
+
+        if ($backUrl && str_contains($backUrl, 'show')) {
             if ($route = $request->attributes->get('_route')) {
                 preg_match('/^app_crudit_(.+)_delete$/', $route, $matches);
                 if ($matches && array_key_exists(1, $matches)) {
                     // explode is necessary in case your controller is in a subdirectory
                     $parts = explode('_', $matches[1]);
                     $entityName = end($parts);
-                    if (str_contains($referer, '/' . $entityName . '/')) {
+                    if (str_contains($backUrl, '/' . $entityName . '/')) {
                         return $this->redirectToRoute($this->config->getRootRoute() . '_index');
                     } else {
                         // If we're in a sublist, add the sublist anchor to the url so that it remains in the correct sublist after deletion
-                        return $this->redirect($request->headers->get('referer') . '#' . $matches[1] . 's');
+                        return $this->redirect($backUrl . '#' . $matches[1] . 's');
                     }
                 }
             }
@@ -363,9 +366,10 @@ trait TraitCrudController
         return $resource;
     }
 
-    protected function redirectToReferrer(Request $request, $default = "/"): RedirectResponse
+    protected function redirectToReferrer(Request $request, string $default = "/"): RedirectResponse
     {
-        $url = $request->headers->get("referer", $default);
+        $stack = json_decode($request->getSession()->get(NavigationStack::SESSION_KEY, '[]'), true) ?? [];
+        $url = !empty($stack) ? end($stack) : $default;
 
         return $this->redirect($url);
     }
