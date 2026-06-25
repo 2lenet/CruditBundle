@@ -6,11 +6,11 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Service\NavigationStack;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Lle\CruditBundle\Service\NavigationStack;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -110,7 +110,9 @@ trait TraitCrudController
         $dataSource = $this->config->getDatasource();
         $dataSource->delete($dataSource->getIdentifier($resource));
 
-        $stack = json_decode($request->getSession()->get(NavigationStack::SESSION_KEY, '[]'), true) ?? [];
+        $stack = $request->hasSession()
+            ? (json_decode($request->getSession()->get(NavigationStack::SESSION_KEY, '[]'), true) ?? [])
+            : [];
         $backUrl = !empty($stack) ? end($stack) : null;
 
         if ($backUrl && str_contains($backUrl, 'show')) {
@@ -368,7 +370,9 @@ trait TraitCrudController
 
     protected function redirectToReferrer(Request $request, string $default = "/"): RedirectResponse
     {
-        $stack = json_decode($request->getSession()->get(NavigationStack::SESSION_KEY, '[]'), true) ?? [];
+        $stack = $request->hasSession()
+            ? (json_decode($request->getSession()->get(NavigationStack::SESSION_KEY, '[]'), true) ?? [])
+            : [];
         $url = !empty($stack) ? end($stack) : $default;
 
         return $this->redirect($url);

@@ -58,20 +58,23 @@ class NavigationStack
         return !empty($stack) ? end($stack) : null;
     }
 
-    public function isEmpty(): bool
-    {
-        return empty($this->all());
-    }
-
     public function all(): array
     {
-        $session = $this->requestStack->getSession();
+        $request = $this->requestStack->getMainRequest();
+        if ($request === null || !$request->hasSession()) {
+            return [];
+        }
 
-        return json_decode($session->get(self::SESSION_KEY, '[]'), true) ?? [];
+        return json_decode($request->getSession()->get(self::SESSION_KEY, '[]'), true) ?? [];
     }
 
     private function save(array $stack): void
     {
-        $this->requestStack->getSession()->set(self::SESSION_KEY, json_encode($stack));
+        $request = $this->requestStack->getMainRequest();
+        if ($request === null || !$request->hasSession()) {
+            return;
+        }
+
+        $request->getSession()->set(self::SESSION_KEY, json_encode($stack));
     }
 }
