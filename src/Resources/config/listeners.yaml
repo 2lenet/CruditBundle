@@ -5,6 +5,8 @@ services:
             - { name: kernel.event_listener, event: kernel.controller }
 
     Lle\CruditBundle\EventListener\KernelRequestListener:
-        arguments: ['@parameter_bag']
+        arguments:
+            - '@parameter_bag'
+            - '@Lle\CruditBundle\Service\NavigationStack'
         tags:
             - { name: kernel.event_listener, event: kernel.request }

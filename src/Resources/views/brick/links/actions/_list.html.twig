@@ -1,10 +1,11 @@
 {% block list_action %}
-    {% set cruditReferers = app.session.get('lle_crudit_referers', '')|json_decode %}
-    {% if not cruditReferers|length %}
-        {% set disabled = disabled or not
+    {% if action.url is null %}
+        {% set disabled = action.disabled or not
             ((action.path.role is null or is_granted(action.path.role, view.data.resource))
             and (action.role is null or is_granted(action.role, view.data.resource)))
         %}
+    {% else %}
+        {% set disabled = action.disabled %}
     {% endif %}
 
     <a
@@ -23,11 +24,7 @@
                 data-confirm-link="{{ path(action.path.route, params) }}"
                 data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans(domain=view.config.translation_domain) }}"
             {% elseif not disabled %}
-                {% if cruditReferers|length %}
-                    href="{{ cruditReferers|last }}"
-                {% else %}
-                    href="{{ action.url ?? path(action.path.route, params) }}"
-                {% endif %}
+                href="{{ action.url ?? path(action.path.route, params) }}"
             {% endif %}
 
             {% if action.target is defined and action.target %}
