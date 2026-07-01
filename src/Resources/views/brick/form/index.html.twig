@@ -45,32 +45,55 @@
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                <div class="{{ displayClass }} position-relative {% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
-                    <div
-                        class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row{% endif %}"
-                        {% if
-                            (field.vars.tooltip is defined and field.vars.tooltip)
-                            or (field.vars.tooltip_html is defined and field.vars.tooltip_html)
-                            or (field.vars.tooltip_template is defined and field.vars.tooltip_template) %}
-                            style="max-width: calc(100% - 40px)"
+                {% if field.vars.compound is defined and field.vars.compound and (field.vars.attr.class is not defined or not field.vars.attr.class) %}
+                    {% for subfield in field %}
+                        {% if subfield.vars.name != '_token' %}
+                            <div class="{{ displayClass }} position-relative {% if subfield.vars.attr.class is defined and subfield.vars.attr.class %} {{ subfield.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
+                                <div class="form-floating mb-4">
+                                    {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(subfield.vars.attr) %}
+                                    {{ form_widget(subfield, {attr}) }}
+                                    {{ form_label(subfield) }}
+                                    <div class="px-2">
+                                        {% if subfield.vars.help is defined %}
+                                            {{ form_help(subfield) }}
+                                        {% endif %}
+                                        {% if subfield.vars.errors is defined %}
+                                            {{ form_errors(subfield) }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         {% endif %}
-                    >
-                        {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
-                        {{ form_widget(field, {attr}) }}
-                        {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
-                            {{ form_label(field) }}
-                        {% endif %}
-                        <div class="px-2">
-                            {% if field.vars.help is defined %}
-                                {{ form_help(field) }}
+                    {% endfor %}
+                    {% do field.setRendered %}
+                {% else %}
+                    <div class="{{ displayClass }} position-relative {% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
+                        <div
+                            class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row{% endif %}"
+                            {% if
+                                (field.vars.tooltip is defined and field.vars.tooltip)
+                                or (field.vars.tooltip_html is defined and field.vars.tooltip_html)
+                                or (field.vars.tooltip_template is defined and field.vars.tooltip_template) %}
+                                style="max-width: calc(100% - 40px)"
                             {% endif %}
-                            {% if field.vars.errors is defined %}
-                                {{ form_errors(field) }}
+                        >
+                            {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
+                            {{ form_widget(field, {attr}) }}
+                            {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
+                                {{ form_label(field) }}
                             {% endif %}
+                            <div class="px-2">
+                                {% if field.vars.help is defined %}
+                                    {{ form_help(field) }}
+                                {% endif %}
+                                {% if field.vars.errors is defined %}
+                                    {{ form_errors(field) }}
+                                {% endif %}
+                            </div>
                         </div>
+                        {% include '@LleCrudit/brick/form/_tooltip.html.twig' %}
                     </div>
-                    {% include '@LleCrudit/brick/form/_tooltip.html.twig' %}
-                </div>
+                {% endif %}
             {% endif %}
         {% endif %}
     {% endfor %}
