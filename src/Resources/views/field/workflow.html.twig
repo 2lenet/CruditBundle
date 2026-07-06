@@ -63,7 +63,7 @@
 
 {% else %}
     {# There are no allowed transitions #}
-    <span class="badge rounded-pill {{ options.backgroundColor }} text-start crudit-wf-badge crudit-wf-state-{{ value }}">
+    <span class="badge rounded-pill {{ options.backgroundColor|default('bg-primary') }} text-start crudit-wf-badge crudit-wf-state-{{ value }}">
         {{ ('wf.state.' ~ value) | trans }}
     </span>
 {% endif %}
