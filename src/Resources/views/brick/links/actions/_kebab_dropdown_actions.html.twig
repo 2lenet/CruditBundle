@@ -1,7 +1,7 @@
 <div class="dropdown dropdown--no-arrow">
     {% block kebab_dropdown_actions_button %}
         <button id="actions_{{ view.id }}" class="btn btn-sm dropdown-toggle mt-2 ms-1 mt-md-0" data-bs-toggle="dropdown">
-            <i class="fas fa-ellipsis-v"></i>
+            <i class="{{ crudit_icon('kebab') }}"></i>
         </button>
     {% endblock %}
     {% block kebab_dropdown_actions_menu %}

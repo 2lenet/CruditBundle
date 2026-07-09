@@ -6,7 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
+use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
+use Lle\CruditBundle\Registry\IconRegistry;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +27,7 @@ class CruditExtension extends AbstractExtension
         private EntityManagerInterface $em,
         private ParameterBagInterface $parameterBag,
         private Registry $workflowRegistry,
+        private IconRegistry $iconRegistry,
     ) {
     }
 
@@ -37,8 +40,30 @@ class CruditExtension extends AbstractExtension
             new TwigFunction('crudit_add_connect_profile_link', [$this, 'addConnectProfileLink']),
             new TwigFunction('crudit_add_exit_impersonation_button', [$this, 'addExitImpersonationButton']),
             new TwigFunction('crudit_exit_impersonation_path', [$this, 'getExitImpersonationPath']),
+            new TwigFunction('crudit_icon', [$this, 'getIcon']),
             new TwigFunction('get_workflow_names', $this->getWorkflowNames(...))
         ];
+    }
+
+    public function getIcon(string|Icon|null $name): string
+    {
+        if ($name === null) {
+            return '';
+        }
+
+        if ($name instanceof Icon) {
+            if ($name->isImg()) {
+                return '';
+            }
+
+            if ($name->isLogical()) {
+                return $this->iconRegistry->get($name->getIcon());
+            }
+
+            return $name->getCssClass();
+        }
+
+        return $this->iconRegistry->get($name);
     }
 
     public function getFilters(): array

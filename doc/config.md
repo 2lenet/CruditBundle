@@ -63,3 +63,17 @@ ignore_referer_routes:
     - /\/admin\/[0-9]+/
     - /\/login
 ```
+
+**4. Icons**
+
+`icons` lets you override the icons used throughout the admin to switch to
+another icon pack (Bootstrap Icons, Material Icons...) or just tweak a few
+glyphs without forking templates. See [Icons / icon pack](icons.md) for the
+full list of overridable keys.
+
+```yaml
+lle_crudit:
+    icons:
+        search: 'bi bi-search'
+        pager_first: 'bi bi-chevron-double-left'
+```

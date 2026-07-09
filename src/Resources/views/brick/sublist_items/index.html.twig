@@ -45,19 +45,19 @@
                                                 } %}
                                                 {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
                                                 {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
-                                                {% set icon = 'fa-sort' %}
+                                                {% set icon = 'sort' %}
                                                 {% if sorted %}
-                                                    {% set icon = 'fa-sort-up' %}
+                                                    {% set icon = 'sort_up' %}
                                                 {% endif %}
                                                 {% if sorted and order=='asc' %}
-                                                    {% set icon = 'fa-sort-down' %}
+                                                    {% set icon = 'sort_down' %}
                                                     {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
                                                 {% endif %}
                                                 {% set parameters = app.request.query.all()|merge(merge_params) %}
                                                 {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
                                                 {% if field.info is defined and field.info %}
                                                     <i
-                                                        class="fas fa-info-circle"
+                                                        class="{{ crudit_icon('info') }}"
                                                         data-bs-toggle="tooltip"
                                                         data-bs-placement="bottom"
                                                         data-bs-custom-class="custom-tooltip"
@@ -66,7 +66,7 @@
                                                 {% endif %}
                                                 <span>
                                                 <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                                    <i class="fas {{ icon }}"></i>
+                                                    <i class="{{ crudit_icon(icon) }}"></i>
                                                 </a>
                                             </span>
                                             {% endif %}

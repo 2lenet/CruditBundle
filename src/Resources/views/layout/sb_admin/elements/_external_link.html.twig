@@ -8,12 +8,12 @@
         {% if element.icon and element.icon.img %}
             <img class="img-thumbnail" src="{{ element.icon.icon }}" alt="{{ element.libelle|trans }}"/>
         {% elseif element.icon %}
-            <i class="nav-icon {{ element.icon.cssClass }}"></i>
+            <i class="nav-icon {{ crudit_icon(element.icon) }}"></i>
         {% endif %}
         <span>
             {{ element.libelle|trans }}
             {% if element.target == '_blank' %}
-                &nbsp;<i class="fas fa-external-link-alt external-link"></i>
+                &nbsp;<i class="{{ crudit_icon('external_link') }} external-link"></i>
             {% endif %}
         </span>
     </a>
