@@ -124,6 +124,7 @@ class GedmoTranslatableType extends AbstractType
             'required' => false,
             'by_reference' => false,
             'fields_class' => TextType::class,
+            'attr' => ['class' => 'gedmo-translatable'],
         ]);
     }
 }
