@@ -5,31 +5,37 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\SublistBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
+use Lle\CruditBundle\Brick\RuptureAwareTrait;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceFilter;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Registry\FieldRegistry;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SublistFactory extends AbstractBasicBrickFactory
 {
+    use RuptureAwareTrait;
+
     protected FieldRegistry $fieldRegistry;
+    protected TranslatorInterface $translator;
 
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FieldRegistry $fieldRegistry,
+        TranslatorInterface $translator,
     ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->fieldRegistry = $fieldRegistry;
+        $this->translator = $translator;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -51,6 +57,7 @@ class SublistFactory extends AbstractBasicBrickFactory
                     'resource' => $this->getResource($brickConfigurator),
                     'lines' => $this->getLines($brickConfigurator),
                     'totals' => $this->getTotals($brickConfigurator),
+                    'grouped_totals' => $this->getGroupedTotals($brickConfigurator),
                     'batch_actions' => [], // to use the same pager template as list
                 ]);
         }
@@ -79,6 +86,7 @@ class SublistFactory extends AbstractBasicBrickFactory
         $dsParams->setEnableFilters(false);
         $dsParams->setFilters(array_merge($dsParams->getFilters(), [$fkFilter]));
         $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+        $this->prependRuptureSorts($dsParams, $brickConfigurator->getFields());
         $resources = $brickConfigurator->getDatasource()->list($dsParams);
 
         foreach ($resources as $resource) {
@@ -90,7 +98,7 @@ class SublistFactory extends AbstractBasicBrickFactory
             );
         }
 
-        return $lines;
+        return $this->annotateRuptureBreaks($lines);
     }
 
     private function getResource(SublistConfig $brickConfigurator): object
@@ -123,23 +131,24 @@ class SublistFactory extends AbstractBasicBrickFactory
             /** @var array $totalByField */
             $totalByField = $brickConfigurator->getDatasource()->getTotals($dsParams, $crudConfig->getSublistTotalFields());
 
-            $i = 0;
-            $fieldViews = [];
-            foreach ($crudConfig->getSublistTotalFields() as $field) {
-                $i++;
-                $fieldView = new FieldView($field['field'], $totalByField[$i]);
-                $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
-                    $fieldView,
-                    $totalByField[$i]
-                );
-            }
-
-            return $fieldViews;
+            return $this->buildTotalFieldViews($crudConfig->getSublistTotalFields(), $totalByField);
         }
 
         return [];
     }
 
+    private function getGroupedTotals(SublistConfig $brickConfigurator): array
+    {
+        /** @var CrudConfigInterface $crudConfig */
+        $crudConfig = $brickConfigurator->getSubCrudConfig();
+
+        return $this->computeGroupedTotals(
+            $brickConfigurator->getDatasource(),
+            $brickConfigurator->getDatasourceParams(),
+            $crudConfig->getSublistTotalFields(),
+            $brickConfigurator->getFields()
+        );
+    }
 
     /** @return Field[] */
     private function getFields(SublistConfig $brickConfigurator): array
