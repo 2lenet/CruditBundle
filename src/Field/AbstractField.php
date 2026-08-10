@@ -34,6 +34,12 @@ abstract class AbstractField implements FieldInterface
     {
         $optionResolver = new OptionsResolver();
         $this->configureOptions($optionResolver);
+        $crudConfig = $fieldView->getConfig();
+        if ($crudConfig !== null) {
+            $optionResolver->setDefault('cssClass', $crudConfig->getCssClassColumnsShow());
+            $optionResolver->setDefault('cardCssClass', $crudConfig->getCssClassColumnsCard());
+        }
+
         $options = $optionResolver->resolve($fieldView->getField()->getOptions());
         $fieldView->setOptions($options);
 
