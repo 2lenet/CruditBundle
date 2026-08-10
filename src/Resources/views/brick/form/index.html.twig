@@ -45,7 +45,7 @@
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                {% if field.vars.compound is defined and field.vars.compound and (field.vars.attr.class is not defined or not field.vars.attr.class) %}
+                {% if field.vars.compound is defined and field.vars.compound and 'collection' not in field.vars.block_prefixes and (field.vars.attr.class is not defined or not field.vars.attr.class) %}
                     {% for subfield in field %}
                         {% if subfield.vars.name != '_token' %}
                             <div class="{{ displayClass }} position-relative {% if subfield.vars.attr.class is defined and subfield.vars.attr.class %} {{ subfield.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
