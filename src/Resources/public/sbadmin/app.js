@@ -3472,6 +3472,10 @@ function setupOverflowCounter(tomselect, originalInput) {
       popover.appendChild(row);
     });
   };
+
+  // Minimum width (px) a truncated boundary chip is allowed to keep — enough
+  // room for a couple of characters plus the remove button.
+  var MIN_CHIP_WIDTH = 56;
   var update = function update() {
     placeCounter();
     var items = Array.from(control.querySelectorAll(':scope > .item'));
@@ -3481,43 +3485,59 @@ function setupOverflowCounter(tomselect, originalInput) {
       return;
     }
 
-    // Show all items at natural width, render counter with worst-case label
-    // so its reserved width is accounted for during measurement.
+    // Reset to natural, unclamped state before measuring.
     items.forEach(function (el) {
       el.style.display = '';
       el.style.flexShrink = '0';
+      el.style.maxWidth = '';
     });
-    counter.textContent = '+' + Math.max(items.length - 1, 1);
-    counter.hidden = false;
     var cs = window.getComputedStyle(control);
     var paddingRight = parseFloat(cs.paddingRight) || 0;
     var gap = parseFloat(cs.columnGap) || parseFloat(cs.gap) || 4;
-    var controlContentRight = control.getBoundingClientRect().right - paddingRight;
-    var counterWidth = counter.offsetWidth;
-    var limit = controlContentRight - counterWidth - gap;
-    var hidden = 0;
-    items.forEach(function (el, idx) {
-      if (idx === 0) {
-        // First chip is always visible — if it's too wide, the CSS
-        // ellipsis on .item-text handles the truncation.
-        return;
-      }
-      var rect = el.getBoundingClientRect();
-      if (rect.right > limit) {
-        el.style.display = 'none';
-        hidden++;
-      }
-    });
-
-    // Restore default flex-shrink so the lone visible chip can ellipsis
-    items.forEach(function (el) {
-      el.style.flexShrink = '';
-    });
-    if (hidden === 0) {
+    var availableRight = control.getBoundingClientRect().right - paddingRight;
+    if (items[items.length - 1].getBoundingClientRect().right <= availableRight) {
+      // Everything fits at natural width, no counter needed.
       counter.hidden = true;
       popover.hidden = true;
+      return;
+    }
+
+    // Doesn't all fit — reserve room for the counter badge (worst case
+    // label width) and find how many items fit fully before it.
+    counter.hidden = false;
+    counter.textContent = '+' + items.length;
+    var counterWidth = counter.offsetWidth;
+    var limit = availableRight - counterWidth - gap;
+    var shownCount = 0;
+    while (shownCount < items.length && items[shownCount].getBoundingClientRect().right <= limit) {
+      shownCount++;
+    }
+
+    // Try to fit the next chip truncated (ellipsis) into the remaining
+    // space, rather than hiding it outright.
+    if (shownCount < items.length) {
+      var boundary = items[shownCount];
+      var prevRight = shownCount > 0 ? items[shownCount - 1].getBoundingClientRect().right + gap : boundary.getBoundingClientRect().left;
+      var remaining = limit - prevRight;
+      if (remaining >= MIN_CHIP_WIDTH) {
+        boundary.style.maxWidth = remaining + 'px';
+        shownCount++;
+      }
+    }
+    var hiddenCount = items.length - shownCount;
+    if (hiddenCount === 0) {
+      // The truncated chip turned out to be the last one — no counter
+      // needed, so let it reclaim the width reserved for the badge.
+      counter.hidden = true;
+      popover.hidden = true;
+      var lastEl = items[items.length - 1];
+      var _prevRight = items.length > 1 ? items[items.length - 2].getBoundingClientRect().right + gap : lastEl.getBoundingClientRect().left;
+      lastEl.style.maxWidth = availableRight - _prevRight + 'px';
     } else {
-      counter.textContent = '+' + hidden;
+      for (var idx = shownCount; idx < items.length; idx++) {
+        items[idx].style.display = 'none';
+      }
+      counter.textContent = '+' + hiddenCount;
     }
     if (!popover.hidden) {
       renderPopover();

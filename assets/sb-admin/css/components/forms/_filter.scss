@@ -70,9 +70,15 @@ $input-group-prepend-length: 60px;
 
                     & > .item-text {
                         display: block;
+                        flex: 1 1 auto;
+                        min-width: 0;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
+                    }
+
+                    & > .remove {
+                        flex-shrink: 0;
                     }
                 }
 

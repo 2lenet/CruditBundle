@@ -67,6 +67,8 @@ function setupOverflowCounter(tomselect, originalInput) {
         });
     };
 
+    const MIN_CHIP_WIDTH = 56;
+
     const update = () => {
         placeCounter();
 
@@ -77,46 +79,61 @@ function setupOverflowCounter(tomselect, originalInput) {
             return;
         }
 
-        // Show all items at natural width, render counter with worst-case label
-        // so its reserved width is accounted for during measurement.
         items.forEach((el) => {
             el.style.display = '';
             el.style.flexShrink = '0';
+            el.style.maxWidth = '';
         });
-        counter.textContent = '+' + Math.max(items.length - 1, 1);
-        counter.hidden = false;
 
         const cs = window.getComputedStyle(control);
         const paddingRight = parseFloat(cs.paddingRight) || 0;
         const gap = parseFloat(cs.columnGap) || parseFloat(cs.gap) || 4;
-        const controlContentRight = control.getBoundingClientRect().right - paddingRight;
-        const counterWidth = counter.offsetWidth;
-        const limit = controlContentRight - counterWidth - gap;
+        const availableRight = control.getBoundingClientRect().right - paddingRight;
 
-        let hidden = 0;
-        items.forEach((el, idx) => {
-            if (idx === 0) {
-                // First chip is always visible — if it's too wide, the CSS
-                // ellipsis on .item-text handles the truncation.
-                return;
-            }
-            const rect = el.getBoundingClientRect();
-            if (rect.right > limit) {
-                el.style.display = 'none';
-                hidden++;
-            }
-        });
-
-        // Restore default flex-shrink so the lone visible chip can ellipsis
-        items.forEach((el) => {
-            el.style.flexShrink = '';
-        });
-
-        if (hidden === 0) {
+        if (items[items.length - 1].getBoundingClientRect().right <= availableRight) {
             counter.hidden = true;
             popover.hidden = true;
+            return;
+        }
+
+        counter.hidden = false;
+        counter.textContent = '+' + items.length;
+        const counterWidth = counter.offsetWidth;
+        const limit = availableRight - counterWidth - gap;
+
+        let shownCount = 0;
+        while (shownCount < items.length && items[shownCount].getBoundingClientRect().right <= limit) {
+            shownCount++;
+        }
+
+        if (shownCount < items.length) {
+            const boundary = items[shownCount];
+            const prevRight = shownCount > 0
+                ? items[shownCount - 1].getBoundingClientRect().right + gap
+                : boundary.getBoundingClientRect().left;
+            const remaining = limit - prevRight;
+
+            if (remaining >= MIN_CHIP_WIDTH) {
+                boundary.style.maxWidth = remaining + 'px';
+                shownCount++;
+            }
+        }
+
+        const hiddenCount = items.length - shownCount;
+
+        if (hiddenCount === 0) {
+            counter.hidden = true;
+            popover.hidden = true;
+            const lastEl = items[items.length - 1];
+            const prevRight = items.length > 1
+                ? items[items.length - 2].getBoundingClientRect().right + gap
+                : lastEl.getBoundingClientRect().left;
+            lastEl.style.maxWidth = (availableRight - prevRight) + 'px';
         } else {
-            counter.textContent = '+' + hidden;
+            for (let idx = shownCount; idx < items.length; idx++) {
+                items[idx].style.display = 'none';
+            }
+            counter.textContent = '+' + hiddenCount;
         }
 
         if (!popover.hidden) {
@@ -137,7 +154,6 @@ function setupOverflowCounter(tomselect, originalInput) {
     };
 
     counter.addEventListener('mousedown', (e) => {
-        // Stop TomSelect from grabbing focus and opening its own dropdown
         e.preventDefault();
         e.stopPropagation();
     });
