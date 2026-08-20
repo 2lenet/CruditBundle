@@ -15,7 +15,8 @@
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
             {% endif %}
         </div>
-        <div class="card-body">
+        {% set is_sortable = view.config.sortable and is_granted('ROLE_' ~ view.config.name ~ '_EDIT') %}
+    <div class="card-body">
             {% if view.config.title is defined and view.config.title %}
                 <h2 class="{% if view.config.titleCss is defined and view.config.titleCss %}{{ view.config.titleCss }}{% endif %}">
                     {{ view.config.title|trans }}
@@ -23,107 +24,102 @@
                 <hr/>
             {% endif %}
             <div class="table-responsive crudit-sublist">
-                <table id="{{ view.id }}_table" class="table table-sm table-hover">
+                <table id="{{ view.id }}_table" class="table table-sm table-hover{% if is_sortable %} crudit-sortable{% endif %}"{% if is_sortable %} data-sort-url="{{ path(view.config.sort_url.route) }}"{% endif %}>
                     {% if not view.options.noHeader|default(false) %}
                         <thead class="thead-light">
                         <tr>
+                            {% if is_sortable %}
+                                <th></th>
+                            {% endif %}
                             {% for field in view.config.fields %}
-                                {% if
-                                    field.role is not defined or field.role is null or
-                                    (field.role is defined and field.role is not null and is_granted(field.role))
-                                %}
-                                    {% if field.ruptGroup == 0 and (field.role == null or is_granted(field.role)) %}
-                                        <th class="text-nowrap">{{ field.label |trans(domain=view.config.translation_domain) }}
-                                            {% if field.sortable %}
-                                                {% set merge_params = {
-                                                    ((view.config.name|lower)~'_sort'): field.name,
-                                                    ((view.config.name|lower)~'_sort_order'): 'asc'
-                                                } %}
-                                                {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
-                                                {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
-                                                {% set icon = 'fa-sort' %}
-                                                {% if sorted %}
-                                                    {% set icon = 'fa-sort-up' %}
-                                                {% endif %}
-                                                {% if sorted and order=='asc' %}
-                                                    {% set icon = 'fa-sort-down' %}
-                                                    {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
-                                                {% endif %}
-                                                {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                                {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
-                                                {% if field.info is defined and field.info %}
-                                                    <i
-                                                        class="fas fa-info-circle"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="bottom"
-                                                        data-bs-custom-class="custom-tooltip"
-                                                        data-bs-title="{{ field.info|trans }}"
-                                                    ></i>
-                                                {% endif %}
-                                                <span>
-                                                <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
-                                                    <i class="fas {{ icon }}"></i>
-                                                </a>
-                                            </span>
+                                {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                    <th class="text-nowrap">{{ field.label |trans(domain=view.config.translation_domain) }}
+                                        {% if field.sortable %}
+                                            {% set merge_params = {
+                                                ((view.config.name|lower)~'_sort'): field.name,
+                                                ((view.config.name|lower)~'_sort_order'): 'asc'
+                                            } %}
+                                            {% set order = app.request.query.get((view.config.name|lower)~'_sort_order') %}
+                                            {% set sorted = (app.request.query.get((view.config.name|lower)~'_sort')==field.name) %}
+                                            {% set icon = 'fa-sort' %}
+                                            {% if sorted %}
+                                                {% set icon = 'fa-sort-up' %}
                                             {% endif %}
-                                        </th>
-                                    {% endif %}
+                                            {% if sorted and order=='asc' %}
+                                                {% set icon = 'fa-sort-down' %}
+                                                {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
+                                            {% endif %}
+                                            {% set parameters = app.request.query.all()|merge(merge_params) %}
+                                            {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
+                                            {% if field.info is defined and field.info %}
+                                                <i
+                                                    class="fas fa-info-circle"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    data-bs-custom-class="custom-tooltip"
+                                                    data-bs-title="{{ field.info|trans }}"
+                                                ></i>
+                                            {% endif %}
+                                            <span>
+                                            <a href="{{ url }}" class="btn btn-sm {% if sorted %}active{% endif %}">
+                                                <i class="fas {{ icon }}"></i>
+                                            </a>
+                                        </span>
+                                        {% endif %}
+                                    </th>
                                 {% endif %}
                             {% endfor %}
                             {% if view.config.actions|length %}
+                                {% set hasActions = true %}
                                 <th>{{ 'crudit.action'|trans(domain=view.config.translation_domain) }}</th>
                             {% endif %}
                         </tr>
                         </thead>
                     {% endif %}
                     <tbody>
-                    {% set ruptval1 = '' %}
-                    {% set ruptval2 = '' %}
-
+                    {% set currentGroup = null %}
+                    {% set nbCols = view.config.fields|length + (is_sortable ? 1 : 0) + (hasActions is defined and hasActions ? 1 : 0) %}
                     {% for line in view.data.lines %}
-                        {% for column in line.fields %}
-                            {% if
-                                column.field.role is not defined
-                                or column.field.role is null
-                                or (
-                                    column.field.role is defined
-                                    and column.field.role is not null
-                                    and is_granted(column.field.role)
-                                )
-                            %}
-                                {# RUPTURE NIVEAU 1 #}
-                                {# Don't display ruptGroup1 if there is a ruptGroup2 #}
-                                {% if
-                                    column.field.ruptGroup == 1
-                                    and view.data.lines|length > 1
-                                    and view.data.lines[1].fields[1].field.ruptGroup != 2
-                                %}
-                                    {% if ruptval1 != column.value %}
-                                        <tr>
-                                            <th colspan="{{ line.fields|length + 1 }}">{{ column.value|raw }}</th>
-                                        </tr>
-                                        {% set ruptval2 = "" %}
-                                    {% endif %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
-                                    {% set ruptval1 = column.value %}
-                                {% endif %}
+                        {% if line.ruptGroup1 is not null %}
+                            {% if currentGroup is not null and view.data.grouped_totals[currentGroup] is defined %}
+                                <tr class="table-secondary fw-bold">
+                                    {% if is_sortable %}<td></td>{% endif %}
+                                    {% set groupTotals = view.data.grouped_totals[currentGroup] %}
+                                    {% for field in view.config.fields %}
+                                        {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                            {% set match = false %}
+                                            {% for key, total in groupTotals %}
+                                                {% if field.id == total.field.id %}
+                                                    {% set match = true %}
+                                                    <td>{{ total.value|raw }}</td>
+                                                    {% set groupTotals = groupTotals|filter((v, k) => k != key) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if not match %}<td></td>{% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if hasActions is defined and hasActions %}<td></td>{% endif %}
+                                </tr>
+                            {% endif %}
 
-                                {# RUPTURE NIVEAU 2 #}
-                                {% if column.field.ruptGroup == 2 %}
-                                    {% if ruptval2 != column.value and view.data.lines|length > 0 %}
-                                        <tr>
-                                            <th colspan="{{ line.fields|length + 1 }}">{{ view.data.lines[0].fields[0].value|raw }}
-                                                - {{ column.value|raw }}</th>
-                                        </tr>
-                                    {% endif %}
-                                    <tr {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
-                                    {% set ruptval2 = column.value %}
-                                {% endif %}
+                            <tr{% if line.ruptGroup1.cssClass %} class="{{ line.ruptGroup1.cssClass }}"{% endif %}>
+                                <th colspan="{{ nbCols }}">{{ line.ruptGroup1.display|raw }}</th>
+                            </tr>
+                            {% set currentGroup = line.ruptGroup1.key %}
+                        {% endif %}
 
-                                {% if column.field.ruptGroup == 0 %}
-                                    {% if loop.first %}
-                                        <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
-                                    {% endif %}
+                        {% if line.ruptGroup2 is not null %}
+                            <tr{% if line.ruptGroup2.cssClass %} class="{{ line.ruptGroup2.cssClass }}"{% endif %}>
+                                <th colspan="{{ nbCols }}">{{ line.ruptGroup2.display|raw }}</th>
+                            </tr>
+                        {% endif %}
+
+                        <tr id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id }}" data-id="{{ line.id }}" {% if line.resource and line.resource.getCssClass is defined %}class="{{ line.resource.getCssClass }}"{% endif %}>
+                            {% if is_sortable %}
+                                <td><i class="fas fa-grip-vertical crudit-sortable-handle" style="cursor:grab"></i></td>
+                            {% endif %}
+                            {% for column in line.fields %}
+                                {% if (column.field.ruptGroup == 0 or not column.field.ruptHideFromList) and (column.field.role is null or is_granted(column.field.role)) %}
                                     <td id="{{ 'sublist-' ~ view.config.name|lower ~ '-' ~ line.id ~ '-' ~ column.field.id|lower ~ '-' ~ column.field.label|replace({'field.': '', 'label.': ''})|lower }}">
                                         {% if column.field.path %}
                                         <a href="{{ path(column.field.path.route, column.field.path.params({'id': line.id})) }}">
@@ -134,41 +130,63 @@
                                         {% endif %}
                                     </td>
                                 {% endif %}
+                            {% endfor %}
+                            {% if view.config.actions|length %}
+                                {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
                             {% endif %}
-                        {% endfor %}
-                        {% if view.config.actions|length %}
-                            {% include('@LleCrudit/brick/list_items/_actions.html.twig') %}
-                        {% endif %}
                         </tr>
                     {% endfor %}
+
+                    {% if currentGroup is not null and view.data.grouped_totals[currentGroup] is defined %}
+                        <tr class="table-secondary fw-bold">
+                            {% if is_sortable %}<td></td>{% endif %}
+                            {% set groupTotals = view.data.grouped_totals[currentGroup] %}
+                            {% for field in view.config.fields %}
+                                {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                    {% set match = false %}
+                                    {% for key, total in groupTotals %}
+                                        {% if field.id == total.field.id %}
+                                            {% set match = true %}
+                                            <td>{{ total.value|raw }}</td>
+                                            {% set groupTotals = groupTotals|filter((v, k) => k != key) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if not match %}<td></td>{% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if hasActions is defined and hasActions %}<td></td>{% endif %}
+                        </tr>
+                    {% endif %}
                     </tbody>
                     {% if view.data.totals is defined and view.data.totals %}
                         {% set totals = view.data.totals %}
                         <tr>
+                            {% if is_sortable %}<td></td>{% endif %}
                             {% for field in view.config.fields %}
-                                {% set match = false %}
-                                {% for key, total in totals %}
-                                    {% if field.id == total.field.id %}
-                                        {% set match = true %}
-                                        <td>
-                                            {% if total.field.path %}
-                                            <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
-                                                {% endif %}
-                                                {{ total.value|raw }}
+                                {% if (field.ruptGroup == 0 or not field.ruptHideFromList) and (field.role is null or is_granted(field.role)) %}
+                                    {% set match = false %}
+                                    {% for key, total in totals %}
+                                        {% if field.id == total.field.id %}
+                                            {% set match = true %}
+                                            <td>
                                                 {% if total.field.path %}
-                                            </a>
-                                            {% endif %}
-                                        </td>
-                                        {% set totals = totals|filter((v, k) => k != key) %}
+                                                <a href="{{ path(total.field.path.route, total.field.path.params({'id': line.getLinkId(total.field.linkId)})) }}">
+                                                    {% endif %}
+                                                    {{ total.value|raw }}
+                                                    {% if total.field.path %}
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                            {% set totals = totals|filter((v, k) => k != key) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if not match %}
+                                        <td></td>
                                     {% endif %}
-                                {% endfor %}
-                                {% if not match %}
-                                    <td></td>
                                 {% endif %}
                             {% endfor %}
                         </tr>
                         {% if totals|length %}
-                            {% set nbCols = view.config.fields|length %}
                             <tr>
                                 <td colspan="{{ nbCols + 1 }}" class="text-end">
                                     {% for total in totals %}

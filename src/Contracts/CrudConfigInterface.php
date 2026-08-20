@@ -20,6 +20,7 @@ interface CrudConfigInterface
     public const NEW = 'NEW';
     public const DELETE = 'DELETE';
     public const EXPORT = 'EXPORT';
+    public const SORT = 'SORT';
 
     public const ACTION_LIST = 'list';
     public const ACTION_SHOW = 'show';
@@ -107,6 +108,10 @@ interface CrudConfigInterface
     public function getTotalFields(): array;
 
     public function getRootRoute(): ?string;
+
+    public function getSortableField(): ?string;
+
+    public function getSortableUrl(): ?Path;
 
     public function getListAutoRefresh(): ?int;
 

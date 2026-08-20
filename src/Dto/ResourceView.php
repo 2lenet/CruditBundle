@@ -11,6 +11,10 @@ class ResourceView
     /** @var FieldView[] */
     private array $fields;
 
+    private ?RuptBreak $ruptGroup1 = null;
+
+    private ?RuptBreak $ruptGroup2 = null;
+
     /**
      * @param int|string $id
      */
@@ -35,6 +39,30 @@ class ResourceView
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    public function getRuptGroup1(): ?RuptBreak
+    {
+        return $this->ruptGroup1;
+    }
+
+    public function setRuptGroup1(string $display, string $key, string $cssClass = ''): self
+    {
+        $this->ruptGroup1 = new RuptBreak($display, $key, $cssClass);
+
+        return $this;
+    }
+
+    public function getRuptGroup2(): ?RuptBreak
+    {
+        return $this->ruptGroup2;
+    }
+
+    public function setRuptGroup2(string $display, string $key, string $cssClass = ''): self
+    {
+        $this->ruptGroup2 = new RuptBreak($display, $key, $cssClass);
+
+        return $this;
     }
 
     public function getLinkId(string $fieldName): mixed

@@ -5,31 +5,37 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\ListBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
+use Lle\CruditBundle\Brick\RuptureAwareTrait;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
-use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Registry\FieldRegistry;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ListFactory extends AbstractBasicBrickFactory
 {
+    use RuptureAwareTrait;
+
     private FormFactoryInterface $formFactory;
-    private FieldRegistry $fieldRegistry;
+    protected FieldRegistry $fieldRegistry;
+    protected TranslatorInterface $translator;
 
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FormFactoryInterface $formFactory,
         FieldRegistry $fieldRegistry,
+        TranslatorInterface $translator,
     ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->formFactory = $formFactory;
         $this->fieldRegistry = $fieldRegistry;
+        $this->translator = $translator;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -60,6 +66,7 @@ class ListFactory extends AbstractBasicBrickFactory
                 ->setData([
                     'lines' => $this->getLines($brickConfigurator),
                     'totals' => $this->getTotals($brickConfigurator),
+                    'grouped_totals' => $this->getGroupedTotals($brickConfigurator),
                     'batch_actions' => $batchActions,
                     'auto_refresh' => $brickConfigurator->getCrudConfig()->getListAutoRefresh(),
                 ]);
@@ -77,13 +84,13 @@ class ListFactory extends AbstractBasicBrickFactory
     }
 
     /** @return ResourceView[] */
-    private function getLines(ListConfig $brickConfigurator): array
+    protected function getLines(ListConfig $brickConfigurator): array
     {
         $lines = [];
 
-        // normal list
         $dsParams = $brickConfigurator->getDatasourceParams();
         $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+        $this->prependRuptureSorts($dsParams, $brickConfigurator->getFields());
         $resources = $brickConfigurator->getDatasource()->list($dsParams);
 
         foreach ($resources as $resource) {
@@ -95,10 +102,10 @@ class ListFactory extends AbstractBasicBrickFactory
             );
         }
 
-        return $lines;
+        return $this->annotateRuptureBreaks($lines);
     }
 
-    private function getTotals(ListConfig $brickConfigurator): array
+    protected function getTotals(ListConfig $brickConfigurator): array
     {
         $crudConfig = $brickConfigurator->getCrudConfig();
 
@@ -108,25 +115,26 @@ class ListFactory extends AbstractBasicBrickFactory
             /** @var array $totalByField */
             $totalByField = $brickConfigurator->getDatasource()->getTotals($dsParams, $crudConfig->getTotalFields());
 
-            $i = 0;
-            $fieldViews = [];
-            foreach ($crudConfig->getTotalFields() as $field) {
-                $i++;
-                $fieldView = new FieldView($field['field'], $totalByField[$i]);
-                $fieldViews[] = $this->fieldRegistry->get($field['field']->getType())->buildView(
-                    $fieldView,
-                    $totalByField[$i]
-                );
-            }
-
-            return $fieldViews;
+            return $this->buildTotalFieldViews($crudConfig->getTotalFields(), $totalByField);
         }
 
         return [];
     }
 
+    protected function getGroupedTotals(ListConfig $brickConfigurator): array
+    {
+        $crudConfig = $brickConfigurator->getCrudConfig();
+
+        return $this->computeGroupedTotals(
+            $brickConfigurator->getDatasource(),
+            $brickConfigurator->getDatasourceParams(),
+            $crudConfig->getTotalFields(),
+            $brickConfigurator->getFields()
+        );
+    }
+
     /** @return Field[] */
-    private function getFields(ListConfig $brickConfigurator): array
+    protected function getFields(ListConfig $brickConfigurator): array
     {
         return $brickConfigurator->getFields();
     }

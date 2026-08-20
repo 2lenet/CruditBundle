@@ -12,6 +12,7 @@ use Doctrine\Persistence\ObjectRepository;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
+use Lle\CruditBundle\Contracts\GroupedTotalsInterface;
 use Lle\CruditBundle\Contracts\QueryAdapterInterface;
 use Lle\CruditBundle\Exception\BadConfigException;
 use Lle\CruditBundle\Field\DoctrineEntityField;
@@ -20,7 +21,7 @@ use Lle\CruditBundle\Field\TelephoneField;
 use Lle\CruditBundle\Filter\FilterState;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-abstract class AbstractDoctrineDatasource implements DatasourceInterface
+abstract class AbstractDoctrineDatasource implements DatasourceInterface, GroupedTotalsInterface
 {
     protected EntityManagerInterface $entityManager;
     protected ?FilterSetInterface $filterset;
@@ -147,6 +148,12 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     protected function addOrderBy(QueryBuilder $qb, string $column, ?string $order): void
     {
+        if (str_contains($column, '(')) {
+            $qb->addOrderBy($column, $order);
+
+            return;
+        }
+
         // parts (e.g. : user.post.title => [user, post, title]
         $fields = explode(".", $column);
 
@@ -237,21 +244,20 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function initializeAutocompleteQueryBuilder(QueryBuilder $qb, string $queryTerm): QueryBuilder
     {
-        $orStatements = $qb->expr()->orX();
-        foreach ($this->getAutoCompleteSearchFields() as $field) {
-            $orStatements->add(
-                $qb->expr()->like('root.' . $field, $qb->expr()->literal('%' . $queryTerm . '%'))
-            );
+        $terms = array_filter(explode(' ', $queryTerm));
 
-            // allow null if the user didn't type anything
-            if (!$queryTerm) {
-                $orStatements->add(
-                    $qb->expr()->isNull('root.' . $field)
-                );
+        foreach ($terms as $key => $term) {
+            $parts = [];
+            foreach ($this->getAutoCompleteSearchFields() as $field) {
+                $param = 'autocomplete_' . $key . '_' . str_replace('.', '_', $field);
+                $parts[] = 'root.' . $field . ' LIKE :' . $param;
+                $qb->setParameter($param, '%' . $term . '%');
+            }
+
+            if ($parts) {
+                $qb->andWhere(implode(' OR ', $parts));
             }
         }
-
-        $qb->andWhere($orStatements);
 
         return $qb;
     }
@@ -469,13 +475,21 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
 
     public function getTotals(?DatasourceParams $requestParams, array $fields): iterable
     {
-        $qb = $this->buildQueryBuilder($requestParams);
+        $matchingIds = $this->getFilteredIds($requestParams);
+
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
+        $qb = $repository->createQueryBuilder('root');
+
+        if (empty($matchingIds)) {
+            $qb->andWhere('root.id IS NULL');
+        } else {
+            $qb->andWhere('root.id IN (:_matching_ids)')
+                ->setParameter('_matching_ids', $matchingIds);
+        }
 
         foreach ($fields as $field => $data) {
-            $expression = $data['type'] . '(root.' . $field . ')';
-            if ($data['type'] === CrudConfigInterface::EXPRESSION) {
-                $expression = $data['expression'];
-            }
+            $expression = $this->buildAggregateExpression($field, $data);
             if ($field === array_key_first($fields)) {
                 $qb->select($expression);
             } else {
@@ -483,9 +497,116 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
             }
         }
 
-        $this->applyFilters($qb, $requestParams);
-
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /** @return int[] */
+    protected function getFilteredIds(?DatasourceParams $requestParams): array
+    {
+        $filterQb = $this->buildQueryBuilder($requestParams);
+        $this->applyFilters($filterQb, $requestParams);
+        $filterQb->select('root.id');
+
+        $rows = $filterQb->getQuery()->getScalarResult();
+
+        return array_unique(array_column($rows, 'id'));
+    }
+
+    public function getGroupedTotals(
+        ?DatasourceParams $requestParams,
+        array $fields,
+        string $ruptFieldPath,
+        ?string $ruptDateFormat = null,
+    ): array {
+        $matchingIds = $this->getFilteredIds($requestParams);
+
+        if (empty($matchingIds)) {
+            return [];
+        }
+
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
+        $qb = $repository->createQueryBuilder('root');
+        $qb
+            ->andWhere('root.id IN (:_matching_ids)')
+            ->setParameter('_matching_ids', $matchingIds);
+
+        [$selectExpr, $groupByExpr] = $this->buildRuptGroupExpression($qb, $ruptFieldPath, $ruptDateFormat);
+
+        $qb->select($selectExpr . ' AS _rupt_key');
+
+        $i = 1;
+        foreach ($fields as $field => $data) {
+            $qb->addSelect($this->buildAggregateExpression($field, $data) . ' AS _agg_' . $i);
+            $i++;
+        }
+
+        $qb->groupBy($groupByExpr);
+
+        $rows = $qb->getQuery()->getScalarResult();
+
+        $result = [];
+        $fieldCount = count($fields);
+        foreach ($rows as $row) {
+            $groupKey = (string) $row['_rupt_key'];
+            $totals = [];
+            for ($j = 1; $j <= $fieldCount; $j++) {
+                $totals[$j] = $row['_agg_' . $j];
+            }
+
+            $result[$groupKey] = $totals;
+        }
+
+        return $result;
+    }
+
+    private function buildAggregateExpression(string $field, array $data): string
+    {
+        if ($data['type'] === CrudConfigInterface::EXPRESSION) {
+            return $data['expression'];
+        }
+
+        return $data['type'] . '(root.' . $field . ')';
+    }
+
+    /** @return array{0: string, 1: string} */
+    protected function buildRuptGroupExpression(QueryBuilder $qb, string $fieldPath, ?string $dateFormat): array
+    {
+        $parts = explode('.', $fieldPath);
+        $field = array_pop($parts);
+
+        if ($field === '') {
+            return ["root.$fieldPath", "root.$fieldPath"];
+        }
+
+        $rootAlias = $qb->getRootAliases()[0];
+        $joinAlias = $rootAlias;
+
+        foreach ($parts as $segment) {
+            $newAlias = '_rupt_' . $segment;
+            if (!in_array($newAlias, $qb->getAllAliases())) {
+                $qb->leftJoin($joinAlias . '.' . $segment, $newAlias);
+            }
+
+            $joinAlias = $newAlias;
+        }
+
+        if ($dateFormat !== null) {
+            $sqlFormat = RuptDateFormat::toSql($dateFormat);
+            $expr = "DATE_FORMAT($joinAlias.$field, '$sqlFormat')";
+
+            return [$expr, '_rupt_key'];
+        }
+
+        /** @var class-string $className */
+        $className = $this->getClassName();
+        $metadata = $this->entityManager->getClassMetadata($className);
+
+        if ($joinAlias === $rootAlias && $metadata->hasAssociation($field)) {
+            return ["IDENTITY($joinAlias.$field)", "$joinAlias.$field"];
+        }
+
+        return ["$joinAlias.$field", "$joinAlias.$field"];
     }
 
     public function applyLimit(QueryBuilder $qb, ?DatasourceParams $requestParams): void
@@ -521,5 +642,19 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface
     public function getTags(object $resource): iterable
     {
         return ['tags' => [], 'currentTags' => []];
+    }
+
+    public function applySort(array $ids, string $sortField): void
+    {
+        $accessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($ids as $position => $id) {
+            $entity = $this->get($id);
+            if ($entity !== null) {
+                $accessor->setValue($entity, $sortField, $position);
+            }
+        }
+
+        $this->entityManager->flush();
     }
 }

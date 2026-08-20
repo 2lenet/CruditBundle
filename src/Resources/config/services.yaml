@@ -108,6 +108,10 @@ services:
         arguments:
             $translator: "@translator"
 
+    Lle\CruditBundle\Service\NavigationStack:
+        arguments:
+            - '@request_stack'
+
     Lle\CruditBundle\Service\SanitizerService: ~
     Lle\CruditBundle\Contracts\SanitizerInterface: '@Lle\CruditBundle\Service\SanitizerService'
 

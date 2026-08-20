@@ -33,6 +33,7 @@ class WorkflowField extends AbstractField
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
             "name" => $this->name,
+            "backgroundColor" => "bg-primary",
         ]);
     }
 }
