@@ -203,6 +203,7 @@ export function initTomSelect() {
     document.querySelectorAll('input.entity-select:not(.tomselected)').forEach(select => {
         const dataurl = select.dataset.url;
         const inioptions = JSON.parse(select.dataset.options);
+        let keepDropdownClosedOnLoad = false;
 
         const ts = new TomSelect('#' + select.id,
             {
@@ -229,6 +230,11 @@ export function initTomSelect() {
                 onItemAdd() {
                     select.parentElement.querySelector('.ts-control > input').value = '';
                     select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
+                },
+                onItemRemove() {
+                    keepDropdownClosedOnLoad = true;
+                    this.clearPagination();
+                    this.load('');
                 },
                 firstUrl(query) {
                     let params = new URLSearchParams({
@@ -257,6 +263,20 @@ export function initTomSelect() {
                                 let nextUrl = dataurl + '?' + params.toString();
 
                                 this.setNextUrl(query, nextUrl);
+                            }
+
+                            if (keepDropdownClosedOnLoad) {
+                                // Prevent refreshOptions() from auto-opening the dropdown
+                                // when this load() was triggered by onItemRemove's reset.
+                                const wasFocused = this.isFocused;
+                                this.isFocused = false;
+                                callback(json.items);
+                                //restore isFocused's real value so as not to disrupt subsequent normal behavior
+                                this.isFocused = wasFocused;
+                                keepDropdownClosedOnLoad = false;
+                            } else {
+                                // add data to the results
+                                callback(json.items);
                             }
 
                             // add data to the results
