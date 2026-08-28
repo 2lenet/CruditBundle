@@ -99,6 +99,11 @@ class HistoryFactory extends AbstractBasicBrickFactory
                 $objectClass = $log->getObjectClass();
                 $metadata = $this->em->getClassMetadata($objectClass);
                 foreach ($log->getData() as $property => $value) {
+                    if (is_array($value) && isset($value['date'], $value['timezone'])) {
+                        // since DBAL4 dropped the "array" type, LogEntry::$data is stored as JSON:
+                        // the \DateTime Gedmo puts in it are read back as arrays
+                        $value = new \DateTime($value['date'] . ' ' . $value['timezone']);
+                    }
                     $type = $metadata->getTypeOfField($property);
                     $result = $value;
                     $class = false;
