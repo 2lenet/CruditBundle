@@ -279,9 +279,6 @@ export function initTomSelect() {
                                 callback(json.items);
                             }
 
-                            // add data to the results
-                            callback(json.items);
-
                             // Fix Virtual Scroll Plugin scrolls to top when next url loads
                             this.scrollToOption = _scrollToOption;
                         }).catch((e) => {
