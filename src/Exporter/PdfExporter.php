@@ -20,6 +20,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporter extends AbstractExporter
 {
+    /**
+     * Marker Mpdf::save() looks for to know where the document body starts. Kept as a literal
+     * instead of Mpdf::SIMULATED_BODY_START because that constant only exists since
+     * PhpSpreadsheet 2.0, while this bundle also supports 1.30. On 1.30 the marker is an inert
+     * HTML comment: the writer still falls back to sending the HTML in chunks of 1000 lines,
+     * which keeps the <style> block inside a single WriteHTML() call.
+     */
+    public const SIMULATED_BODY_START = '<!-- simulated body start -->';
+
     public function __construct(
         protected TranslatorInterface $translator,
     ) {
@@ -250,6 +259,14 @@ class PdfExporter extends AbstractExporter
             $sizeBC = $params['size-footer-center'] ?? 'medium';
             $sizeBR = $params['size-footer-right'] ?? 'medium';
 
+            // Rewriting the <body> tag removes the marker Mpdf::save() looks for to locate the
+            // start of the document body. Without it the whole HTML - <head> and <style>
+            // included - is pushed to mPDF one line at a time (PhpSpreadsheet >= 2.0), which
+            // prints the stylesheet as plain text instead of applying it. Closing the injected
+            // block with the marker gives the writer back a split point, so the head and the
+            // page header/footer tags are written in a single WriteHTML() call.
+            $simulatedBodyStart = self::SIMULATED_BODY_START;
+
             $bodyrepl = <<<EOF
                     <body style="font-family: 'Arial';">
                         <htmlpageheader name="myHeader1">
@@ -271,7 +288,7 @@ class PdfExporter extends AbstractExporter
                                 </tr>
                             </table>
                         </htmlpagefooter>
-                    
+                        $simulatedBodyStart
                     EOF;
 
             return preg_replace($bodystring, $bodyrepl, $html) ?? '';
