@@ -20,6 +20,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporter extends AbstractExporter
 {
+    /**
+     * Marker Mpdf::save() looks for to know where the document body starts. Kept as a literal
+     * instead of Mpdf::SIMULATED_BODY_START because that constant only exists since
+     * PhpSpreadsheet 2.0, while this bundle also supports 1.30. On 1.30 the marker is an inert
+     * HTML comment: the writer still falls back to sending the HTML in chunks of 1000 lines,
+     * which keeps the <style> block inside a single WriteHTML() call.
+     */
+    public const SIMULATED_BODY_START = '<!-- simulated body start -->';
+
+    /** Needles rewritten in the HTML produced by the spreadsheet writer. */
+    private const PAGE_DECLARATION = '@page page0 {';
+    private const BODY_TAG = '<body>';
+
     public function __construct(
         protected TranslatorInterface $translator,
     ) {
@@ -235,8 +248,12 @@ class PdfExporter extends AbstractExporter
                     odd-footer-name: html_myFooter2;
                     even-footer-name: html_myFooter2;                   
                 EOF;
-            $html = preg_replace('/@page page0 {/', $pagerepl, $html) ?? '';
-            $bodystring = '/<body>/';
+            // str_replace, not preg_replace: both needles are literals, and the injected header
+            // and footer values are free text from the crud config. As a replacement string,
+            // preg_replace() would read $1, \1 and \\ in them as backreferences and silently
+            // drop part of the value.
+            $html = str_replace(self::PAGE_DECLARATION, $pagerepl, $html);
+            $bodystring = self::BODY_TAG;
             $topLeft = $params['header-left'] ?? '';
             $topCenter = $params['header-center'] ?? '';
             $topRight = $params['header-right'] ?? '';
@@ -249,6 +266,14 @@ class PdfExporter extends AbstractExporter
             $sizeBL = $params['size-footer-left'] ?? 'medium';
             $sizeBC = $params['size-footer-center'] ?? 'medium';
             $sizeBR = $params['size-footer-right'] ?? 'medium';
+
+            // Rewriting the <body> tag removes the marker Mpdf::save() looks for to locate the
+            // start of the document body. Without it the whole HTML - <head> and <style>
+            // included - is pushed to mPDF one line at a time (PhpSpreadsheet >= 2.0), which
+            // prints the stylesheet as plain text instead of applying it. Closing the injected
+            // block with the marker gives the writer back a split point, so the head and the
+            // page header/footer tags are written in a single WriteHTML() call.
+            $simulatedBodyStart = self::SIMULATED_BODY_START;
 
             $bodyrepl = <<<EOF
                     <body style="font-family: 'Arial';">
@@ -271,10 +296,10 @@ class PdfExporter extends AbstractExporter
                                 </tr>
                             </table>
                         </htmlpagefooter>
-                    
+                        $simulatedBodyStart
                     EOF;
 
-            return preg_replace($bodystring, $bodyrepl, $html) ?? '';
+            return str_replace($bodystring, $bodyrepl, $html);
         };
     }
 
