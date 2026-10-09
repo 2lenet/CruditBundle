@@ -1,0 +1,11 @@
+{# Prototype (lot 0.1) : un template de Crudit qui utilise un contrôleur Stimulus d'UiBundle. À supprimer ou remplacer au lot 1.x. #}
+{% set ui_dropdown = '@2lenet/ui-bundle/dropdown' %}
+<div class="ui-dropdown" {{ stimulus_controller(ui_dropdown) }}>
+    <button type="button" class="ui-dropdown__button" aria-expanded="false"
+            {{ stimulus_target(ui_dropdown, 'button') }} {{ stimulus_action(ui_dropdown, 'toggle') }}>
+        {{ label|default('Actions') }}
+    </button>
+    <div class="ui-dropdown__panel" hidden {{ stimulus_target(ui_dropdown, 'panel') }}>
+        {% block content %}{% endblock %}
+    </div>
+</div>
