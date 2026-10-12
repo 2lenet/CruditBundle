@@ -13,7 +13,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 
 ## Checklist
 
-1. [Install UiBundle and Stimulus](#1-requirements-and-installation) *(lot 1.1)*
+1. [Install CruditUiBundle and Stimulus](#1-requirements-and-installation) *(lot 1.1)*
 2. [Change the layout you extend](#2-layout) *(lot 2.1)*
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
@@ -28,11 +28,11 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 
 *Draft, completed by lot 1.1.*
 
-- New dependency: `2lenet/ui-bundle` (installed automatically, design system shared with DashboardBundle).
+- New dependency: `2lenet/crudit-ui-bundle` (installed automatically, design system shared with DashboardBundle).
 - `symfony/stimulus-bundle` and `symfony/ux-twig-component` are required. If your project had no
   Stimulus before, Flex does not create the configuration: `assets/controllers.json`,
   `assets/bootstrap.js` (`startStimulusApp`) and, under Encore, `enableStimulusBridge()` in
-  `webpack.config.js`. The Flex recipe of UiBundle does it for you.
+  `webpack.config.js`. The Flex recipe of CruditUiBundle does it for you.
 - Works with **Webpack Encore** and **AssetMapper**. A project with a Vue front stays on Encore.
 - Remove `vendor/2lenet/crudit-bundle/assets/sb-admin/...` imports (SCSS and JS).
 
@@ -106,7 +106,7 @@ Crudit no longer loads Bootstrap (CSS, JS, form theme) and no longer depends on 
 CKEditor or EasyMDE. Your own templates keep working **only if you load Bootstrap yourself**, in the
 `stylesheets` and `javascripts` blocks of your layout, before Crudit's CSS.
 
-Bundle classes are prefixed (`lle-…`) and live in the `lle-ui` CSS layer, so they do not clash with
+Bundle classes are prefixed (`crudit-ui-…`) and live in the `crudit-ui` CSS layer, so they do not clash with
 Bootstrap and your CSS wins over them without `!important`.
 
 Things that stop working without Bootstrap loaded: `data-bs-toggle`, `data-bs-target`,
@@ -133,7 +133,7 @@ Use the action options instead *(to be filled)*.
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `add_exit_impersonation_button`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
-| `lle_ui.icons.load_fontawesome`, `lle_ui.icons.map` | New (UiBundle): icon library and replacement of any icon |
+| `lle_crudit_ui.icons.load_fontawesome`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon |
 
 ## 7. Template overrides
 
@@ -150,7 +150,7 @@ The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *
 Renamed or removed blocks: *to be filled lot by lot.*
 
 CSS hooks you may rely on: `crudit-field` and `crudit-action` are kept. `crudit-flash` is gone
-(toasts). Workflow states: `crudit-wf-state-<state>` is **removed**: declare a color per state in the workflow configuration (named palette, or your own `--lle-badge-<name>-bg` / `-fg` variables) *(details: lot 3.4)*. Edit in place `crudit-eip-*`:
+(toasts). Workflow states: `crudit-wf-state-<state>` is **removed**: declare a color per state in the workflow configuration (named palette, or your own `--crudit-ui-badge-<name>-bg` / `-fg` variables) *(details: lot 3.4)*. Edit in place `crudit-eip-*`:
 renamed *(lot 3.4.b)*.
 
 ## 8. JavaScript

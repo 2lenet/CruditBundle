@@ -1,11 +1,11 @@
-{# Prototype (lot 0.1) : un template de Crudit qui utilise un contrôleur Stimulus d'UiBundle. À supprimer ou remplacer au lot 1.x. #}
-{% set ui_dropdown = '@2lenet/ui-bundle/dropdown' %}
-<div class="lle-dropdown" {{ stimulus_controller(ui_dropdown) }}>
-    <button type="button" class="lle-dropdown__button" aria-expanded="false"
+{# Prototype (lot 0.1) : un template de Crudit qui utilise un contrôleur Stimulus de CruditUiBundle. À supprimer ou remplacer au lot 1.x. #}
+{% set ui_dropdown = '@2lenet/crudit-ui-bundle/dropdown' %}
+<div class="crudit-ui-dropdown" {{ stimulus_controller(ui_dropdown) }}>
+    <button type="button" class="crudit-ui-dropdown__button" aria-expanded="false"
             {{ stimulus_target(ui_dropdown, 'button') }} {{ stimulus_action(ui_dropdown, 'toggle') }}>
         {{ label|default('Actions') }}
     </button>
-    <div class="lle-dropdown__panel" hidden {{ stimulus_target(ui_dropdown, 'panel') }}>
+    <div class="crudit-ui-dropdown__panel" hidden {{ stimulus_target(ui_dropdown, 'panel') }}>
         {% block content %}{% endblock %}
     </div>
 </div>
