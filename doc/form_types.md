@@ -37,6 +37,35 @@ The [Lle\CruditBundle\Form\Type\MarkdownType](markdown.md#markdowntype) allows y
 
 The `Lle\CruditBundle\Form\Type\CronExpressionType` allows you to create a cron input with a interface to select value.
 
+### Telephone
+
+The `Lle\CruditBundle\Form\Type\TelephoneType` renders a calling code select (`Switzerland (+41)`) next to a number input,
+and stores the number as an E.164 string (`+41791234567`) in a plain string property. No external library is needed.
+
+```php
+$builder->add('telephone', TelephoneType::class, [
+    'default_country' => 'CH',
+    'preferred_countries' => ['CH', 'FR', 'IT'],
+]);
+```
+
+Options :
+
+| Name                | Default | Description                                                    |
+|---------------------|---------|----------------------------------------------------------------|
+| default_country     | FR      | ISO code selected when the field is empty                      |
+| preferred_countries | []      | ISO codes displayed at the top of the select                   |
+
+Validation happens on submit: only digits (spaces, dots, dashes and parentheses allowed), and the number of digits after
+the calling code is checked for the main European countries and North America (generic E.164 bounds elsewhere).
+A leading trunk `0` is removed (`06 12 34 56 78` → `+33612345678`), except for Italy. A number typed with `+` or `00`
+takes precedence over the selected country.
+
+Existing values that are not E.164 (legacy free text) are displayed as is in the number input, and converted on next save.
+
+The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): override it in your own form theme
+to restyle it. Display stored numbers with the `telephone` Twig filter (`+41 79 123 45 67`).
+
 ### CollectionType
 
 Crudit works with CollectionType, but you need to do configure some things on your side.

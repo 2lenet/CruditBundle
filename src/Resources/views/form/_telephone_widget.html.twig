@@ -1,0 +1,8 @@
+{# The error sits on the compound field: forward its state so both inputs get .is-invalid #}
+<div id="{{ id }}" class="input-group crudit-telephone">
+    {{ form_widget(form.country, {
+        valid: form.vars.valid,
+        attr: form.country.vars.attr|merge({'aria-label': 'crudit.telephone.calling_code'|trans({}, 'LleCruditBundle')}),
+    }) }}
+    {{ form_widget(form.number, {valid: form.vars.valid}) }}
+</div>
