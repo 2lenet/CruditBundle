@@ -1,0 +1,6 @@
+crudit:
+    telephone:
+        invalid: "This phone number is not valid."
+        invalid_characters: "The number may only contain digits (spaces, dots and dashes are allowed)."
+        invalid_length: "Invalid number ({{ country }}, {{ code }}): {{ min }} digits expected after the calling code."
+        invalid_length_range: "Invalid number ({{ country }}, {{ code }}): between {{ min }} and {{ max }} digits expected after the calling code."

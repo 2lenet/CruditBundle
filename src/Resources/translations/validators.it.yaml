@@ -1,0 +1,6 @@
+crudit:
+    telephone:
+        invalid: "Questo numero di telefono non è valido."
+        invalid_characters: "Il numero può contenere solo cifre (spazi, punti e trattini sono ammessi)."
+        invalid_length: "Numero non valido ({{ country }}, {{ code }}): sono attese {{ min }} cifre dopo il prefisso internazionale."
+        invalid_length_range: "Numero non valido ({{ country }}, {{ code }}): sono attese tra {{ min }} e {{ max }} cifre dopo il prefisso internazionale."
