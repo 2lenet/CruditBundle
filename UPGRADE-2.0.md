@@ -72,24 +72,41 @@ configuration or in the `footer` block.
 
 ## 3. Theme: SCSS variables to CSS variables
 
-*Draft, completed by lot 1.2.*
+*Completed by lot 1.2, except the layout variables (lot 2.1).*
 
 Remove the `@import '.../crudit-bundle/assets/sb-admin/css/app.scss'` and the Sass variables declared
-before it. The theme is now CSS custom properties, with no compilation:
+before it. The theme is now the design tokens of CruditUiBundle, CSS custom properties overridden with no
+compilation (CruditUiBundle `docs/customization.md`):
 
 ```css
 :root {
-    --color-primary: #333333;
+    --brand: #b3261e;
 }
 ```
 
+`--brand` is the only colour to provide: the primary colours (buttons, links, focus ring, first chart series) are
+derived from it, in the light and in the dark theme. Choose it dark enough for white text (4.5:1).
+
 | Sass variable | CSS variable |
 |---|---|
-| `$primary` | *to be filled (lot 1.2)* |
-| `$secondary`, `$success`, `$danger`, `$warning`, `$info` | *to be filled* |
-| `$topbar-bg-color`, `$topbar-color` | *to be filled* |
-| `$sidebar-bg-color`, `$sidebar-color`, `$sidebar-bg-event-color` | *to be filled* |
-| `$border-radius`, `$font-size-base`, `$spacer` | *to be filled* |
+| `$primary` | `--brand` |
+| `$body-color` | `--c-text` (`--c-text-muted` for secondary text) |
+| `$success`, `$danger`, `$warning`, `$info` | `--c-success-*`, `--c-danger-*`, `--c-warning-*`, `--c-info-*` (`-bg`, `-text`, `-border`; `-solid` for success and danger) |
+| `$secondary`, `$dark` | `--c-neutral-bg` / `--c-neutral-text`, `--c-inverse-bg` / `--c-inverse-text` |
+| `$blue`, `$teal`, `$green`, `$yellow`, `$orange`, `$red`, `$pink`, `$purple`, `$indigo` | `--c-<hue>-bg` / `--c-<hue>-text`, 11 hues with a contrast of 4.5:1 in both themes (`$cyan`: `teal` or `blue`) |
+| `$border-color` | `--c-border` (`--c-border-strong` for the form controls) |
+| `$border-radius` | `--radius-sm` (controls), `--radius-md` (panels), `--radius-lg` |
+| `$box-shadow-sm` | `--shadow-sm` (`--shadow-md`, `--shadow-lg`) |
+| `$font-family-sans-serif` | `--font-sans` (Inter by default, the system font when the project does not load it) |
+| `$font-size-base` | `--font-size-md` (16 px) |
+| `$spacer` | `--space-4` (scale `--space-1` to `--space-8`, 4 px steps) |
+| `$topbar-bg-color`, `$topbar-color` | *to be filled (lot 2.1)* |
+| `$sidebar-bg-color`, `$sidebar-color`, `$sidebar-bg-event-color` | *to be filled (lot 2.1)* |
+
+A colour you override is defined twice: on `:root` for the light theme and on `:root[data-theme='dark']` for the dark
+theme. **Dark mode is new**: it follows the system preference, and the user can choose. If you do not extend the
+layout of Crudit, put the choice on `<html>` (`data-theme="{{ ui_theme() }}"`, see CruditUiBundle
+`docs/installation.md`).
 
 Variables with no equivalent (`$input-*`, `$card-*`, `$btn-*`, `$table-*`, `$alert-*`, `$h2-font-size`…)
 are gone: those components are driven by the design tokens. The `media()` mixin is gone too
@@ -104,10 +121,27 @@ Logo (with a dark-theme variant) and primary color are also configurable: see `l
 
 Crudit no longer loads Bootstrap (CSS, JS, form theme) and no longer depends on `jquery`, `popper`,
 CKEditor or EasyMDE. Your own templates keep working **only if you load Bootstrap yourself**, in the
-`stylesheets` and `javascripts` blocks of your layout, before Crudit's CSS.
+`stylesheets` and `javascripts` blocks of your layout.
 
-Bundle classes are prefixed (`crudit-ui-…`) and live in the `crudit-ui` CSS layer, so they do not clash with
-Bootstrap and your CSS wins over them without `!important`.
+**Load Bootstrap in a CSS layer**, between the two layers of CruditUiBundle, and declare their order before the
+stylesheet of CruditUiBundle (CruditUiBundle `docs/customization.md`, *Keeping Bootstrap*):
+
+```css
+@layer crudit-ui-base, bootstrap, crudit-ui;
+@import url('bootstrap/dist/css/bootstrap.min.css') layer(bootstrap);
+```
+
+Loaded as usual (outside a layer), its reboot wins over the components of Crudit (`button { border-radius: 0 }`
+removes the radius of their buttons). In its layer, the classes of Bootstrap win over the reset of Crudit and the
+components of Crudit over the reboot of Bootstrap.
+
+Bundle classes are prefixed (`crudit-ui-…`), so they do not clash with Bootstrap, and your CSS, outside the layers,
+wins over both without `!important`.
+
+In the templates you override, the grid and the utilities of Bootstrap have a prefixed equivalent (CruditUiBundle
+`docs/styles.md`): `row` → `crudit-ui-grid`, `col-lg-6` → `crudit-ui-col-lg-6`, `mb-3` → `crudit-ui-mb-3`,
+`d-none d-md-flex` → `crudit-ui-d-none crudit-ui-d-md-flex`, `visually-hidden` → `crudit-ui-visually-hidden`,
+`d-print-none` → `crudit-ui-print-hidden`. The spacing scale is not the same: `crudit-ui-mb-3` is `--space-3` (0.75rem).
 
 Things that stop working without Bootstrap loaded: `data-bs-toggle`, `data-bs-target`,
 `bootstrap.Modal`, `bootstrap.Tooltip`… in your own templates and scripts, and every Bootstrap
