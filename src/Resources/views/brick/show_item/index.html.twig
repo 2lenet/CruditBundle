@@ -77,11 +77,11 @@
     </div>
     {% if view.data.createdAt is defined %}
         <div class="card-footer">
-            <small>{{ 'crudit.field.createdAt'|trans({}, 'LleCruditBundle') }} {{ view.data.createdAt|date('d/m/Y H:i:s') }}</small>
+            <small>{{ 'crudit.field.createdAt'|trans({}, 'LleCruditBundle') }} {{ view.data.createdAt|ui_datetime('short', 'medium') }}</small>
             {% if view.data.createdBy is defined %}
                 <small>{{ 'crudit.field.createdBy'|trans({}, 'LleCruditBundle') }} {{ view.data.createdBy }}</small>{% endif %}
             {% if view.data.updatedAt is defined %}-
-                <small>{{ 'crudit.field.updatedAt'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedAt|date('d/m/Y H:i:s') }}</small>{% endif %}
+                <small>{{ 'crudit.field.updatedAt'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedAt|ui_datetime('short', 'medium') }}</small>{% endif %}
             {% if view.data.updatedBy is defined %}
                 <small>{{ 'crudit.field.updatedBy'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedBy }}</small>{% endif %}
         </div>

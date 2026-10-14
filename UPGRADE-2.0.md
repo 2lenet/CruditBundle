@@ -22,7 +22,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
-10. [Translations](#10-translations) *(lot 1.4)*
+10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
 
 ## 1. Requirements and installation
 
@@ -204,8 +204,46 @@ renamed *(lot 3.4.b)*.
 *Completed by lot 5.8.* HermesBundle, ConfigBundle, EntityFileBundle, CredentialBundle and
 CruditPlatformBundle must be at a version compatible with Crudit 2.0: *versions to be filled*.
 
-## 10. Translations
+## 10. Languages, dates and numbers
 
-*Completed by lot 1.4.* Locales: fr, en, de, it. Right-to-left languages are supported (provide your
-own translations, Latin digits). Renamed or removed keys of the `LleCruditBundle` domain:
-*to be filled*.
+*Lot 1.4.*
+
+**Translations.** The bundles are translated in fr, en, de and it. No key of the `LleCruditBundle` domain
+is renamed or removed. New keys: `crudit.action.edit`, `delete`, `show`, `add`, `export`, `filter`,
+`search`, `reset`, `close`. A project in another language (Arabic…) translates the `LleCruditBundle`
+and `LleCruditUiBundle` domains in its own `translations/`.
+
+**Language and direction.** The layout puts `lang` and `dir` on `<html>`, from the locale of the request
+(`ui_lang()`, `ui_dir()` of CruditUiBundle): the page is right-to-left in Arabic, Persian, Hebrew and
+Urdu (`lle_crudit_ui.rtl_languages`). If you overrode the layout, do the same.
+
+**Dates and numbers follow the locale** (breaking: they were in the French format whatever the
+locale). The fields, the filter badges, the history and the creation and update dates use the format
+of the locale of the request, always in Latin digits and in the Gregorian calendar:
+
+| Field | Before | After, by default |
+|---|---|---|
+| `DateField` | `format: 'd/m/Y'` | `format: null`: `13/10/2026` in fr, `10/13/26` in en |
+| `DateTimeField` | `format: 'd/m/Y H:i'` | `format: null`: `13/10/2026 09:05` in fr, `10/13/26, 9:05 AM` in en |
+| `NumberField` | `decimal_separator: ','`, `thousands_separator: ' '` | `null`: `1 234,56` in fr, `1,234.56` in en |
+| `IntegerField` | `thousands_separator: ' '` | `null`: separator of the locale |
+| `CurrencyField` | `locale`: locale of the main request | `locale: null`: locale of the request, in Latin digits |
+
+The French screens look the same (the thousands are separated by a thin space). To keep a fixed
+format, give it to the field:
+
+```php
+DateField::new('dateLivraison')->setOptions(['format' => 'd/m/Y']);
+NumberField::new('poids')->setOptions(['decimal_separator' => ',', 'thousands_separator' => ' ']);
+CurrencyField::new('montant')->setOptions(['locale' => 'fr']);
+```
+
+The exports (CSV, Excel) do not change: a date without format is exported as `d/m/Y` (`d/m/Y H:i`
+for a date and time).
+
+In your templates, replace `|date('d/m/Y')`, `|number_format(…)` and the `format_*` filters by the
+filters of CruditUiBundle, which follow the locale: `ui_date('short')`, `ui_datetime('short', 'short')`,
+`ui_number`, `ui_currency('EUR')` (see `docs/languages.md` of CruditUiBundle).
+
+If you extended these classes: the constructor of `CurrencyField` no longer takes the `RequestStack`,
+the one of `HistoryFactory` takes the `FormatExtension` of CruditUiBundle.

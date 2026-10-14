@@ -35,7 +35,8 @@ class IntegerField extends AbstractField
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
             'tableCssClass' => $this->getTableCssClass($defaultIntegerAlignment),
-            'thousands_separator' => ' ',
+            // null: separator of the locale of the request (1 234 in fr, 1,234 in en)
+            'thousands_separator' => null,
         ]);
     }
 }

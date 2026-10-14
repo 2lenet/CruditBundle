@@ -36,8 +36,9 @@ class NumberField extends AbstractField
         $optionsResolver->setDefaults([
             'tableCssClass' => $this->getTableCssClass($defaultNumberAlignment),
             'decimals' => '2',
-            'decimal_separator' => ',',
-            'thousands_separator' => ' ',
+            // null: separators of the locale of the request (1 234,56 in fr, 1,234.56 in en)
+            'decimal_separator' => null,
+            'thousands_separator' => null,
         ]);
     }
 }

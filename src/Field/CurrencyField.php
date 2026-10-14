@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Field;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Twig\Environment;
 
@@ -13,7 +12,6 @@ class CurrencyField extends AbstractField
 {
     public function __construct(
         Environment $twig,
-        private RequestStack $requestStack,
         protected ParameterBagInterface $parameterBag,
     ) {
         parent::__construct($twig, $this->parameterBag);
@@ -37,7 +35,8 @@ class CurrencyField extends AbstractField
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
             'tableCssClass' => $this->getTableCssClass($defaultCurrencyAlignment),
-            'locale' => $this->requestStack->getMainRequest()?->getLocale(),
+            // null: locale of the request, in Latin digits
+            'locale' => null,
             'currency' => 'EUR',
             'property' => null,
             'removeHtml' => false,

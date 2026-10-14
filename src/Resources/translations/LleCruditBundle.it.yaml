@@ -33,6 +33,16 @@ crudit:
         validate: "Convalidare"
         profile: "Profilo"
         exit_impersonation: "Esci dall'impersonificazione"
+        batch: "Scegliere un'azione di massa"
+        edit: "Modificare"
+        delete: "Eliminare"
+        show: "Visualizzare"
+        add: "Aggiungere"
+        export: "Esportare"
+        filter: "Filtrare"
+        search: "Cercare"
+        reset: "Reimpostare"
+        close: "Chiudere"
 
     message:
         success: "Successo"
@@ -48,6 +58,9 @@ crudit:
             message: "Scegliere un formato di esportazione"
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
+        transition:
+            message: "Volete davvero modificare lo stato di questo elemento?"
+            action: "Convalidare"
 
     field:
         createdAt: "Creato il"

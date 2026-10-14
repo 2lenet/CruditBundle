@@ -11,6 +11,7 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Provider\ConfigProvider;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Lle\CruditUiBundle\Twig\FormatExtension;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class HistoryFactory extends AbstractBasicBrickFactory
@@ -22,6 +23,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
         RequestStack $requestStack,
         EntityManagerInterface $em,
         private ConfigProvider $configProvider,
+        private FormatExtension $formatExtension,
     ) {
         parent::__construct($resourceResolver, $requestStack);
 
@@ -126,11 +128,11 @@ class HistoryFactory extends AbstractBasicBrickFactory
                     } elseif ($type === "boolean" || is_bool($value)) {
                         $result = $value ? "crudit.boolean.yes" : "crudit.boolean.no";
                     } elseif ($type === "date") {
-                        $result = $value ? $value->format("d/m/Y") : "";
+                        $result = $value ? $this->formatDate($value, \IntlDateFormatter::NONE) : "";
                     } elseif ($type === "time") {
                         $result = $value ? $value->format("H:i:s") : "";
                     } elseif ($type === "datetime" || $value instanceof \DateTime) {
-                        $result = $value ? $value->format("d/m/Y H:i:s") : "";
+                        $result = $value ? $this->formatDate($value, \IntlDateFormatter::MEDIUM) : "";
                     } elseif (is_array($value)) {
                         $result = implode(", ", $value);
                     }
@@ -156,5 +158,21 @@ class HistoryFactory extends AbstractBasicBrickFactory
         }
 
         return $history;
+    }
+
+    /**
+     * Date in the short format of the locale of the request, in Latin digits (13/10/2026 in fr, 10/13/26 in en).
+     */
+    private function formatDate(\DateTimeInterface $date, int $timeType): string
+    {
+        $formatter = new \IntlDateFormatter(
+            $this->formatExtension->locale(),
+            \IntlDateFormatter::SHORT,
+            $timeType,
+            $date->getTimezone(),
+            \IntlDateFormatter::GREGORIAN,
+        );
+
+        return (string)$formatter->format($date);
     }
 }

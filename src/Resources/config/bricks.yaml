@@ -41,7 +41,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@doctrine.orm.default_entity_manager', '@Lle\CruditBundle\Provider\ConfigProvider']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@doctrine.orm.default_entity_manager', '@Lle\CruditBundle\Provider\ConfigProvider', '@Lle\CruditUiBundle\Twig\FormatExtension']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\TagBrick\TagFactory:
