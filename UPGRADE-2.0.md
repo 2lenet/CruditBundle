@@ -33,6 +33,8 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
   Stimulus before, Flex does not create the configuration: `assets/controllers.json`,
   `assets/bootstrap.js` (`startStimulusApp`) and, under Encore, `enableStimulusBridge()` in
   `webpack.config.js`. The Flex recipe of CruditUiBundle does it for you.
+- The `intl` extension of PHP is required (by CruditUiBundle, lot 1.4): dates and numbers follow the
+  locale, see [§10](#10-languages-dates-and-numbers).
 - Works with **Webpack Encore** and **AssetMapper**. A project with a Vue front stays on Encore.
 - Remove `vendor/2lenet/crudit-bundle/assets/sb-admin/...` imports (SCSS and JS).
 

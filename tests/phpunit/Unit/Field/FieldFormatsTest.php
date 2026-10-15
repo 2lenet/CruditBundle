@@ -10,9 +10,9 @@ use Lle\CruditBundle\Field\DateField;
 use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
+use Lle\CruditUiBundle\Locale\RequestLocale;
 use Lle\CruditUiBundle\Twig\FormatExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +29,6 @@ use Twig\TwigFunction;
  * Dates and numbers of the fields follow the locale of the request, in Latin digits; a format or separators given
  * by the project are kept.
  */
-#[RequiresPhpExtension('intl')]
 class FieldFormatsTest extends TestCase
 {
     private const string NNBSP = "\u{202F}";
@@ -56,7 +55,9 @@ class FieldFormatsTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{class-string<AbstractField>, string, mixed, array<string, mixed>, string}>
+     * The date in Arabic depends on the version of ICU (`13‏/10‏/2026 م` since ICU 74): only its digits are checked.
+     *
+     * @return iterable<string, array{class-string<AbstractField>, string, mixed, array<string, mixed>, string|list<string>}>
      */
     public static function fields(): iterable
     {
@@ -64,7 +65,7 @@ class FieldFormatsTest extends TestCase
 
         yield 'date, fr' => [DateField::class, 'fr', $date, [], '13/10/2026'];
         yield 'date, en' => [DateField::class, 'en', $date, [], '10/13/26'];
-        yield 'date, ar_SA: Latin digits' => [DateField::class, 'ar_SA', $date, [], "13\u{200F}/10\u{200F}/2026"];
+        yield 'date, ar_SA: Latin digits' => [DateField::class, 'ar_SA', $date, [], ['13', '10', '2026']];
         yield 'date, format of the project' => [DateField::class, 'en', $date, ['format' => 'd/m/Y'], '13/10/2026'];
         yield 'datetime, fr' => [DateTimeField::class, 'fr', $date, [], '13/10/2026 09:05'];
         yield 'datetime, en' => [DateTimeField::class, 'en', $date, [], '10/13/26, 9:05' . self::NNBSP . 'AM'];
@@ -87,9 +88,10 @@ class FieldFormatsTest extends TestCase
     /**
      * @param class-string<AbstractField> $class
      * @param array<string, mixed>        $options
+     * @param string|list<string>         $expected text, or numbers of a date in their order
      */
     #[DataProvider('fields')]
-    public function testFormat(string $class, string $locale, mixed $value, array $options, string $expected): void
+    public function testFormat(string $class, string $locale, mixed $value, array $options, string|array $expected): void
     {
         $twig = $this->twig($locale);
         $field = new $class($twig, new ParameterBag([
@@ -109,7 +111,15 @@ class FieldFormatsTest extends TestCase
             'resource' => null,
         ]);
 
-        self::assertSame($expected, trim(strip_tags($html)));
+        $text = trim(strip_tags($html));
+        if (\is_array($expected)) {
+            self::assertDoesNotMatchRegularExpression('/[\x{0660}-\x{0669}\x{06F0}-\x{06F9}]/u', $text, 'Arabic-Indic or Persian digits');
+            preg_match_all('/\d+/', $text, $matches);
+            self::assertSame($expected, $matches[0], $text);
+
+            return;
+        }
+        self::assertSame($expected, $text);
     }
 
     private function twig(string $locale): Environment
@@ -118,7 +128,7 @@ class FieldFormatsTest extends TestCase
         $request->setLocale($locale);
         $requestStack = new RequestStack();
         $requestStack->push($request);
-        $formatExtension = new FormatExtension($requestStack, 'en');
+        $formatExtension = new FormatExtension(new RequestLocale($requestStack, 'en'));
 
         $loader = new FilesystemLoader();
         $loader->addPath(\dirname(__DIR__, 4) . '/src/Resources/views', 'LleCrudit');
