@@ -10,6 +10,7 @@ use Lle\CruditBundle\Field\DateField;
 use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
+use Lle\CruditUiBundle\Format\Formatter;
 use Lle\CruditUiBundle\Locale\RequestLocale;
 use Lle\CruditUiBundle\Twig\FormatExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -64,11 +65,11 @@ class FieldFormatsTest extends TestCase
         $date = new \DateTimeImmutable('2026-10-13 09:05:00');
 
         yield 'date, fr' => [DateField::class, 'fr', $date, [], '13/10/2026'];
-        yield 'date, en' => [DateField::class, 'en', $date, [], '10/13/26'];
+        yield 'date, en: year in 4 digits' => [DateField::class, 'en', $date, [], '10/13/2026'];
         yield 'date, ar_SA: Latin digits' => [DateField::class, 'ar_SA', $date, [], ['13', '10', '2026']];
         yield 'date, format of the project' => [DateField::class, 'en', $date, ['format' => 'd/m/Y'], '13/10/2026'];
         yield 'datetime, fr' => [DateTimeField::class, 'fr', $date, [], '13/10/2026 09:05'];
-        yield 'datetime, en' => [DateTimeField::class, 'en', $date, [], '10/13/26, 9:05' . self::NNBSP . 'AM'];
+        yield 'datetime, en: year in 4 digits' => [DateTimeField::class, 'en', $date, [], '10/13/2026, 9:05' . self::NNBSP . 'AM'];
         yield 'datetime, format of the project' => [DateTimeField::class, 'en', $date, ['format' => 'd/m/Y H:i'], '13/10/2026 09:05'];
         yield 'number, fr' => [NumberField::class, 'fr', 1234.567, [], '1' . self::NNBSP . '234,57'];
         yield 'number, en' => [NumberField::class, 'en', 1234.5, [], '1,234.50'];
@@ -77,6 +78,7 @@ class FieldFormatsTest extends TestCase
         yield 'number, separators of the project' => [NumberField::class, 'en', 1234.5, ['decimal_separator' => ',', 'thousands_separator' => ' '], '1 234,50'];
         yield 'number, one separator of the project' => [NumberField::class, 'en', 1234.5, ['thousands_separator' => '.'], '1.234,50'];
         yield 'number, decimals' => [NumberField::class, 'en', 1234.6, ['decimals' => 0], '1,235'];
+        yield 'number, decimals given as a string' => [NumberField::class, 'en', 1234.5, ['decimals' => '3'], '1,234.500'];
         yield 'integer, fr' => [IntegerField::class, 'fr', 1234, [], '1' . self::NNBSP . '234'];
         yield 'integer, en' => [IntegerField::class, 'en', 1234, [], '1,234'];
         yield 'integer, separator of the project' => [IntegerField::class, 'en', 1234, ['thousands_separator' => ' '], '1 234'];
@@ -128,11 +130,11 @@ class FieldFormatsTest extends TestCase
         $request->setLocale($locale);
         $requestStack = new RequestStack();
         $requestStack->push($request);
-        $formatExtension = new FormatExtension(new RequestLocale($requestStack, 'en'));
 
         $loader = new FilesystemLoader();
         $loader->addPath(\dirname(__DIR__, 4) . '/src/Resources/views', 'LleCrudit');
         $twig = new Environment($loader, ['strict_variables' => true]);
+        $formatExtension = new FormatExtension(new Formatter(new RequestLocale($requestStack, 'en'), $twig));
         $twig->addExtension(new IntlExtension());
         $twig->addExtension(new AttributeExtension(FormatExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([FormatExtension::class => static fn () => $formatExtension]));

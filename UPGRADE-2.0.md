@@ -225,14 +225,19 @@ of the locale of the request, always in Latin digits and in the Gregorian calend
 
 | Field | Before | After, by default |
 |---|---|---|
-| `DateField` | `format: 'd/m/Y'` | `format: null`: `13/10/2026` in fr, `10/13/26` in en |
-| `DateTimeField` | `format: 'd/m/Y H:i'` | `format: null`: `13/10/2026 09:05` in fr, `10/13/26, 9:05 AM` in en |
+| `DateField` | `format: 'd/m/Y'` | `format: null`: `13/10/2026` in fr, `10/13/2026` in en |
+| `DateTimeField` | `format: 'd/m/Y H:i'` | `format: null`: `13/10/2026 09:05` in fr, `10/13/2026, 9:05 AM` in en |
 | `NumberField` | `decimal_separator: ','`, `thousands_separator: ' '` | `null`: `1 234,56` in fr, `1,234.56` in en |
+| `NumberField`, one separator given | the other one: `,` or `' '` | unchanged: the other one keeps its former French default (`thousands_separator: '.'` gives `1.234,50`, in en too) |
 | `IntegerField` | `thousands_separator: ' '` | `null`: separator of the locale |
 | `CurrencyField` | `locale`: locale of the main request | `locale: null`: locale of the request, in Latin digits |
 
-The French screens look the same (the thousands are separated by a thin space). To keep a fixed
-format, give it to the field:
+The dates always have the year in 4 digits. The history brick follows the locale too (dates, times, in the
+timezone of Twig as the date of each change).
+
+The French screens look the same, but **the thousands are now separated by a narrow no-break space
+(U+202F)** instead of a space: the functional tests of your project that compare texts (Behat, Panther,
+snapshots) must be updated, `1 234,56` no longer matches. To keep a fixed format, give it to the field:
 
 ```php
 DateField::new('dateLivraison')->setOptions(['format' => 'd/m/Y']);
