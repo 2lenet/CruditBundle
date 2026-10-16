@@ -10,6 +10,7 @@ use Gedmo\Loggable\Entity\LogEntry;
 use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory;
+use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Provider\ConfigProvider;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Lle\CruditUiBundle\Format\Formatter;
@@ -27,8 +28,6 @@ use Twig\Loader\ArrayLoader;
  */
 class HistoryFactoryTest extends TestCase
 {
-    private const string NNBSP = "\u{202F}";
-
     private string $defaultLocale;
 
     protected function setUp(): void
@@ -53,12 +52,23 @@ class HistoryFactoryTest extends TestCase
             'scannedAt' => [null, new \DateTimeImmutable('2026-10-13 14:05', $utc)],
         ]);
 
-        self::assertSame([
-            'deliveryDate' => '10/13/2026',
-            'openingTime' => '2:05:00' . self::NNBSP . 'PM',
-            'updatedAt' => '10/13/2026, 10:05:00' . self::NNBSP . 'AM',
-            'scannedAt' => '10/13/2026, 10:05:00' . self::NNBSP . 'AM',
-        ], $values);
+        // the spaces depend on the version of ICU: only the digits, their order and the half of the day are checked
+        self::assertDigits(['10', '13', '2026'], $values['deliveryDate']);
+        self::assertDigits(['2', '05', '00'], $values['openingTime']);
+        self::assertStringContainsString('PM', $values['openingTime']);
+        foreach (['updatedAt', 'scannedAt'] as $field) {
+            self::assertDigits(['10', '13', '2026', '10', '05', '00'], $values[$field]);
+            self::assertStringContainsString('AM', $values[$field]);
+        }
+    }
+
+    /**
+     * @param list<string> $numbers
+     */
+    private static function assertDigits(array $numbers, string $actual): void
+    {
+        preg_match_all('/\d+/', $actual, $matches);
+        self::assertSame($numbers, $matches[0], $actual);
     }
 
     /**
@@ -66,12 +76,13 @@ class HistoryFactoryTest extends TestCase
      *
      * @param array<string, array{?string, mixed}> $fields type and value of each field
      *
-     * @return array<string, mixed>
+     * @return array<string, string>
      */
     private function values(array $fields): array
     {
         $request = new Request();
         $request->setLocale('en');
+        $request->attributes->set('id', '1');
         $requestStack = new RequestStack();
         $requestStack->push($request);
         $twig = new Environment(new ArrayLoader());
@@ -97,8 +108,15 @@ class HistoryFactoryTest extends TestCase
             $this->createMock(ConfigProvider::class),
             new Formatter(new RequestLocale($requestStack, 'en'), $twig),
         );
-        $history = (new \ReflectionMethod($factory, 'getLogEntriesDatasource'))->invoke($factory, new \stdClass(), $this->createMock(HistoryConfig::class));
+        $datasource = $this->createMock(DatasourceInterface::class);
+        $datasource->method('get')->willReturn(new \stdClass());
+        $config = $this->createMock(HistoryConfig::class);
+        $config->method('getDatasource')->willReturn($datasource);
+        $config->method('getOptions')->willReturn([]);
 
-        return array_map(static fn (array $value): mixed => $value['value'], $history[0]['data']);
+        /** @var array{history: list<array{data: array<string, array{value: mixed}>}>} $data */
+        $data = $factory->buildView($config)->getData();
+
+        return array_map(static fn (array $value): mixed => $value['value'], $data['history'][0]['data']);
     }
 }

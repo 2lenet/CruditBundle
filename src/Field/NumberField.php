@@ -42,6 +42,7 @@ class NumberField extends AbstractField
             'thousands_separator' => null,
         ]);
         // an integer for NumberFormatter, also when a project gives a string ('3')
+        $optionsResolver->setAllowedTypes('decimals', ['int', 'string']);
         $optionsResolver->setNormalizer('decimals', static fn (Options $options, int|string $decimals): int => (int)$decimals);
     }
 }

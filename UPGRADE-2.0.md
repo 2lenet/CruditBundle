@@ -232,7 +232,8 @@ of the locale of the request, always in Latin digits and in the Gregorian calend
 | `IntegerField` | `thousands_separator: ' '` | `null`: separator of the locale |
 | `CurrencyField` | `locale`: locale of the main request | `locale: null`: locale of the request, in Latin digits |
 
-The dates always have the year in 4 digits. The history brick follows the locale too (dates, times, in the
+The dates always have the year in 4 digits, the rest follows the short format of the locale, leading zeros included
+(`05/01/2026` in fr, `1/5/2026` in en). The history brick follows the locale too (dates, times, in the
 timezone of Twig as the date of each change).
 
 The French screens look the same, but **the thousands are now separated by a narrow no-break space

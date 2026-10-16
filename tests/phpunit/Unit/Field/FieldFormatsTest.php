@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Twig\Environment;
 use Twig\Extension\AttributeExtension;
@@ -56,7 +57,7 @@ class FieldFormatsTest extends TestCase
     }
 
     /**
-     * The date in Arabic depends on the version of ICU (`13‏/10‏/2026 م` since ICU 74): only its digits are checked.
+     * The spaces of the date in Arabic depend on the version of ICU: only its digits are checked.
      *
      * @return iterable<string, array{class-string<AbstractField>, string, mixed, array<string, mixed>, string|list<string>}>
      */
@@ -66,6 +67,7 @@ class FieldFormatsTest extends TestCase
 
         yield 'date, fr' => [DateField::class, 'fr', $date, [], '13/10/2026'];
         yield 'date, en: year in 4 digits' => [DateField::class, 'en', $date, [], '10/13/2026'];
+        yield 'date, en: leading zeros of the locale' => [DateField::class, 'en', new \DateTimeImmutable('2026-01-05'), [], '1/5/2026'];
         yield 'date, ar_SA: Latin digits' => [DateField::class, 'ar_SA', $date, [], ['13', '10', '2026']];
         yield 'date, format of the project' => [DateField::class, 'en', $date, ['format' => 'd/m/Y'], '13/10/2026'];
         yield 'datetime, fr' => [DateTimeField::class, 'fr', $date, [], '13/10/2026 09:05'];
@@ -96,15 +98,7 @@ class FieldFormatsTest extends TestCase
     public function testFormat(string $class, string $locale, mixed $value, array $options, string|array $expected): void
     {
         $twig = $this->twig($locale);
-        $field = new $class($twig, new ParameterBag([
-            'lle_crudit.css_class_columns_show' => '',
-            'lle_crudit.css_class_columns_card' => '',
-            'lle_crudit.default_number_alignment' => 'right',
-            'lle_crudit.default_integer_alignment' => 'right',
-            'lle_crudit.default_currency_alignment' => 'right',
-        ]));
-        $resolver = new OptionsResolver();
-        $field->configureOptions($resolver);
+        $resolver = $this->resolver($class, $twig);
 
         $html = $twig->render('@LleCrudit/field/' . self::TEMPLATES[$class] . '.html.twig', [
             'value' => $value,
@@ -122,6 +116,43 @@ class FieldFormatsTest extends TestCase
             return;
         }
         self::assertSame($expected, $text);
+    }
+
+    /**
+     * @return iterable<string, array{mixed}>
+     */
+    public static function wrongDecimals(): iterable
+    {
+        yield 'null' => [null];
+        yield 'float' => [2.5];
+    }
+
+    #[DataProvider('wrongDecimals')]
+    public function testDecimalsOfAWrongTypeAreRefusedClearly(mixed $decimals): void
+    {
+        $resolver = $this->resolver(NumberField::class, $this->twig('en'));
+
+        $this->expectException(InvalidOptionsException::class);
+        $this->expectExceptionMessage('"decimals"');
+        $resolver->resolve(['decimals' => $decimals]);
+    }
+
+    /**
+     * @param class-string<AbstractField> $class
+     */
+    private function resolver(string $class, Environment $twig): OptionsResolver
+    {
+        $field = new $class($twig, new ParameterBag([
+            'lle_crudit.css_class_columns_show' => '',
+            'lle_crudit.css_class_columns_card' => '',
+            'lle_crudit.default_number_alignment' => 'right',
+            'lle_crudit.default_integer_alignment' => 'right',
+            'lle_crudit.default_currency_alignment' => 'right',
+        ]));
+        $resolver = new OptionsResolver();
+        $field->configureOptions($resolver);
+
+        return $resolver;
     }
 
     private function twig(string $locale): Environment
