@@ -19,6 +19,8 @@
     ],
     "require": {
         "php": "^8.4",
+        "ext-intl": "*",
+        "2lenet/crudit-ui-bundle": "dev-main",
         "doctrine/common": "^3.0",
         "doctrine/dbal": "^3.3 || ^4.0",
         "doctrine/doctrine-bundle": "^2.0 || ^3.0",

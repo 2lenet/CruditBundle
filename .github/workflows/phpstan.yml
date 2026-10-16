@@ -2,9 +2,9 @@ name: PHPStan
 
 on:
     push:
-        branches: [main]
+        branches: [main, feature/redesign]
     pull_request:
-        branches: [main]
+        branches: [main, feature/redesign]
 
 jobs:
     phpstan:

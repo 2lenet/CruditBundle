@@ -39,7 +39,7 @@ services:
         arguments: ['@twig','@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\CurrencyField:
-        arguments: ['@twig', '@request_stack', '@parameter_bag']
+        arguments: ['@twig', '@parameter_bag']
         tags: ['crudit.field']
     Lle\CruditBundle\Field\JsonField:
         arguments: ['@twig', '@parameter_bag' ,'@request_stack']

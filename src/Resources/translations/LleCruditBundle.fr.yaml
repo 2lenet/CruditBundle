@@ -34,6 +34,15 @@ crudit:
         validate: "Valider"
         profile: "Profil"
         exit_impersonation: "Quitter l'impersonation"
+        edit: "Modifier"
+        delete: "Supprimer"
+        show: "Voir"
+        add: "Ajouter"
+        export: "Exporter"
+        filter: "Filtrer"
+        search: "Rechercher"
+        reset: "Réinitialiser"
+        close: "Fermer"
 
     message:
         success: "Succès"
