@@ -11,10 +11,13 @@ use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Provider\ConfigProvider;
 use Lle\CruditBundle\Resolver\ResourceResolver;
+use Lle\CruditUiBundle\Format\Formatter;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class HistoryFactory extends AbstractBasicBrickFactory
 {
+    private const array DATETIME_TYPES = ["datetime", "datetime_immutable", "datetimetz", "datetimetz_immutable"];
+
     private EntityManagerInterface $em;
 
     public function __construct(
@@ -22,6 +25,7 @@ class HistoryFactory extends AbstractBasicBrickFactory
         RequestStack $requestStack,
         EntityManagerInterface $em,
         private ConfigProvider $configProvider,
+        private Formatter $formatter,
     ) {
         parent::__construct($resourceResolver, $requestStack);
 
@@ -125,12 +129,14 @@ class HistoryFactory extends AbstractBasicBrickFactory
                         }
                     } elseif ($type === "boolean" || is_bool($value)) {
                         $result = $value ? "crudit.boolean.yes" : "crudit.boolean.no";
-                    } elseif ($type === "date") {
-                        $result = $value ? $value->format("d/m/Y") : "";
-                    } elseif ($type === "time") {
-                        $result = $value ? $value->format("H:i:s") : "";
-                    } elseif ($type === "datetime" || $value instanceof \DateTime) {
-                        $result = $value ? $value->format("d/m/Y H:i:s") : "";
+                    } elseif (\in_array($type, ["date", "date_immutable"], true)) {
+                        // a date alone keeps its day: no conversion to the timezone of Twig
+                        $result = $value ? $this->formatter->date($value, 'short', timezone: false) : "";
+                    } elseif (\in_array($type, ["time", "time_immutable"], true)) {
+                        $result = $value ? $this->formatter->time($value, 'medium', timezone: false) : "";
+                    } elseif (\in_array($type, self::DATETIME_TYPES, true) || $value instanceof \DateTimeInterface) {
+                        // in the timezone of Twig, as the date of the log entry
+                        $result = $value ? $this->formatter->datetime($value, 'short', 'medium') : "";
                     } elseif (is_array($value)) {
                         $result = implode(", ", $value);
                     }

@@ -2,6 +2,20 @@
 
 Crudit provide some twig helpers.
 
+## Dates and numbers
+
+Crudit displays the dates and the numbers in the format of the locale of the request, in Latin digits. Do the
+same in your templates with the filters of CruditUiBundle, rather than `|date('d/m/Y')` or `|number_format`:
+
+```twig
+{{ commande.dateLivraison|ui_date('short') }}   {# 13/10/2026 in fr, 10/13/26 in en #}
+{{ commande.updatedAt|ui_datetime('short', 'short') }}
+{{ commande.poids|ui_number }}                  {# 1 234,5 in fr, 1,234.5 in en #}
+{{ commande.montant|ui_currency('EUR') }}
+```
+
+See `docs/languages.md` in CruditUiBundle.
+
 ## How to create link to a filtered page
 
 You can create links to a filtered page with `crudit_route_filtered_link` Twig function.

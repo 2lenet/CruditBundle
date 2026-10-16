@@ -19,8 +19,8 @@
             </div>
             <div class="editable-error-block help-block" style="display: none;"></div>
         </form>
-        <div class="crudit-eip-value">{{ value ? value|date(options.format) }}</div>
+        <div class="crudit-eip-value">{{ value ? (options.format ? value|date(options.format) : value|ui_date('short')) }}</div>
     </div>
 {% elseif value %}
-    {{ value|date(options.format) }}
+    {{ (options.format ? value|date(options.format) : value|ui_date('short')) }}
 {% endif %}

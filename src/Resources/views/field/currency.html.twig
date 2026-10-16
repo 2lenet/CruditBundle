@@ -36,9 +36,9 @@
         {% set currency = options.property|split('.')|reduce(
             (object, property) => object ? attribute(object, property) : null, resource
             ) %}
-        {% set result = value|format_currency(currency, options.params, options.locale) %}
+        {% set result = options.locale ? value|format_currency(currency, options.params, options.locale) : value|ui_currency(currency, options.params) %}
     {% else %}
-        {% set result = value|format_currency(options.currency, options.params, options.locale) %}
+        {% set result = options.locale ? value|format_currency(options.currency, options.params, options.locale) : value|ui_currency(options.currency, options.params) %}
     {% endif %}
 
     {% if options.removeHtml %}

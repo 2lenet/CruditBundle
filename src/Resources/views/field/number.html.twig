@@ -28,6 +28,11 @@
     {% endif %}
 
     <div class="{{ tableCssClass|default('text-end') }} me-3">
-        {{ value|number_format(options.decimals, options.decimal_separator, options.thousands_separator) }}
+        {% if options.decimal_separator is null and options.thousands_separator is null %}
+            {{ value|ui_number({min_fraction_digit: options.decimals, max_fraction_digit: options.decimals}) }}
+        {% else %}
+            {# a separator given by the project: the other one keeps its former default #}
+            {{ value|number_format(options.decimals, options.decimal_separator ?? ',', options.thousands_separator ?? ' ') }}
+        {% endif %}
     </div>
 {% endif %}
