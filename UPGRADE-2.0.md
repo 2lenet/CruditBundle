@@ -38,6 +38,25 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 - Works with **Webpack Encore** and **AssetMapper**. A project with a Vue front stays on Encore.
 - Remove `vendor/2lenet/crudit-bundle/assets/sb-admin/...` imports (SCSS and JS).
 
+### Icons
+
+*Lot 1.3. How a `CrudConfig` passes an icon (`Icon::new()`) is completed by the screen lots.*
+
+- **No more icon font**: CruditBundle no longer loads Font Awesome (the `sb-admin` assets that load it go with the
+  former layout, lot 2.1). The icons are SVG rendered by Symfony UX Icons,
+  in the library chosen by the project (`lle_crudit_ui.icons.library`, Font Awesome 7 by default), see
+  `docs/installation.md` and `docs/configuration.md` of CruditUiBundle.
+- **No compatibility with Font Awesome 4 or 5**: the classes `fa fa-truck`, `fas fa-truck` or `far fa-clock` are no
+  longer understood. The icons of the project (actions, menu, tabs) become **Iconify names**: `fas fa-truck` gives
+  `fa7-solid:truck`, `far fa-clock` gives `fa7-regular:clock`. Many names changed since Font Awesome 4 and 5
+  (`fa-trash-o` is `fa7-regular:trash-can`, `fa-edit` is `fa7-solid:pen-to-square`): check each one on
+  [ux.symfony.com/icons](https://ux.symfony.com/icons). Any icon set of Iconify can be used (`lucide:truck`).
+- **Before committing**, run `bin/console ux:icons:lock` and commit `assets/icons/`: production reads the icons from
+  it, without calling Iconify. Remove `auto_lock`, which the recipe of Symfony UX Icons enables in development.
+  The icons the project builds in PHP or stores in the database need a finder of the project
+  (`Symfony\UX\Icons\IconFinderInterface`), see the installation of CruditUiBundle.
+- A project that keeps the Font Awesome classes stays on CruditBundle 1.x.
+
 ## 2. Layout
 
 *Draft, completed by lot 2.1.*
@@ -169,7 +188,7 @@ Use the action options instead *(to be filled)*.
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `add_exit_impersonation_button`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
-| `lle_crudit_ui.icons.load_fontawesome`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon |
+| `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 
 ## 7. Template overrides
 
