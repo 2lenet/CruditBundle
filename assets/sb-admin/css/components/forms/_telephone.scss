@@ -1,0 +1,47 @@
+// TelephoneType: compact calling code box on the left, number input on the right
+.crudit-telephone {
+    flex-wrap: nowrap;
+
+    > .crudit-telephone-calling-code {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 5.75rem;
+
+        // The select is invisible: the box shows its focus instead
+        &:focus-within {
+            z-index: 5;
+            border-color: $input-focus-border-color;
+            box-shadow: $input-focus-box-shadow;
+        }
+    }
+
+    .crudit-telephone-country {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+}
+
+// In the form brick: same height as the other floating fields, label always floated above the "+33" box
+.form-floating > .crudit-telephone {
+    > .crudit-telephone-calling-code,
+    > .crudit-telephone-number {
+        // Same box as a filled floating input (Crudit's _input.scss), so the text lines up with its neighbours
+        min-height: $form-floating-height;
+        padding-top: 0.9rem;
+        padding-bottom: $form-floating-input-padding-b;
+        line-height: $form-floating-line-height;
+    }
+
+    ~ label {
+        // Above the box and input, which the input group raises on focus
+        z-index: 6;
+        transform: $form-floating-label-transform;
+        opacity: $form-floating-label-opacity;
+    }
+}

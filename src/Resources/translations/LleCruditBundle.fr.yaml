@@ -134,3 +134,6 @@ crudit:
 
     gedmo_translatable:
         default_locale_helper: "Une donnée est toujours requise pour la langue suivante :"
+
+    telephone:
+        calling_code: "Indicatif"

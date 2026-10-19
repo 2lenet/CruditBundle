@@ -40,6 +40,9 @@ services:
         autowire: true
         tags:
             - { name: form.type, alias: crudit_ckeditor }
+    Lle\CruditBundle\Form\Type\TelephoneType:
+        tags:
+            - { name: form.type, alias: crudit_telephone }
     Lle\CruditBundle\Form\Extension\TooltipExtension:
         tags:
             - { name: form.type_extension }
