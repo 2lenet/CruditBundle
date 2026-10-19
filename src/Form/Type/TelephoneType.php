@@ -10,6 +10,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,6 +20,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class TelephoneType extends AbstractType
 {
+    /** Shown instead of a calling code for a legacy value, whose country is unknown */
+    public const UNKNOWN_CALLING_CODE = '+ ?';
+
+    /** @var array<string, array<string, string>> country choices by locale */
+    private static array $countryChoices = [];
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -28,6 +36,10 @@ class TelephoneType extends AbstractType
                 'preferred_choices' => $options['preferred_countries'],
                 'duplicate_preferred_choices' => false,
                 'choice_attr' => fn (string $country): array => ['data-code' => '+' . CallingCodes::getCode($country)],
+                // Empty for a legacy value: the user has to pick the calling code, see TelephoneTransformer
+                'required' => false,
+                'placeholder' => self::UNKNOWN_CALLING_CODE,
+                'translation_domain' => false,
                 // Native select laid transparent over the "+33" box of the widget, TomSelect would replace it
                 'disable_tom_select' => true,
                 'attr' => [
@@ -46,6 +58,14 @@ class TelephoneType extends AbstractType
             ->addViewTransformer(new TelephoneTransformer($options['default_country']));
     }
 
+    public function buildView(FormView $view, FormInterface $form, array $options): void
+    {
+        $country = $form->get('country')->getData();
+        $view->vars['calling_code'] = is_string($country) && CallingCodes::exists($country)
+            ? '+' . CallingCodes::getCode($country)
+            : self::UNKNOWN_CALLING_CODE;
+    }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -58,6 +78,10 @@ class TelephoneType extends AbstractType
         $resolver->setAllowedTypes('default_country', 'string');
         $resolver->setAllowedValues('default_country', CallingCodes::exists(...));
         $resolver->setAllowedTypes('preferred_countries', 'string[]');
+        $resolver->setAllowedValues(
+            'preferred_countries',
+            fn (array $countries): bool => array_all($countries, CallingCodes::exists(...)),
+        );
     }
 
     public function getBlockPrefix(): string
@@ -70,6 +94,12 @@ class TelephoneType extends AbstractType
      */
     private function getCountryChoices(): array
     {
+        // Built once per locale: the type may be repeated many times in a collection
+        $locale = \Locale::getDefault();
+        if (isset(self::$countryChoices[$locale])) {
+            return self::$countryChoices[$locale];
+        }
+
         $choices = [];
         foreach (CallingCodes::CODES as $country => $code) {
             if (Countries::exists($country)) {
@@ -77,9 +107,9 @@ class TelephoneType extends AbstractType
             }
         }
 
-        $collator = new \Collator(\Locale::getDefault());
+        $collator = new \Collator($locale);
         uksort($choices, fn (string $a, string $b): int => (int)$collator->compare($a, $b));
 
-        return $choices;
+        return self::$countryChoices[$locale] = $choices;
     }
 }

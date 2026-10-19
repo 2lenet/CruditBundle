@@ -1,6 +1,7 @@
 crudit:
     telephone:
         invalid: "Diese Telefonnummer ist ungültig."
-        invalid_characters: "Die Nummer darf nur Ziffern enthalten (Leerzeichen, Punkte und Bindestriche sind erlaubt)."
+        invalid_characters: "Die Nummer darf nur Ziffern enthalten (Leerzeichen, Punkte, Bindestriche, Schrägstriche und Klammern sind erlaubt)."
+        calling_code_required: "Wählen Sie die Ländervorwahl oder geben Sie die Nummer im internationalen Format ein (+…)."
         invalid_length: "Ungültige Nummer ({{ country }}, {{ code }}): {{ min }} Ziffern nach der Ländervorwahl erwartet."
         invalid_length_range: "Ungültige Nummer ({{ country }}, {{ code }}): zwischen {{ min }} und {{ max }} Ziffern nach der Ländervorwahl erwartet."

@@ -29,6 +29,8 @@ class TelephoneTransformerTest extends TestCase
         yield 'french mobile without trunk prefix' => ['FR', '612345678', '+33612345678'];
         yield 'swiss mobile with dots' => ['CH', '079.123.45.67', '+41791234567'];
         yield 'italian landline keeps its zero' => ['IT', '06 1234 5678', '+390612345678'];
+        yield 'italian zero kept after a typed +39' => ['FR', '+39 06 1234 5678', '+390612345678'];
+        yield 'no calling code but international prefix' => ['', '+41 79 123 45 67', '+41791234567'];
         yield 'us number with dashes and parentheses' => ['US', '(212) 555-1234', '+12125551234'];
         yield 'international prefix wins over select' => ['CH', '+33 6 12 34 56 78', '+33612345678'];
         yield '00 international prefix' => ['FR', '0041 79 123 45 67', '+41791234567'];
@@ -57,6 +59,7 @@ class TelephoneTransformerTest extends TestCase
         yield 'swiss number too long' => ['CH', '079 123 45 67 8', 'crudit.telephone.invalid_length'];
         yield 'belgian number out of range' => ['BE', '1234567', 'crudit.telephone.invalid_length_range'];
         yield 'unknown calling code' => ['FR', '+999 123 456', 'crudit.telephone.invalid'];
+        yield 'no calling code' => ['', '06 12 34 56 78', 'crudit.telephone.calling_code_required'];
     }
 
     public function testEmptyNumberIsNull(): void
@@ -80,11 +83,36 @@ class TelephoneTransformerTest extends TestCase
         );
     }
 
-    public function testLegacyValueIsKeptAsIs(): void
+    public function testLegacyValueHasNoCallingCode(): void
     {
         self::assertSame(
-            ['country' => 'FR', 'number' => '06 12 34 56 78'],
+            ['country' => null, 'number' => '06 12 34 56 78'],
             $this->transformer->transform('06 12 34 56 78'),
+        );
+    }
+
+    public function testUnknownCallingCodeIsLegacy(): void
+    {
+        self::assertSame(['country' => null, 'number' => '+999123456'], $this->transformer->transform('+999123456'));
+    }
+
+    public function testUntouchedLegacyValueIsKeptAsIs(): void
+    {
+        $this->transformer->transform('06 12 34 56 78 (bureau)');
+
+        self::assertSame(
+            '06 12 34 56 78 (bureau)',
+            $this->transformer->reverseTransform(['country' => null, 'number' => '06 12 34 56 78 (bureau)']),
+        );
+    }
+
+    public function testLegacyValueIsConvertedOnceACallingCodeIsChosen(): void
+    {
+        $this->transformer->transform('06 12 34 56 78');
+
+        self::assertSame(
+            '+33612345678',
+            $this->transformer->reverseTransform(['country' => 'FR', 'number' => '06 12 34 56 78']),
         );
     }
 }

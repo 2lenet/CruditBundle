@@ -64,6 +64,26 @@ class TelephoneTypeTest extends TypeTestCase
 
         self::assertSame('FR', $form->get('country')->getData());
         self::assertSame('612345678', $form->get('number')->getData());
+        self::assertSame('+33', $form->createView()->vars['calling_code']);
+    }
+
+    public function testLegacyValueIsNotReinterpretedWithDefaultCountry(): void
+    {
+        $form = $this->factory->create(TelephoneType::class, '06 12 34 56 78', ['default_country' => 'CH']);
+
+        self::assertNull($form->get('country')->getData());
+        self::assertSame(TelephoneType::UNKNOWN_CALLING_CODE, $form->createView()->vars['calling_code']);
+
+        $form->submit(['country' => '', 'number' => '06 12 34 56 78']);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame('06 12 34 56 78', $form->getData());
+    }
+
+    public function testUnknownPreferredCountryIsRejected(): void
+    {
+        $this->expectException(InvalidOptionsException::class);
+        $this->factory->create(TelephoneType::class, null, ['preferred_countries' => ['CH', 'ZZ']]);
     }
 
     public function testCountryChoicesShowCallingCode(): void
