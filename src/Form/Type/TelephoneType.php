@@ -27,6 +27,9 @@ class TelephoneType extends AbstractType
                 'choice_translation_domain' => false,
                 'preferred_choices' => $options['preferred_countries'],
                 'duplicate_preferred_choices' => false,
+                'choice_attr' => fn (string $country): array => ['data-code' => '+' . CallingCodes::getCode($country)],
+                // Native select laid transparent over the "+33" box of the widget, TomSelect would replace it
+                'disable_tom_select' => true,
                 'attr' => [
                     'class' => 'crudit-telephone-country',
                 ],

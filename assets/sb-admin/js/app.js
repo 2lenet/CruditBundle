@@ -14,6 +14,7 @@ import './tag';
 import './form_collection';
 import './ckeditor';
 import './sortable';
+import './telephone';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {

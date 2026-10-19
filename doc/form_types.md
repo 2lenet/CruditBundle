@@ -63,8 +63,10 @@ takes precedence over the selected country.
 
 Existing values that are not E.164 (legacy free text) are displayed as is in the number input, and converted on next save.
 
-The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): override it in your own form theme
-to restyle it. Display stored numbers with the `telephone` Twig filter (`+41 79 123 45 67`).
+The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): a compact box showing the calling
+code (`+41`) on the left, with the native country select laid transparent over it (no TomSelect), and the number input
+on the right. Each country option carries its calling code in a `data-code` attribute, copied into the box on change.
+Override the block in your own form theme to restyle it. Display stored numbers with the `telephone` Twig filter (`+41 79 123 45 67`).
 
 ### CollectionType
 
