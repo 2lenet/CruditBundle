@@ -78,7 +78,9 @@ for each record.
 The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): a compact box showing the calling
 code (`+41`, from the `calling_code` view variable) on the left, with the native country select laid transparent over
 it (no TomSelect), and the number input on the right. Each country option carries its calling code in a `data-code`
-attribute, copied into the box on change. Override the block in your own form theme to restyle it.
+attribute, copied into the box on change. Override the block in your own form theme to restyle it. With `form_row()`,
+the `crudit_telephone_row` block renders a regular `<label>` pointing to the number input, instead of the
+`<fieldset>`/`<legend>` Bootstrap uses for compound fields.
 
 Display stored numbers with the `telephone` Twig filter (`+41 79 123 45 67`). Formats exist for a set of calling codes
 (`CruditTelephoneFilterExtension::FORMATS`: `+1`, `+32`, `+33`, `+34`, `+41`, `+49`, French overseas, Maghreb…); other
