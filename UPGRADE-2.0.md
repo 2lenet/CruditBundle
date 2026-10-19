@@ -62,9 +62,10 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
   only copies the icons displayed while developing, so an icon never displayed would be missing in production.
   The icons the project builds in PHP or stores in the database need a finder of the project
   (`Symfony\UX\Icons\IconFinderInterface`), see the [installation of CruditUiBundle](https://github.com/2lenet/CruditUiBundle/blob/main/docs/installation.md#icons).
-- **After changing the library** (`lle_crudit_ui.icons.library`), delete `assets/icons/fa7-solid/` and
-  `assets/icons/fa7-regular/` (Font Awesome) and run `bin/console ux:icons:lock` again: the command deletes nothing,
-  and the icons of the former library would stay in the repository.
+- **After changing the library** (`lle_crudit_ui.icons.library`), delete the folders of the Iconify prefixes of the
+  former library (`assets/icons/fa7-solid/` and `assets/icons/fa7-regular/` for Font Awesome, `assets/icons/lucide/`
+  for Lucide) and run `bin/console ux:icons:lock` again: the command deletes nothing, and the icons of the former
+  library would stay in the repository.
 - A project that keeps the Font Awesome classes stays on CruditBundle 1.x.
 
 ## 2. Layout
