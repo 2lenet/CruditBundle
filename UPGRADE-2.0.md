@@ -14,6 +14,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 ## Checklist
 
 1. [Install CruditUiBundle and Stimulus](#1-requirements-and-installation) *(lot 1.1)*
+   - [Convert the icons to Iconify names and run `ux:icons:lock`](#icons) *(lot 1.3)*
 2. [Change the layout you extend](#2-layout) *(lot 2.1)*
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
@@ -37,6 +38,35 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
   locale, see [§10](#10-languages-dates-and-numbers).
 - Works with **Webpack Encore** and **AssetMapper**. A project with a Vue front stays on Encore.
 - Remove `vendor/2lenet/crudit-bundle/assets/sb-admin/...` imports (SCSS and JS).
+
+### Icons
+
+*Lot 1.3. How a `CrudConfig` passes an icon (`Icon::new()`) is completed by the screen lots.*
+
+- **No more icon font**: once lot 2.1 is merged, CruditBundle no longer loads Font Awesome (the `sb-admin` assets that
+  load it go with the former layout; until then, the templates of `feature/redesign` still use Font Awesome classes).
+  The icons are SVG rendered by Symfony UX Icons (`symfony/ux-icons` **3.5 or later**, required by CruditUiBundle for
+  its finder), in the library chosen by the project (`lle_crudit_ui.icons.library`, Font Awesome 7 by default), see
+  the [installation](https://github.com/2lenet/CruditUiBundle/blob/main/docs/installation.md#icons) and the [configuration](https://github.com/2lenet/CruditUiBundle/blob/main/docs/configuration.md#icons) of
+  CruditUiBundle.
+- **No Font Awesome CSS classes are understood (4, 5 or 6)**: `fa fa-truck`, `fas fa-truck`, `far fa-clock`,
+  `fa-solid fa-truck` or `fab fa-github`. The icons of the project (actions, menu, tabs) become **Iconify names**:
+  `fas fa-truck` and `fa-solid fa-truck` give `fa7-solid:truck`, `far fa-clock` gives `fa7-regular:clock`, and the
+  brands (`fab fa-github`, menus and social links) give `fa7-brands:github`. Many names changed since Font Awesome 4
+  and 5 (`fa-trash-o` is `fa7-regular:trash-can`; `fa-edit` is `fa7-regular:pen-to-square` from Font Awesome 4, an
+  alias of the outlined `pencil-square-o`, and `fa7-solid:pen-to-square` from `fas fa-edit` in Font Awesome 5): check
+  each one on [ux.symfony.com/icons](https://ux.symfony.com/icons). Any icon set of Iconify can be used
+  (`lucide:truck`).
+- **Before committing**, run `bin/console ux:icons:lock` and commit `assets/icons/`: production reads the icons from
+  it, without calling Iconify. Remove `auto_lock`, which the recipe of Symfony UX Icons enables in development: it
+  only copies the icons displayed while developing, so an icon never displayed would be missing in production.
+  The icons the project builds in PHP or stores in the database need a finder of the project
+  (`Symfony\UX\Icons\IconFinderInterface`), see the [installation of CruditUiBundle](https://github.com/2lenet/CruditUiBundle/blob/main/docs/installation.md#icons).
+- **After changing the library** (`lle_crudit_ui.icons.library`), delete the folders of the Iconify prefixes of the
+  former library (`assets/icons/fa7-solid/` and `assets/icons/fa7-regular/` for Font Awesome, `assets/icons/lucide/`
+  for Lucide) and run `bin/console ux:icons:lock` again: the command deletes nothing, and the icons of the former
+  library would stay in the repository.
+- A project that keeps the Font Awesome classes stays on CruditBundle 1.x.
 
 ## 2. Layout
 
@@ -169,7 +199,7 @@ Use the action options instead *(to be filled)*.
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `add_exit_impersonation_button`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
-| `lle_crudit_ui.icons.load_fontawesome`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon |
+| `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 
 ## 7. Template overrides
 
