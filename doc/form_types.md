@@ -66,14 +66,15 @@ elsewhere). A leading trunk `0` is removed (`06 12 34 56 78` → `+33612345678`)
 Switching an existing string field to `TelephoneType` breaks nothing: a stored value that is not E.164 (free text such
 as `06 12 34 56 78`, or an unknown calling code) is never guessed from `default_country`:
 
-- it is displayed as is in the number input, with no calling code selected (`+ ?` in the box);
+- it is displayed as is in the number input, with no calling code selected (`+ ?` in the box, an option offered
+  in the select for such values only);
 - submitted untouched, it is saved back unchanged, so the rest of the form can be saved;
 - once the user picks a calling code (or types the number with `+`/`00`), it is validated and converted to E.164.
   Changing the number without choosing a calling code raises `crudit.telephone.calling_code_required`.
 
 Legacy values thus stay as they are until someone edits them. If you need E.164 everywhere (SMS, CRM sync…), migrate
-the existing data when switching the field, e.g. with `TelephoneTransformer::reverseTransform()` and the country known
-for each record.
+the existing data when switching the field: `TelephoneTransformer::isLegacy()` spots the values to convert, and
+`reverseTransform()` on a new transformer instance converts them with the country known for each record.
 
 The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): a compact box showing the calling
 code (`+41`, from the `calling_code` view variable) on the left, with the native country select laid transparent over

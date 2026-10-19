@@ -80,6 +80,17 @@ class TelephoneTypeTest extends TypeTestCase
         self::assertSame('06 12 34 56 78', $form->getData());
     }
 
+    public function testUnknownCallingCodePlaceholderOnlyForLegacyValue(): void
+    {
+        foreach ([null, '+41791234567'] as $data) {
+            $view = $this->factory->create(TelephoneType::class, $data, ['required' => false])->createView();
+            self::assertNull($view['country']->vars['placeholder']);
+        }
+
+        $view = $this->factory->create(TelephoneType::class, '06 12 34 56 78')->createView();
+        self::assertSame(TelephoneType::UNKNOWN_CALLING_CODE, $view['country']->vars['placeholder']);
+    }
+
     public function testUnknownPreferredCountryIsRejected(): void
     {
         $this->expectException(InvalidOptionsException::class);

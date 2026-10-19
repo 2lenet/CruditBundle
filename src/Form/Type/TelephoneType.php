@@ -10,6 +10,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Intl\Countries;
@@ -29,23 +31,7 @@ class TelephoneType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('country', ChoiceType::class, [
-                'label' => false,
-                'choices' => $this->getCountryChoices(),
-                'choice_translation_domain' => false,
-                'preferred_choices' => $options['preferred_countries'],
-                'duplicate_preferred_choices' => false,
-                'choice_attr' => fn (string $country): array => ['data-code' => '+' . CallingCodes::getCode($country)],
-                // Empty for a legacy value: the user has to pick the calling code, see TelephoneTransformer
-                'required' => false,
-                'placeholder' => self::UNKNOWN_CALLING_CODE,
-                'translation_domain' => false,
-                // Native select laid transparent over the "+33" box of the widget, TomSelect would replace it
-                'disable_tom_select' => true,
-                'attr' => [
-                    'class' => 'crudit-telephone-country',
-                ],
-            ])
+            ->add('country', ChoiceType::class, $this->getCountryOptions($options, false))
             ->add('number', TelType::class, [
                 'label' => false,
                 'required' => $options['required'],
@@ -55,7 +41,13 @@ class TelephoneType extends AbstractType
                     'inputmode' => 'tel',
                 ],
             ])
-            ->addViewTransformer(new TelephoneTransformer($options['default_country']));
+            ->addViewTransformer(new TelephoneTransformer($options['default_country']))
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options): void {
+                $data = $event->getData();
+                if (is_string($data) && $data !== '' && TelephoneTransformer::isLegacy($data)) {
+                    $event->getForm()->add('country', ChoiceType::class, $this->getCountryOptions($options, true));
+                }
+            });
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
@@ -87,6 +79,33 @@ class TelephoneType extends AbstractType
     public function getBlockPrefix(): string
     {
         return 'crudit_telephone';
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     *
+     * @return array<string, mixed>
+     */
+    private function getCountryOptions(array $options, bool $legacy): array
+    {
+        return [
+            'label' => false,
+            'choices' => $this->getCountryChoices(),
+            'choice_translation_domain' => false,
+            'preferred_choices' => $options['preferred_countries'],
+            'duplicate_preferred_choices' => false,
+            'choice_attr' => fn (string $country): array => ['data-code' => '+' . CallingCodes::getCode($country)],
+            'required' => false,
+            // "+ ?" only for a legacy value, which has no calling code: offered elsewhere,
+            // picking it would just lead to calling_code_required
+            'placeholder' => $legacy ? self::UNKNOWN_CALLING_CODE : false,
+            'translation_domain' => false,
+            // Native select laid transparent over the "+33" box of the widget, TomSelect would replace it
+            'disable_tom_select' => true,
+            'attr' => [
+                'class' => 'crudit-telephone-country',
+            ],
+        ];
     }
 
     /**

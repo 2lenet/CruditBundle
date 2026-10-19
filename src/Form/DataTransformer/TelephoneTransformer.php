@@ -16,11 +16,22 @@ use Symfony\Component\Intl\Countries;
  */
 class TelephoneTransformer implements DataTransformerInterface
 {
-    /** Value of the form that is not E.164 (legacy free text), see reverseTransform() */
+    /**
+     * Legacy value set by transform(), read by reverseTransform(): relies on Symfony calling transform() first on
+     * the same instance, which holds as TelephoneType builds one instance per field. Do not share an instance.
+     */
     private ?string $legacyValue = null;
 
     public function __construct(private readonly string $defaultCountry)
     {
+    }
+
+    /**
+     * Not E.164 (free text such as "06 12 34 56 78", or an unknown calling code): its country can't be known.
+     */
+    public static function isLegacy(string $value): bool
+    {
+        return !str_starts_with($value, '+') || CallingCodes::split(substr($value, 1)) === null;
     }
 
     public function transform(mixed $value): array
@@ -30,18 +41,16 @@ class TelephoneTransformer implements DataTransformerInterface
             return ['country' => $this->defaultCountry, 'number' => null];
         }
 
-        $split = str_starts_with($value, '+')
-            ? CallingCodes::split(substr($value, 1), $this->defaultCountry)
-            : null;
-
-        // Legacy free text ("06 12 34 56 78"): its calling code is unknown, so none is selected rather than guessed
-        if ($split === null) {
+        // No calling code is selected rather than guessed from the default country
+        if (self::isLegacy($value)) {
             $this->legacyValue = $value;
 
             return ['country' => null, 'number' => $value];
         }
 
-        return ['country' => $split[0], 'number' => $split[1]];
+        $split = CallingCodes::split(substr($value, 1), $this->defaultCountry);
+
+        return ['country' => $split[0] ?? null, 'number' => $split[1] ?? $value];
     }
 
     public function reverseTransform(mixed $value): ?string
