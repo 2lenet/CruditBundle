@@ -11,14 +11,47 @@ use Lle\CruditBundle\Contracts\ExporterInterface;
 use Lle\CruditBundle\Contracts\FieldInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
+use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
-class LleCruditExtension extends Extension implements ExtensionInterface
+class LleCruditExtension extends Extension implements ExtensionInterface, PrependExtensionInterface
 {
+    /**
+     * Name of the Symfony UX package of the bundle (assets/package.json): the Stimulus controllers and crudit.css.
+     */
+    public const string ASSETS_PACKAGE = '@2lenet/crudit-bundle';
+
+    /**
+     * Under AssetMapper, assets/dist of the bundle is served as @2lenet/crudit-bundle (crudit.css, the controllers).
+     * Under Webpack Encore, the project declares the package in its package.json (UPGRADE-2.0.md, §1).
+     */
+    public function prepend(ContainerBuilder $container): void
+    {
+        if (!interface_exists(AssetMapperInterface::class)) {
+            return;
+        }
+
+        /** @var array<string, array{path: string}> $bundlesMetadata */
+        $bundlesMetadata = $container->getParameter('kernel.bundles_metadata');
+        if (!isset($bundlesMetadata['FrameworkBundle'])
+            || !is_file($bundlesMetadata['FrameworkBundle']['path'] . '/Resources/config/asset_mapper.php')) {
+            return;
+        }
+
+        $container->prependExtensionConfig('framework', [
+            'asset_mapper' => [
+                'paths' => [
+                    \dirname(__DIR__, 2) . '/assets/dist' => self::ASSETS_PACKAGE,
+                ],
+            ],
+        ]);
+    }
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));

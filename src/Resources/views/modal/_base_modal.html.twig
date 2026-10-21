@@ -1,20 +1,28 @@
-<div class="modal fade" id="{{ id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            {% block content %}
-                <div class="modal-header">
+{#
+ # Base of the modals of Crudit and of the projects (55 templates extend it): a native <dialog>, with the controller
+ # dialog of CruditUiBundle and the markup of its component Dialog, so that it looks the same. Path, variable `id`
+ # and blocks kept from 1.x: content (all the inside), header (the title, which names the dialog), body, footer (the
+ # buttons). Opened by a button of the page, commandfor="<id>" command="show-modal"; closed by the close button,
+ # Escape, the backdrop or a button commandfor="<id>" command="close" (UPGRADE-2.0.md, §7).
+ #}
+<dialog id="{{ id }}" class="crudit-ui-dialog crudit-ui-dialog--dialog" aria-labelledby="{{ id }}-title" data-controller="2lenet--crudit-ui-bundle--dialog">
+    <div class="crudit-ui-dialog__inner">
+        {% block content %}
+            <div class="crudit-ui-dialog__header">
+                <div id="{{ id }}-title" class="crudit-ui-dialog__title">
                     {% block header %}
                     {% endblock %}
                 </div>
-                <div class="modal-body">
-                    {% block body %}
-                    {% endblock %}
-                </div>
-                <div class="modal-footer">
-                    {% block footer %}
-                    {% endblock %}
-                </div>
-            {% endblock %}
-        </div>
+                <twig:LleCruditUi:IconButton icon="close" label="{{ 'crudit_ui.action.close'|trans(domain: 'LleCruditUiBundle') }}" class="crudit-ui-dialog__close" data-action="2lenet--crudit-ui-bundle--dialog#dismiss"/>
+            </div>
+            <div class="crudit-ui-dialog__body">
+                {% block body %}
+                {% endblock %}
+            </div>
+            <div class="crudit-ui-dialog__footer">
+                {% block footer %}
+                {% endblock %}
+            </div>
+        {% endblock %}
     </div>
-</div>
+</dialog>

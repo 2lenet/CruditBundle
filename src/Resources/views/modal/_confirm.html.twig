@@ -1,18 +1,14 @@
-{% extends '@LleCrudit/modal/_base_modal.html.twig' %}
-
-{% block content %}
-    <div class="modal-body">
-        <p id="modal-confirm-text">
-            {{ 'crudit.modal.confirm.message'|trans({}, 'LleCruditBundle') }}
-        </p>
-    </div>
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            {{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}
-        </button>
-        <a id="modal-confirm-link" href="#" type="button" class="btn btn-danger crudit-action">
-            {{ 'crudit.modal.confirm.action'|trans({}, 'LleCruditBundle') }}
-        </a>
-    </div>
-{% endblock %}
+{#
+ # Confirmation of the actions (Action::setConfirmModal()), once in the layout (block modal_confirmation): a Dialog of
+ # CruditUiBundle with the controller confirm. The action gives its question (data-confirm-text, the title of the
+ # dialog, which names the element concerned) and its address (data-confirm-link, the link "Confirm"). Cancel has
+ # the focus: the least destructive choice.
+ #}
+{%- set id = id ?? 'crudit-confirm' -%}
+<twig:LleCruditUi:Dialog id="{{ id }}" role="alertdialog" title="{{ 'crudit.modal.confirm.message'|trans(domain: 'LleCruditBundle') }}"
+    data-controller="2lenet--crudit-bundle--confirm">
+    <twig:block name="footer">
+        <twig:LleCruditUi:Button commandfor="{{ id }}" command="close" autofocus>{{ 'crudit.modal.cancel'|trans(domain: 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+        <twig:LleCruditUi:Button variant="danger" href="#" class="crudit-action" data-2lenet--crudit-bundle--confirm-target="link">{{ 'crudit.modal.confirm.action'|trans(domain: 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+    </twig:block>
+</twig:LleCruditUi:Dialog>
