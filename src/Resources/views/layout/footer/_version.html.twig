@@ -1,4 +1,18 @@
-{# Version of the application, when the project gives app_version. Reworked in lot 2.1.c. #}
-{% if app_version is defined %}
-    <span class="crudit-footer__version">{{ 'crudit.footer.release'|trans(domain: 'LleCruditBundle') }} {{ app_version }}</span>
+{#
+ # Version of the application and its date (lle_crudit.layout.version and release_date; without version, the Twig
+ # global app_version of the project). Not shown when both are empty.
+ #}
+{% set layout = crudit_layout() %}
+{% set version = layout.version ?? app_version ?? null %}
+{% set date = layout.release_date %}
+{% if version or date %}
+    <p class="crudit-footer__version">
+        {%- if version -%}
+            {{ 'crudit.footer.release'|trans(domain: 'LleCruditBundle') }} {{ version }}
+        {%- endif -%}
+        {%- if version and date %} · {% endif -%}
+        {%- if date -%}
+            {{ 'crudit.footer.updated_on'|trans(domain: 'LleCruditBundle') }} <time datetime="{{ date|date('Y-m-d') }}">{{ date|ui_date('long') }}</time>
+        {%- endif -%}
+    </p>
 {% endif %}

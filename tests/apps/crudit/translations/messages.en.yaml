@@ -2,6 +2,7 @@ menu:
     home: "Home"
     operations: "Operations"
     clients: "Clients"
+    clients_to_call: "clients to call"
     interventions: "Interventions"
     billing: "Billing"
     invoices: "Invoices"
@@ -23,3 +24,10 @@ menu:
     suppliers: "Suppliers"
     vehicles: "Vehicles"
     agencies: "Agencies"
+    archives: "Archives"
+    secret: "Secret"
+    tools: "Tools"
+    exports: "Exports"
+footer:
+    accessibility: "Accessibility statement"
+    legal: "Legal notice"

@@ -17,6 +17,7 @@
     @include meta.load-css('components/skip-links');
     @include meta.load-css('components/header');
     @include meta.load-css('components/footer');
+    @include meta.load-css('components/brand');
     @include meta.load-css('components/sidebar');
     @include meta.load-css('components/nav');
 }

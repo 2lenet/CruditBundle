@@ -6,6 +6,8 @@
  #}
 {% set active = crudit_menu_active(element, app.request) %}
 {% set label = element.libelle|trans %}
+{# The tooltip of the rail shows the badges after the label #}
+{% set tooltip_text = ([label]|merge((element.badges ?? [])|map(badge => badge.libelle|trans)))|join(' · ') %}
 {# The id of the panel: from the id of the element, from its label when it has none #}
 {% set panel = 'crudit-nav-' ~ ((element.id ?? '')|lower|replace({' ': '-', '.': '-'}) ?: label|lower|replace({' ': '-', '.': '-'})) %}
 {% set button %}
@@ -20,15 +22,13 @@
 {% endset %}
 <li class="crudit-nav__item crudit-nav__item--parent {{ element.cssClass|default('') }}" data-menu-kind="item" data-menu-label="{{ label }}"
     data-controller="2lenet--crudit-ui-bundle--disclosure">
-    <twig:LleCruditUi:Tooltip :text="label" placement="beside">{{ button }}</twig:LleCruditUi:Tooltip>
+    <twig:LleCruditUi:Tooltip :text="tooltip_text" placement="beside">{{ button }}</twig:LleCruditUi:Tooltip>
     <div id="{{ panel }}" class="crudit-nav__submenu crudit-ui-disclosure__panel{{ active ? '' : ' crudit-ui-disclosure__panel--closed' }}"
          data-2lenet--crudit-ui-bundle--disclosure-target="panel">
         <p class="crudit-nav__flyout-title" aria-hidden="true">{{ label }}</p>
         <ul class="crudit-nav__sublist">
             {% for child in element.children %}
-                {% if is_granted(child.role) %}
-                    {% include '@LleCrudit/layout/sidebar/_item.html.twig' with {'element': child, 'tooltip': false} %}
-                {% endif %}
+                {% include '@LleCrudit/layout/sidebar/_item.html.twig' with {'element': child, 'tooltip': false} %}
             {% endfor %}
         </ul>
     </div>

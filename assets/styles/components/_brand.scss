@@ -1,0 +1,79 @@
+// Logo of the application, link to the home page (layout/sidebar/_logo, configuration lle_crudit.layout): the image
+// of the project on the width of the menu, 40 px high at most, one per theme, or the name of the application; the
+// mark (logo_small, or the initial of the name) in the rail (components/sidebar). Same as `.brand` of the crudit-v2
+// mockup (src/styles/components/_brand.scss).
+.crudit-brand {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    border-radius: var(--radius-md);
+    color: var(--c-text);
+    text-decoration: none;
+
+    &__full {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+    }
+
+    // A logo is not mirrored in right to left
+    &__logo {
+        display: block;
+        max-width: 100%;
+        max-height: 2.5rem;
+        direction: ltr;
+    }
+
+    &__logo--dark {
+        display: none;
+    }
+
+    &__name {
+        font-weight: var(--font-weight-bold);
+        overflow-wrap: anywhere;
+    }
+
+    &__mark {
+        display: none;
+        width: 2.5rem;
+        height: 2.5rem;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        background-color: var(--c-primary);
+        color: var(--c-on-primary);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
+    }
+
+    // logo_small: the image of the project, not the initial
+    img.crudit-brand__mark {
+        object-fit: contain;
+        background-color: transparent;
+    }
+}
+
+// Dark theme: chosen by the user (data-theme) or by the system, as the tokens of CruditUiBundle. In CSS, not on the
+// server: with the theme of the system, the server does not know it, and the choice of the user does not reload the
+// page. Printed in the light theme (screen only).
+@mixin dark-logo {
+    .crudit-brand__full--themed .crudit-brand__logo--light {
+        display: none;
+    }
+
+    .crudit-brand__full--themed .crudit-brand__logo--dark {
+        display: block;
+    }
+}
+
+:root[data-theme='dark'] {
+    @include dark-logo;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        @include dark-logo;
+    }
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Crudit\CrudMenu;
 
+use App\Security\AllowAllVoter;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Lle\CruditBundle\Dto\Badge;
 use Lle\CruditBundle\Dto\Icon;
@@ -16,14 +17,16 @@ use Lle\CruditBundle\Dto\Layout\TitleElement;
 use Lle\CruditBundle\Dto\Path;
 
 /**
- * One of each element of the menu: link (with icon, badge, without icon), sub-menu, category, title, header,
- * separator, external link. The routes of the pages have no underscore (see PageController).
+ * One of each element of the menu: link (with icon, badge, without icon), sub-menu, category, title (alone and with
+ * children), header, separator, external link. Icons in Iconify names and one logical name (user). The elements that
+ * MenuBuilder removes: a link with a role nobody has (AllowAllVoter), the category it leaves alone, a separator at the
+ * start and a doubled one. The routes of the pages have no underscore (see PageController).
  */
 class AppMenuProvider implements MenuProviderInterface
 {
     public function getMenuEntry(): array
     {
-        $billing = LinkElement::new('menu.billing', null, Icon::new('euro-sign'));
+        $billing = LinkElement::new('menu.billing', null, Icon::new('fa7-solid:euro-sign'));
         $billing->add(LinkElement::new('menu.invoices', Path::new('invoices')));
         $billing->add(LinkElement::new('menu.credits', Path::new('credits')));
         $reminders = LinkElement::new('menu.reminders', Path::new('reminders'));
@@ -37,20 +40,29 @@ class AppMenuProvider implements MenuProviderInterface
         // A link of a sub-menu that opens a new tab (a sub-menu only holds LinkElement)
         $stock->add(LinkElement::new('menu.map', Path::new('items'))->setTarget('_blank'));
 
-        $clients = LinkElement::new('menu.clients', Path::new('app_client_index'), Icon::new('users'));
-        $clients->addBadge(Badge::new('12'));
+        $clients = LinkElement::new('menu.clients', Path::new('app_client_index'), Icon::new('fa7-solid:users'));
+        $clients->addBadge(Badge::new('12', 'danger', 'menu.clients_to_call'));
+
+        $tools = TitleElement::new('menu.tools');
+        $tools->addChild(LinkElement::new('menu.exports', Path::new('exports'), Icon::new('fa7-solid:file-export')));
+        $tools->addChild(LinkElement::new('menu.secret', Path::new('secret'), null, AllowAllVoter::NOBODY));
 
         return [
-            LinkElement::new('menu.home', Path::new('home'), Icon::new('home')),
+            HorizontalSeparatorElement::new(),
+            LinkElement::new('menu.home', Path::new('home'), Icon::new('fa7-solid:house')),
             CategoryElement::new('menu.operations'),
             $clients,
-            LinkElement::new('menu.interventions', Path::new('interventions'), Icon::new('wrench')),
+            LinkElement::new('menu.interventions', Path::new('interventions'), Icon::new('fa7-solid:wrench')),
             $billing,
             $stock,
             HorizontalSeparatorElement::new(),
+            CategoryElement::new('menu.archives'),
+            LinkElement::new('menu.secret', Path::new('secret'), null, AllowAllVoter::NOBODY),
+            HorizontalSeparatorElement::new(),
             TitleElement::new('menu.administration'),
             LinkElement::new('menu.users', Path::new('users'), Icon::new('user')),
-            LinkElement::new('menu.settings', Path::new('settings'), Icon::new('cog')),
+            LinkElement::new('menu.settings', Path::new('settings'), Icon::new('fa7-solid:gear')),
+            $tools,
             HeaderElement::new('menu.help'),
             ExternalLinkElement::new('menu.documentation', 'https://example.org/doc'),
             LinkElement::new('menu.reports', Path::new('reports')),

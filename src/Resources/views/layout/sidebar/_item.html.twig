@@ -6,6 +6,8 @@
  # announces it and has a safe `rel`.
  #}
 {% set label = element.libelle|trans %}
+{# The tooltip of the rail shows the badges after the label #}
+{% set tooltip_text = ([label]|merge((element.badges ?? [])|map(badge => badge.libelle|trans)))|join(' · ') %}
 {% set tooltip = tooltip is defined ? tooltip : true %}
 {% set route = element.path ?? null %}
 {% set url = route ? path(route.route, route.params) : (element.url ?? null) %}
@@ -24,7 +26,7 @@
 {% endset %}
 <li class="crudit-nav__item {{ element.cssClass|default('') }}" data-menu-kind="item" data-menu-label="{{ label }}">
     {% if tooltip %}
-        <twig:LleCruditUi:Tooltip :text="label" placement="beside">{{ link }}</twig:LleCruditUi:Tooltip>
+        <twig:LleCruditUi:Tooltip :text="tooltip_text" placement="beside">{{ link }}</twig:LleCruditUi:Tooltip>
     {% else %}
         {{ link }}
     {% endif %}

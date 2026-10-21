@@ -35,8 +35,13 @@
         transform: scaleX(-1);
     }
 
-    .crudit-sidebar__brand-text {
-        @include sr-only;
+    // The mark instead of the logo (components/brand)
+    .crudit-brand__full {
+        display: none;
+    }
+
+    .crudit-brand__mark {
+        display: flex;
     }
 
     .crudit-sidebar__tooltip > .crudit-ui-tooltip {
@@ -108,25 +113,6 @@
         justify-content: space-between;
         gap: var(--space-2);
         padding: var(--space-2) var(--space-3);
-
-        // The logo of the project: the width of the menu, never taller than the bar (lot 2.1.c).
-        img {
-            max-width: 100%;
-            max-height: 2.5rem;
-        }
-    }
-
-    &__brand {
-        display: flex;
-        min-width: 0;
-        align-items: center;
-        gap: var(--space-2);
-        color: var(--c-text);
-        text-decoration: none;
-    }
-
-    &__brand-text {
-        font-weight: var(--font-weight-bold);
     }
 
     &__close {

@@ -50,9 +50,14 @@ services:
         arguments:
             - !tagged_iterator crudit.menu
 
+    Lle\CruditBundle\Builder\MenuBuilder: ~
+
+    # Tagged ux_icons.finder by autoconfiguration (ux:icons:lock)
+    Lle\CruditBundle\Icon\MenuIconFinder: ~
+
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
-            - '@Lle\CruditBundle\Registry\MenuRegistry'
+            - '@Lle\CruditBundle\Builder\MenuBuilder'
             - '@router'
             - '@doctrine.orm.entity_manager'
             - '@parameter_bag'
@@ -61,6 +66,10 @@ services:
 
     Lle\CruditBundle\Twig\SidebarExtension:
         arguments: ['@request_stack']
+        tags: [twig.extension]
+
+    Lle\CruditBundle\Twig\LayoutExtension:
+        arguments: ['%lle_crudit.layout%']
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:

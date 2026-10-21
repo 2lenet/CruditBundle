@@ -18,7 +18,7 @@ const ok = (name) => { passed++; console.log('ok  ', name); };
 async function open(width, path = '/', {cookie = null, dark = false, rtl = false} = {}) {
     const page = await browser.newPage();
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
-    page.on('console', (m) => m.type() === 'error' && !/favicon|logo\.png/.test(m.text() + m.location().url) && errors.push(`console: ${m.text()}`));
+    page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});
     await page.emulateMediaFeatures([{name: 'prefers-color-scheme', value: dark ? 'dark' : 'light'}]);
     await page.deleteCookie({name: 'crudit_sidebar', url: base});
@@ -36,9 +36,9 @@ const visible = (page, sel) => page.$eval(sel, (e) => { const s = getComputedSty
 const attr = (page, sel, a) => page.$eval(sel, (e, a) => e.getAttribute(a), a);
 const active = (page) => page.evaluate(() => { const a = document.activeElement; return a ? (a.id || a.className || a.tagName) : null; });
 const inAside = (page) => page.evaluate(() => document.querySelector('#crudit-sidebar').contains(document.activeElement));
-// What the lots have not reworked yet is not checked: the header (lot 2.2.a), the footer (lot 2.1.c). Remove each one
-// from this list when its lot is done.
-const EXCLUDED = [['.crudit-shell__header'], ['.crudit-shell__body > footer']];
+// What the lots have not reworked yet is not checked: the header (lot 2.2.a). Remove each one from this list when its
+// lot is done.
+const EXCLUDED = [['.crudit-shell__header']];
 
 async function axe(page, label) {
     await new Promise((r) => setTimeout(r, 500));
@@ -60,6 +60,8 @@ assert.ok(!(await visible(page, '.crudit-header__burger')), 'no burger on deskto
 assert.ok(!(await visible(page, '.crudit-sidebar__close')), 'no close on desktop');
 assert.equal(await page.$eval('[data-2lenet--crudit-bundle--sidebar-target=toggleLabel]', (e) => e.textContent), 'Collapse the menu');
 assert.equal(await page.$eval('[aria-current=page] .crudit-nav__label', (e) => e.textContent.trim()), 'Home');
+assert.ok(await visible(page, '[data-menu-label=Clients] .crudit-nav__badge') && !(await visible(page, '[data-menu-label=Clients] .crudit-nav__dot')), 'badge shown, no dot');
+assert.ok(await visible(page, '[data-menu-label=Clients] .crudit-nav__icon svg'), 'icon of the menu (SVG)');
 ok('full menu at 1440');
 await shot(page, 'desktop-full');
 await axe(page, 'desktop full');
@@ -117,6 +119,13 @@ assert.ok((await box(page, '.crudit-nav__label')).w <= 1.5, 'labels hidden (sr-o
 assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar').value, 'collapsed');
 assert.equal(await attr(page, '[data-menu-label=Billing] button', 'aria-expanded'), 'false', 'sub-menus closed in rail');
 ok('toggle to rail, cookie written');
+// badge: a dot of its tone instead, the badge stays for assistive technologies
+assert.ok(await visible(page, '[data-menu-label=Clients] .crudit-nav__dot'), 'dot of the badge in the rail');
+assert.ok((await box(page, '[data-menu-label=Clients] .crudit-nav__badge')).w <= 1.5, 'badge sr-only in the rail');
+ok('badge as a dot in the rail');
+assert.ok(await visible(page, '.crudit-brand__mark') && !(await visible(page, '.crudit-brand__full')), 'mark instead of the logo in the rail');
+assert.equal(await page.$eval('.crudit-brand__mark', (e) => e.textContent.trim()), 'G');
+ok('logo: the initial of the application in the rail');
 await shot(page, 'desktop-rail');
 await axe(page, 'desktop rail');
 
@@ -124,7 +133,7 @@ await axe(page, 'desktop rail');
 await page.hover('[data-menu-label=Clients] a');
 await new Promise((r) => setTimeout(r, 300));
 const tip = await page.$eval('[data-menu-label=Clients] .crudit-ui-tooltip', (e) => { const s = getComputedStyle(e); const r = e.getBoundingClientRect(); return {vis: s.visibility, op: s.opacity, x: r.x, text: e.textContent}; });
-assert.equal(tip.vis, 'visible'); assert.equal(tip.text, 'Clients'); assert.ok(tip.x >= 64, `tooltip beside the rail (${tip.x})`);
+assert.equal(tip.vis, 'visible'); assert.equal(tip.text, 'Clients · 12'); assert.ok(tip.x >= 64, `tooltip beside the rail (${tip.x})`);
 ok('tooltip beside the rail on hover');
 await shot(page, 'desktop-rail-tooltip');
 await page.mouse.move(700, 400);
@@ -279,6 +288,29 @@ await page.close();
 page = await open(1440, '/page/invoices', {dark: true});
 await shot(page, 'desktop-dark');
 await axe(page, 'desktop dark');
+
+// logo per theme, in CSS: the theme of the system, then the choice of the user (data-theme) over it
+const logo = async (p) => ({light: await visible(p, '.crudit-brand__logo--light'), dark: await visible(p, '.crudit-brand__logo--dark')});
+assert.deepEqual(await logo(page), {light: false, dark: true}, 'dark logo with the dark theme of the system');
+await page.evaluate(() => { document.documentElement.dataset.theme = 'light'; });
+assert.deepEqual(await logo(page), {light: true, dark: false}, 'light logo chosen by the user over the system');
+page = await open(1440, '/page/invoices');
+assert.deepEqual(await logo(page), {light: true, dark: false}, 'light logo with the light theme of the system');
+await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+assert.deepEqual(await logo(page), {light: false, dark: true}, 'dark logo chosen by the user');
+ok('logo per theme: system and choice of the user');
+
+// footer: links and version, in a column on a phone, without horizontal scroll
+page = await open(360, '/page/invoices');
+assert.ok(await visible(page, '.crudit-footer__links') && await visible(page, '.crudit-footer__version'));
+const links = await box(page, '.crudit-footer__nav');
+const version = await box(page, '.crudit-footer__version');
+assert.ok(version.y >= links.b, 'version under the links on a phone');
+assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'no horizontal scroll');
+await axe(page, 'phone footer');
+page = await open(1440, '/page/invoices');
+assert.ok(Math.abs((await box(page, '.crudit-footer__nav')).y - (await box(page, '.crudit-footer__version')).y) < 8, 'links and version on one line on desktop');
+ok('footer: column on a phone, one line on desktop');
 await page.close();
 page = await open(1440, '/page/invoices', {cookie: 'collapsed', rtl: true});
 await new Promise((r) => setTimeout(r, 300));

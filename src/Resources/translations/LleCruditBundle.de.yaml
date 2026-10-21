@@ -22,9 +22,12 @@ crudit:
         expand_menu: "Menü ausklappen"
         contains_current_page: "(enthält die aktuelle Seite)"
         new_tab: "(neuer Tab)"
+        home: "%app%, Startseite"
 
     footer:
         release: "Version"
+        updated_on: "aktualisiert am"
+        links: "Rechtliche Hinweise und Hilfe"
 
     pagination:
         first: "Erste"

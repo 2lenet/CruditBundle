@@ -1,17 +1,22 @@
 {#
- # Content of the link of a menu item (icon, label, badges). The icon is replaced by the first letter of the label when
- # the item has none: the collapsed menu (rail) shows only that. Lot 2.1.b; lot 2.1.a renders the icons and the badges.
+ # Content of the link of a menu item (icon, label, badges). The icon is an Iconify name or a logical name of
+ # CruditUiBundle (ui_icon); without one, or when it cannot be rendered, the first letter of the label stands for it:
+ # the collapsed menu (rail) shows only that. A badge is the Badge component of CruditUiBundle, with its text for
+ # assistive technologies; in the rail it is replaced by a dot of its tone, and it is read in the label.
  #}
+{% set svg = element.icon ? ui_icon(element.icon.icon) : '' %}
 <span class="crudit-nav__icon" aria-hidden="true">
-    {%- if element.icon and element.icon.img -%}
-        <img src="{{ element.icon.icon }}" alt="">
-    {%- elseif element.icon -%}
-        <i class="{{ element.icon.cssClass }}"></i>
+    {%- if svg -%}
+        {# the SVG of ui_icon (safe), escaped once put in a variable #}
+        {{ svg|raw }}
     {%- else -%}
         {{ label|first|upper }}
     {%- endif -%}
 </span>
 <span class="crudit-nav__label">{{ label }}</span>
 {% for badge in element.badges ?? [] %}
-    <span class="crudit-nav__badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
+    {% if loop.first %}<span class="crudit-nav__dot crudit-ui-tone--{{ badge.tone }}" aria-hidden="true"></span>{% endif %}
+    <twig:LleCruditUi:Badge class="crudit-nav__badge" :tone="badge.tone" :label="badge.label ? badge.label|trans : null">
+        {{- badge.libelle|trans -}}
+    </twig:LleCruditUi:Badge>
 {% endfor %}

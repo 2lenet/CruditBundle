@@ -20,8 +20,8 @@
     {% block autorefresh %}{% endblock %}
     <title>{% block page_title %}{{ app_name ?? 'Crudit' }}{% endblock %}</title>
     {% block favicon %}
-        <link rel="icon" href="/img/logo.png">
-        <link rel="apple-touch-icon" href="/img/logo.png">
+        {% set favicon = crudit_layout().favicon %}
+        {% if favicon %}<link rel="icon" href="{{ asset(favicon) }}">{% endif %}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
     {% block head_stylesheets %}{% endblock %}
@@ -44,7 +44,7 @@
              data-menu-label="{{ 'crudit.layout.main_menu'|trans(domain: 'LleCruditBundle') }}">
             <div class="crudit-sidebar__header">
                 {% block brand %}
-                    <a class="crudit-sidebar__brand" href="/">
+                    <a class="crudit-brand crudit-sidebar__brand" href="/">
                         {% block logo %}
                             {% include '@LleCrudit/layout/sidebar/_logo.html.twig' %}
                         {% endblock %}
@@ -93,6 +93,7 @@
 
             {% block footer %}
                 <footer class="crudit-footer">
+                    {% include '@LleCrudit/layout/footer/_links.html.twig' %}
                     {% include '@LleCrudit/layout/footer/_version.html.twig' %}
                 </footer>
             {% endblock %}

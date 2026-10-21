@@ -93,4 +93,17 @@ abstract class AbstractLayoutElement implements LayoutElementInterface
     {
         return $this->children;
     }
+
+    /**
+     * Copy of the element with other children (the menu shown to the user: MenuBuilder), the element is not changed.
+     *
+     * @param LayoutElementInterface[] $children
+     */
+    public function withChildren(array $children): static
+    {
+        $element = clone $this;
+        $element->children = $children;
+
+        return $element;
+    }
 }

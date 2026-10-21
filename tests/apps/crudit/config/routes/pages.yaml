@@ -54,3 +54,15 @@ agencies:
     path: /page/agencies
     controller: App\Controller\PageController::page
     defaults: {slug: agencies}
+exports:
+    path: /page/exports
+    controller: App\Controller\PageController::page
+    defaults: {slug: exports}
+secret:
+    path: /page/secret
+    controller: App\Controller\PageController::page
+    defaults: {slug: secret}
+accessibility:
+    path: /page/accessibility
+    controller: App\Controller\PageController::page
+    defaults: {slug: accessibility}
