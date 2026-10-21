@@ -4,7 +4,7 @@
     {% if data['value'] %}
         <span class="filter-state">
             <span class="badge">
-                {{ data.value | date("d/m/Y") ~ ' ' ~ data.time }}
+                {{ data.value|ui_date('short') ~ ' ' ~ data.time }}
             </span>
         </span>
     {% endif %}

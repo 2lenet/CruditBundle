@@ -32,7 +32,7 @@
                                     </div>
                                     <div class="col-xl-2">
                                     <span><i class="far fa-clock"></i>&nbsp;
-                                        {{ entry.log.loggedAt|date('d/m/Y H:i') }}
+                                        {{ entry.log.loggedAt|ui_datetime('short', 'short') }}
                                     </span>
                                     </div>
                                     <div class="col-lg-5">

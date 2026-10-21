@@ -41,6 +41,15 @@ crudit:
         validate: "Validate"
         profile: "Profile"
         exit_impersonation: "Exit impersonation"
+        edit: "Edit"
+        delete: "Delete"
+        show: "Show"
+        add: "Add"
+        export: "Export"
+        filter: "Filter"
+        search: "Search"
+        reset: "Reset"
+        close: "Close"
 
     message:
         success: "Success"
@@ -56,6 +65,9 @@ crudit:
             message: "Choose your export format"
             action: "Export"
             notConfigured: "Export is not configured"
+        transition:
+            message: "Do you really want to change the status of this item?"
+            action: "Validate"
 
     field:
         createdAt: "Created at"

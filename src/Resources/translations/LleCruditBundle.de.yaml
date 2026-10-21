@@ -41,6 +41,15 @@ crudit:
         batch: "Massenaktion wählen"
         profile: "Profil"
         exit_impersonation: "Die Imitation beenden"
+        edit: "Bearbeiten"
+        delete: "Löschen"
+        show: "Anzeigen"
+        add: "Hinzufügen"
+        export: "Exportieren"
+        filter: "Filtern"
+        search: "Suchen"
+        reset: "Zurücksetzen"
+        close: "Schließen"
 
     message:
         success: "Erfolg"
@@ -56,6 +65,9 @@ crudit:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"
             notConfigured: "Export ist nicht konfiguriert"
+        transition:
+            message: "Wollen Sie den Status dieses Elements wirklich ändern?"
+            action: "Validieren"
 
     field:
         createdAt: "Erstellt am"
