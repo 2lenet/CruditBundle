@@ -1,0 +1,11 @@
+{# The error sits on the compound field: forward its state to the "+33" box and the number input #}
+<div id="{{ id }}" class="input-group crudit-telephone" data-controller="2lenet--crudit-bundle--telephone">
+    {# Compact "+33" box: the native select lies transparent over it, keeping the full country list and keyboard #}
+    <div class="crudit-telephone-calling-code form-select{{ form.vars.valid ? '' : ' is-invalid' }}">
+        <span class="crudit-telephone-code" aria-hidden="true" data-2lenet--crudit-bundle--telephone-target="code">{{ calling_code }}</span>
+        {{ form_widget(form.country, {
+            attr: form.country.vars.attr|merge({'data-2lenet--crudit-bundle--telephone-target': 'country', 'data-action': 'change->2lenet--crudit-bundle--telephone#sync', 'aria-label': 'crudit.telephone.calling_code'|trans({}, 'LleCruditBundle')}),
+        }) }}
+    </div>
+    {{ form_widget(form.number, {valid: form.vars.valid}) }}
+</div>

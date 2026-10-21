@@ -38,6 +38,25 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
   locale, see [§10](#10-languages-dates-and-numbers).
 - Works with **Webpack Encore** and **AssetMapper**. A project with a Vue front stays on Encore.
 - Remove `vendor/2lenet/crudit-bundle/assets/sb-admin/...` imports (SCSS and JS).
+- **Crudit is a Symfony UX package too** (`@2lenet/crudit-bundle`, keyword `symfony-ux`): its Stimulus controllers
+  (`2lenet--crudit-bundle--confirm`, `2lenet--crudit-bundle--back-to-top`, more in the next lots) and `crudit.css`,
+  the styles of the layout and of the CRUD screens. *(lot 2.1.0)*
+  - **AssetMapper**: the bundle registers its `assets/dist` folder; Flex adds the controllers to
+    `assets/controllers.json`.
+  - **Webpack Encore**: add the package to your `package.json`, then `npm install`:
+
+    ```json
+    "@2lenet/crudit-bundle": "file:vendor/2lenet/crudit-bundle/assets"
+    ```
+
+    and enable its controllers in `assets/controllers.json` (Flex does it when it knows the package):
+
+    ```json
+    "@2lenet/crudit-bundle": {
+        "back-to-top": {"enabled": true, "fetch": "eager"},
+        "confirm": {"enabled": true, "fetch": "eager"}
+    }
+    ```
 
 ### Icons
 
@@ -83,7 +102,53 @@ The layout lost its `sb_admin` folder. In every template extending it:
 
 The blocks you most likely override keep their name and role: `stylesheets`, `javascripts`,
 `page_title`, `favicon`, `brand`, `header`, `header_right`, `header_nav`, `menu`, `body`, `content`,
-`footer`, `side_footer`, `main`.
+`footer`, `side_footer`, `main`. Also kept: `autorefresh`, `head_stylesheets`, `head_javascript`,
+`body_javascript`, `modal_confirmation`, `scroll_top`, `logo`, `footer_text`. *(lot 2.1.0)*
+
+Careful with `logo`, `side_footer`, `header_nav` and `header_right`: they are defined in the templates included by the
+layout (`layout/sb_admin/brand.html.twig`, `menu.html.twig`, `header.html.twig`), and Twig does not pass the blocks of
+a child template to an `include`. Overriding them from a template that extends the layout has no effect (as in 1.x):
+override the included template instead.
+
+**The layout loads neither CSS nor JavaScript any more** (`bundles/llecrudit/sbadmin/app.css` and `app.js` are
+gone): the blocks `stylesheets` and `javascripts` are empty. Load the CSS of CruditUiBundle, then the one of Crudit,
+then yours, and your Stimulus application:
+
+```twig
+{# AssetMapper #}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('@2lenet/crudit-ui-bundle/ui.css') }}">
+    <link rel="stylesheet" href="{{ asset('@2lenet/crudit-bundle/crudit.css') }}">
+{% endblock %}
+{% block javascripts %}{{ importmap('app') }}{% endblock %}
+```
+
+```js
+// Webpack Encore, in your entry point (assets/app.js)
+import '@2lenet/crudit-ui-bundle/dist/ui.css';
+import '@2lenet/crudit-bundle/dist/crudit.css';
+import './bootstrap.js';
+```
+
+`{{ parent() }}` in these blocks now adds nothing. The two scripts of FOSJsRouting are still in `<head>` *(to be
+reviewed)*.
+
+New markup, if you rewrite the block `body`: `<aside class="crudit-shell__sidebar">` (logo, then
+`<nav id="main-nav">` with the menu), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
+tabindex="-1">` and the footer. **Keep the ids `main` and `main-nav`**: the skip links go there. Without Bootstrap,
+the old markup of SB Admin (`#wrapper`, `#content-wrapper`, `container-fluid`) is not styled any more: the simplest
+is to stop overriding `body`, and to keep only the blocks inside it (`brand`, `menu`, `header`, `footer`, `content`).
+
+Out of the block `body`, so that a project that rewrites it keeps them: the skip links (block `skip_links`), the
+toasts (block `toasts`), the confirmation of the actions (block `modal_confirmation`) and the back to the top
+button (block `scroll_top`). **Remove them from your `body` or `main` block** if you copied them there:
+`{% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}` and
+`{% include '@LleCrudit/modal/_confirm.html.twig' with {id: 'modal-confirm'} %}` (the first one no longer exists, the
+second one would give two confirmation dialogs).
+
+`<html>` gets `lang`, `dir` (right to left) and `data-theme` (the theme chosen by the user, cookie
+`crudit_ui_theme`) from CruditUiBundle. The cookie `sidebarToggled` and the class `sidebar-toggled` of `<body>` are
+gone *(replacement: lot 2.1.b)*.
 
 | Before | After |
 |---|---|
@@ -92,9 +157,13 @@ The blocks you most likely override keep their name and role: `stylesheets`, `ja
 | `layout/sb_admin/elements/_user`, `_multisearch`, `_exit_impersonation` | `layout/_user_menu`, `_search`, `_exit_impersonation` |
 | `layout/sb_admin/elements/_v_separator` | removed |
 
-Removed `Dto/Layout` elements: `TemplateElement`, `SearchElement`, `UserElement`, `HorizontalSeparatorElement`, `VerticalSeparatorElement` (search is `Ctrl K`, the user menu is part of the header). Kept: `LinkElement`, `TitleElement`, `CategoryElement`, `HeaderElement`, `ExternalLinkElement`.
+Removed `Dto/Layout` elements: `TemplateElement`, `SearchElement`, `UserElement`, `VerticalSeparatorElement` (search is `Ctrl K`, the user menu is part of the header, the top bar has no separator). Kept: `LinkElement`, `TitleElement`, `CategoryElement`, `HeaderElement`, `ExternalLinkElement`, `HorizontalSeparatorElement` (a rule between two groups of the menu).
 
-| `layout/sb_admin/_flash.html.twig` | `layout/_toasts.html.twig` (flash messages are toasts) |
+**Flash messages are toasts** (`layout/_toasts.html.twig`, component `Toasts` of CruditUiBundle; removed:
+`layout/sb_admin/_flash.html.twig`, the element `#crudit-flash` and the class `crudit-flash`). Types: `success`,
+`info` / `notice`, `warning`, `danger` / `error`; an error stays until it is closed. The keys `crudit.*` are
+translated in the domain `LleCruditBundle`, the others in `messages`. **They are escaped**: a message with HTML
+shows its tags (before, a type containing `nt` was output raw). Write the message as text.
 
 If you overrode one of these files in `templates/bundles/LleCruditBundle/layout/sb_admin/`, rewrite it
 on the new one: their markup changed completely.
@@ -204,6 +273,27 @@ Use the action options instead *(to be filled)*.
 ## 7. Template overrides
 
 *Draft, completed lot by lot.*
+
+**Modals** (`modal/_base_modal.html.twig`): same path, same variable `id` and blocks `content`, `header`, `body`,
+`footer`, but a native `<dialog>` (controller `dialog` of CruditUiBundle) instead of a Bootstrap modal. *(lot 2.1.0)*
+
+- Open it with a button: `<button type="button" commandfor="<id>" command="show-modal">` instead of
+  `data-bs-toggle="modal" data-bs-target="#<id>"`; in JavaScript, `document.getElementById(id).showModal()` instead
+  of `bootstrap.Modal`.
+- Until lot 3.1, the triggers of Crudit (`<a data-bs-toggle="modal" data-bs-target="#<id>">`, `data-bs-dismiss="modal"`)
+  still work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as
+  long as the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
+- Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
+  header: remove your `btn-close`.
+- The block `header` is the title of the dialog, inside a `<h2>` that names it (`aria-labelledby`): put text only in it, no `<h5 class="modal-title">` (a heading in a heading).
+- `TelephoneType`: the behaviour is ported (controller `telephone`), not its style yet (`sb-admin/css/components/forms/_telephone.scss`, built on Bootstrap): until the forms are migrated, the calling code and the country select are side by side. *(to be done with the forms)*
+- `.modal-header`, `.modal-body`, `.modal-footer` are gone (`crudit-ui-dialog__…`).
+
+**Confirmation of the actions** (`modal/_confirm.html.twig`, block `modal_confirmation`): a `Dialog` with the
+controller `confirm`, id `crudit-confirm` (was `modal-confirm`; `#modal-confirm-text` and `#modal-confirm-link` are
+gone). The element that asks for it keeps `data-confirm-link` and `data-confirm-text` (the question, now the title of
+the dialog); `data-bs-toggle` and `data-bs-target` are no longer needed. A button can also open it with
+`commandfor="crudit-confirm" command="show-modal"`.
 
 These paths and their main blocks are **kept**, because many projects extend them:
 `brick/form/index.html.twig`, `modal/_base_modal.html.twig`, `field/*.html.twig`

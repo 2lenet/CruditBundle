@@ -5,3 +5,7 @@ vendor
 /docker-compose.yaml
 /Dockerfile
 /var/
+/assets/node_modules/
+/composer.lock
+/.phpunit.cache/
+.idea/

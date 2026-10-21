@@ -5,6 +5,13 @@ crudit:
     multisearch:
         placeholder: "Cerca ..."
 
+    layout:
+        main_menu: "Menu principale"
+        skip_to_content: "Vai al contenuto"
+        skip_to_menu: "Vai al menu"
+        back_to_top: "Torna all'inizio della pagina"
+        messages: "Messaggi"
+
     footer:
         copyrights: "Copyrights."
         release: "Versione"
@@ -143,3 +150,6 @@ crudit:
 
     gedmo_translatable:
         default_locale_helper: "È sempre richiesto un dato per la seguente lingua:"
+
+    telephone:
+        calling_code: "Prefisso internazionale"

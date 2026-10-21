@@ -20,6 +20,21 @@
     {% include '@LleCrudit/form/_cron_expression_widget.html.twig' %}
 {% endblock %}
 
+{% block crudit_telephone_widget %}
+    {% include '@LleCrudit/form/_telephone_widget.html.twig' %}
+{% endblock %}
+
+{% block crudit_telephone_row %}
+    {# A <label> pointing to the number, instead of the <fieldset>/<legend> Bootstrap renders for a compound field #}
+    {%- set row_attr = row_attr|merge({class: (row_attr.class|default('') ~ ' mb-3')|trim}) -%}
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        {{ form_label(form, null, {compound: false, id: form.number.vars.id}) }}
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+        {{ form_help(form) }}
+    </div>
+{% endblock %}
+
 {% block collection_widget %}
     <div>
         <div class="card">

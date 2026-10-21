@@ -77,7 +77,8 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 
         switch ($metadata->getTypeOfField($property)) {
             case Types::JSON:
-            case Types::SIMPLE_ARRAY:
+            // Types::SIMPLE_ARRAY is deprecated since DBAL 4.5, but still mapped by projects on older versions
+            case 'simple_array':
                 return new TypeGuess(
                     'Symfony\Component\Form\Extension\Core\Type\CollectionType',
                     ["label" => $label],

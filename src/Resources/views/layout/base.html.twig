@@ -1,0 +1,86 @@
+{#
+ # Layout of Crudit, extended by the base.html.twig of the projects. The skip links, the menu (<aside>), then the
+ # column of the content: the header (<header>), <main id="main">, the footer. The page gives the only <h1>.
+ #
+ # Language, direction and theme are on <html> (ui_lang(), ui_dir(), ui_theme() of CruditUiBundle): the page is shown
+ # right to left and in the theme chosen from the first paint, without an inline script.
+ #
+ # The layout loads neither CSS nor JavaScript: the project loads ui.css of CruditUiBundle, then crudit.css, and the
+ # Stimulus controllers in its blocks stylesheets and javascripts (UPGRADE-2.0.md, §2).
+ #
+ # Out of the block body, so that a project that rewrites it keeps them: the skip links, the toasts (flash messages),
+ # the confirmation of the actions and the back to the top button.
+ #}
+<!DOCTYPE html>
+{% set theme = ui_theme() %}
+<html lang="{{ ui_lang() }}" dir="{{ ui_dir() }}"{% if theme %} data-theme="{{ theme }}"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block autorefresh %}{% endblock %}
+    <title>{% block page_title %}{{ app_name ?? 'Crudit' }}{% endblock %}</title>
+    {% block favicon %}
+        <link rel="icon" href="/img/logo.png">
+        <link rel="apple-touch-icon" href="/img/logo.png">
+    {% endblock %}
+    {% block stylesheets %}{% endblock %}
+    {% block head_stylesheets %}{% endblock %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {callback: 'fos.Router.setData'}) }}"></script>
+    {% block javascripts %}{% endblock %}
+    {% block head_javascript %}{% endblock %}
+</head>
+
+<body data-controller="2lenet--crudit-bundle--modal-bridge">
+{% block skip_links %}
+    {% include '@LleCrudit/layout/_skip_links.html.twig' %}
+{% endblock %}
+
+{% block body %}
+    <div class="crudit-shell">
+        <aside class="crudit-shell__sidebar">
+            {% block brand %}
+                {% include '@LleCrudit/layout/sb_admin/brand.html.twig' %}
+            {% endblock %}
+            <nav id="main-nav" class="crudit-shell__nav" aria-label="{{ 'crudit.layout.main_menu'|trans(domain: 'LleCruditBundle') }}" tabindex="-1">
+                {% block menu %}
+                    {% include '@LleCrudit/layout/sb_admin/menu.html.twig' %}
+                {% endblock %}
+            </nav>
+        </aside>
+
+        <div class="crudit-shell__body">
+            <header class="crudit-shell__header">
+                {% block header %}
+                    {% include '@LleCrudit/layout/sb_admin/header.html.twig' %}
+                {% endblock %}
+            </header>
+
+            <main id="main" class="crudit-shell__main" tabindex="-1">
+                {% block main %}
+                    {% block content %}{% endblock %}
+                {% endblock main %}
+            </main>
+
+            {% block footer %}
+                {% include '@LleCrudit/layout/sb_admin/footer.html.twig' %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block toasts %}
+    {% include '@LleCrudit/layout/_toasts.html.twig' %}
+{% endblock %}
+
+{% block modal_confirmation %}
+    {% include '@LleCrudit/modal/_confirm.html.twig' with {id: 'crudit-confirm'} only %}
+{% endblock %}
+
+{% block scroll_top %}
+    {% include '@LleCrudit/layout/_back_to_top.html.twig' %}
+{% endblock %}
+
+{% block body_javascript %}{% endblock %}
+</body>
+</html>

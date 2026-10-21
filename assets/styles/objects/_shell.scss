@@ -1,0 +1,47 @@
+@use 'tools/responsive' as *;
+
+// Layout (layout/base.html.twig): the menu, then the column of the content (header, <main>, footer). From lg, the
+// menu is a column of the grid; below, it is above the content until the drawer of the menu (lot 2.1.b).
+// Same as `.shell` of the crudit-v2 mockup (src/styles/objects/_shell.scss).
+.crudit-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    @include media('>lg') {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+
+        &--rail {
+            grid-template-columns: var(--sidebar-rail-w) minmax(0, 1fr);
+        }
+
+        .crudit-shell__sidebar {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .crudit-shell__body {
+            grid-column: 2;
+            grid-row: 1;
+        }
+    }
+
+    &__sidebar {
+        min-width: 0;
+    }
+
+    &__body {
+        display: flex;
+        min-width: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        flex-direction: column;
+    }
+
+    &__main {
+        // No maximum width: the content takes the room the rail gives back.
+        width: 100%;
+        flex: 1;
+        padding: var(--space-3) var(--gutter) var(--space-7);
+    }
+}

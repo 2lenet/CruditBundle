@@ -1,0 +1,31 @@
+// Skip links (layout/_skip_links.html.twig): the first focusable elements of the page, shown when they have the
+// focus. Same as `.skip-links` of the crudit-v2 mockup (src/styles/components/_skip-links.scss).
+.crudit-skip-links {
+    // Out of the grid of the layout
+    position: absolute;
+
+    &__list {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    &__link {
+        position: fixed;
+        z-index: var(--z-skip);
+        top: var(--space-2);
+        inset-inline-start: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border: 2px solid var(--c-focus);
+        border-radius: var(--radius-md);
+        background-color: var(--c-surface);
+        color: var(--c-primary-text);
+        font-weight: var(--font-weight-semibold);
+        translate: 0 calc(-100% - var(--space-4));
+
+        &:focus-visible {
+            box-shadow: var(--shadow-lg);
+            translate: none;
+        }
+    }
+}

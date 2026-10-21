@@ -9,8 +9,6 @@
                 data-bs-toggle="modal"
                 data-bs-target="#modal_{{ action.id }}"
             {% elseif action.confirmModal %}
-                data-bs-toggle="modal"
-                data-bs-target="#modal-confirm"
                 data-confirm-link="{{ path(action.path.route, params) }}"
                 data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans(domain=view.config.translation_domain) }}"
             {% elseif not disabled %}

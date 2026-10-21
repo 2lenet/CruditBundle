@@ -1,0 +1,7 @@
+// Tokens of the layout, which CruditUiBundle leaves to Crudit (the other tokens are in its generic/_tokens.scss).
+// Menu of the crudit-v2 mockup (src/styles/generic/_tokens.scss); a rail of 72 px (decided on 20/10/2026, the mockup
+// has 60). A project changes them on :root.
+:root {
+    --sidebar-w: 15rem;
+    --sidebar-rail-w: 4.5rem;
+}
