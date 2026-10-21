@@ -1,0 +1,25 @@
+{#
+ # Item of the menu without children: a link. Contract with the sidebar controller: `data-menu-kind="item"` and
+ # `data-menu-label` on the <li> (filter of the menu), `aria-current="page"` on the current link. The links of the
+ # first level carry the tooltip of the collapsed menu (`tooltip`).
+ #}
+{% set active = crudit_menu_active(element, app.request) %}
+{% set label = element.libelle|trans %}
+{% set tooltip = tooltip|default(false) %}
+{% if element.path %}
+    {% set path = path(element.path.route, element.path.params) %}
+{% endif %}
+{% set link %}
+    <a href="{{ path|default('#') }}" class="crudit-nav__link"
+       {% if active %}aria-current="page"{% endif %}
+       {% if element.target is defined and element.target %}target="{{ element.target }}"{% endif %}>
+        {% include '@LleCrudit/layout/sidebar/_item_content.html.twig' %}
+    </a>
+{% endset %}
+<li class="crudit-nav__item {{ element.cssClass|default('') }}" data-menu-kind="item" data-menu-label="{{ label }}">
+    {% if tooltip %}
+        <twig:LleCruditUi:Tooltip :text="label" placement="beside">{{ link }}</twig:LleCruditUi:Tooltip>
+    {% else %}
+        {{ link }}
+    {% endif %}
+</li>

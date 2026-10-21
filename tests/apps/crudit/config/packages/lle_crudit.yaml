@@ -1,0 +1,5 @@
+lle_crudit:
+    default_currency_alignment: 'right'
+    default_integer_alignment: 'right'
+    default_number_alignment: 'right'
+    hide_if_disabled: false

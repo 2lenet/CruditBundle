@@ -1,0 +1,15 @@
+{#
+ # Button that reduces the menu to a rail of icons and back (block menu_toggle of base.html.twig, controller sidebar).
+ # The controller swaps the label (and the tooltip) from the two texts of the data attributes.
+ #}
+{% set ctrl = '2lenet--crudit-bundle--sidebar' %}
+{% set collapse = 'crudit.layout.collapse_menu'|trans(domain: 'LleCruditBundle') %}
+<div class="crudit-sidebar__footer">
+    <twig:LleCruditUi:Tooltip :text="collapse" placement="beside" class="crudit-sidebar__tooltip">
+        <button type="button" class="crudit-sidebar__collapse" data-action="{{ ctrl }}#toggle" data-{{ ctrl }}-target="toggle"
+                data-collapse-label="{{ collapse }}" data-expand-label="{{ 'crudit.layout.expand_menu'|trans(domain: 'LleCruditBundle') }}">
+            {{- ui_icon('sidebar-toggle', 'crudit-sidebar__collapse-icon') -}}
+            <span class="crudit-sidebar__collapse-label" data-{{ ctrl }}-target="toggleLabel">{{ collapse }}</span>
+        </button>
+    </twig:LleCruditUi:Tooltip>
+</div>

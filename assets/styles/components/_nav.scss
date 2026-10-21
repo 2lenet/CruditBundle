@@ -1,0 +1,290 @@
+@use 'tools/responsive' as *;
+@use 'tools/a11y' as *;
+
+// Items of the menu (layout/sb_admin/menu.html.twig and elements/): headings, links, sub-menus. The collapsed menu
+// (rail) is in components/sidebar. Same as `.nav` of the crudit-v2 mockup (src/styles/components/_nav.scss). The
+// rendering of the elements (icons, badges) is reworked in lot 2.1.a.
+.crudit-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nav-item-gap);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    &__sublist {
+        display: flex;
+        flex-direction: column;
+        gap: var(--nav-item-gap);
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    // Three distinct headings, as in Crudit (nothing forced to capitals).
+    &__heading {
+        margin: 0;
+
+        // TitleElement: discreet heading of a group of links
+        &--title {
+            padding: var(--space-2) var(--space-2) 0.125rem;
+            color: var(--c-text-muted);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: 0.02em;
+        }
+
+        // CategoryElement: between the title and the header
+        &--category {
+            padding: var(--space-2) var(--space-2) 0.125rem;
+            color: var(--c-text-muted);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        // HeaderElement: heading of a zone, more assertive
+        &--header {
+            padding: var(--space-2) var(--space-2) var(--space-1);
+            color: var(--c-text);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+        }
+    }
+
+    // HorizontalSeparatorElement
+    &__separator {
+        margin: var(--space-1) var(--space-2);
+        border-top: 1px solid var(--c-border);
+    }
+
+    &__item--parent {
+        position: relative;
+
+        .crudit-ui-tooltip-host {
+            display: flex;
+        }
+    }
+
+    &__item > .crudit-ui-tooltip-host {
+        display: flex;
+    }
+
+    &__link {
+        position: relative;
+        display: flex;
+        width: 100%;
+        min-height: var(--nav-item-h);
+        align-items: center;
+        gap: var(--space-2);
+        padding: 0.125rem var(--space-2);
+        border: 0;
+        border-radius: var(--radius-md);
+        background-color: transparent;
+        color: var(--c-text-muted);
+        font: inherit;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        line-height: var(--line-height-tight);
+        text-align: start;
+        text-decoration: none;
+        cursor: pointer;
+        @include transition(background-color, color);
+
+        &:hover {
+            background-color: var(--c-surface-hover);
+            color: var(--c-text);
+        }
+
+        &:focus-visible {
+            @include focus-ring(-2px);
+        }
+
+        // Current page: background and weight, not only the colour of the text.
+        &[aria-current='page'] {
+            background-color: var(--c-primary-subtle);
+            color: var(--c-primary-text);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        &--has-current {
+            color: var(--c-text);
+            font-weight: var(--font-weight-semibold);
+        }
+    }
+
+    // The sub-menu: its links are indented, a rule joins them to their parent.
+    &__submenu {
+        position: relative;
+        padding: var(--nav-item-gap) 0 0;
+
+        &::before {
+            position: absolute;
+            top: var(--space-1);
+            bottom: var(--space-1);
+            inset-inline-start: calc(var(--space-2) + 0.5625rem);
+            width: 1px;
+            background-color: var(--c-border);
+            content: '';
+        }
+
+        .crudit-nav__icon {
+            display: none;
+        }
+
+        .crudit-nav__link {
+            padding-inline-start: calc(var(--space-2) * 2 + 1.125rem);
+        }
+    }
+
+    &__flyout-title {
+        display: none;
+    }
+
+    &__icon {
+        display: inline-flex;
+        width: 1.125rem;
+        flex: none;
+        justify-content: center;
+        font-size: 0.8125rem;
+
+        img {
+            width: 1.125rem;
+            height: 1.125rem;
+            object-fit: contain;
+        }
+    }
+
+    &__label {
+        min-width: 0;
+        flex: 1;
+    }
+
+    &__badge {
+        flex: none;
+        padding: 0 var(--space-2);
+        border-radius: var(--radius-full);
+        background-color: var(--c-surface-active);
+        color: var(--c-text);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-bold);
+    }
+
+    &__external {
+        flex: none;
+        font-size: 0.75em;
+    }
+
+    &__chevron {
+        flex: none;
+        font-size: 0.75em;
+        @include transition(transform);
+    }
+
+    &__link[aria-expanded='true'] &__chevron {
+        transform: rotate(180deg);
+    }
+}
+
+// Collapsed menu (rail of icons, chosen by the cookie or by default between lg and xl: `data-sidebar` of the shell, see
+// components/sidebar for the container). Icons only: the labels stay for assistive technologies, the headings go, the
+// badges become dots, the sub-menus are panels next to their button (placed by the controller sidebar), the items have
+// their tooltip.
+@mixin rail-items {
+    .crudit-nav__heading > span,
+    .crudit-nav__label {
+        @include sr-only;
+    }
+
+    .crudit-nav__heading {
+        padding: 0;
+        margin-top: var(--space-2);
+    }
+
+    .crudit-nav__link {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .crudit-nav__icon {
+        font-size: var(--font-size-lg);
+    }
+
+    .crudit-nav__chevron {
+        position: absolute;
+        inset-inline-end: 0.125rem;
+        width: 0.5rem;
+    }
+
+    .crudit-nav__badge {
+        position: absolute;
+        top: 0.25rem;
+        inset-inline-start: calc(50% + 0.25rem);
+        width: 0.5rem;
+        height: 0.5rem;
+        padding: 0;
+        overflow: hidden;
+        font-size: 0;
+    }
+
+    // Open but not placed yet (as rendered by the server, before the controller closes it): not shown.
+    .crudit-nav__submenu:not([data-placed]) {
+        display: none;
+    }
+
+    .crudit-nav__submenu {
+        position: fixed;
+        max-height: calc(100dvh - 1rem);
+        overflow-y: auto;
+        z-index: var(--z-popover);
+        inset-inline-start: calc(var(--sidebar-rail-w) - var(--space-1));
+        min-width: 15rem;
+        padding: var(--space-2);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-lg);
+        background-color: var(--c-surface);
+        box-shadow: var(--shadow-lg);
+
+        &::before {
+            display: none;
+        }
+    }
+
+    .crudit-nav__flyout-title {
+        display: block;
+    }
+
+    .crudit-nav__submenu .crudit-nav__label {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+    }
+
+    .crudit-nav__submenu .crudit-nav__link {
+        justify-content: flex-start;
+        padding: var(--space-1) var(--space-3);
+    }
+
+    .crudit-nav__submenu .crudit-nav__icon {
+        display: none;
+    }
+
+    .crudit-nav__item > .crudit-ui-tooltip-host > .crudit-ui-tooltip {
+        display: block;
+    }
+}
+
+@include media('>lg') {
+    .crudit-shell[data-sidebar='collapsed'] {
+        @include rail-items;
+    }
+
+    @include media('<xl') {
+        .crudit-shell[data-sidebar='auto'] {
+            @include rail-items;
+        }
+    }
+}

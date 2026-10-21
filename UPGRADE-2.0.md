@@ -103,12 +103,11 @@ The layout lost its `sb_admin` folder. In every template extending it:
 The blocks you most likely override keep their name and role: `stylesheets`, `javascripts`,
 `page_title`, `favicon`, `brand`, `header`, `header_right`, `header_nav`, `menu`, `body`, `content`,
 `footer`, `side_footer`, `main`. Also kept: `autorefresh`, `head_stylesheets`, `head_javascript`,
-`body_javascript`, `modal_confirmation`, `scroll_top`, `logo`, `footer_text`. *(lot 2.1.0)*
+`body_javascript`, `modal_confirmation`, `scroll_top`, `logo`. *(lot 2.1.0)*
 
-Careful with `logo`, `side_footer`, `header_nav` and `header_right`: they are defined in the templates included by the
-layout (`layout/sb_admin/brand.html.twig`, `menu.html.twig`, `header.html.twig`), and Twig does not pass the blocks of
-a child template to an `include`. Overriding them from a template that extends the layout has no effect (as in 1.x):
-override the included template instead.
+The blocks `logo`, `side_header`, `side_footer`, `header_nav` and `header_right` are in
+`layout/base.html.twig` itself (in 1.x they were in included templates, where a template extending the layout could
+not override them): you can now override any block of the layout, whatever the template that holds its content.
 
 **The layout loads neither CSS nor JavaScript any more** (`bundles/llecrudit/sbadmin/app.css` and `app.js` are
 gone): the blocks `stylesheets` and `javascripts` are empty. Load the CSS of CruditUiBundle, then the one of Crudit,
@@ -133,8 +132,8 @@ import './bootstrap.js';
 `{{ parent() }}` in these blocks now adds nothing. The two scripts of FOSJsRouting are still in `<head>` *(to be
 reviewed)*.
 
-New markup, if you rewrite the block `body`: `<aside class="crudit-shell__sidebar">` (logo, then
-`<nav id="main-nav">` with the menu), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
+New markup, if you rewrite the block `body`: `<div id="crudit-sidebar" role="complementary">` (logo, filter, then
+`<nav id="main-nav">` with the menu, then the button that reduces it), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
 tabindex="-1">` and the footer. **Keep the ids `main` and `main-nav`**: the skip links go there. Without Bootstrap,
 the old markup of SB Admin (`#wrapper`, `#content-wrapper`, `container-fluid`) is not styled any more: the simplest
 is to stop overriding `body`, and to keep only the blocks inside it (`brand`, `menu`, `header`, `footer`, `content`).
@@ -148,14 +147,50 @@ second one would give two confirmation dialogs).
 
 `<html>` gets `lang`, `dir` (right to left) and `data-theme` (the theme chosen by the user, cookie
 `crudit_ui_theme`) from CruditUiBundle. The cookie `sidebarToggled` and the class `sidebar-toggled` of `<body>` are
-gone *(replacement: lot 2.1.b)*.
+gone: see "The menu" below.
 
-| Before | After |
+### The menu *(lot 2.1.b)*
+
+Three states of the same markup, driven by the Stimulus controller `sidebar` (declared in `assets/package.json`, nothing
+to register with AssetMapper or Flex; with Webpack Encore, enable it in `controllers.json` like the others):
+
+- **full menu** from 1024 px, **rail of icons** (72 px, `--sidebar-rail-w`) between 1024 and 1279 px by default, and
+  **drawer** below 1024 px, opened by the burger of the header or by the skip link "Skip to menu";
+- the choice of the user (button at the bottom of the menu, not shown below 1024 px) is in the cookie `crudit_sidebar`
+  (`auto`, `collapsed`, `expanded`), read by the layout (`crudit_sidebar()`) and put in `data-sidebar` of
+  `.crudit-shell`: the page arrives in the right state, without a jump. `auto` follows the width of the window;
+- the menu is **rendered once**. It is a `<div role="complementary">`, not an `<aside>`: the drawer gives it the role
+  `dialog` when it is open (`aria-modal`, the rest of the page `inert`, focus trapped, Escape and the backdrop close
+  it, the focus goes back to the burger), and an `<aside>` cannot have that role;
+- the **filter of the menu** (block `menu_filter`, to empty to remove it) hides the items that do not match, opens the
+  sub-menus that hold matches and announces the count; the button that reduces the menu is the block `menu_toggle`;
+- in the rail, the sub-menus are panels next to their button, and the items have a tooltip (component `Tooltip`,
+  `beside`). An item without icon shows the first letter of its label until lot 2.1.a.
+
+Markup of the items (`layout/sidebar/`), if you override them: `data-menu-kind` (`item`, `heading` or
+`separator`) on the `<li>`, `data-menu-label` on the items (the filter reads it), `aria-current="page"` on the link of
+the current page, and the classes `crudit-nav__*`. A sub-menu is an `<li>` with the controller `disclosure` of
+CruditUiBundle: a button (`aria-expanded`) and a panel `.crudit-nav__submenu`. **Your SCSS** on `.nav-link`,
+`.sidebar-item`, `.btn-toggle`, `#sidebar-collapser` or `.sidebar-heading` has no effect any more.
+
+New translation keys, domain `LleCruditBundle` (`crudit.layout.*`): `sidebar`, `open_menu`, `close_menu`,
+`filter_menu`, `filter_none`, `filter_one`, `filter_many`, `collapse_menu`, `expand_menu`, `contains_current_page`,
+`new_tab`.
+
+| Before (`layout/sb_admin/…`) | After (`layout/…`) |
 |---|---|
-| `layout/sb_admin/layout.html.twig` | `layout/base.html.twig` |
-| `layout/sb_admin/header.html.twig`, `menu`, `footer`, `brand` | `layout/_header.html.twig`, `_menu`, `_footer`, `_brand` |
-| `layout/sb_admin/elements/_user`, `_multisearch`, `_exit_impersonation` | `layout/_user_menu`, `_search`, `_exit_impersonation` |
-| `layout/sb_admin/elements/_v_separator` | removed |
+| `layout.html.twig` | `base.html.twig` |
+| `brand.html.twig` (block `logo`), `menu.html.twig` (blocks `side_header`, `side_footer`) | blocks in `base.html.twig`, content in `sidebar/_logo.html.twig`, `sidebar/_menu.html.twig` |
+| `header.html.twig` (blocks `header_nav`, `header_right`) | blocks in `base.html.twig`, content in `header/_burger.html.twig`, `header/_actions.html.twig` |
+| `elements/_user`, `elements/_multisearch`, `elements/_exit_impersonation` | `header/_user_menu`, `header/_search`, `header/_exit_impersonation` |
+| `footer.html.twig` | block `footer` of `base.html.twig`, `footer/_version.html.twig` |
+| `elements/_link`, `_link_element`, `_external_link`, `_title`, `_category`, `_header`, `_h_separator` | `sidebar/_link` (link or sub-menu), `sidebar/_item` (link), `sidebar/_submenu`, `sidebar/_external_link`, `sidebar/_title`, `sidebar/_category`, `sidebar/_header`, `sidebar/_separator` |
+| `bricks/_bricks` | `crud/_bricks` |
+| `elements/_v_separator`, `_search`, `_message`, `_notification` | removed, **no replacement**: delete your `{% include %}` of `_v_separator` (the top bar has no separator any more). `elements/_search` (an SB Admin demo form) is not `header/_search`, which is the former `_multisearch` |
+
+The folder `layout/sb_admin/` no longer exists: one folder per area of the layout (`sidebar/`, `header/`, `footer/`), and
+`base.html.twig` with the fragments that belong to no area (`_skip_links`, `_toasts`, `_back_to_top`). The two new
+fragments of the menu are `sidebar/_filter` (block `menu_filter`) and `sidebar/_toggle` (block `menu_toggle`).
 
 Removed `Dto/Layout` elements: `TemplateElement`, `SearchElement`, `UserElement`, `VerticalSeparatorElement` (search is `Ctrl K`, the user menu is part of the header, the top bar has no separator). Kept: `LinkElement`, `TitleElement`, `CategoryElement`, `HeaderElement`, `ExternalLinkElement`, `HorizontalSeparatorElement` (a rule between two groups of the menu).
 
@@ -168,7 +203,7 @@ shows its tags (before, a type containing `nt` was output raw). Write the messag
 If you overrode one of these files in `templates/bundles/LleCruditBundle/layout/sb_admin/`, rewrite it
 on the new one: their markup changed completely.
 
-The footer has **no default link** any more: add yours (accessibility statement, legal notice…) by
+The footer has **no copyright text** any more (block `footer_text` and key `crudit.footer.copyrights` removed: put your own text in the block `footer`), and **no default link**: add yours (accessibility statement, legal notice…) by
 configuration or in the `footer` block.
 
 ## 3. Theme: SCSS variables to CSS variables

@@ -1,0 +1,8 @@
+<li class="crudit-nav__heading crudit-nav__heading--title {{ element.cssClass|default('') }}" data-menu-kind="heading">
+    <span>{{ element.libelle|trans }}</span>
+</li>
+{% if element.children %}
+    {% for child in element.children %}
+        {% include crudit.template(child.template) with {'element': child} %}
+    {% endfor %}
+{% endif %}

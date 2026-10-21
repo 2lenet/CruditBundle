@@ -1,0 +1,14 @@
+{% set label = element.libelle|trans %}
+{% set link %}
+    <a href="{{ element.url|default('#') }}" class="crudit-nav__link" target="{{ element.target }}"
+       {% if element.target == '_blank' %}rel="noopener noreferrer"{% endif %}>
+        {% include '@LleCrudit/layout/sidebar/_item_content.html.twig' %}
+        {% if element.target == '_blank' %}
+            {{- ui_icon('external-link', 'crudit-nav__external') -}}
+            <span class="crudit-ui-visually-hidden">&nbsp;{{ 'crudit.layout.new_tab'|trans(domain: 'LleCruditBundle') }}</span>
+        {% endif %}
+    </a>
+{% endset %}
+<li class="crudit-nav__item {{ element.cssClass|default('') }}" data-menu-kind="item" data-menu-label="{{ label }}">
+    <twig:LleCruditUi:Tooltip :text="label" placement="beside">{{ link }}</twig:LleCruditUi:Tooltip>
+</li>

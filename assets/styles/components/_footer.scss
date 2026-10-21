@@ -1,0 +1,12 @@
+// Footer of the layout (<footer class="crudit-footer">): copyright and version. Reworked in lot 2.1.c.
+.crudit-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--gutter);
+    border-top: 1px solid var(--c-border);
+    color: var(--c-text-muted);
+    font-size: var(--font-size-sm);
+}

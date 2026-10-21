@@ -1,0 +1,394 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import puppeteer from 'puppeteer-core';
+
+const require = createRequire(import.meta.url);
+const axeSource = readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
+const base = (process.argv[2] ?? '').replace(/\/$/, '');
+const executablePath = process.argv[3] ?? process.env.CHROME_PATH ?? '/usr/bin/google-chrome';
+const shots = process.env.SHOTS;
+assert.ok(base, 'Usage: node smoke.mjs <url> [chrome path]');
+
+const browser = await puppeteer.launch({executablePath, headless: true, args: ['--no-sandbox']});
+const errors = [];
+let passed = 0;
+const ok = (name) => { passed++; console.log('ok  ', name); };
+
+async function open(width, path = '/', {cookie = null, dark = false, rtl = false} = {}) {
+    const page = await browser.newPage();
+    page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+    page.on('console', (m) => m.type() === 'error' && !/favicon|logo\.png/.test(m.text() + m.location().url) && errors.push(`console: ${m.text()}`));
+    await page.setViewport({width, height: 800});
+    await page.emulateMediaFeatures([{name: 'prefers-color-scheme', value: dark ? 'dark' : 'light'}]);
+    await page.deleteCookie({name: 'crudit_sidebar', url: base});
+    if (cookie) {
+        await page.setCookie({name: 'crudit_sidebar', value: cookie, url: base});
+    }
+    await page.goto(base + path, {waitUntil: 'networkidle0'});
+    if (rtl) {
+        await page.evaluate(() => { document.documentElement.dir = 'rtl'; document.documentElement.lang = 'ar'; });
+    }
+    return page;
+}
+const box = (page, sel) => page.$eval(sel, (e) => { const r = e.getBoundingClientRect(); return {x: r.x, y: r.y, w: r.width, h: r.height, r: r.right, b: r.bottom}; });
+const visible = (page, sel) => page.$eval(sel, (e) => { const s = getComputedStyle(e); const r = e.getBoundingClientRect(); return s.visibility !== 'hidden' && s.display !== 'none' && r.width > 1 && r.height > 1; });
+const attr = (page, sel, a) => page.$eval(sel, (e, a) => e.getAttribute(a), a);
+const active = (page) => page.evaluate(() => { const a = document.activeElement; return a ? (a.id || a.className || a.tagName) : null; });
+const inAside = (page) => page.evaluate(() => document.querySelector('#crudit-sidebar').contains(document.activeElement));
+// What the lots have not reworked yet is not checked: the header (lot 2.2.a), the footer (lot 2.1.c). Remove each one
+// from this list when its lot is done.
+const EXCLUDED = [['.crudit-shell__header'], ['.crudit-shell__body > footer']];
+
+async function axe(page, label) {
+    await new Promise((r) => setTimeout(r, 500));
+    await page.evaluate(axeSource);
+    const result = await page.evaluate((exclude) => axe.run({exclude}, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']}), EXCLUDED);
+    const v = result.violations.map((x) => `${x.id}: ${x.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
+    assert.deepEqual(v, [], `axe ${label}`);
+    ok(`axe ${label}`);
+}
+const shot = async (page, name) => shots && page.screenshot({path: `${shots}/${name}.png`});
+
+// ---------- Desktop, full menu (auto, ≥ 1280)
+let page = await open(1440);
+assert.equal(await attr(page, '.crudit-shell', 'data-sidebar'), 'auto');
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2, 'full menu is 240 px');
+assert.equal(await attr(page, '#crudit-sidebar', 'role'), 'complementary');
+assert.ok(await visible(page, '#crudit-menu-filter'));
+assert.ok(!(await visible(page, '.crudit-header__burger')), 'no burger on desktop');
+assert.ok(!(await visible(page, '.crudit-sidebar__close')), 'no close on desktop');
+assert.equal(await page.$eval('[data-2lenet--crudit-bundle--sidebar-target=toggleLabel]', (e) => e.textContent), 'Collapse the menu');
+assert.equal(await page.$eval('[aria-current=page] .crudit-nav__label', (e) => e.textContent.trim()), 'Home');
+ok('full menu at 1440');
+await shot(page, 'desktop-full');
+await axe(page, 'desktop full');
+
+// current page: /page/invoices opens Billing
+await page.goto(base + '/page/invoices', {waitUntil: 'networkidle0'});
+assert.equal(await attr(page, '[data-menu-label=Billing] > .crudit-ui-tooltip-host > button', 'aria-expanded'), 'true');
+assert.equal(await attr(page, '[data-menu-label=Stock] > .crudit-ui-tooltip-host > button', 'aria-expanded'), 'false');
+assert.equal(await page.$eval('[aria-current=page] .crudit-nav__label', (e) => e.textContent.trim()), 'Invoices');
+ok('sub-menu of the current page is open, aria-current set');
+
+// open / close a submenu by click
+await page.click('[data-menu-label=Stock] button');
+assert.ok(await visible(page, '[data-menu-label=Stock] .crudit-nav__submenu'));
+await page.click('[data-menu-label=Stock] button');
+assert.ok(!(await visible(page, '[data-menu-label=Stock] .crudit-nav__submenu')));
+ok('sub-menu toggles');
+await shot(page, 'desktop-full-submenu');
+
+// filter
+await page.type('#crudit-menu-filter', 'bill');
+const labels = () => page.$$eval('[data-menu-kind=item]:not([hidden])', (els) => els.filter((e) => e.offsetParent !== null).map((e) => e.dataset.menuLabel));
+assert.deepEqual(await labels(), ['Billing', 'Invoices', 'Credit notes', 'Reminders']);
+assert.ok(await visible(page, '.crudit-nav__heading--category'), 'heading of the group that matches stays');
+assert.ok(!(await visible(page, '.crudit-nav__heading--title')) && !(await visible(page, '.crudit-nav__heading--header')), 'headings without match hidden');
+await new Promise((r) => setTimeout(r, 700));
+assert.equal(await page.$eval('#crudit-menu-filter-status', (e) => e.textContent), '3 items found');
+ok('filter by parent label keeps its links, announces count');
+await shot(page, 'desktop-filter');
+await page.$eval('#crudit-menu-filter', (e) => { e.value = ''; });
+await page.type('#crudit-menu-filter', 'remi');
+assert.deepEqual(await labels(), ['Billing', 'Reminders']);
+await page.$eval('#crudit-menu-filter', (e) => { e.value = ''; });
+await page.type('#crudit-menu-filter', 'zzz');
+assert.ok(await visible(page, '.crudit-sidebar__empty'));
+await new Promise((r) => setTimeout(r, 700));
+assert.equal(await page.$eval('#crudit-menu-filter-status', (e) => e.textContent), 'No item found');
+ok('filter: child match, no result');
+await page.$eval('#crudit-menu-filter', (e) => { e.value = ''; e.dispatchEvent(new Event('input', {bubbles: true})); });
+assert.ok(!(await visible(page, '.crudit-sidebar__empty')));
+assert.equal((await labels()).includes('Clients'), true);
+assert.equal(await attr(page, '[data-menu-label=Billing] button', 'aria-expanded'), 'true');
+assert.equal(await attr(page, '[data-menu-label=Stock] button', 'aria-expanded'), 'false', 'state restored after the filter');
+assert.ok(await visible(page, '.crudit-nav__heading--category'));
+ok('filter cleared: everything back, sub-menus restored');
+
+// ---------- Rail by toggle, cookie, no jump
+await page.click('.crudit-sidebar__collapse');
+assert.equal(await attr(page, '.crudit-shell', 'data-sidebar'), 'collapsed');
+await new Promise((r) => setTimeout(r, 300));
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'rail is 72 px');
+assert.equal(await page.$eval('[data-2lenet--crudit-bundle--sidebar-target=toggleLabel]', (e) => e.textContent), 'Expand the menu');
+assert.ok(!(await visible(page, '#crudit-menu-filter')), 'filter hidden in rail');
+assert.ok((await box(page, '.crudit-nav__label')).w <= 1.5, 'labels hidden (sr-only) in rail');
+assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar').value, 'collapsed');
+assert.equal(await attr(page, '[data-menu-label=Billing] button', 'aria-expanded'), 'false', 'sub-menus closed in rail');
+ok('toggle to rail, cookie written');
+await shot(page, 'desktop-rail');
+await axe(page, 'desktop rail');
+
+// tooltip on focus/hover of an item
+await page.hover('[data-menu-label=Clients] a');
+await new Promise((r) => setTimeout(r, 300));
+const tip = await page.$eval('[data-menu-label=Clients] .crudit-ui-tooltip', (e) => { const s = getComputedStyle(e); const r = e.getBoundingClientRect(); return {vis: s.visibility, op: s.opacity, x: r.x, text: e.textContent}; });
+assert.equal(tip.vis, 'visible'); assert.equal(tip.text, 'Clients'); assert.ok(tip.x >= 64, `tooltip beside the rail (${tip.x})`);
+ok('tooltip beside the rail on hover');
+await shot(page, 'desktop-rail-tooltip');
+await page.mouse.move(700, 400);
+
+// flyout
+await page.click('[data-menu-label=Billing] button');
+assert.ok(await visible(page, '[data-menu-label=Billing] .crudit-nav__submenu'));
+const fly = await box(page, '[data-menu-label=Billing] .crudit-nav__submenu');
+assert.ok(fly.x >= 60 && fly.x <= 80, `flyout next to the rail (x=${fly.x})`);
+const btn = await box(page, '[data-menu-label=Billing] button');
+assert.ok(Math.abs(fly.y - btn.y) < 4, 'flyout aligned on the button');
+await shot(page, 'desktop-rail-flyout');
+await page.click('[data-menu-label=Stock] button');
+assert.ok(!(await visible(page, '[data-menu-label=Billing] .crudit-nav__submenu')), 'one flyout at a time');
+await page.keyboard.press('Escape');
+assert.ok(!(await visible(page, '[data-menu-label=Stock] .crudit-nav__submenu')));
+assert.equal(await page.evaluate(() => document.activeElement.closest('[data-menu-label]')?.dataset.menuLabel), 'Stock', 'focus back to the button');
+await page.click('[data-menu-label=Stock] button');
+await page.mouse.click(700, 500);
+assert.ok(!(await visible(page, '[data-menu-label=Stock] .crudit-nav__submenu')), 'click outside closes');
+await page.click('[data-menu-label=Stock] button');
+await page.keyboard.press('Tab'); await page.keyboard.press('Tab'); await page.keyboard.press('Tab'); await page.keyboard.press('Tab');
+assert.ok(!(await visible(page, '[data-menu-label=Stock] .crudit-nav__submenu')), 'focus leaving closes');
+ok('rail flyouts: placement, one at a time, Escape, outside, focus');
+await axe(page, 'desktop rail flyout');
+
+// reload: arrives in rail, no jump
+await page.goto(base + '/page/invoices', {waitUntil: 'domcontentloaded'});
+assert.equal(await page.evaluate(() => document.querySelector('.crudit-shell').dataset.sidebar), 'collapsed');
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'rail on first paint');
+ok('rail remembered (cookie read by the layout)');
+
+// back to full
+await page.waitForSelector('.crudit-sidebar__collapse');
+await page.click('.crudit-sidebar__collapse');
+await new Promise((r) => setTimeout(r, 300));
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2);
+assert.equal(await attr(page, '[data-menu-label=Billing] button', 'aria-expanded'), 'true', 'current sub-menu reopened');
+ok('back to full menu');
+await page.close();
+
+// ---------- auto rail between 1024 and 1279, explicit expanded wins
+page = await open(1100);
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'auto: rail at 1100');
+assert.equal(await page.$eval('[data-2lenet--crudit-bundle--sidebar-target=toggleLabel]', (e) => e.textContent), 'Expand the menu');
+await page.click('.crudit-sidebar__collapse');
+await new Promise((r) => setTimeout(r, 300));
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2, 'expanded at 1100');
+assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar').value, 'expanded');
+ok('auto = rail at 1100, expand by choice');
+await page.setViewport({width: 1500, height: 800});
+await new Promise((r) => setTimeout(r, 200));
+await page.setViewport({width: 1100, height: 800});
+await new Promise((r) => setTimeout(r, 300));
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2, 'explicit choice kept when resizing');
+await page.close();
+
+// ---------- Mobile drawer
+page = await open(390);
+assert.ok(!(await visible(page, '#crudit-sidebar')), 'drawer closed');
+assert.ok(await visible(page, '.crudit-header__burger'));
+assert.equal(await attr(page, '.crudit-header__burger', 'aria-expanded'), 'false');
+assert.ok((await box(page, '.crudit-shell__main')).x < 40, 'content takes the width');
+await shot(page, 'mobile-closed');
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(await visible(page, '#crudit-sidebar'));
+assert.equal(await attr(page, '#crudit-sidebar', 'role'), 'dialog');
+assert.equal(await attr(page, '#crudit-sidebar', 'aria-modal'), 'true');
+assert.equal(await attr(page, '#crudit-sidebar', 'aria-label'), 'Main menu');
+assert.equal(await attr(page, '.crudit-header__burger', 'aria-expanded'), 'true');
+assert.equal(await page.$eval('.crudit-shell__body', (e) => e.inert), true);
+assert.equal(await page.$eval('.crudit-skip-links', (e) => e.inert), true);
+assert.ok(await page.evaluate(() => document.documentElement.classList.contains('crudit-has-drawer')));
+assert.ok(await visible(page, '.crudit-shell__backdrop'));
+assert.ok(await inAside(page), 'focus in the drawer');
+assert.ok(await visible(page, '.crudit-sidebar__close'));
+assert.ok(!(await visible(page, '.crudit-sidebar__collapse')), 'no reduce button in the drawer');
+assert.ok((await box(page, '#crudit-sidebar')).w <= 320);
+await shot(page, 'mobile-open');
+await axe(page, 'mobile drawer open');
+for (let i = 0; i < 40; i++) {
+    await page.keyboard.press('Tab');
+    assert.ok(await inAside(page), `focus trapped (Tab ${i})`);
+}
+for (let i = 0; i < 40; i++) {
+    await page.keyboard.down('Shift'); await page.keyboard.press('Tab'); await page.keyboard.up('Shift');
+    assert.ok(await inAside(page), `focus trapped (Shift+Tab ${i})`);
+}
+ok('drawer opens as modal dialog, inert page, focus trapped');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(!(await visible(page, '#crudit-sidebar')));
+assert.equal(await page.evaluate(() => document.activeElement.className.includes('crudit-header__burger')), true, 'focus back to burger');
+assert.equal(await page.$eval('.crudit-shell__body', (e) => e.inert), false);
+assert.equal(await attr(page, '#crudit-sidebar', 'role'), 'complementary');
+assert.equal(await attr(page, '.crudit-header__burger', 'aria-expanded'), 'false');
+ok('Escape closes, focus back to the burger');
+
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+await page.mouse.click(380, 400);
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(!(await visible(page, '#crudit-sidebar')), 'backdrop closes');
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+await page.click('.crudit-sidebar__close');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(!(await visible(page, '#crudit-sidebar')), 'close button closes');
+ok('backdrop and close button');
+
+// skip link "Skip to menu" opens the drawer
+await page.reload({waitUntil: 'networkidle0'});
+await page.keyboard.press('Tab');
+await page.keyboard.press('Tab');
+assert.equal(await page.evaluate(() => document.activeElement.getAttribute('href')), '#main-nav');
+await page.keyboard.press('Enter');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(await visible(page, '#crudit-sidebar'), 'skip link opens the drawer');
+assert.equal(await active(page), 'main-nav');
+ok('skip link to the menu opens the drawer, focus on the nav');
+
+// filter in drawer + click on a link closes
+await page.type('#crudit-menu-filter', 'client');
+assert.deepEqual(await labels(), ['Clients']);
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('[data-menu-label=Clients] a')]);
+assert.ok(page.url().endsWith('/client/'));
+assert.ok(!(await visible(page, '#crudit-sidebar')), 'the drawer is closed on the page reached from it');
+assert.equal(await page.$eval('.crudit-shell__body', (e) => e.inert), false);
+ok('a link of the drawer navigates and the new page has a closed drawer');
+await page.close();
+
+// drawer open then widen to desktop
+page = await open(390);
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+await page.setViewport({width: 1500, height: 800});
+await new Promise((r) => setTimeout(r, 400));
+assert.equal(await page.$eval('.crudit-shell__body', (e) => e.inert), false, 'drawer closed on resize');
+assert.equal(await page.evaluate(() => document.documentElement.classList.contains('crudit-has-drawer')), false);
+assert.ok(await visible(page, '#crudit-sidebar'));
+ok('resize to desktop closes the drawer');
+await page.close();
+
+// ---------- tablet 800: drawer too
+page = await open(800);
+assert.ok(!(await visible(page, '#crudit-sidebar')));
+assert.ok(await visible(page, '.crudit-header__burger'));
+await page.close();
+
+// ---------- dark, RTL
+page = await open(1440, '/page/invoices', {dark: true});
+await shot(page, 'desktop-dark');
+await axe(page, 'desktop dark');
+await page.close();
+page = await open(1440, '/page/invoices', {cookie: 'collapsed', rtl: true});
+await new Promise((r) => setTimeout(r, 300));
+const rb = await box(page, '#crudit-sidebar');
+assert.ok(rb.x > 1000, `rail on the right in RTL (${rb.x})`);
+await page.click('[data-menu-label=Billing] button');
+const rf = await box(page, '[data-menu-label=Billing] .crudit-nav__submenu');
+assert.ok(rf.r < rb.x + 8 && rf.x < rb.x, `flyout on the left of the rail in RTL (${rf.x}-${rf.r} / ${rb.x})`);
+await shot(page, 'desktop-rtl-flyout');
+const tipx = await (async () => { await page.keyboard.press('Escape'); await page.hover('[data-menu-label=Clients] a'); await new Promise((r) => setTimeout(r, 300)); return box(page, '[data-menu-label=Clients] .crudit-ui-tooltip'); })();
+assert.ok(tipx.r <= rb.x + 8, `tooltip on the left in RTL (${tipx.r})`);
+ok('RTL: rail, flyout and tooltip on the inline end side');
+await page.close();
+page = await open(390, '/', {rtl: true});
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+const db = await box(page, '#crudit-sidebar');
+assert.ok(db.r > 380, `drawer from the right in RTL (${db.r})`);
+await shot(page, 'mobile-rtl-open');
+await page.close();
+
+// ---------- Defects found by the review of lot 2.1.b
+// A flyout leaves no inline position behind when the menu stops being a rail
+page = await open(1100, '/page/invoices');
+await page.click('[data-menu-label=Billing] button');
+await page.keyboard.press('Escape');
+await page.click('.crudit-sidebar__collapse');
+await new Promise((r) => setTimeout(r, 300));
+assert.equal(await page.$eval('[data-menu-label=Billing] .crudit-nav__submenu', (e) => e.style.insetBlockStart), '', 'no inline position left');
+const sub = await box(page, '[data-menu-label=Billing] .crudit-nav__submenu');
+const parentButton = await box(page, '[data-menu-label=Billing] button');
+assert.ok(sub.y >= parentButton.b - 2 && sub.y < parentButton.b + 12, `sub-menu in the flow under its button (${sub.y} / ${parentButton.b})`);
+ok('a sub-menu is back in the flow when the rail is left');
+await page.close();
+
+// A page loaded in the rail does not show the sub-menu of the current page before it is opened
+page = await open(1440, '/page/invoices', {cookie: 'collapsed'});
+assert.ok(!(await visible(page, '[data-menu-label=Billing] .crudit-nav__submenu')), 'sub-menu hidden in the rail until opened');
+assert.equal(await page.$eval('[data-menu-label=Billing] .crudit-nav__submenu', (e) => 'placed' in e.dataset), false);
+ok('rail: the sub-menu of the current page is not shown before it is opened');
+
+// The flyout follows its button when the menu scrolls
+await page.setViewport({width: 1440, height: 420});
+await page.click('[data-menu-label=Billing] button');
+await page.$eval('#main-nav', (e) => { e.scrollTop = 60; });
+await new Promise((r) => setTimeout(r, 200));
+const flyBox = await box(page, '[data-menu-label=Billing] .crudit-nav__submenu');
+const flyButton = await box(page, '[data-menu-label=Billing] button');
+assert.ok(Math.abs(flyBox.y - flyButton.y) < 6 || flyBox.b <= 420, `the flyout follows its button (${flyBox.y} / ${flyButton.y})`);
+ok('the flyout follows its button when the menu scrolls');
+await page.close();
+
+// Drawer: Escape and Tab work when the focus is on the page (click on a part that cannot take it)
+page = await open(390);
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+// The padding under the filter: nothing there can take the focus, which goes to <body>
+const padding = await box(page, '.crudit-sidebar__filter');
+await page.mouse.click(padding.x + padding.w / 2, padding.b - 2);
+assert.equal(await page.evaluate(() => document.activeElement === document.body), true, 'the focus is on <body>');
+await page.keyboard.press('Tab');
+assert.ok(await inAside(page), 'Tab comes back into the drawer');
+await page.mouse.click(padding.x + padding.w / 2, padding.b - 2);
+assert.equal(await page.evaluate(() => document.activeElement === document.body), true);
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(!(await visible(page, '#crudit-sidebar')), 'Escape closes the drawer from <body>');
+ok('drawer: Escape and Tab with the focus on the page');
+
+// Drawer: a click that does not change the page leaves it open
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+const opened = new Promise((resolve) => browser.once('targetcreated', resolve));
+await page.keyboard.down('Control');
+await page.click('[data-menu-label=Documentation] a');
+await page.keyboard.up('Control');
+await opened;
+assert.ok(await visible(page, '#crudit-sidebar'), 'the drawer stays open on a click that opens a new tab');
+for (const other of await browser.pages()) {
+    if (other !== page && other.url() !== 'about:blank') { await other.close(); } else if (other !== page) { await other.close(); }
+}
+ok('drawer: a link that opens a new tab leaves it open');
+
+// Drawer: a resize that closes it leaves the focus in the menu
+await page.focus('.crudit-sidebar__close');
+await page.setViewport({width: 1500, height: 800});
+await new Promise((r) => setTimeout(r, 400));
+assert.equal(await active(page), 'main-nav', 'the focus goes to the menu, not to <body>');
+ok('a resize that closes the drawer keeps the focus');
+await page.close();
+
+// A project that empties the blocks menu_filter and menu_toggle: the controller works without them
+const errorsBefore = errors.length;
+page = await open(1440, '/overrides', {cookie: 'collapsed'});
+await page.click('[data-menu-label=Billing] button');
+assert.ok(await visible(page, '[data-menu-label=Billing] .crudit-nav__submenu'));
+await page.setViewport({width: 390, height: 800});
+await new Promise((r) => setTimeout(r, 300));
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(await visible(page, '#crudit-sidebar'));
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(!(await visible(page, '#crudit-sidebar')));
+assert.equal(errors.length, errorsBefore, 'no error without the blocks menu_filter and menu_toggle');
+ok('the menu works without the filter and the button that reduces it');
+await page.close();
+
+// ---------- Turbo cache hook / reduced motion: no errors
+console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
+console.log(`${passed} checks passed`);
+await browser.close();
+process.exit(errors.length ? 1 : 0);

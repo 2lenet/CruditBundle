@@ -1,0 +1,9 @@
+{#
+ # Template of LinkElement: a link, or a sub-menu when the element has children. Only the first level calls it; the
+ # links of a sub-menu are `_item`.
+ #}
+{% if element.children|length %}
+    {% include '@LleCrudit/layout/sidebar/_submenu.html.twig' %}
+{% else %}
+    {% include '@LleCrudit/layout/sidebar/_item.html.twig' with {'element': element, 'tooltip': true} %}
+{% endif %}

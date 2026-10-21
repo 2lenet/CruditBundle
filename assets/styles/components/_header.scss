@@ -1,0 +1,17 @@
+@use 'tools/responsive' as *;
+
+// Bar of the header (layout/_header.html.twig): the burger (below lg) and the blocks of the project. Reworked in lot
+// 2.2.a.
+.crudit-header {
+    display: flex;
+    min-height: var(--topbar-h);
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--gutter);
+
+    &__burger {
+        @include media('>lg') {
+            display: none;
+        }
+    }
+}

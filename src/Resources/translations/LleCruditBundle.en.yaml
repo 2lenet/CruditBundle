@@ -11,9 +11,19 @@ crudit:
         skip_to_menu: "Skip to menu"
         back_to_top: "Back to the top of the page"
         messages: "Messages"
+        sidebar: "Sidebar"
+        open_menu: "Open the menu"
+        close_menu: "Close the menu"
+        filter_menu: "Filter the menu"
+        filter_none: "No item found"
+        filter_one: "1 item found"
+        filter_many: "%count% items found"
+        collapse_menu: "Collapse the menu"
+        expand_menu: "Expand the menu"
+        contains_current_page: "(contains the current page)"
+        new_tab: "(new tab)"
 
     footer:
-        copyrights: "Copyrights."
         release: "Release"
 
     pagination:
