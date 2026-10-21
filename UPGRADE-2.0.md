@@ -285,7 +285,8 @@ Use the action options instead *(to be filled)*.
   long as the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
   header: remove your `btn-close`.
-- The block `header` names the dialog (`aria-labelledby`): put the title in it (a `<h2>`).
+- The block `header` is the title of the dialog, inside a `<h2>` that names it (`aria-labelledby`): put text only in it, no `<h5 class="modal-title">` (a heading in a heading).
+- `TelephoneType`: the behaviour is ported (controller `telephone`), not its style yet (`sb-admin/css/components/forms/_telephone.scss`, built on Bootstrap): until the forms are migrated, the calling code and the country select are side by side. *(to be done with the forms)*
 - `.modal-header`, `.modal-body`, `.modal-footer` are gone (`crudit-ui-dialog__…`).
 
 **Confirmation of the actions** (`modal/_confirm.html.twig`, block `modal_confirmation`): a `Dialog` with the

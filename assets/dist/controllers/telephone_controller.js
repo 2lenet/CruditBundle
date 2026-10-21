@@ -14,14 +14,16 @@ export default class extends Controller {
             // The reset event fires before the values are restored
             setTimeout(() => this.sync());
         };
+        // this.element is the <div> of the field, which has no `form`
+        this.form = this.element.closest('form');
         window.addEventListener('pageshow', this.onPageShow);
-        this.element.form?.addEventListener('reset', this.onReset);
+        this.form?.addEventListener('reset', this.onReset);
         this.sync();
     }
 
     disconnect() {
         window.removeEventListener('pageshow', this.onPageShow);
-        this.element.form?.removeEventListener('reset', this.onReset);
+        this.form?.removeEventListener('reset', this.onReset);
     }
 
     sync() {
