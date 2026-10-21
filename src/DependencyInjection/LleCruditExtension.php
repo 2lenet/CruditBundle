@@ -38,8 +38,10 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
 
         /** @var array<string, array{path: string}> $bundlesMetadata */
         $bundlesMetadata = $container->getParameter('kernel.bundles_metadata');
-        if (!isset($bundlesMetadata['FrameworkBundle'])
-            || !is_file($bundlesMetadata['FrameworkBundle']['path'] . '/Resources/config/asset_mapper.php')) {
+        if (
+            !isset($bundlesMetadata['FrameworkBundle'])
+            || !is_file($bundlesMetadata['FrameworkBundle']['path'] . '/Resources/config/asset_mapper.php')
+        ) {
             return;
         }
 

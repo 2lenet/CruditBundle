@@ -27,3 +27,4 @@ parameters:
         -
             identifier: classConstant.deprecated
             path: ../src/Form/DoctrineOrmTypeGuesser.php
+            reportUnmatched: false

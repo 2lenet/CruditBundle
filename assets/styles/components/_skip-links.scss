@@ -23,7 +23,7 @@
         font-weight: var(--font-weight-semibold);
         translate: 0 calc(-100% - var(--space-4));
 
-        &:focus {
+        &:focus-visible {
             box-shadow: var(--shadow-lg);
             translate: none;
         }

@@ -13,6 +13,18 @@
                 "fetch": "eager",
                 "enabled": true
             },
+            "modal-bridge": {
+                "main": "dist/controllers/modal_bridge_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "telephone": {
+                "main": "dist/controllers/telephone_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
             "confirm": {
                 "main": "dist/controllers/confirm_controller.js",
                 "webpackMode": "eager",

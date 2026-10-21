@@ -12,7 +12,8 @@
  # the confirmation of the actions and the back to the top button.
  #}
 <!DOCTYPE html>
-<html lang="{{ ui_lang() }}" dir="{{ ui_dir() }}"{% if ui_theme() %} data-theme="{{ ui_theme() }}"{% endif %}>
+{% set theme = ui_theme() %}
+<html lang="{{ ui_lang() }}" dir="{{ ui_dir() }}"{% if theme %} data-theme="{{ theme }}"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,7 +31,7 @@
     {% block head_javascript %}{% endblock %}
 </head>
 
-<body>
+<body data-controller="2lenet--crudit-bundle--modal-bridge">
 {% block skip_links %}
     {% include '@LleCrudit/layout/_skip_links.html.twig' %}
 {% endblock %}
@@ -73,7 +74,7 @@
 {% endblock %}
 
 {% block modal_confirmation %}
-    {% include '@LleCrudit/modal/_confirm.html.twig' %}
+    {% include '@LleCrudit/modal/_confirm.html.twig' with {id: 'crudit-confirm'} only %}
 {% endblock %}
 
 {% block scroll_top %}

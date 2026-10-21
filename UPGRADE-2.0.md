@@ -105,6 +105,11 @@ The blocks you most likely override keep their name and role: `stylesheets`, `ja
 `footer`, `side_footer`, `main`. Also kept: `autorefresh`, `head_stylesheets`, `head_javascript`,
 `body_javascript`, `modal_confirmation`, `scroll_top`, `logo`, `footer_text`. *(lot 2.1.0)*
 
+Careful with `logo`, `side_footer`, `header_nav` and `header_right`: they are defined in the templates included by the
+layout (`layout/sb_admin/brand.html.twig`, `menu.html.twig`, `header.html.twig`), and Twig does not pass the blocks of
+a child template to an `include`. Overriding them from a template that extends the layout has no effect (as in 1.x):
+override the included template instead.
+
 **The layout loads neither CSS nor JavaScript any more** (`bundles/llecrudit/sbadmin/app.css` and `app.js` are
 gone): the blocks `stylesheets` and `javascripts` are empty. Load the CSS of CruditUiBundle, then the one of Crudit,
 then yours, and your Stimulus application:
@@ -275,6 +280,9 @@ Use the action options instead *(to be filled)*.
 - Open it with a button: `<button type="button" commandfor="<id>" command="show-modal">` instead of
   `data-bs-toggle="modal" data-bs-target="#<id>"`; in JavaScript, `document.getElementById(id).showModal()` instead
   of `bootstrap.Modal`.
+- Until lot 3.1, the triggers of Crudit (`<a data-bs-toggle="modal" data-bs-target="#<id>">`, `data-bs-dismiss="modal"`)
+  still work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as
+  long as the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
   header: remove your `btn-close`.
 - The block `header` names the dialog (`aria-labelledby`): put the title in it (a `<h2>`).
