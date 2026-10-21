@@ -1,7 +1,8 @@
 {#
  # Item of the first level with children: a button that shows or hides its links (controller disclosure of
  # CruditUiBundle). The sub-menu is open when it holds the current page. In the collapsed menu (rail) the sidebar
- # controller shows it as a panel next to the button.
+ # controller shows it as a panel next to the button. One level only: a sub-menu holds links (`_item`), the children of
+ # these links are not rendered (the controller and the filter do not handle a third level).
  #}
 {% set active = crudit_menu_active(element, app.request) %}
 {% set label = element.libelle|trans %}
@@ -26,7 +27,7 @@
         <ul class="crudit-nav__sublist">
             {% for child in element.children %}
                 {% if is_granted(child.role) %}
-                    {% include child.template with {'element': child, 'tooltip': false} %}
+                    {% include '@LleCrudit/layout/sidebar/_item.html.twig' with {'element': child, 'tooltip': false} %}
                 {% endif %}
             {% endfor %}
         </ul>

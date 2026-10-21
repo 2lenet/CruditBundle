@@ -7,6 +7,7 @@ menu:
     invoices: "Invoices"
     credits: "Credit notes"
     reminders: "Reminders"
+    lateReminders: "Late reminders"
     stock: "Stock"
     items: "Items"
     movements: "Movements"

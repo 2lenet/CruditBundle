@@ -26,7 +26,10 @@ class AppMenuProvider implements MenuProviderInterface
         $billing = LinkElement::new('menu.billing', null, Icon::new('euro-sign'));
         $billing->add(LinkElement::new('menu.invoices', Path::new('invoices')));
         $billing->add(LinkElement::new('menu.credits', Path::new('credits')));
-        $billing->add(LinkElement::new('menu.reminders', Path::new('reminders')));
+        $reminders = LinkElement::new('menu.reminders', Path::new('reminders'));
+        // A third level, which LinkElement::add() allows: it is not rendered
+        $reminders->add(LinkElement::new('menu.lateReminders', Path::new('reminders')));
+        $billing->add($reminders);
 
         $stock = LinkElement::new('menu.stock', null);
         $stock->add(LinkElement::new('menu.items', Path::new('items')));

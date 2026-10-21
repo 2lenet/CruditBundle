@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 
 const COOKIE = 'crudit_sidebar';
 const YEAR = 31536000;
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [contenteditable="true"], [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [contenteditable]:not([contenteditable="false"]), [tabindex]:not([tabindex="-1"])';
 const NOT_INERT = /^(SCRIPT|STYLE|LINK|TEMPLATE|NOSCRIPT)$/;
 const DISCLOSURE_TOGGLE = '2lenet--crudit-ui-bundle--disclosure:toggle';
 const CLOSED = 'crudit-ui-disclosure__panel--closed';

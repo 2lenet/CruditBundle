@@ -94,6 +94,10 @@ class LayoutTest extends AppTestCase
         self::assertSame('noopener noreferrer', $external->attr('rel'));
         self::assertStringContainsString('(new tab)', $external->text());
 
+        // One level of sub-menu: the children of a link of a sub-menu are not rendered
+        self::assertCount(2, $crawler->filter('.crudit-nav__submenu'));
+        self::assertCount(0, $crawler->filter('[data-menu-label="Late reminders"]'));
+
         // New tab, in a sub-menu (a link with a target) as at the first level (an external link): icon, announced, safe rel
         foreach (['Map', 'Documentation'] as $label) {
             $link = $crawler->filter(sprintf('[data-menu-label="%s"] a', $label));
