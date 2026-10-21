@@ -31,6 +31,8 @@ class AppMenuProvider implements MenuProviderInterface
         $stock = LinkElement::new('menu.stock', null);
         $stock->add(LinkElement::new('menu.items', Path::new('items')));
         $stock->add(LinkElement::new('menu.movements', Path::new('movements')));
+        // A link of a sub-menu that opens a new tab (a sub-menu only holds LinkElement)
+        $stock->add(LinkElement::new('menu.map', Path::new('items'))->setTarget('_blank'));
 
         $clients = LinkElement::new('menu.clients', Path::new('app_client_index'), Icon::new('users'));
         $clients->addBadge(Badge::new('12'));

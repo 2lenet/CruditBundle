@@ -158,7 +158,8 @@ to register with AssetMapper or Flex; with Webpack Encore, enable it in `control
   **drawer** below 1024 px, opened by the burger of the header or by the skip link "Skip to menu";
 - the choice of the user (button at the bottom of the menu, not shown below 1024 px) is in the cookie `crudit_sidebar`
   (`auto`, `collapsed`, `expanded`), read by the layout (`crudit_sidebar()`) and put in `data-sidebar` of
-  `.crudit-shell`: the page arrives in the right state, without a jump. `auto` follows the width of the window;
+  `.crudit-shell`: the page arrives in the right state, without a jump. `auto` follows the width of the window; the
+  cookie is deleted when the user's choice is what `auto` gives at that width, so the menu follows the window again;
 - the menu is **rendered once**. It is a `<div role="complementary">`, not an `<aside>`: the drawer gives it the role
   `dialog` when it is open (`aria-modal`, the rest of the page `inert`, focus trapped, Escape and the backdrop close
   it, the focus goes back to the burger), and an `<aside>` cannot have that role;
@@ -184,7 +185,7 @@ New translation keys, domain `LleCruditBundle` (`crudit.layout.*`): `sidebar`, `
 | `header.html.twig` (blocks `header_nav`, `header_right`) | blocks in `base.html.twig`, content in `header/_burger.html.twig`, `header/_actions.html.twig` |
 | `elements/_user`, `elements/_multisearch`, `elements/_exit_impersonation` | `header/_user_menu`, `header/_search`, `header/_exit_impersonation` |
 | `footer.html.twig` | block `footer` of `base.html.twig`, `footer/_version.html.twig` |
-| `elements/_link`, `_link_element`, `_external_link`, `_title`, `_category`, `_header`, `_h_separator` | `sidebar/_link` (link or sub-menu), `sidebar/_item` (link), `sidebar/_submenu`, `sidebar/_external_link`, `sidebar/_title`, `sidebar/_category`, `sidebar/_header`, `sidebar/_separator` |
+| `elements/_link`, `_link_element`, `_external_link`, `_title`, `_category`, `_header`, `_h_separator` | `sidebar/_link` (link or sub-menu), `sidebar/_item` (link and external link), `sidebar/_submenu`, `sidebar/_title`, `sidebar/_category`, `sidebar/_header`, `sidebar/_separator` |
 | `bricks/_bricks` | `crud/_bricks` |
 | `elements/_v_separator`, `_search`, `_message`, `_notification` | removed, **no replacement**: delete your `{% include %}` of `_v_separator` (the top bar has no separator any more). `elements/_search` (an SB Admin demo form) is not `header/_search`, which is the former `_multisearch` |
 

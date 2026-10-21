@@ -1,19 +1,25 @@
 {#
- # Item of the menu without children: a link. Contract with the sidebar controller: `data-menu-kind="item"` and
- # `data-menu-label` on the <li> (filter of the menu), `aria-current="page"` on the current link. The links of the
- # first level carry the tooltip of the collapsed menu (`tooltip`).
+ # Item of the menu without children: a link (LinkElement: route and parameters) or an external link
+ # (ExternalLinkElement: address). Contract with the sidebar controller: `data-menu-kind="item"` and `data-menu-label`
+ # on the <li> (filter of the menu), `aria-current="page"` on the link of the current page. `tooltip` (true by default,
+ # false for the links of a sub-menu): the tooltip of the collapsed menu. A link that opens a new tab shows an icon,
+ # announces it and has a safe `rel`.
  #}
-{% set active = crudit_menu_active(element, app.request) %}
 {% set label = element.libelle|trans %}
-{% set tooltip = tooltip|default(false) %}
-{% if element.path %}
-    {% set path = path(element.path.route, element.path.params) %}
-{% endif %}
+{% set tooltip = tooltip is defined ? tooltip : true %}
+{% set route = element.path ?? null %}
+{% set url = route ? path(route.route, route.params) : (element.url ?? null) %}
+{% set target = element.target ?? null %}
 {% set link %}
-    <a href="{{ path|default('#') }}" class="crudit-nav__link"
-       {% if active %}aria-current="page"{% endif %}
-       {% if element.target is defined and element.target %}target="{{ element.target }}"{% endif %}>
+    <a href="{{ url|default('#') }}" class="crudit-nav__link"
+       {% if route and crudit_menu_active(element, app.request) %}aria-current="page"{% endif %}
+       {% if target %}target="{{ target }}"{% endif %}
+       {% if target == '_blank' %}rel="noopener noreferrer"{% endif %}>
         {% include '@LleCrudit/layout/sidebar/_item_content.html.twig' %}
+        {% if target == '_blank' %}
+            {{- ui_icon('external-link', 'crudit-nav__external') -}}
+            <span class="crudit-ui-visually-hidden">&nbsp;{{ 'crudit.layout.new_tab'|trans(domain: 'LleCruditBundle') }}</span>
+        {% endif %}
     </a>
 {% endset %}
 <li class="crudit-nav__item {{ element.cssClass|default('') }}" data-menu-kind="item" data-menu-label="{{ label }}">

@@ -1,5 +1,6 @@
 {# Content of the block logo (inside the link to the home page): lot 2.1.c reworks it (logo of the project, one per theme). #}
-<img src="/img/logo.png" alt="Logo"/>
+{# The name of the application is shown next to the logo: the image has no text of its own #}
+<img src="/img/logo.png" alt="{{ app_name is defined ? '' : 'Logo' }}"/>
 {% if app_name is defined %}
     <span class="crudit-sidebar__brand-text">{{ app_name }}</span>
 {% endif %}

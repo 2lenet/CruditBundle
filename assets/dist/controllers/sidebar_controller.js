@@ -2,7 +2,8 @@ import { Controller } from '@hotwired/stimulus';
 
 const COOKIE = 'crudit_sidebar';
 const YEAR = 31536000;
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [contenteditable="true"], [tabindex]:not([tabindex="-1"])';
+const NOT_INERT = /^(SCRIPT|STYLE|LINK|TEMPLATE|NOSCRIPT)$/;
 const DISCLOSURE_TOGGLE = '2lenet--crudit-ui-bundle--disclosure:toggle';
 const CLOSED = 'crudit-ui-disclosure__panel--closed';
 const OPEN = 'crudit-sidebar--open';
@@ -136,22 +137,52 @@ export default class extends Controller {
             this.sidebarTarget.removeAttribute('aria-modal');
             this.sidebarTarget.setAttribute('aria-label', this.sidebarLabel);
         }
-        for (const part of [this.bodyTarget, document.querySelector('.crudit-skip-links')]) {
-            if (part) {
-                part.inert = modal;
-            }
-        }
+        this.setInert(modal);
         if (this.hasBurgerTarget) {
             this.burgerTarget.setAttribute('aria-expanded', String(modal));
         }
     }
 
+    // Everything around the menu is inert while the drawer is open: the column of the content and, in the <body>, what
+    // is not in the shell (skip links, toasts, dialog of confirmation, back to the top). Only what the drawer made
+    // inert is released.
+    setInert(inert) {
+        if (!inert) {
+            (this.inerted ?? []).forEach((element) => { element.inert = false; });
+            this.inerted = [];
+
+            return;
+        }
+        if (this.inerted?.length) {
+            return;
+        }
+        const around = [this.bodyTarget];
+        for (let node = this.element; node && node !== document.body; node = node.parentElement) {
+            for (const sibling of node.parentElement?.children ?? []) {
+                if (sibling !== node && !NOT_INERT.test(sibling.tagName)) {
+                    around.push(sibling);
+                }
+            }
+        }
+        this.inerted = around.filter((element) => !element.inert);
+        this.inerted.forEach((element) => { element.inert = true; });
+    }
+
     // Rail: the button of the footer, and the label that follows the state
 
+    // The choice of the user, remembered: but when it is what `auto` gives at this width, the choice is forgotten
+    // (the cookie goes) and the menu follows the width again.
     toggle() {
-        const mode = this.rail ? 'expanded' : 'collapsed';
-        this.element.dataset.sidebar = mode;
-        document.cookie = `${COOKIE}=${mode}; path=/; max-age=${YEAR}; SameSite=Lax`;
+        const rail = !this.rail;
+        const auto = this.desktop.matches && !this.wide.matches;
+        if (rail === auto) {
+            this.element.dataset.sidebar = 'auto';
+            document.cookie = `${COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+        } else {
+            const mode = rail ? 'collapsed' : 'expanded';
+            this.element.dataset.sidebar = mode;
+            document.cookie = `${COOKIE}=${mode}; path=/; max-age=${YEAR}; SameSite=Lax`;
+        }
         this.sync();
     }
 
@@ -282,7 +313,17 @@ export default class extends Controller {
     // Keyboard
 
     keydown(event) {
+        if (event.defaultPrevented) {
+            return;
+        }
         if (event.key === 'Escape') {
+            // In the filter, Escape empties it and nothing else (the field of a search does it by itself in some browsers).
+            if (this.hasFilterTarget && event.target === this.filterTarget && this.filterTarget.value !== '') {
+                event.preventDefault();
+                this.clearFilter();
+
+                return;
+            }
             const open = this.rail ? this.parents().find((item) => this.isOpen(item)) : null;
             if (open) {
                 this.setOpen(open, false);

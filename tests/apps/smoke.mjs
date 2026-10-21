@@ -387,6 +387,53 @@ assert.equal(errors.length, errorsBefore, 'no error without the blocks menu_filt
 ok('the menu works without the filter and the button that reduces it');
 await page.close();
 
+// ---------- Points of the second review
+// Drawer: everything outside the shell is inert (back to the top, skip links, toasts), the backdrop still closes it
+page = await open(390);
+await page.evaluate(() => { window.scrollTo(0, 800); });
+await new Promise((r) => setTimeout(r, 200));
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+const outside = await page.evaluate(() => [...document.body.children]
+    .filter((e) => !['SCRIPT', 'STYLE', 'LINK', 'TEMPLATE'].includes(e.tagName) && !e.contains(document.querySelector('.crudit-shell')) && e !== document.querySelector('.crudit-shell'))
+    .map((e) => `${e.className || e.tagName}:${e.inert}`));
+assert.ok(outside.length >= 2 && outside.every((x) => x.endsWith(':true')), `everything outside the shell is inert (${outside})`);
+assert.equal(await page.$eval('.crudit-shell__backdrop', (e) => e.inert), false, 'the backdrop is not inert');
+assert.equal(await page.$eval('#crudit-sidebar', (e) => e.inert), false);
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 400));
+const left = await page.evaluate(() => [...document.querySelectorAll('[inert]')].length);
+assert.equal(left, 0, 'nothing stays inert once the drawer is closed');
+ok('drawer: everything around the menu is inert, and released on close');
+
+// Escape in the filter empties it and nothing else
+await page.click('.crudit-header__burger');
+await new Promise((r) => setTimeout(r, 400));
+await page.type('#crudit-menu-filter', 'inter');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 200));
+assert.equal(await page.$eval('#crudit-menu-filter', (e) => e.value), '', 'Escape empties the filter');
+assert.ok(await visible(page, '#crudit-sidebar'), 'and the drawer stays open');
+assert.ok((await labels()).includes('Clients'), 'the menu is whole again');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(!(await visible(page, '#crudit-sidebar')), 'a second Escape closes the drawer');
+ok('Escape in the filter empties it, a second one closes the drawer');
+await page.close();
+
+// Back to `auto`: the cookie goes when the choice is what `auto` gives at this width
+page = await open(1440);
+await page.click('.crudit-sidebar__collapse');
+assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar')?.value, 'collapsed');
+await page.click('.crudit-sidebar__collapse');
+assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar'), undefined, 'the cookie is gone');
+assert.equal(await attr(page, '.crudit-shell', 'data-sidebar'), 'auto');
+await page.setViewport({width: 1100, height: 800});
+await new Promise((r) => setTimeout(r, 300));
+assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'auto again: the rail at 1100');
+ok('the menu goes back to auto when the choice is what auto gives');
+await page.close();
+
 // ---------- Turbo cache hook / reduced motion: no errors
 console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
 console.log(`${passed} checks passed`);

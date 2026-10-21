@@ -94,9 +94,19 @@ class LayoutTest extends AppTestCase
         self::assertSame('noopener noreferrer', $external->attr('rel'));
         self::assertStringContainsString('(new tab)', $external->text());
 
+        // New tab, in a sub-menu (a link with a target) as at the first level (an external link): icon, announced, safe rel
+        foreach (['Map', 'Documentation'] as $label) {
+            $link = $crawler->filter(sprintf('[data-menu-label="%s"] a', $label));
+            self::assertSame('_blank', $link->attr('target'), $label);
+            self::assertSame('noopener noreferrer', $link->attr('rel'), $label);
+            self::assertStringContainsString('(new tab)', $link->text(), $label);
+            self::assertCount(1, $link->filter('svg.crudit-nav__external'), $label);
+        }
+
         // Tooltip of the rail on the items of the first level, not on the links of a sub-menu
         self::assertCount(1, $crawler->filter('[data-menu-label="Home"] .crudit-ui-tooltip'));
         self::assertCount(0, $crawler->filter('[data-menu-label="Invoices"] .crudit-ui-tooltip'));
+        self::assertCount(0, $crawler->filter('[data-menu-label="Map"] .crudit-ui-tooltip'));
 
         // Every id is unique
         $ids = $crawler->filter('[id]')->each(static fn ($node) => $node->attr('id'));

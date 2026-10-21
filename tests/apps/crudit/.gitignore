@@ -9,3 +9,4 @@
 /assets/vendor/
 /assets/icons/
 /config/reference.php
+/.phpunit.result.cache

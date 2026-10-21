@@ -5,8 +5,8 @@
  #}
 {% set active = crudit_menu_active(element, app.request) %}
 {% set label = element.libelle|trans %}
-{# The id of the panel: from the id of the element, a random one when it has none #}
-{% set panel = 'crudit-nav-' ~ ((element.id ?? '')|lower|replace({' ': '-', '.': '-'}) ?: random()) %}
+{# The id of the panel: from the id of the element, from its label when it has none #}
+{% set panel = 'crudit-nav-' ~ ((element.id ?? '')|lower|replace({' ': '-', '.': '-'}) ?: label|lower|replace({' ': '-', '.': '-'})) %}
 {% set button %}
     <button type="button" class="crudit-nav__link crudit-nav__link--parent{{ active ? ' crudit-nav__link--has-current' : '' }}"
             aria-expanded="{{ active ? 'true' : 'false' }}" aria-controls="{{ panel }}"
@@ -26,7 +26,7 @@
         <ul class="crudit-nav__sublist">
             {% for child in element.children %}
                 {% if is_granted(child.role) %}
-                    {% include '@LleCrudit/layout/sidebar/_item.html.twig' with {'element': child, 'tooltip': false} %}
+                    {% include child.template with {'element': child, 'tooltip': false} %}
                 {% endif %}
             {% endfor %}
         </ul>

@@ -10,6 +10,7 @@ menu:
     stock: "Stock"
     items: "Items"
     movements: "Movements"
+    map: "Map"
     administration: "Administration"
     users: "Users"
     settings: "Settings"
