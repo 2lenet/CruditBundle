@@ -20,7 +20,7 @@ class TitleElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return '@LleCrudit/layout/sb_admin/elements/_title.html.twig';
+        return '@LleCrudit/layout/sidebar/_title.html.twig';
     }
 
     public function getLibelle(): string

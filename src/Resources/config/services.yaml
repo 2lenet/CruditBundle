@@ -59,6 +59,10 @@ services:
             - '@workflow.registry'
         tags: [twig.extension]
 
+    Lle\CruditBundle\Twig\SidebarExtension:
+        arguments: ['@request_stack']
+        tags: [twig.extension]
+
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
         tags: [twig.extension]
 

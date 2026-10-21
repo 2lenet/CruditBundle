@@ -1,0 +1,35 @@
+{#
+ # Item of the first level with children: a button that shows or hides its links (controller disclosure of
+ # CruditUiBundle). The sub-menu is open when it holds the current page. In the collapsed menu (rail) the sidebar
+ # controller shows it as a panel next to the button. One level only: a sub-menu holds links (`_item`), the children of
+ # these links are not rendered (the controller and the filter do not handle a third level).
+ #}
+{% set active = crudit_menu_active(element, app.request) %}
+{% set label = element.libelle|trans %}
+{# The id of the panel: from the id of the element, from its label when it has none #}
+{% set panel = 'crudit-nav-' ~ ((element.id ?? '')|lower|replace({' ': '-', '.': '-'}) ?: label|lower|replace({' ': '-', '.': '-'})) %}
+{% set button %}
+    <button type="button" class="crudit-nav__link crudit-nav__link--parent{{ active ? ' crudit-nav__link--has-current' : '' }}"
+            aria-expanded="{{ active ? 'true' : 'false' }}" aria-controls="{{ panel }}"
+            data-2lenet--crudit-ui-bundle--disclosure-target="toggle"
+            data-action="2lenet--crudit-ui-bundle--disclosure#toggle">
+        {% include '@LleCrudit/layout/sidebar/_item_content.html.twig' %}
+        {% if active %}<span class="crudit-ui-visually-hidden">&nbsp;{{ 'crudit.layout.contains_current_page'|trans(domain: 'LleCruditBundle') }}</span>{% endif %}
+        {{- ui_icon('dropdown', 'crudit-nav__chevron') -}}
+    </button>
+{% endset %}
+<li class="crudit-nav__item crudit-nav__item--parent {{ element.cssClass|default('') }}" data-menu-kind="item" data-menu-label="{{ label }}"
+    data-controller="2lenet--crudit-ui-bundle--disclosure">
+    <twig:LleCruditUi:Tooltip :text="label" placement="beside">{{ button }}</twig:LleCruditUi:Tooltip>
+    <div id="{{ panel }}" class="crudit-nav__submenu crudit-ui-disclosure__panel{{ active ? '' : ' crudit-ui-disclosure__panel--closed' }}"
+         data-2lenet--crudit-ui-bundle--disclosure-target="panel">
+        <p class="crudit-nav__flyout-title" aria-hidden="true">{{ label }}</p>
+        <ul class="crudit-nav__sublist">
+            {% for child in element.children %}
+                {% if is_granted(child.role) %}
+                    {% include '@LleCrudit/layout/sidebar/_item.html.twig' with {'element': child, 'tooltip': false} %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</li>

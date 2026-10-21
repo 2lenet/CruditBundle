@@ -1,0 +1,56 @@
+interventions:
+    path: /page/interventions
+    controller: App\Controller\PageController::page
+    defaults: {slug: interventions}
+invoices:
+    path: /page/invoices
+    controller: App\Controller\PageController::page
+    defaults: {slug: invoices}
+credits:
+    path: /page/credits
+    controller: App\Controller\PageController::page
+    defaults: {slug: credits}
+reminders:
+    path: /page/reminders
+    controller: App\Controller\PageController::page
+    defaults: {slug: reminders}
+items:
+    path: /page/items
+    controller: App\Controller\PageController::page
+    defaults: {slug: items}
+movements:
+    path: /page/movements
+    controller: App\Controller\PageController::page
+    defaults: {slug: movements}
+users:
+    path: /page/users
+    controller: App\Controller\PageController::page
+    defaults: {slug: users}
+settings:
+    path: /page/settings
+    controller: App\Controller\PageController::page
+    defaults: {slug: settings}
+reports:
+    path: /page/reports
+    controller: App\Controller\PageController::page
+    defaults: {slug: reports}
+planning:
+    path: /page/planning
+    controller: App\Controller\PageController::page
+    defaults: {slug: planning}
+contracts:
+    path: /page/contracts
+    controller: App\Controller\PageController::page
+    defaults: {slug: contracts}
+suppliers:
+    path: /page/suppliers
+    controller: App\Controller\PageController::page
+    defaults: {slug: suppliers}
+vehicles:
+    path: /page/vehicles
+    controller: App\Controller\PageController::page
+    defaults: {slug: vehicles}
+agencies:
+    path: /page/agencies
+    controller: App\Controller\PageController::page
+    defaults: {slug: agencies}

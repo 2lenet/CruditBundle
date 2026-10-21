@@ -30,6 +30,12 @@
                 "webpackMode": "eager",
                 "fetch": "eager",
                 "enabled": true
+            },
+            "sidebar": {
+                "main": "dist/controllers/sidebar_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
             }
         },
         "importmap": {

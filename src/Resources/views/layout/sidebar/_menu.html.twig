@@ -1,0 +1,15 @@
+{# Items of the menu, from the providers (crudit.menu). Each element renders itself (its getTemplate()). #}
+<ul class="crudit-nav">
+    {% for element in crudit_menu_items('menu_side') %}
+        {% set mustBeDisplayed = (element.children|length) ? false : true %}
+        {% for child in element.children %}
+            {% if is_granted(child.role) %}
+                {% set mustBeDisplayed = true %}
+            {% endif %}
+        {% endfor %}
+
+        {% if is_granted(element.role) and mustBeDisplayed %}
+            {% include element.template with {'element': element, 'where': 'menu-nav'} %}
+        {% endif %}
+    {% endfor %}
+</ul>

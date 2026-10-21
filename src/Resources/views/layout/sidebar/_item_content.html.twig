@@ -1,0 +1,17 @@
+{#
+ # Content of the link of a menu item (icon, label, badges). The icon is replaced by the first letter of the label when
+ # the item has none: the collapsed menu (rail) shows only that. Lot 2.1.b; lot 2.1.a renders the icons and the badges.
+ #}
+<span class="crudit-nav__icon" aria-hidden="true">
+    {%- if element.icon and element.icon.img -%}
+        <img src="{{ element.icon.icon }}" alt="">
+    {%- elseif element.icon -%}
+        <i class="{{ element.icon.cssClass }}"></i>
+    {%- else -%}
+        {{ label|first|upper }}
+    {%- endif -%}
+</span>
+<span class="crudit-nav__label">{{ label }}</span>
+{% for badge in element.badges ?? [] %}
+    <span class="crudit-nav__badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
+{% endfor %}

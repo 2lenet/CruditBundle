@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Crudit\CrudMenu;
+declare(strict_types=1);
 
-use Lle\CruditBundle\Dto\Layout\AbstractLayoutElement;
+namespace Lle\CruditBundle\Dto\Layout;
 
 class CategoryElement extends AbstractLayoutElement
 {
@@ -25,6 +25,6 @@ class CategoryElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return '@LleCrudit/layout/sb_admin/elements/_category.html.twig';
+        return '@LleCrudit/layout/sidebar/_category.html.twig';
     }
 }

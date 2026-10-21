@@ -11,9 +11,19 @@ crudit:
         skip_to_menu: "Zum Menü springen"
         back_to_top: "Zurück zum Seitenanfang"
         messages: "Meldungen"
+        sidebar: "Seitenleiste"
+        open_menu: "Menü öffnen"
+        close_menu: "Menü schließen"
+        filter_menu: "Menü filtern"
+        filter_none: "Kein Element gefunden"
+        filter_one: "1 Element gefunden"
+        filter_many: "%count% Elemente gefunden"
+        collapse_menu: "Menü einklappen"
+        expand_menu: "Menü ausklappen"
+        contains_current_page: "(enthält die aktuelle Seite)"
+        new_tab: "(neuer Tab)"
 
     footer:
-        copyrights: "Copyrights."
         release: "Version"
 
     pagination:

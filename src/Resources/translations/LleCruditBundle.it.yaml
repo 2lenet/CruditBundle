@@ -11,9 +11,19 @@ crudit:
         skip_to_menu: "Vai al menu"
         back_to_top: "Torna all'inizio della pagina"
         messages: "Messaggi"
+        sidebar: "Barra laterale"
+        open_menu: "Apri il menu"
+        close_menu: "Chiudi il menu"
+        filter_menu: "Filtra il menu"
+        filter_none: "Nessun elemento trovato"
+        filter_one: "1 elemento trovato"
+        filter_many: "%count% elementi trovati"
+        collapse_menu: "Riduci il menu"
+        expand_menu: "Espandi il menu"
+        contains_current_page: "(contiene la pagina corrente)"
+        new_tab: "(nuova scheda)"
 
     footer:
-        copyrights: "Copyrights."
         release: "Versione"
 
     pagination:

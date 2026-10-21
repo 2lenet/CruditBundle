@@ -1,0 +1,17 @@
+{#
+ # Filter of the menu (block menu_filter of base.html.twig, controller sidebar). The texts of the announcement of the
+ # result are read by the controller from the data attributes of the status.
+ #}
+{% set ctrl = '2lenet--crudit-bundle--sidebar' %}
+{% set label = 'crudit.layout.filter_menu'|trans(domain: 'LleCruditBundle') %}
+<div class="crudit-sidebar__filter" role="search" aria-label="{{ label }}">
+    <label for="crudit-menu-filter" class="crudit-ui-visually-hidden">{{ label }}</label>
+    {{- ui_icon('search', 'crudit-sidebar__filter-icon') -}}
+    <input id="crudit-menu-filter" class="crudit-sidebar__filter-input" type="search" autocomplete="off" placeholder="{{ label }}"
+           aria-describedby="crudit-menu-filter-status"
+           data-{{ ctrl }}-target="filter" data-action="input->{{ ctrl }}#filter">
+    <p id="crudit-menu-filter-status" class="crudit-ui-visually-hidden" aria-live="polite" data-{{ ctrl }}-target="status"
+       data-none="{{ 'crudit.layout.filter_none'|trans(domain: 'LleCruditBundle') }}"
+       data-one="{{ 'crudit.layout.filter_one'|trans(domain: 'LleCruditBundle') }}"
+       data-many="{{ 'crudit.layout.filter_many'|trans(domain: 'LleCruditBundle') }}"></p>
+</div>
