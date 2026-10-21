@@ -30,12 +30,6 @@
         min-width: 0;
     }
 
-    // <nav id="main-nav">, focused by the skip link "Go to the menu": not interactive, no ring around the whole menu
-    // (the next Tab reaches its first link).
-    &__nav:focus {
-        outline: none;
-    }
-
     &__body {
         display: flex;
         min-width: 0;
