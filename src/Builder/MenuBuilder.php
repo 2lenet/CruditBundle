@@ -16,8 +16,8 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * The menu shown to the user, from the elements of the providers (MenuRegistry):
  * - the elements the user is not granted are removed, children included;
- * - a sub-menu whose children are all removed is removed;
- * - a heading (title, category, header) with no item under it is removed;
+ * - a sub-menu or a title whose children are all removed is removed (a title with children labels them only);
+ * - a heading (title, category, header) without children and with no item under it is removed;
  * - a separator at the start, at the end or after another separator is removed.
  *
  * The elements of the providers are not changed: an element whose children are filtered is a copy (withChildren()).
@@ -54,11 +54,11 @@ class MenuBuilder
             $children = $element->getChildren();
             if ($children !== []) {
                 $grantedChildren = $this->filterGranted($children);
-                // Empty sub-menu: removed. Empty title: kept, removeEmptyHeadings() decides.
-                if ($grantedChildren === [] && !$element instanceof TitleElement) {
+                if ($grantedChildren === []) {
                     continue;
                 }
-                if (\count($grantedChildren) !== \count($children) && $element instanceof AbstractLayoutElement) {
+                // Compares the instances, not the count: a child can be a copy (a sub-menu without a refused link)
+                if ($grantedChildren !== $children && $element instanceof AbstractLayoutElement) {
                     $element = $element->withChildren($grantedChildren);
                 }
             }

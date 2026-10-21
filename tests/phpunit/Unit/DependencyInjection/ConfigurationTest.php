@@ -11,7 +11,8 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 /**
- * lle_crudit.layout: nothing by default (no logo, no favicon, no link), a link of the footer has a route or an url.
+ * lle_crudit.layout: nothing by default (no logo, no favicon, no link), a link of the footer has a route or an url,
+ * logo_dark needs logo.
  */
 class ConfigurationTest extends TestCase
 {
@@ -61,6 +62,14 @@ class ConfigurationTest extends TestCase
         $this->expectExceptionMessage('A link of the footer has a route or an url, not both');
 
         $this->process(['layout' => ['footer_links' => [$link]]]);
+    }
+
+    public function testLogoDarkNeedsLogo(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('lle_crudit.layout.logo_dark needs lle_crudit.layout.logo');
+
+        $this->process(['layout' => ['logo_dark' => 'images/logo-dark.svg']]);
     }
 
     /**

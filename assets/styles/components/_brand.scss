@@ -68,8 +68,10 @@
     }
 }
 
-:root[data-theme='dark'] {
-    @include dark-logo;
+@media screen {
+    :root[data-theme='dark'] {
+        @include dark-logo;
+    }
 }
 
 @media screen and (prefers-color-scheme: dark) {

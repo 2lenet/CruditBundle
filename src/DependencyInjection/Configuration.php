@@ -169,6 +169,10 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->validate()
+                    ->ifTrue(static fn (array $layout): bool => $layout['logo_dark'] !== null && $layout['logo'] === null)
+                    ->thenInvalid('lle_crudit.layout.logo_dark needs lle_crudit.layout.logo: %s')
+                ->end()
             ->end();
 
         return $treeBuilder;

@@ -69,7 +69,7 @@ services:
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\LayoutExtension:
-        arguments: ['%lle_crudit.layout%']
+        arguments: ['%lle_crudit.layout%', '@?logger']
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:

@@ -220,18 +220,25 @@ configuration or in the `footer` block.
   read as a logical name of CruditUiBundle). `Icon::new('/img/icons/home.svg', Icon::TYPE_IMG)` (arcade5) or
   `/bundles/llehermes/img/hermes.svg` (HermesBundle) are the cases to convert.
 - **Run `bin/console ux:icons:lock`**: the icons of the menu are found by the finder of CruditBundle
-  (`MenuIconFinder`, it reads your menu providers), the command imports them like the icons of the templates.
+  (`MenuIconFinder`, it reads your menu providers), the command imports them like the icons of the templates. It
+  runs without a user (`ux:icons:lock`, `cache:warmup`): the icons of the items a provider adds only for some users
+  (`if ($this->security->isGranted(…))`) are not found, declare them in `lle_crudit_ui.icons.map` or in the aliases
+  of `ux_icons`; and what a provider computes (a badge counted in the database) also runs then.
 - **Badges** (`Dto/Badge`): `Badge::new('12', 'danger', 'menu.visits_to_plan')`: the text shown, a tone
   (`neutral` by default, `info`, `success`, `warning`, `danger`) and a text read after it by screen readers only
   (a translation key: "12" alone means nothing). Any tone of the `Badge` component of CruditUiBundle works
   (`primary`, the extended palette, or a colour of the project with its CSS rule); a tone without its rule gives the
-  neutral colours. `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, a
+  neutral colours, **without any error**: `'badge-danger'` or `'bg-danger'` (the Bootstrap classes of 1.x) become
+  neutral badges, write `'danger'`. `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, a
   badge becomes a dot of its tone and is shown in the tooltip.
 - **What the user cannot see is removed before rendering** (`MenuBuilder`, used by `crudit_menu_items()`): elements
-  the user is not granted (`setRole()`), children included, a sub-menu whose children are all removed, a heading
-  (title, category, header) followed by no item, a separator at the start, at the end or after another separator.
+  the user is not granted (`setRole()`), children included, a sub-menu or a title whose children are all removed (a
+  title with children labels them only), a heading without children (title, category, header) followed by no item,
+  a separator at the start, at the end or after another separator.
   The templates no longer call `is_granted()`. A `TitleElement` renders its children after it (it crashed before).
 - `setCssClass()` with Bootstrap classes (`d-none d-md-block`) has no effect any more: remove it.
+- The constructor of `Lle\CruditBundle\Twig\CruditExtension` takes a `MenuBuilder` instead of the `MenuRegistry`:
+  nothing to do through the container, only a class that extends or decorates it is concerned.
 
 ### Logo and footer *(lot 2.1.c)*
 
@@ -247,7 +254,7 @@ lle_crudit:
         logo_dark: 'images/logo-dark.svg' # dark theme (without it, logo in both themes)
         logo_small: 'images/mark.svg'     # square, collapsed menu (without it, the initial of app_name)
         favicon: 'images/favicon.svg'
-        version: '%env(APP_VERSION)%'
+        version: '%env(default::APP_VERSION)%'
         release_date: '%env(default::APP_RELEASE_DATE)%' # Y-m-d, shown "updated on 21 October 2026"
         footer_links:
             - { label: 'footer.accessibility', route: 'app_accessibility' } # translation key (messages) or text
@@ -255,18 +262,20 @@ lle_crudit:
 ```
 
 - **Remove your blocks `brand`, `logo` and `favicon`** when they only put your image: `/img/logo.png` is no longer
-  the default, neither for the logo nor for the favicon (without `favicon`, the browser asks for `/favicon.ico`). An
-  inline `style` (kisscut6: `style="height:25px"`, a background colour) is refused by a strict CSP and is not needed
-  any more: the logo takes the width of the menu.
+  the default, neither for the logo nor for the favicon (without `favicon`, the browser asks for `/favicon.ico`), and
+  the `apple-touch-icon` link is gone: add it in your block `favicon` if you need it. An inline `style` (kisscut6:
+  `style="height:25px"`, a background colour) is refused by a strict CSP and is not needed any more: the logo takes
+  the width of the menu.
 - **The link of the logo is named "\<app_name\>, home"** (key `crudit.layout.home`) and the images are decorative
   (`alt=""`): do not put `alt="Logo"` back if you keep your block. Without `logo`, the name of the application is
   shown as text. It goes to `/`, as before (helyon used `path('homepage')`: keep your block `brand` for another
   address).
 - **Logo per theme in CSS**: both images are in the page, the stylesheet shows the one of the theme (chosen by the
-  user or by the system), without reloading.
-- **Footer**: the version comes from `version`, and from the Twig global `app_version` without it. `release_date`
-  adds "updated on …", in the language of the page. No link by default; a footer with neither link nor version is not
-  shown. To remove it, empty the block `footer` (arhon).
+  user or by the system), without reloading; printed with the light one. `logo_dark` without `logo` is refused.
+- **Footer**: the version comes from `version`, and from the Twig global `app_version` when it is empty.
+  `release_date` adds "updated on …", in the language of the page; a date that is not `Y-m-d` is logged and not
+  shown. No link by default; without link, version nor date, there is no `<footer>`. To remove it, empty the block
+  `footer` (arhon).
 
 ## 3. Theme: SCSS variables to CSS variables
 

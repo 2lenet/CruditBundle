@@ -160,9 +160,6 @@ class LayoutTest extends AppTestCase
     }
 
     /**
-     * The blocks that 1.x kept in included templates (where they could not be overridden) are in the layout.
-     */
-    /**
      * Logo, favicon and footer from lle_crudit.layout (config/packages/lle_crudit.yaml).
      */
     public function testLogoFaviconAndFooter(): void
@@ -170,7 +167,7 @@ class LayoutTest extends AppTestCase
         $crawler = $this->client->request('GET', '/page/invoices');
 
         // Favicon of the configuration (AssetMapper), no logo.png left
-        self::assertMatchesRegularExpression('#^/assets/images/favicon-[\w-]+\.svg$#', (string) $crawler->filter('link[rel="icon"]')->attr('href'));
+        self::assertMatchesRegularExpression('#^/assets/images/favicon-[\w-]+\.svg$#', (string) $crawler->filter('link[rel="icon"][type="image/svg+xml"]')->attr('href'));
         self::assertStringNotContainsString('logo.png', (string) $this->client->getResponse()->getContent());
 
         // Link of the logo: named "<application>, home", decorative images, one per theme, the initial in the rail
@@ -192,12 +189,15 @@ class LayoutTest extends AppTestCase
         self::assertSame('2026-10-21', $version->filter('time')->attr('datetime'));
     }
 
+    /**
+     * The blocks that 1.x kept in included templates (where they could not be overridden) are in the layout.
+     */
     public function testEveryBlockCanBeOverridden(): void
     {
         $crawler = $this->client->request('GET', '/overrides');
 
         self::assertResponseIsSuccessful();
-        self::assertSame('MY LOGO', $crawler->filter('.crudit-sidebar__brand #o-logo')->text());
+        self::assertSame('MY LOGO', $crawler->filter('.crudit-brand #o-logo')->text());
         self::assertCount(1, $crawler->filter('#main-nav #o-side-header'));
         self::assertCount(1, $crawler->filter('#main-nav #o-side-footer'));
         self::assertCount(1, $crawler->filter('.crudit-header #o-header-nav'));

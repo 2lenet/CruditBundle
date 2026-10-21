@@ -89,12 +89,39 @@ class MenuBuilderTest extends TestCase
         $title = TitleElement::new('administration');
         $title->addChild(LinkElement::new('users', Path::new('users'), role: 'ROLE_ADMIN'));
         $title->addChild(LinkElement::new('settings', Path::new('settings')));
-        $empty = TitleElement::new('reports');
-        $empty->addChild(LinkElement::new('sales', Path::new('sales'), role: 'ROLE_ADMIN'));
 
-        $menu = $this->build([$title, HorizontalSeparatorElement::new(), $empty]);
+        self::assertSame(['administration' => ['settings']], $this->labels($this->build([$title])));
+    }
 
-        self::assertSame(['administration' => ['settings']], $this->labels($menu));
+    /**
+     * A title with children labels them only: without any of them, it goes, even if items follow it.
+     */
+    public function testTitleWithoutGrantedChildIsRemoved(): void
+    {
+        $title = TitleElement::new('reports');
+        $title->addChild(LinkElement::new('sales', Path::new('sales'), role: 'ROLE_ADMIN'));
+
+        $menu = $this->build([$title, LinkElement::new('home', Path::new('home'))]);
+
+        self::assertSame(['home'], $this->labels($menu));
+    }
+
+    /**
+     * Title > sub-menu > refused link: the sub-menu is a copy without the link, so the title must be a copy too, even
+     * if it keeps one child.
+     */
+    public function testRefusedLinkInASubMenuOfATitle(): void
+    {
+        $billing = LinkElement::new('billing', null);
+        $billing->add(LinkElement::new('invoices', Path::new('invoices')));
+        $billing->add(LinkElement::new('credits', Path::new('credits'), role: 'ROLE_ADMIN'));
+        $title = TitleElement::new('administration');
+        $title->addChild($billing);
+
+        $menu = $this->build([$title]);
+
+        self::assertSame(['administration' => ['billing' => ['invoices']]], $this->labels($menu));
+        self::assertCount(2, $billing->getChildren(), 'the element of the provider is not changed');
     }
 
     public function testSeparators(): void

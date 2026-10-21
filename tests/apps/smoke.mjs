@@ -15,8 +15,14 @@ const errors = [];
 let passed = 0;
 const ok = (name) => { passed++; console.log('ok  ', name); };
 
+// One page at a time: open() closes the previous one
+let current = null;
 async function open(width, path = '/', {cookie = null, dark = false, rtl = false} = {}) {
+    if (current && !current.isClosed()) {
+        await current.close();
+    }
     const page = await browser.newPage();
+    current = page;
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
     page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});

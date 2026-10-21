@@ -48,6 +48,7 @@
         "symfony/stimulus-bundle": "^2.20 || ^3.0",
         "symfony/twig-bundle": "^7.0 || ^8.0",
         "symfony/translation": "^7.0 || ^8.0",
+        "symfony/ux-icons": "^3.5",
         "symfony/ux-twig-component": "^2.20 || ^3.0",
         "symfony/workflow": "^7.0 || ^8.0",
         "symfony/yaml": "^7.0 || ^8.0",

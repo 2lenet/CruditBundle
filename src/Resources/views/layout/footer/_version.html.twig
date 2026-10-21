@@ -1,9 +1,10 @@
 {#
- # Version of the application and its date (lle_crudit.layout.version and release_date; without version, the Twig
- # global app_version of the project). Not shown when both are empty.
+ # Version of the application and its date (lle_crudit.layout.version and release_date, resolved by LayoutExtension:
+ # without version, the Twig global app_version; the date is a DateTimeImmutable or null). Not shown when both are
+ # empty.
  #}
 {% set layout = crudit_layout() %}
-{% set version = layout.version ?? app_version ?? null %}
+{% set version = layout.version %}
 {% set date = layout.release_date %}
 {% if version or date %}
     <p class="crudit-footer__version">
