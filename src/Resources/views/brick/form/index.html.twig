@@ -45,7 +45,7 @@
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}
-                {% if field.vars.compound is defined and field.vars.compound and 'collection' not in field.vars.block_prefixes and (field.vars.attr.class is not defined or not field.vars.attr.class) %}
+                {% if field.vars.compound is defined and field.vars.compound and 'collection' not in field.vars.block_prefixes and 'crudit_telephone' not in field.vars.block_prefixes and (field.vars.attr.class is not defined or not field.vars.attr.class) %}
                     {% for subfield in field %}
                         {% if subfield.vars.name != '_token' %}
                             <div class="{{ displayClass }} position-relative {% if subfield.vars.attr.class is defined and subfield.vars.attr.class %} {{ subfield.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
@@ -79,7 +79,10 @@
                         >
                             {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
                             {{ form_widget(field, {attr}) }}
-                            {% if field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
+                            {% if 'crudit_telephone' in field.vars.block_prefixes %}
+                                {# A floating <label> pointing to the number, instead of the <legend> of a compound field #}
+                                {{ form_label(field, null, {compound: false, id: field.number.vars.id}) }}
+                            {% elseif field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
                                 {{ form_label(field) }}
                             {% endif %}
                             <div class="px-2">

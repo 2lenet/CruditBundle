@@ -37,6 +37,56 @@ The [Lle\CruditBundle\Form\Type\MarkdownType](markdown.md#markdowntype) allows y
 
 The `Lle\CruditBundle\Form\Type\CronExpressionType` allows you to create a cron input with a interface to select value.
 
+### Telephone
+
+The `Lle\CruditBundle\Form\Type\TelephoneType` renders a calling code select (`Switzerland (+41)`) next to a number input,
+and stores the number as an E.164 string (`+41791234567`) in a plain string property. No external library is needed.
+
+```php
+$builder->add('telephone', TelephoneType::class, [
+    'default_country' => 'CH',
+    'preferred_countries' => ['CH', 'FR', 'IT'],
+]);
+```
+
+Options :
+
+| Name                | Default | Description                                                    |
+|---------------------|---------|----------------------------------------------------------------|
+| default_country     | FR      | ISO code selected when the field is empty                      |
+| preferred_countries | []      | ISO codes displayed at the top of the select (unknown codes are rejected) |
+
+Validation happens on submit: only digits (spaces, dots, dashes, slashes and parentheses allowed), and the number of
+digits after the calling code is checked for the main European countries and North America (generic E.164 bounds
+elsewhere). A leading trunk `0` is removed (`06 12 34 56 78` → `+33612345678`), except for Italy. A number typed with
+`+` or `00` takes precedence over the selected country.
+
+#### Existing (legacy) values
+
+Switching an existing string field to `TelephoneType` breaks nothing: a stored value that is not E.164 (free text such
+as `06 12 34 56 78`, or an unknown calling code) is never guessed from `default_country`:
+
+- it is displayed as is in the number input, with no calling code selected (`+ ?` in the box, an option offered
+  in the select for such values only);
+- submitted untouched, it is saved back unchanged, so the rest of the form can be saved;
+- once the user picks a calling code (or types the number with `+`/`00`), it is validated and converted to E.164.
+  Changing the number without choosing a calling code raises `crudit.telephone.calling_code_required`.
+
+Legacy values thus stay as they are until someone edits them. If you need E.164 everywhere (SMS, CRM sync…), migrate
+the existing data when switching the field: `TelephoneTransformer::isLegacy()` spots the values to convert, and
+`reverseTransform()` on a new transformer instance converts them with the country known for each record.
+
+The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): a compact box showing the calling
+code (`+41`, from the `calling_code` view variable) on the left, with the native country select laid transparent over
+it (no TomSelect), and the number input on the right. Each country option carries its calling code in a `data-code`
+attribute, copied into the box on change. Override the block in your own form theme to restyle it. With `form_row()`,
+the `crudit_telephone_row` block renders a regular `<label>` pointing to the number input, instead of the
+`<fieldset>`/`<legend>` Bootstrap uses for compound fields.
+
+Display stored numbers with the `telephone` Twig filter (`+41 79 123 45 67`). Formats exist for a set of calling codes
+(`CruditTelephoneFilterExtension::FORMATS`: `+1`, `+32`, `+33`, `+34`, `+41`, `+49`, French overseas, Maghreb…); other
+numbers, Italian ones (`+39`) for instance, are displayed unformatted.
+
 ### CollectionType
 
 Crudit works with CollectionType, but you need to do configure some things on your side.

@@ -138,3 +138,6 @@ crudit:
 
     gedmo_translatable:
         default_locale_helper: "Data is always required for the following language:"
+
+    telephone:
+        calling_code: "Calling code"

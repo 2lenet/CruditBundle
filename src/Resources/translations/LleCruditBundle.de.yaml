@@ -138,3 +138,6 @@ crudit:
 
     gedmo_translatable:
         default_locale_helper: "Für die folgende Sprache sind immer Daten erforderlich:"
+
+    telephone:
+        calling_code: "Ländervorwahl"

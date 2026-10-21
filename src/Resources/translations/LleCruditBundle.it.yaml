@@ -137,3 +137,6 @@ crudit:
 
     gedmo_translatable:
         default_locale_helper: "È sempre richiesto un dato per la seguente lingua:"
+
+    telephone:
+        calling_code: "Prefisso internazionale"
