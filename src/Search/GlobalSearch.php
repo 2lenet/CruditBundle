@@ -70,7 +70,6 @@ class GlobalSearch
         }
 
         $groups = [];
-        $tried = 0;
         $failures = [];
         $attempts = array_map(
             fn (array $entity): array => [$entity['config'], fn (): ?array => $this->entityGroup($entity, $text)],
@@ -81,7 +80,6 @@ class GlobalSearch
         }
 
         foreach ($attempts as [$name, $build]) {
-            ++$tried;
             try {
                 $group = $build();
             } catch (\Throwable $exception) {
@@ -99,7 +97,7 @@ class GlobalSearch
         }
 
         // Every group failed (the database is down): an error, which the palette says, not "no result".
-        if ($tried > 0 && \count($failures) === $tried) {
+        if ($attempts !== [] && \count($failures) === \count($attempts)) {
             throw $failures[0];
         }
 

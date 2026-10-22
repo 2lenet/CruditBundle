@@ -27,7 +27,12 @@ async function open(width, path = '/', {cookie = null, dark = false, rtl = false
     page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});
     if (platform) {
-        await page.evaluateOnNewDocument((value) => Object.defineProperty(navigator, 'platform', {get: () => value}), platform);
+        // navigator.userAgentData (client hints, read first by the controllers) and navigator.platform, both.
+        await page.setUserAgent({
+            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+            userAgentMetadata: {platform: 'macOS', platformVersion: '14.0.0', architecture: 'arm', model: '', mobile: false},
+            platform,
+        });
     }
     await page.emulateMediaFeatures([{name: 'prefers-color-scheme', value: dark ? 'dark' : 'light'}]);
     await page.deleteCookie({name: 'crudit_sidebar', url: base});
