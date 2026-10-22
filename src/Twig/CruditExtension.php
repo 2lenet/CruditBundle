@@ -3,11 +3,11 @@
 namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Builder\MenuBuilder;
 use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
-use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -20,7 +20,7 @@ use Twig\TwigFunction;
 class CruditExtension extends AbstractExtension
 {
     public function __construct(
-        private MenuRegistry $menuRegistry,
+        private MenuBuilder $menuBuilder,
         private RouterInterface $router,
         private EntityManagerInterface $em,
         private ParameterBagInterface $parameterBag,
@@ -51,9 +51,10 @@ class CruditExtension extends AbstractExtension
         ];
     }
 
+    /** @return LayoutElementInterface[] the menu shown to the user (granted elements, no empty heading) */
     public function menuItems(string $navid): array
     {
-        return $this->menuRegistry->getElements($navid);
+        return $this->menuBuilder->build($navid);
     }
 
     public function menuIsActive(LayoutElementInterface $item, Request $request): bool

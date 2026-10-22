@@ -22,9 +22,12 @@ crudit:
         expand_menu: "Déplier le menu"
         contains_current_page: "(contient la page courante)"
         new_tab: "(nouvel onglet)"
+        home: "%app%, accueil"
 
     footer:
         release: "Version"
+        updated_on: "mise à jour le"
+        links: "Informations légales et aide"
 
     pagination:
         first: "Première"

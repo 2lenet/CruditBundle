@@ -1,6 +1,25 @@
-{# Content of the block logo (inside the link to the home page): lot 2.1.c reworks it (logo of the project, one per theme). #}
-{# The name of the application is shown next to the logo: the image has no text of its own #}
-<img src="/img/logo.png" alt="{{ app_name is defined ? '' : 'Logo' }}"/>
-{% if app_name is defined %}
-    <span class="crudit-sidebar__brand-text">{{ app_name }}</span>
-{% endif %}
+{#
+ # Content of the block logo, inside the link to the home page (block brand). Configuration lle_crudit.layout:
+ # - the logo of the project (logo, logo_dark for the dark theme: components/brand shows one of them), or the name of
+ #   the application without logo;
+ # - the mark of the collapsed menu (rail): logo_small, or the initial of the name.
+ # The images are decorative (alt=""): the name of the link is "<name of the application>, home".
+ #}
+{% set layout = crudit_layout() %}
+{% set name = app_name ?? 'Crudit' %}
+<span class="crudit-brand__full{{ layout.logo and layout.logo_dark ? ' crudit-brand__full--themed' : '' }}">
+    {%- if layout.logo -%}
+        <img class="crudit-brand__logo crudit-brand__logo--light" src="{{ asset(layout.logo) }}" alt="">
+        {%- if layout.logo_dark -%}
+            <img class="crudit-brand__logo crudit-brand__logo--dark" src="{{ asset(layout.logo_dark) }}" alt="">
+        {%- endif -%}
+    {%- else -%}
+        <span class="crudit-brand__name" aria-hidden="true">{{ name }}</span>
+    {%- endif -%}
+</span>
+{%- if layout.logo_small -%}
+    <img class="crudit-brand__mark" src="{{ asset(layout.logo_small) }}" alt="">
+{%- else -%}
+    <span class="crudit-brand__mark" aria-hidden="true">{{ name|first|upper }}</span>
+{%- endif -%}
+<span class="crudit-ui-visually-hidden">{{ 'crudit.layout.home'|trans({'%app%': name}, 'LleCruditBundle') }}</span>

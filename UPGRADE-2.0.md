@@ -16,6 +16,8 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 1. [Install CruditUiBundle and Stimulus](#1-requirements-and-installation) *(lot 1.1)*
    - [Convert the icons to Iconify names and run `ux:icons:lock`](#icons) *(lot 1.3)*
 2. [Change the layout you extend](#2-layout) *(lot 2.1)*
+   - [Update your menu providers: icons, badges](#the-items-of-the-menu-lot-21a) *(lot 2.1.a)*
+   - [Configure your logo, favicon and footer](#logo-and-footer-lot-21c) *(lot 2.1.c)*
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
 5. [Fix `setCssClass()` on actions](#5-css-classes-on-actions) *(lot 3.1)*
@@ -133,7 +135,8 @@ import './bootstrap.js';
 reviewed)*.
 
 New markup, if you rewrite the block `body`: `<div id="crudit-sidebar" role="complementary">` (logo, filter, then
-`<nav id="main-nav">` with the menu, then the button that reduces it), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
+`<nav id="main-nav">` with the menu, then the button that reduces it; the logo is `<a class="crudit-brand">`, with
+`crudit-brand__full`, `__logo`, `__name` and `__mark` for the rail), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
 tabindex="-1">` and the footer. **Keep the ids `main` and `main-nav`**: the skip links go there. Without Bootstrap,
 the old markup of SB Admin (`#wrapper`, `#content-wrapper`, `container-fluid`) is not styled any more: the simplest
 is to stop overriding `body`, and to keep only the blocks inside it (`brand`, `menu`, `header`, `footer`, `content`).
@@ -166,7 +169,7 @@ to register with AssetMapper or Flex; with Webpack Encore, enable it in `control
 - the **filter of the menu** (block `menu_filter`, to empty to remove it) hides the items that do not match, opens the
   sub-menus that hold matches and announces the count; the button that reduces the menu is the block `menu_toggle`;
 - in the rail, the sub-menus are panels next to their button, and the items have a tooltip (component `Tooltip`,
-  `beside`). An item without icon shows the first letter of its label until lot 2.1.a.
+  `beside`). An item without icon shows the first letter of its label.
 
 Markup of the items (`layout/sidebar/`), if you override them: `data-menu-kind` (`item`, `heading` or
 `separator`) on the `<li>`, `data-menu-label` on the items (the filter reads it), `aria-current="page"` on the link of
@@ -206,6 +209,77 @@ on the new one: their markup changed completely.
 
 The footer has **no copyright text** any more (block `footer_text` and key `crudit.footer.copyrights` removed: put your own text in the block `footer`), and **no default link**: add yours (accessibility statement, legal notice…) by
 configuration or in the `footer` block.
+
+### The items of the menu *(lot 2.1.a)*
+
+- **Icons are Iconify names** (see *Icons* in §1): `Icon::new('users')` becomes `Icon::new('fa7-solid:users')`,
+  `Icon::new('fas fa-book fa-lg')` becomes `Icon::new('fa7-solid:book')` (no size modifier: every icon of the menu has
+  the same size). A logical name of CruditUiBundle (`Icon::new('user')`) also works. An icon that cannot be rendered
+  (a Font Awesome class) is logged and replaced by the first letter of the label, as an item without icon.
+- **`Icon::TYPE_IMG` is not rendered in the menu any more**: put the SVG in a folder of `assets/icons/` and give its
+  name with the folder as prefix (`assets/icons/menu/home.svg` is `Icon::new('menu:home')`; a name without prefix is
+  read as a logical name of CruditUiBundle). `Icon::new('/img/icons/home.svg', Icon::TYPE_IMG)` (arcade5) or
+  `/bundles/llehermes/img/hermes.svg` (HermesBundle) are the cases to convert.
+- **Run `bin/console ux:icons:lock`**: the icons of the menu are found by the finder of CruditBundle
+  (`MenuIconFinder`, it reads your menu providers), the command imports them like the icons of the templates. It
+  runs without a user (`ux:icons:lock`, `cache:warmup`): the icons of the items a provider adds only for some users
+  (`if ($this->security->isGranted(…))`) are not found, declare them in `lle_crudit_ui.icons.map` or in the aliases
+  of `ux_icons`; and what a provider computes (a badge counted in the database) also runs then.
+- **Badges** (`Dto/Badge`): `Badge::new('12', 'danger', 'menu.visits_to_plan')`: the text shown, a tone
+  (`neutral` by default, `info`, `success`, `warning`, `danger`) and a text read after it by screen readers only
+  (a translation key: "12" alone means nothing). Any tone of the `Badge` component of CruditUiBundle works
+  (`primary`, the extended palette, or a colour of the project with its CSS rule); a tone without its rule gives the
+  neutral colours, without any error. The Bootstrap classes of 1.x (`'badge-danger'`, `'bg-danger'`) are
+  **deprecated** and turned into their tone (`secondary`, `light` and `dark` give `neutral`): write `'danger'`.
+  `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, the badges become
+  one dot, of the tone of the **first** badge (put the most important one first), and are shown in the tooltip.
+- **What the user cannot see is removed before rendering** (`MenuBuilder`, used by `crudit_menu_items()`): elements
+  the user is not granted (`setRole()`), children included, a sub-menu or a title whose children are all removed (a
+  title with children labels them only), a heading without children (title, category, header) followed by no item
+  (an item or a heading with children; a separator ends the section), a separator at the start, at the end or after
+  another separator. An implementation of `LayoutElementInterface` must add `withChildren()` (a copy of the element
+  with other children: the menu is filtered on copies).
+  The templates no longer call `is_granted()`. A `TitleElement` renders its children after it (it crashed before).
+- `setCssClass()` with Bootstrap classes (`d-none d-md-block`) has no effect any more: remove it.
+- The constructor of `Lle\CruditBundle\Twig\CruditExtension` takes a `MenuBuilder` instead of the `MenuRegistry`:
+  nothing to do through the container, only a class that extends or decorates it is concerned.
+
+### Logo and footer *(lot 2.1.c)*
+
+The logo, the favicon, the version and the links of the footer are **configuration**, `lle_crudit.layout` (nothing by
+default). The images are given to `asset()`: a logical path of AssetMapper (`images/logo.svg`), a public path
+(`/img/logo.png`) or an address.
+
+```yaml
+# config/packages/lle_crudit.yaml
+lle_crudit:
+    layout:
+        logo: 'images/logo.svg'           # the width of the menu, 40 px high at most
+        logo_dark: 'images/logo-dark.svg' # dark theme (without it, logo in both themes)
+        logo_small: 'images/mark.svg'     # square, collapsed menu (without it, the initial of app_name)
+        favicon: 'images/favicon.svg'
+        version: '%env(default::APP_VERSION)%'
+        release_date: '%env(default::APP_RELEASE_DATE)%' # Y-m-d, shown "updated on 21 October 2026"
+        footer_links:
+            - { label: 'footer.accessibility', route: 'app_accessibility' } # translation key (messages) or text
+            - { label: 'footer.legal', url: 'https://example.org/legal' }   # a route (route_params) or an url
+```
+
+- **Remove your blocks `brand`, `logo` and `favicon`** when they only put your image: `/img/logo.png` is no longer
+  the default, neither for the logo nor for the favicon (without `favicon`, the browser asks for `/favicon.ico`), and
+  the `apple-touch-icon` link is gone: add it in your block `favicon` if you need it. An inline `style` (kisscut6:
+  `style="height:25px"`, a background colour) is refused by a strict CSP and is not needed any more: the logo takes
+  the width of the menu.
+- **The link of the logo is named "\<app_name\>, home"** (key `crudit.layout.home`) and the images are decorative
+  (`alt=""`): do not put `alt="Logo"` back if you keep your block. Without `logo`, the name of the application is
+  shown as text. It goes to `/`, as before (helyon used `path('homepage')`: keep your block `brand` for another
+  address).
+- **Logo per theme in CSS**: both images are in the page, the stylesheet shows the one of the theme (chosen by the
+  user or by the system), without reloading; printed with the light one. `logo_dark` without `logo` is refused.
+- **Footer**: the version comes from `version`, and from the Twig global `app_version` when it is empty.
+  `release_date` adds "updated on …", in the language of the page; a date that is not `Y-m-d` is logged and not
+  shown. No link by default; without link, version nor date, there is no `<footer>`. To remove it, empty the block
+  `footer` (arhon).
 
 ## 3. Theme: SCSS variables to CSS variables
 
@@ -304,6 +378,7 @@ Use the action options instead *(to be filled)*.
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `add_exit_impersonation_button`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
+| `layout` (`logo`, `logo_dark`, `logo_small`, `favicon`, `version`, `release_date`, `footer_links`) | New: logo, favicon and footer, see [Logo and footer](#logo-and-footer-lot-21c) |
 | `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 
 ## 7. Template overrides

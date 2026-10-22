@@ -34,7 +34,7 @@ class LayoutTest extends AppTestCase
     {
         $crawler = $this->client->request('GET', '/page/invoices');
 
-        // The header, the logo and the footer are reworked in lots 2.2.a, 2.1.c; the menu and the modals are done.
+        // The header is reworked in lot 2.2.a; the menu, the logo, the footer and the modals are done.
         self::assertCount(0, $crawler->filter('#sidebar-collapser, #crudit-sidebar .nav-link, #crudit-sidebar .btn-toggle, #crudit-sidebar [data-bs-toggle], .modal, .modal-dialog'));
         self::assertStringNotContainsString('sbadmin', (string) $this->client->getResponse()->getContent());
     }
@@ -73,11 +73,30 @@ class LayoutTest extends AppTestCase
         self::assertContains('Invoices', $labels);
         self::assertContains('Documentation', $labels);
 
-        // One of each kind of heading, and the separator is hidden from assistive technologies
-        self::assertCount(1, $crawler->filter('.crudit-nav__heading--category'));
-        self::assertCount(1, $crawler->filter('.crudit-nav__heading--title'));
+        // One of each kind of heading (two titles: alone and with children), the separator is hidden from assistive
+        // technologies. Removed (MenuBuilder): the link the user is not granted, in a title or alone, the category it
+        // leaves alone, the separator at the start and the doubled one.
+        self::assertSame(['Operations'], $crawler->filter('.crudit-nav__heading--category')->each(static fn ($h) => trim($h->text())));
+        self::assertSame(['Administration', 'Tools'], $crawler->filter('.crudit-nav__heading--title')->each(static fn ($h) => trim($h->text())));
         self::assertCount(1, $crawler->filter('.crudit-nav__heading--header'));
         self::assertCount(1, $crawler->filter('.crudit-nav__separator[aria-hidden="true"]'));
+        self::assertSame('item', $crawler->filter('.crudit-nav > li')->first()->attr('data-menu-kind'), 'no separator at the start');
+        self::assertCount(0, $crawler->filter('[data-menu-label="Secret"]'));
+        // The children of a title follow it in the same list
+        self::assertSame('Exports', $crawler->filterXPath('//li[span="Tools"]/following-sibling::li[1]')->attr('data-menu-label'));
+
+        // Icons: SVG of Symfony UX Icons (Iconify name or logical name), the first letter of the label without icon
+        self::assertCount(1, $crawler->filter('[data-menu-label="Clients"] .crudit-nav__icon svg'));
+        self::assertCount(1, $crawler->filter('[data-menu-label="Users"] .crudit-nav__icon svg'));
+        self::assertSame('R', trim($crawler->filter('[data-menu-label="Reports"] .crudit-nav__icon')->text()));
+
+        // Badge: its tone, its text for assistive technologies, a dot for the rail, shown in the tooltip
+        $badge = $crawler->filter('[data-menu-label="Clients"] .crudit-nav__badge');
+        self::assertStringContainsString('crudit-ui-badge crudit-ui-tone--danger', (string) $badge->attr('class'));
+        self::assertSame('12 clients to call', trim(str_replace("\u{a0}", ' ', $badge->text())));
+        self::assertSame('clients to call', trim(str_replace("\u{a0}", ' ', $badge->filter('.crudit-ui-visually-hidden')->text())));
+        self::assertCount(1, $crawler->filter('[data-menu-label="Clients"] .crudit-nav__dot.crudit-ui-tone--danger[aria-hidden="true"]'));
+        self::assertSame('Clients · 12', $crawler->filter('[data-menu-label="Clients"] .crudit-ui-tooltip')->text());
 
         // Current page: aria-current on its link, its sub-menu open, the other one closed
         self::assertSame('Invoices', trim($crawler->filter('#main-nav [aria-current="page"] .crudit-nav__label')->text()));
@@ -141,6 +160,36 @@ class LayoutTest extends AppTestCase
     }
 
     /**
+     * Logo, favicon and footer from lle_crudit.layout (config/packages/lle_crudit.yaml).
+     */
+    public function testLogoFaviconAndFooter(): void
+    {
+        $crawler = $this->client->request('GET', '/page/invoices');
+
+        // Favicon of the configuration (AssetMapper), no logo.png left
+        self::assertMatchesRegularExpression('#^/assets/images/favicon-[\w-]+\.svg$#', (string) $crawler->filter('link[rel="icon"][type="image/svg+xml"]')->attr('href'));
+        self::assertStringNotContainsString('logo.png', (string) $this->client->getResponse()->getContent());
+
+        // Link of the logo: named "<application>, home", decorative images, one per theme, the initial in the rail
+        $brand = $crawler->filter('#crudit-sidebar a.crudit-brand');
+        self::assertSame('/', $brand->attr('href'));
+        self::assertSame('Gestio, home', trim($brand->filter('.crudit-ui-visually-hidden')->text()));
+        self::assertCount(1, $brand->filter('.crudit-brand__full--themed'));
+        self::assertSame(['', ''], $brand->filter('img.crudit-brand__logo')->each(static fn ($img) => $img->attr('alt')));
+        self::assertMatchesRegularExpression('#^/assets/images/logo-[\w-]+\.svg$#', (string) $brand->filter('.crudit-brand__logo--light')->attr('src'));
+        self::assertMatchesRegularExpression('#^/assets/images/logo-dark-[\w-]+\.svg$#', (string) $brand->filter('.crudit-brand__logo--dark')->attr('src'));
+        self::assertSame('G', trim($brand->filter('span.crudit-brand__mark[aria-hidden="true"]')->text()));
+
+        // Footer: the links of the configuration (a route, an address), the version and its date
+        $nav = $crawler->filter('footer.crudit-footer nav[aria-label="Legal information and help"]');
+        self::assertSame(['/page/accessibility', 'https://example.org/legal'], $nav->filter('a')->each(static fn ($a) => $a->attr('href')));
+        self::assertSame(['Accessibility statement', 'Legal notice'], $nav->filter('a')->each(static fn ($a) => $a->text()));
+        $version = $crawler->filter('.crudit-footer__version');
+        self::assertSame('Release test · updated on October 21, 2026', $version->text());
+        self::assertSame('2026-10-21', $version->filter('time')->attr('datetime'));
+    }
+
+    /**
      * The blocks that 1.x kept in included templates (where they could not be overridden) are in the layout.
      */
     public function testEveryBlockCanBeOverridden(): void
@@ -148,7 +197,7 @@ class LayoutTest extends AppTestCase
         $crawler = $this->client->request('GET', '/overrides');
 
         self::assertResponseIsSuccessful();
-        self::assertSame('MY LOGO', $crawler->filter('.crudit-sidebar__brand #o-logo')->text());
+        self::assertSame('MY LOGO', $crawler->filter('.crudit-brand #o-logo')->text());
         self::assertCount(1, $crawler->filter('#main-nav #o-side-header'));
         self::assertCount(1, $crawler->filter('#main-nav #o-side-footer'));
         self::assertCount(1, $crawler->filter('.crudit-header #o-header-nav'));

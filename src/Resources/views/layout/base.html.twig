@@ -20,8 +20,8 @@
     {% block autorefresh %}{% endblock %}
     <title>{% block page_title %}{{ app_name ?? 'Crudit' }}{% endblock %}</title>
     {% block favicon %}
-        <link rel="icon" href="/img/logo.png">
-        <link rel="apple-touch-icon" href="/img/logo.png">
+        {% set favicon = crudit_layout().favicon %}
+        {% if favicon %}<link rel="icon" href="{{ asset(favicon) }}"{% if favicon|split('?')|first|lower ends with '.svg' %} type="image/svg+xml"{% endif %}>{% endif %}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
     {% block head_stylesheets %}{% endblock %}
@@ -44,7 +44,7 @@
              data-menu-label="{{ 'crudit.layout.main_menu'|trans(domain: 'LleCruditBundle') }}">
             <div class="crudit-sidebar__header">
                 {% block brand %}
-                    <a class="crudit-sidebar__brand" href="/">
+                    <a class="crudit-brand" href="/">
                         {% block logo %}
                             {% include '@LleCrudit/layout/sidebar/_logo.html.twig' %}
                         {% endblock %}
@@ -92,9 +92,14 @@
             </main>
 
             {% block footer %}
-                <footer class="crudit-footer">
-                    {% include '@LleCrudit/layout/footer/_version.html.twig' %}
-                </footer>
+                {# No footer without link, version nor date #}
+                {% set layout = crudit_layout() %}
+                {% if layout.footer_links or layout.version or layout.release_date %}
+                    <footer class="crudit-footer">
+                        {% include '@LleCrudit/layout/footer/_links.html.twig' %}
+                        {% include '@LleCrudit/layout/footer/_version.html.twig' %}
+                    </footer>
+                {% endif %}
             {% endblock %}
         </div>
     </div>
