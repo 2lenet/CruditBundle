@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Security\UserProvider;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\BrowserKit\Cookie;
 
@@ -32,10 +33,11 @@ class LayoutTest extends AppTestCase
 
     public function testNoBootstrapNorSbAdminLeft(): void
     {
+        // Signed in: the user menu is rendered
+        $this->client->loginUser((new UserProvider())->loadUserByIdentifier('alice'));
         $crawler = $this->client->request('GET', '/page/invoices');
 
-        // The header is reworked in lot 2.2.a; the menu, the logo, the footer and the modals are done.
-        self::assertCount(0, $crawler->filter('#sidebar-collapser, #crudit-sidebar .nav-link, #crudit-sidebar .btn-toggle, #crudit-sidebar [data-bs-toggle], .modal, .modal-dialog'));
+        self::assertCount(0, $crawler->filter('#sidebar-collapser, .nav-link, .navbar-nav, .btn-toggle, [data-bs-toggle], .modal, .modal-dialog, .dropdown-menu'));
         self::assertStringNotContainsString('sbadmin', (string) $this->client->getResponse()->getContent());
     }
 
@@ -200,6 +202,8 @@ class LayoutTest extends AppTestCase
         self::assertSame('MY LOGO', $crawler->filter('.crudit-brand #o-logo')->text());
         self::assertCount(1, $crawler->filter('#main-nav #o-side-header'));
         self::assertCount(1, $crawler->filter('#main-nav #o-side-footer'));
+        self::assertCount(1, $crawler->filter('.crudit-shell__header > #o-impersonation'));
+        self::assertCount(1, $crawler->filter('.crudit-header #o-header-search'));
         self::assertCount(1, $crawler->filter('.crudit-header #o-header-nav'));
         self::assertCount(1, $crawler->filter('.crudit-header #o-header-right'));
         self::assertCount(0, $crawler->filter('.crudit-header .navbar-nav'));

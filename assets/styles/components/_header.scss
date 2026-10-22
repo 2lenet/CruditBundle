@@ -1,7 +1,9 @@
+@use 'tools/a11y' as *;
 @use 'tools/responsive' as *;
 
-// Bar of the header (layout/_header.html.twig): the burger (below lg) and the blocks of the project. Reworked in lot
-// 2.2.a.
+// Header (block header of layout/base.html.twig): the banner of the impersonation, then the bar of 52 px: the burger
+// and the logo (below lg, the menu is a drawer), the blocks header_search and header_nav, then at the end the block
+// header_right (the user menu). Same as `.topbar` of the crudit-v2 mockup (src/styles/components/_header.scss).
 .crudit-header {
     display: flex;
     min-height: var(--topbar-h);
@@ -9,9 +11,174 @@
     gap: var(--space-2);
     padding: var(--space-2) var(--gutter);
 
+    @include media('<lg') {
+        padding-inline-start: var(--space-2);
+    }
+
+    @include media('>md') {
+        gap: var(--space-3);
+    }
+
     &__burger {
         @include media('>lg') {
             display: none;
         }
+    }
+
+    // The logo of the menu (block brand), for the drawer closed below lg: the full logo, the mark below sm
+    &__brand {
+        display: flex;
+        min-width: 0;
+
+        @include media('>lg') {
+            display: none;
+        }
+
+        .crudit-brand {
+            flex: none;
+        }
+
+        .crudit-brand__logo {
+            max-height: 2rem;
+        }
+
+        @include media('<sm') {
+            .crudit-brand__full {
+                display: none;
+            }
+
+            .crudit-brand__mark {
+                display: inline-flex;
+                width: 2.25rem;
+                height: 2.25rem;
+            }
+        }
+    }
+
+    &__end {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-inline-start: auto;
+    }
+
+    // The button of the user menu: the avatar, the name and the role (read only below lg), the chevron (not below sm)
+    &__user.crudit-ui-btn {
+        gap: var(--space-2);
+        padding-inline: var(--space-1) var(--space-2);
+        color: var(--c-text);
+        font-weight: var(--font-weight-regular);
+        text-align: start;
+    }
+
+    &__user-text {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        line-height: var(--line-height-tight);
+
+        @include media('<lg') {
+            @include sr-only;
+        }
+    }
+
+    &__user-name {
+        font-weight: var(--font-weight-semibold);
+    }
+
+    &__user-role {
+        color: var(--c-text-muted);
+        font-size: var(--font-size-xs);
+    }
+
+    &__user-chevron {
+        @include media('<sm') {
+            display: none;
+        }
+    }
+
+    &__user-panel {
+        width: min(20rem, 100vw - 2 * var(--gutter));
+    }
+
+    // The user in the panel: the large avatar, the name, the role and the email
+    &__user-card {
+        justify-content: flex-start;
+        padding-inline: var(--space-3);
+        border-block-end: 1px solid var(--c-border);
+    }
+
+    &__user-card-text {
+        min-width: 0;
+    }
+
+    &__user-card-name {
+        margin: 0;
+        font-weight: var(--font-weight-semibold);
+        overflow-wrap: anywhere;
+    }
+
+    &__user-card-detail {
+        margin: 0;
+        color: var(--c-text-muted);
+        font-size: var(--font-size-sm);
+        overflow-wrap: anywhere;
+    }
+
+    &__theme {
+        border-block-start: 1px solid var(--c-border);
+    }
+
+    // The item of the logout is aligned on the items of the menu above it
+    &__logout {
+        padding-inline: 0;
+    }
+
+    &__theme-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-1);
+        margin-block-start: var(--space-2);
+
+        // The choice of the user: aria-pressed, not the colour alone (the button stays outlined, its text is bold)
+        [aria-pressed='true'] {
+            border-color: var(--c-primary);
+            background-color: var(--c-primary-subtle);
+            color: var(--c-primary-text);
+        }
+    }
+}
+
+// Banner of the impersonation (header/_impersonation), above the bar: always visible, in the colours of a warning,
+// with its icon and its text (never the colour alone). Not printed.
+.crudit-impersonation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--gutter);
+    border-block-end: 1px solid var(--c-warning-border);
+    background-color: var(--c-warning-bg);
+    color: var(--c-warning-text);
+    font-size: var(--font-size-sm);
+
+    &__icon {
+        display: inline-flex;
+    }
+
+    &__text {
+        min-width: 0;
+        flex: 1;
+        margin: 0;
+    }
+
+    &__detail {
+        @include media('<md') {
+            display: none;
+        }
+    }
+
+    @media print {
+        display: none;
     }
 }

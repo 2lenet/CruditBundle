@@ -20,6 +20,10 @@
             "sidebar": {
                 "enabled": true,
                 "fetch": "eager"
+            },
+            "page-title": {
+                "enabled": true,
+                "fetch": "eager"
             }
         },
         "@2lenet/crudit-ui-bundle": {

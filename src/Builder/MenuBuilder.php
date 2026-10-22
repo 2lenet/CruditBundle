@@ -12,6 +12,7 @@ use Lle\CruditBundle\Dto\Layout\HorizontalSeparatorElement;
 use Lle\CruditBundle\Dto\Layout\TitleElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * The menu shown to the user, from the elements of the providers (MenuRegistry):
@@ -22,9 +23,14 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * - a separator at the start, at the end or after another separator is removed.
  *
  * The elements of the providers are not changed: an element whose children are filtered is a copy (withChildren()).
+ * The menu is built once per request for each navid (the menu and the breadcrumb use it): the providers (badges
+ * counted in the database) and the voters run once; reset between two requests (kernel.reset).
  */
-class MenuBuilder
+class MenuBuilder implements ResetInterface
 {
+    /** @var array<string, list<LayoutElementInterface>> */
+    private array $built = [];
+
     public function __construct(
         private MenuRegistry $menuRegistry,
         private AuthorizationCheckerInterface $authorizationChecker,
@@ -34,9 +40,14 @@ class MenuBuilder
     /** @return LayoutElementInterface[] */
     public function build(string $navid): array
     {
-        $elements = $this->filterGranted($this->menuRegistry->getElements($navid));
+        return $this->built[$navid] ??= $this->removeSeparators(
+            $this->removeEmptyHeadings($this->filterGranted($this->menuRegistry->getElements($navid))),
+        );
+    }
 
-        return $this->removeSeparators($this->removeEmptyHeadings($elements));
+    public function reset(): void
+    {
+        $this->built = [];
     }
 
     /**

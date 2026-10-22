@@ -1,7 +1,0 @@
-{# Content of the block header_right: the user menu and the exit of the impersonation. Reworked in lot 2.2.a. #}
-<ul class="navbar-nav ms-auto">
-    {% include '@LleCrudit/layout/header/_user_menu.html.twig' %}
-    {% if crudit_add_exit_impersonation_button() %}
-        {% include '@LleCrudit/layout/header/_exit_impersonation.html.twig' %}
-    {% endif %}
-</ul>

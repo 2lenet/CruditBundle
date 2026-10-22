@@ -18,6 +18,8 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 2. [Change the layout you extend](#2-layout) *(lot 2.1)*
    - [Update your menu providers: icons, badges](#the-items-of-the-menu-lot-21a) *(lot 2.1.a)*
    - [Configure your logo, favicon and footer](#logo-and-footer-lot-21c) *(lot 2.1.c)*
+   - [Log out in POST, give the user menu its name, role and email](#the-header-lot-22a) *(lot 2.2.a)*
+   - [Check the header of your CRUD pages: one `<h1>`, the breadcrumb](#title-of-the-page-and-breadcrumb-lot-22b) *(lot 2.2.b)*
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
 5. [Fix `setCssClass()` on actions](#5-css-classes-on-actions) *(lot 3.1)*
@@ -185,8 +187,8 @@ New translation keys, domain `LleCruditBundle` (`crudit.layout.*`): `sidebar`, `
 |---|---|
 | `layout.html.twig` | `base.html.twig` |
 | `brand.html.twig` (block `logo`), `menu.html.twig` (blocks `side_header`, `side_footer`) | blocks in `base.html.twig`, content in `sidebar/_logo.html.twig`, `sidebar/_menu.html.twig` |
-| `header.html.twig` (blocks `header_nav`, `header_right`) | blocks in `base.html.twig`, content in `header/_burger.html.twig`, `header/_actions.html.twig` |
-| `elements/_user`, `elements/_multisearch`, `elements/_exit_impersonation` | `header/_user_menu`, `header/_search`, `header/_exit_impersonation` |
+| `header.html.twig` (blocks `header_nav`, `header_right`) | blocks in `base.html.twig`, content in `header/_burger.html.twig` and the block `user_menu` *(lot 2.2.a)* |
+| `elements/_user`, `elements/_multisearch`, `elements/_exit_impersonation` | `header/_user_menu`, `header/_search`, `header/_impersonation` (the banner, *lot 2.2.a*) |
 | `footer.html.twig` | block `footer` of `base.html.twig`, `footer/_version.html.twig` |
 | `elements/_link`, `_link_element`, `_external_link`, `_title`, `_category`, `_header`, `_h_separator` | `sidebar/_link` (link or sub-menu), `sidebar/_item` (link and external link), `sidebar/_submenu`, `sidebar/_title`, `sidebar/_category`, `sidebar/_header`, `sidebar/_separator` |
 | `bricks/_bricks` | `crud/_bricks` |
@@ -233,6 +235,11 @@ configuration or in the `footer` block.
   **deprecated** and turned into their tone (`secondary`, `light` and `dark` give `neutral`): write `'danger'`.
   `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, the badges become
   one dot, of the tone of the **first** badge (put the most important one first), and are shown in the tooltip.
+- **The entry of the current page** (`aria-current`, sub-menu open, and the breadcrumb of lot 2.2.b): a link is active
+  on its route and on the other pages of its CRUD (`app_client_index` on `app_client_show`, `_edit`, `_new`…). In
+  1.x the route was cut at its last `_`, so a link to `app_home` was active on every `app_…` route: it no longer is.
+  A link whose route ends with another word than an action of a CRUD (`app_client_list`) is active on that route
+  only. A link to `lle_crudit_crud_index` without `resource` is never active (it was an error). *(lot 2.2)*
 - **What the user cannot see is removed before rendering** (`MenuBuilder`, used by `crudit_menu_items()`): elements
   the user is not granted (`setRole()`), children included, a sub-menu or a title whose children are all removed (a
   title with children labels them only), a heading without children (title, category, header) followed by no item
@@ -281,6 +288,125 @@ lle_crudit:
   shown. No link by default; without link, version nor date, there is no `<footer>`. To remove it, empty the block
   `footer` (arhon).
 
+### The header *(lot 2.2.a)*
+
+The bar of the header (52 px, `--topbar-h`): the burger and the logo below 1024 px (the menu is then a drawer: the
+logo is the block `brand`, rendered a second time, so your override counts there too: no `id` in it, it would be in
+the page twice), the block `header_search`
+(empty, the search `Ctrl K` comes with lot 2.2.c), the block `header_nav`, then at the end the block `header_right`,
+which holds the block `user_menu`. Above the bar, the block `impersonation`. Out of the header: `header/_actions.html.twig`
+(its content is the block `user_menu`), the block `user` (in an included template, it could not be overridden) and the
+image `bundles/llecrudit/img/undraw_profile.svg` (the avatar shows the initials).
+
+**The user menu** (`header/_user_menu.html.twig`, a `Dropdown` of CruditUiBundle) shows the initials, the name, the
+role and the email of the user, the profile, the way back during an impersonation, the appearance (light, dark,
+system: the controller `theme` of CruditUiBundle, declared in your `controllers.json`) and the logout. Nothing is shown
+without a user. Name, role and email come from your user if it implements
+`Lle\CruditBundle\Contracts\CruditUserInterface`; without it, the menu shows its name only (`__toString()`, else
+`getUserIdentifier()`):
+
+```php
+use Lle\CruditBundle\Contracts\CruditUserInterface;
+
+class User implements UserInterface, CruditUserInterface
+{
+    public function getDisplayName(): string { return $this->prenom . ' ' . $this->nom; }
+    public function getRoleLabel(): ?string { return $this->profil?->getLabel(); } // CredentialBundle; kisscut6: $this->groupe?->getLibelle()
+    // getEmail(): ?string, already in your entity
+}
+```
+
+To change one part of the menu (a photo instead of the initials, more items), override
+`@LleCrudit/layout/header/_user_menu.html.twig`; to replace it, override the block `user_menu`.
+
+**The logout is a POST with a CSRF token** (it was a GET link to the route `logout`): a page of another site could log
+your users out with an image. Configure the logout on your firewall, with the token:
+
+```yaml
+# config/packages/security.yaml
+security:
+    firewalls:
+        main:
+            logout:
+                path: logout # your route, or a path such as /logout
+                enable_csrf: true
+```
+
+The menu sends the form to the logout of the firewall, with the CSRF field you configured (`csrf_parameter`,
+`csrf_token_id`) in the body. Without `logout` on the firewall (SSO, stateless), the menu has no logout (a debug message is logged). A GET
+link to the logout of your own templates no longer works with `enable_csrf`: make it a form (`method="post"`, the
+hidden field `_csrf_token` with `csrf_token('logout')`, or your own parameter and id).
+
+The translation keys `crudit.action.profile` and `crudit.action.exit_impersonation` are removed (the menu uses
+`crudit.layout.profile`, `crudit.layout.back_to_account` and `back_to_account_of`): move your overrides.
+
+**The profile** (`add_connect_profile_link`, global `connect_url`) is an ordinary link to `<connect_url>profile`, in
+the same tab (it was a popup opened by `window.open`, refused by a strict Content Security Policy).
+
+**The impersonation** (`switch_user` of Symfony). The option **`add_exit_impersonation_button` is removed**: remove
+it from `config/packages/lle_crudit.yaml` (else Symfony stops on "Unrecognized option"). It showed a button "Exit
+impersonation" in the header only if you asked for it; who uses which account is a matter of safety, so Crudit now
+shows it always, without option. During an impersonation:
+
+- **a banner above the header**, on every page: "You are browsing with the account of **Bob Durand**. Actions are
+  recorded under this account." and a button **"Back to my account"**;
+- **the avatar** of the user menu has a flag, read "(impersonation)" by screen readers;
+- **the user menu** repeats the way back: "Back to my account (Alice Martin)", with the name of the user who
+  impersonates.
+
+The way back is the address of Symfony, `impersonation_exit_path()` (a GET: `?_switch_user=_exit`), which then goes to
+the route of **`exit_impersonation_path`** (unchanged, `homepage` by default): set it to your home route if it has
+another name. If the route does not exist, the way back goes to the root of the application (it was an error on every
+page).
+
+```yaml
+# config/packages/security.yaml: what makes the impersonation possible (unchanged)
+security:
+    firewalls:
+        main:
+            switch_user: true # ?_switch_user=<identifier> with the role ROLE_ALLOWED_TO_SWITCH
+
+# config/packages/lle_crudit.yaml
+lle_crudit:
+    exit_impersonation_path: 'app_home' # where "Back to my account" goes
+    # add_exit_impersonation_button: true  ← remove
+```
+
+The names come from `CruditUserInterface` (`getDisplayName()`), else from `__toString()`. To change the banner,
+override `@LleCrudit/layout/header/_impersonation.html.twig` or the block `impersonation` (empty it to hide it, at your
+own risk), and its texts with the keys `crudit.layout.impersonation`, `impersonation_text` (with `%name%`),
+`impersonation_detail` and `back_to_account` (domain `LleCruditBundle`). The Twig function
+`crudit_add_exit_impersonation_button()` is removed with the option: in your templates, test the impersonation with
+`is_granted('IS_IMPERSONATOR')`.
+
+### Title of the page and breadcrumb *(lot 2.2.b)*
+
+**The header of the CRUD pages** (`brick/links/index.html.twig`, the `LinksBrick` first on the list, the record and
+the forms) is the `PageHeader` of CruditUiBundle: the breadcrumb, the title in the **only `<h1>` of the page**
+(`#page-title`; it was a `<h4>` in a Bootstrap `navbar`) and the actions (their markup is reworked in lot 3.1). The
+classes `navbar`, `navbar-brand`, `bg-light` of this header are gone: retarget your CSS on `.crudit-ui-page-header`.
+`getCssClass()` of the resource is on the header. To replace the breadcrumb or the actions only, extend the template
+and override its block `breadcrumb` or `page_actions`:
+
+```twig
+{# templates/bundles/LleCruditBundle/brick/links/index.html.twig #}
+{% extends '@!LleCrudit/brick/links/index.html.twig' %}
+{% block breadcrumb %}<twig:LleCruditUi:Breadcrumb :items="[…]"/>{% endblock %}
+```
+
+- **`<title>`**: "Page – Application" (`Clients – Gestio`), the page first, so that the tab and the screen reader give
+  it before the application; it was "Application - Page". Without a title of the page, the name of the application
+  alone (`app_name`, else `Crudit`; `CRUD-IT` is gone). A project that sets its own block `page_title` follows the
+  same order.
+- **Breadcrumb**: computed from the menu of the user, nothing to configure (it follows your menu providers): the home
+  page, the group, the title and the sub-menu that hold the entry of the page, the entry, then on a CRUD the record
+  (its page), "Edit" or "New". On a page of your own, `crudit_breadcrumb()` gives it (list of `{label, url?}`, the
+  format of the `Breadcrumb` of CruditUiBundle), with the items of your page after it:
+  `<twig:LleCruditUi:PageHeader title="…" :breadcrumb="crudit_breadcrumb([{label: client}])"/>`.
+- **Focus of the title**: after a visit of Turbo, the controller `page-title` (on `<body>`, declared in
+  `assets/package.json`) gives the focus to `<h1 id="page-title">`, so a screen reader starts at the new page. Not on
+  a full load, nor on an address with an anchor. Nothing to do without Turbo.
+
 ## 3. Theme: SCSS variables to CSS variables
 
 *Completed by lot 1.2, except the layout variables (lot 2.1).*
@@ -311,7 +437,7 @@ derived from it, in the light and in the dark theme. Choose it dark enough for w
 | `$font-family-sans-serif` | `--font-sans` (Inter by default, the system font when the project does not load it) |
 | `$font-size-base` | `--font-size-md` (16 px) |
 | `$spacer` | `--space-4` (scale `--space-1` to `--space-8`, 4 px steps) |
-| `$topbar-bg-color`, `$topbar-color` | *to be filled (lot 2.1)* |
+| `$topbar-bg-color`, `$topbar-color` | none: the header is on `--c-surface`, in `--c-text`, like the menu; to colour it, a rule on `.crudit-shell__header` in your CSS (outside any layer, it wins), with a contrast of 4.5:1 for its text *(lot 2.2.a)* |
 | `$sidebar-bg-color`, `$sidebar-color`, `$sidebar-bg-event-color` | *to be filled (lot 2.1)* |
 
 A colour you override is defined twice: on `:root` for the light theme and on `:root[data-theme='dark']` for the dark
@@ -377,7 +503,8 @@ Use the action options instead *(to be filled)*.
 | `css_class_columns_form`, `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.2.a).* |
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
-| `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `add_exit_impersonation_button`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
+| `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
+| `add_exit_impersonation_button` | **Removed**: the banner of the impersonation is always shown during one (and the way back in the user menu), see [The header](#the-header-lot-22a). Remove the key |
 | `layout` (`logo`, `logo_dark`, `logo_small`, `favicon`, `version`, `release_date`, `footer_links`) | New: logo, favicon and footer, see [Logo and footer](#logo-and-footer-lot-21c) |
 | `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 

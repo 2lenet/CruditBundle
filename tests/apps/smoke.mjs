@@ -17,7 +17,9 @@ const ok = (name) => { passed++; console.log('ok  ', name); };
 
 // One page at a time: open() closes the previous one
 let current = null;
-async function open(width, path = '/', {cookie = null, dark = false, rtl = false} = {}) {
+// user: signed in with http_basic (tests/apps/crudit/src/Security/UserProvider.php) on the first request, then by the
+// session only (switch_user keeps its user)
+async function open(width, path = '/', {cookie = null, dark = false, rtl = false, user = null} = {}) {
     if (current && !current.isClosed()) {
         await current.close();
     }
@@ -27,9 +29,15 @@ async function open(width, path = '/', {cookie = null, dark = false, rtl = false
     page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});
     await page.emulateMediaFeatures([{name: 'prefers-color-scheme', value: dark ? 'dark' : 'light'}]);
-    await page.deleteCookie({name: 'crudit_sidebar', url: base});
+    // The pages share the cookies of the browser: menu, theme, session
+    await page.deleteCookie(...(await page.cookies(base)));
     if (cookie) {
         await page.setCookie({name: 'crudit_sidebar', value: cookie, url: base});
+    }
+    if (user) {
+        await page.setExtraHTTPHeaders({Authorization: 'Basic ' + Buffer.from(`${user}:${user}`).toString('base64')});
+        await page.goto(base + '/', {waitUntil: 'networkidle0'});
+        await page.setExtraHTTPHeaders({});
     }
     await page.goto(base + path, {waitUntil: 'networkidle0'});
     if (rtl) {
@@ -42,9 +50,9 @@ const visible = (page, sel) => page.$eval(sel, (e) => { const s = getComputedSty
 const attr = (page, sel, a) => page.$eval(sel, (e, a) => e.getAttribute(a), a);
 const active = (page) => page.evaluate(() => { const a = document.activeElement; return a ? (a.id || a.className || a.tagName) : null; });
 const inAside = (page) => page.evaluate(() => document.querySelector('#crudit-sidebar').contains(document.activeElement));
-// What the lots have not reworked yet is not checked: the header (lot 2.2.a). Remove each one from this list when its
-// lot is done.
-const EXCLUDED = [['.crudit-shell__header']];
+// What the lots have not reworked yet is not checked (none left in the layout since lot 2.2.a): add a selector here
+// only for a zone still to be reworked.
+const EXCLUDED = [];
 
 async function axe(page, label) {
     await new Promise((r) => setTimeout(r, 500));
@@ -470,6 +478,118 @@ await page.setViewport({width: 1100, height: 800});
 await new Promise((r) => setTimeout(r, 300));
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'auto again: the rail at 1100');
 ok('the menu goes back to auto when the choice is what auto gives');
+await page.close();
+
+// ---------- Header and user menu (lot 2.2.a)
+const userButton = '#crudit-user-menu > button';
+const userPanel = '#crudit-user-menu-panel';
+for (const width of [360, 768, 1280]) {
+    page = await open(width, '/', {user: 'alice'});
+    assert.equal(await visible(page, '.crudit-header__brand .crudit-brand'), width < 1024, `logo in the header below 1024 px (${width})`);
+    assert.equal(await visible(page, '.crudit-header__user-name'), width >= 1024, `name of the user shown from 1024 px (${width})`);
+    await page.click(userButton);
+    assert.equal(await attr(page, userButton, 'aria-expanded'), 'true');
+    assert.ok(await visible(page, userPanel));
+    const panel = await box(page, userPanel);
+    assert.ok(panel.x >= 0 && panel.r <= width, `the panel stays on the screen (${width})`);
+    await shot(page, `header-user-menu-${width}`);
+    await axe(page, `user menu open at ${width}`);
+    await page.keyboard.press('Escape');
+    assert.equal(await attr(page, userButton, 'aria-expanded'), 'false');
+    assert.ok(await page.$eval(userButton, (e) => e === document.activeElement), 'Escape gives the focus back to the button');
+    ok(`user menu at ${width}: opens, Escape closes it`);
+}
+
+// Appearance: the choice stays in the open panel, puts data-theme and the cookie, aria-pressed follows
+page = await open(1280, '/', {user: 'alice'});
+await page.click(userButton);
+await page.click(`${userPanel} button[value=dark]`);
+assert.equal(await attr(page, 'html', 'data-theme'), 'dark');
+assert.equal(await attr(page, `${userPanel} button[value=dark]`, 'aria-pressed'), 'true');
+assert.equal(await attr(page, `${userPanel} button[value=system]`, 'aria-pressed'), 'false');
+assert.ok(await visible(page, userPanel), 'the panel stays open');
+assert.equal((await page.cookies()).find((c) => c.name === 'crudit_ui_theme')?.value, 'dark');
+await axe(page, 'user menu open, dark');
+await page.click(`${userPanel} button[value=system]`);
+assert.equal(await attr(page, 'html', 'data-theme'), null);
+ok('appearance chosen in the user menu');
+
+// Impersonation: the banner above the bar, the flag on the avatar, the way back
+page = await open(1280, '/?_switch_user=bob', {user: 'alice'});
+assert.ok(await visible(page, '.crudit-impersonation'));
+assert.equal(await page.$eval('.crudit-impersonation strong', (e) => e.textContent), 'Bob Durand');
+assert.ok(await visible(page, '.crudit-header__user .crudit-ui-avatar--impersonated'));
+await shot(page, 'header-impersonation');
+await axe(page, 'impersonation');
+page = await open(360, '/?_switch_user=bob', {user: 'alice', rtl: true});
+await page.click(userButton);
+await axe(page, 'impersonation, user menu open, RTL at 360');
+await page.keyboard.press('Escape');
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('.crudit-impersonation a')]);
+assert.equal(await page.$('.crudit-impersonation'), null);
+ok('impersonation: banner, flag, way back');
+
+// Logout: a POST from the menu
+page = await open(1280, '/', {user: 'alice'});
+await page.click(userButton);
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click(`${userPanel} button[type=submit]`)]);
+assert.equal(await page.$(userButton), null, 'signed out');
+ok('logout by POST');
+await page.close();
+
+// ---------- Header of the CRUD pages (lot 2.2.b): PageHeader, breadcrumb from the menu. axe on the header only: the
+// lists and the forms are reworked in phase 3
+async function axeHeader(page, label) {
+    await page.evaluate(axeSource);
+    const result = await page.evaluate(() => axe.run({include: [['.crudit-ui-page-header']]}, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']}));
+    assert.deepEqual(result.violations.map((x) => `${x.id}: ${x.nodes.map((n) => n.target.join(' ')).join(' | ')}`), [], `axe ${label}`);
+    ok(`axe ${label}`);
+}
+const crumbs = (page) => page.$$eval('nav.crudit-ui-breadcrumb li', (lis) => lis.filter((li) => li.offsetParent !== null).map((li) => li.textContent.trim()));
+page = await open(1280, '/client/');
+assert.deepEqual(await crumbs(page), ['Home', 'Operations', 'Clients']);
+await page.goto(base + await page.$eval('main a[href*="/client/show/"]', (a) => a.getAttribute('href')), {waitUntil: 'networkidle0'});
+const record = await page.$eval('h1#page-title', (e) => e.textContent.trim());
+assert.deepEqual(await crumbs(page), ['Home', 'Operations', 'Clients', record]);
+assert.equal(await page.$$eval('h1', (h) => h.length), 1, 'one h1');
+await shot(page, 'crud-show-1280');
+await axeHeader(page, 'header of a record at 1280');
+await page.setViewport({width: 360, height: 800});
+await new Promise((r) => setTimeout(r, 200));
+assert.deepEqual(await crumbs(page), ['Clients'], 'on a phone, the link "← parent" only');
+assert.ok(await visible(page, 'nav.crudit-ui-breadcrumb .crudit-ui-breadcrumb__back'));
+await shot(page, 'crud-show-360');
+await axeHeader(page, 'header of a record at 360');
+ok('header of a CRUD page: breadcrumb from the menu, one h1, "← parent" on a phone');
+await page.close();
+
+// ---------- Focus of the title after a visit of Turbo (lot 2.2.b): turbo:load simulated, the application has no Turbo
+page = await open(1280, '/page/invoices');
+// Turbo gives the timing of a visit in turbo:load, none on the first load
+const load = (url, visit = true) => page.evaluate((url, visit) => {
+    document.activeElement?.blur();
+    if (url) {
+        history.pushState({}, '', url);
+    }
+    document.dispatchEvent(new CustomEvent('turbo:load', {detail: {url: location.href, timing: visit ? {visitStart: 1} : {}}}));
+    return document.activeElement?.id ?? '';
+}, url, visit);
+assert.equal(await load(null, false), '', 'first load: the focus does not move');
+assert.equal(await load('/page/credits'), 'page-title', 'a visit: the focus on the title');
+assert.equal(await load(null), '', 'a refresh of the same address: the focus does not move');
+assert.equal(await load('/page/items#content'), '', 'an address with an anchor: the focus does not move');
+assert.equal(await load('/page/movements', false), '', 'no timing (not a visit): the focus does not move');
+// As Turbo does: the address changes, <body> is replaced (its controllers connect again), then turbo:load
+const focusAfterSwap = await page.evaluate(async () => {
+    document.activeElement?.blur();
+    history.pushState({}, '', '/page/reminders');
+    document.body.replaceWith(document.body.cloneNode(true));
+    await new Promise((r) => setTimeout(r, 100));
+    document.dispatchEvent(new CustomEvent('turbo:load', {detail: {url: location.href, timing: {visitStart: 1}}}));
+    return document.activeElement?.id ?? '';
+});
+assert.equal(focusAfterSwap, 'page-title', 'a visit that replaces <body>: the focus on the title');
+ok('focus of the title after a visit of Turbo');
 await page.close();
 
 // ---------- Turbo cache hook / reduced motion: no errors

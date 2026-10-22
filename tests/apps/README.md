@@ -40,5 +40,8 @@ docker run -d --rm --name crudit-app -u $(id -u) --network host -e HOME=/tmp -e 
 cd .. && npm install && node smoke.mjs http://127.0.0.1:8080/
 ```
 
+Signed in, the header has the user menu: open `/login` and give `alice` / `alice` (name, role, email, can impersonate:
+`/?_switch_user=bob`) or `bob` / `bob` (name only). The application lets anonymous visitors in otherwise.
+
 `php-intl` is the image `php:8.5-cli` with the `intl` extension (see `CruditUiBundle/docs/development.md`).
 After `asset-map:compile`, delete `public/assets/` to go back to the development mode.

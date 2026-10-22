@@ -3,6 +3,8 @@ twig:
     globals:
         app_name: '%env(APP_NAME)%'
         app_version: '%env(APP_VERSION)%'
+        # Connect of 2le: the user menu links to <connect_url>profile (add_connect_profile_link)
+        connect_url: 'https://connect.example.org/'
 
 when@test:
     twig:
