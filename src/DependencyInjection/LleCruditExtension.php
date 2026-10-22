@@ -88,6 +88,16 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.css_class_columns_card', $processedConfig['css_class_columns_card']);
         $container->setParameter('lle_crudit.number_cards_per_row', $processedConfig['number_cards_per_row']);
         $container->setParameter('lle_crudit.layout', $processedConfig['layout']);
+        $search = $processedConfig['search'];
+        $search['entities'] = array_map(
+            static fn (array $entity): array => [...$entity, 'limit' => $entity['limit'] ?? $search['limit']],
+            $search['entities'],
+        );
+        $container->setParameter('lle_crudit.search.enabled', $search['enabled']);
+        $container->setParameter('lle_crudit.search.min_length', $search['min_length']);
+        $container->setParameter('lle_crudit.search.limit', $search['limit']);
+        $container->setParameter('lle_crudit.search.screens', $search['screens']);
+        $container->setParameter('lle_crudit.search.entities', $search['entities']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {

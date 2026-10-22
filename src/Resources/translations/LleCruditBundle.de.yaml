@@ -2,8 +2,15 @@ crudit:
     title:
         filter: "Artikel Auswählen"
 
-    multisearch:
-        placeholder: "Suche ..."
+    search:
+        button: "Suchen"
+        hint: "ein Element, eine Seite…"
+        title: "Globale Suche"
+        label: "Ein Element oder eine Seite suchen"
+        placeholder: "Element, Seite…"
+        help: "Die Suche umfasst die wichtigsten Elemente der Anwendung und ihre Seiten."
+        screen: "Seite"
+        screens: "Seiten"
 
     layout:
         main_menu: "Hauptmenü"

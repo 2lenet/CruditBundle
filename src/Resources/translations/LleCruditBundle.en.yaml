@@ -2,8 +2,15 @@ crudit:
     title:
         filter: "Filter items"
 
-    multisearch:
-        placeholder: "Search ..."
+    search:
+        button: "Search"
+        hint: "a record, a screen…"
+        title: "Global search"
+        label: "Search a record or a screen"
+        placeholder: "Record, screen…"
+        help: "The search covers the main records of the application and its screens."
+        screen: "Screen"
+        screens: "Screens"
 
     layout:
         main_menu: "Main menu"

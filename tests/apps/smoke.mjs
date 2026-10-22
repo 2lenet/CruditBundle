@@ -18,8 +18,8 @@ const ok = (name) => { passed++; console.log('ok  ', name); };
 // One page at a time: open() closes the previous one
 let current = null;
 // user: signed in with http_basic (tests/apps/crudit/src/Security/UserProvider.php) on the first request, then by the
-// session only (switch_user keeps its user)
-async function open(width, path = '/', {cookie = null, dark = false, rtl = false, user = null} = {}) {
+// session only (switch_user keeps its user); platform: the client hints of a Mac (global search)
+async function open(width, path = '/', {cookie = null, dark = false, rtl = false, user = null, platform = null} = {}) {
     if (current && !current.isClosed()) {
         await current.close();
     }
@@ -28,6 +28,14 @@ async function open(width, path = '/', {cookie = null, dark = false, rtl = false
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
     page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});
+    if (platform) {
+        // navigator.userAgentData (client hints, read first by the controllers) and navigator.platform, both.
+        await page.setUserAgent({
+            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+            userAgentMetadata: {platform: 'macOS', platformVersion: '14.0.0', architecture: 'arm', model: '', mobile: false},
+            platform,
+        });
+    }
     await page.emulateMediaFeatures([{name: 'prefers-color-scheme', value: dark ? 'dark' : 'light'}]);
     // The pages share the cookies of the browser: menu, theme, session
     await page.deleteCookie(...(await page.cookies(base)));
@@ -590,6 +598,126 @@ const focusAfterSwap = await page.evaluate(async () => {
 });
 assert.equal(focusAfterSwap, 'page-title', 'a visit that replaces <body>: the focus on the title');
 ok('focus of the title after a visit of Turbo');
+
+// ---------- Global search (lot 2.2.c): the button of the header, the command palette, Ctrl K
+const palette = (page) => page.evaluate(() => {
+    const dialog = document.getElementById('crudit-search');
+    const input = dialog.querySelector('input');
+
+    return {
+        open: dialog.open,
+        focus: document.activeElement === input,
+        groups: Array.from(dialog.querySelectorAll('[role=group]')).map((g) => g.querySelector('p').textContent),
+        options: Array.from(dialog.querySelectorAll('[role=option]')).map((o) => `${o.querySelector('.crudit-ui-palette__title').textContent} / ${o.querySelector('.crudit-ui-palette__subtitle')?.textContent ?? ''}`),
+        message: dialog.querySelector('.crudit-ui-palette__message').hidden ? null : dialog.querySelector('.crudit-ui-palette__message').textContent,
+    };
+});
+const results = (page) => page.waitForFunction(() => document.querySelector('#crudit-search [role=option], #crudit-search .crudit-ui-palette__message:not([hidden])'), {timeout: 3000});
+
+page = await open(1440, '/page/invoices');
+assert.ok(await visible(page, '.crudit-search-trigger'), 'the button of the search is shown');
+assert.ok(await visible(page, '.crudit-search-trigger__hint') && await visible(page, '.crudit-search-trigger__kbd'), 'the hint and the keys on desktop');
+assert.equal(await attr(page, '.crudit-search-trigger', 'aria-keyshortcuts'), 'Control+K Meta+K');
+// The header is checked as a whole on the other pages (lot 2.2.a): here, the button alone.
+await page.evaluate(axeSource);
+assert.deepEqual(await page.evaluate(async () => (await axe.run('.crudit-search-trigger', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => v.id)), [], 'axe of the button of the search');
+ok('the button of the search is in the header, accessible');
+assert.equal(await page.$eval('.crudit-search-trigger__kbd', (e) => e.textContent), 'Ctrl K', 'the shortcut is Ctrl K outside a Mac');
+
+// The shortcut shown is the one of the platform; without a palette on the page the button hides itself.
+page = await open(1440, '/page/invoices', {platform: 'MacIntel'});
+assert.equal(await page.$eval('.crudit-search-trigger__kbd', (e) => e.textContent), '⌘ K', 'the shortcut is not ⌘ K on a Mac');
+await page.evaluate(() => {
+    const button = document.querySelector('.crudit-search-trigger');
+    document.getElementById('crudit-search').remove();
+    button.replaceWith(button.cloneNode(true));
+});
+await page.waitForFunction(() => document.querySelector('.crudit-search-trigger').hidden, {timeout: 2000});
+ok('⌘ K on a Mac, the button hidden without a palette');
+page = await open(1440, '/page/invoices');
+
+// Ctrl K from any page opens it, the focus in the field; the clients and the screens; Enter opens the active one.
+await page.keyboard.down('Control');
+await page.keyboard.press('k');
+await page.keyboard.up('Control');
+assert.deepEqual((({open, focus}) => ({open, focus}))(await palette(page)), {open: true, focus: true}, 'Ctrl K opens the palette');
+await page.keyboard.type('cli');
+await results(page);
+assert.deepEqual((await palette(page)).groups, ['Clients', 'Screens'], 'the clients, then the screens');
+assert.ok((await palette(page)).options.includes('Clients / Screen'), 'the screen "Clients", whose second line is the name of the kind');
+assert.equal((await palette(page)).options.length, 11, 'ten clients at most (the default limit), then the screen');
+await page.keyboard.down('Control');
+await page.keyboard.press('a');
+await page.keyboard.up('Control');
+await page.keyboard.type('client2');
+await results(page);
+let found = await palette(page);
+assert.deepEqual(found.groups, ['Clients'], 'the clients found by their name');
+assert.ok(found.options.includes('Client 20 / client20@example.org'), 'the e-mail is the second line');
+ok('Ctrl K: the palette finds the clients and the screens');
+await page.evaluate(axeSource);
+assert.deepEqual(await page.evaluate(async () => (await axe.run('#crudit-search', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => `${v.id} ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)), [], 'axe of the palette');
+ok('axe of the palette with results');
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.keyboard.press('Enter')]);
+assert.match(page.url(), /\/client\/show\/\d+$/, 'Enter opens the active result');
+assert.match(await page.$eval('main', (e) => e.textContent), /Client 2\d/);
+ok('Enter opens the client');
+
+// The button opens it; on the screens, the sub-menu is the second line; the link of a role nobody has is not found.
+await page.click('.crudit-search-trigger');
+assert.equal((await palette(page)).open, true, 'the button opens the palette');
+await page.keyboard.type('invoices');
+await results(page);
+assert.deepEqual(await palette(page).then((p) => [p.groups, p.options]), [['Screens'], ['Invoices / Billing']]);
+await page.keyboard.down('Control');
+await page.keyboard.press('a');
+await page.keyboard.up('Control');
+await page.keyboard.type('secret');
+await results(page);
+assert.equal((await palette(page)).message, 'No result for “secret”.', 'a screen that the user may not see is not found');
+await page.keyboard.press('Escape');
+assert.equal((await palette(page)).open, false);
+assert.equal(await page.evaluate(() => document.activeElement.className.includes('crudit-search-trigger')), true, 'the focus goes back to the button');
+ok('the button, the screens, a refused screen, Escape');
+await page.close();
+
+// Ctrl K and the button in right to left, on a phone (an icon, the label for assistive technologies only) and in dark
+page = await open(360, '/page/invoices');
+const trigger = await box(page, '.crudit-search-trigger');
+assert.ok(trigger.w < 50 && trigger.w >= 28, `the button is an icon on a phone (${trigger.w} px)`);
+assert.ok(!(await visible(page, '.crudit-search-trigger__hint')));
+assert.match(await page.$eval('.crudit-search-trigger', (e) => e.textContent), /Search/, 'the label stays for assistive technologies');
+await page.click('.crudit-search-trigger');
+const full = await page.$eval('#crudit-search', (e) => { const r = e.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; });
+assert.deepEqual(full, [360, 800], 'the palette is the whole screen on a phone');
+await page.keyboard.type('client2');
+await results(page);
+assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, 'no horizontal scroll');
+ok('the search on a phone');
+await page.close();
+
+page = await open(1440, '/page/invoices', {rtl: true, dark: true});
+await page.click('.crudit-search-trigger');
+await page.keyboard.type('client2');
+await results(page);
+assert.equal(await page.$eval('#crudit-search .crudit-ui-palette__field', (e) => getComputedStyle(e).direction), 'rtl');
+await page.evaluate(axeSource);
+assert.deepEqual(await page.evaluate(async () => (await axe.run('#crudit-search', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => v.id)), [], 'axe of the palette, dark, right to left');
+ok('the palette in dark and right to left');
+await page.close();
+
+// A server error is said, not swallowed
+page = await open(1440, '/page/invoices');
+await page.setRequestInterception(true);
+page.on('request', (request) => request.url().includes('/crudit/search') ? request.respond({status: 500, body: 'x'}) : request.continue());
+await page.keyboard.down('Control');
+await page.keyboard.press('k');
+await page.keyboard.up('Control');
+await page.keyboard.type('client');
+await results(page);
+assert.equal((await palette(page)).message, 'The search failed. Try again.');
+errors.splice(0, errors.length, ...errors.filter((e) => !e.includes('status of 500')));
+ok('a server error is shown');
 await page.close();
 
 // ---------- Turbo cache hook / reduced motion: no errors

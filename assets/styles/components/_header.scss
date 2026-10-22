@@ -62,6 +62,14 @@
         margin-inline-start: auto;
     }
 
+    // Below md, the button of the global search (components/search-trigger) is an icon pushed to the end of the bar:
+    // the user menu follows it. From md it is a field at the start, and the user menu goes to the end.
+    @include media('<md') {
+        .crudit-search-trigger ~ &__end {
+            margin-inline-start: 0;
+        }
+    }
+
     // The button of the user menu: the avatar, the name and the role (read only below lg), the chevron (not below sm)
     &__user.crudit-ui-btn {
         gap: var(--space-2);

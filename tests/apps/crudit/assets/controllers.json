@@ -17,6 +17,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "search-trigger": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "sidebar": {
                 "enabled": true,
                 "fetch": "eager"
@@ -32,6 +36,10 @@
                 "fetch": "eager"
             },
             "button": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "command-palette": {
                 "enabled": true,
                 "fetch": "eager"
             },

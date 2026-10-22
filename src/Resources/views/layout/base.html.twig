@@ -83,8 +83,10 @@
                         {% include '@LleCrudit/layout/header/_burger.html.twig' %}
                         {# Below 1024 px, the logo of the menu, closed in the drawer: the same block, so an override counts twice #}
                         <div class="crudit-header__brand">{{ block('brand') }}</div>
-                        {% block header_search %}{% endblock %}
                         {% block header_nav %}{% endblock %}
+                        {% block header_search %}
+                            {% include '@LleCrudit/layout/header/_search.html.twig' %}
+                        {% endblock %}
                         <div class="crudit-header__end">
                             {% block header_right %}
                                 {% block user_menu %}
@@ -118,6 +120,10 @@
 
 {% block toasts %}
     {% include '@LleCrudit/layout/_toasts.html.twig' %}
+{% endblock %}
+
+{% block search_dialog %}
+    {% include '@LleCrudit/layout/_search.html.twig' %}
 {% endblock %}
 
 {% block modal_confirmation %}

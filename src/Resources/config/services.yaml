@@ -92,6 +92,21 @@ services:
 
     Lle\CruditBundle\Twig\BreadcrumbExtension: ~
 
+    Lle\CruditBundle\Search\GlobalSearch:
+        arguments:
+            $propertyAccessor: '@property_accessor'
+            $entities: '%lle_crudit.search.entities%'
+            $screens: '%lle_crudit.search.screens%'
+            $minLength: '%lle_crudit.search.min_length%'
+            $logger: '@?logger'
+            $debug: '%kernel.debug%'
+
+    Lle\CruditBundle\Twig\SearchExtension:
+        arguments:
+            $enabled: '%lle_crudit.search.enabled%'
+            $minLength: '%lle_crudit.search.min_length%'
+        tags: [twig.extension]
+
     Lle\CruditBundle\Twig\CruditTelephoneCallFilterExtension:
         tags: [twig.extension]
 
