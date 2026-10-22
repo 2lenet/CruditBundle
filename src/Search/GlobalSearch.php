@@ -9,6 +9,8 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Provider\ConfigProvider;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\PropertyAccess\Exception\ExceptionInterface as PropertyAccessException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -50,6 +52,7 @@ class GlobalSearch
         private readonly array $entities,
         private readonly bool $screens,
         private readonly int $minLength,
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -65,20 +68,40 @@ class GlobalSearch
 
         $groups = [];
         foreach ($this->entities as $entity) {
-            $group = $this->entityGroup($entity, $text);
+            $group = $this->guarded(fn (): ?array => $this->entityGroup($entity, $text), $entity['config']);
             if ($group !== null) {
                 $groups[] = $group;
             }
         }
 
         if ($this->screens) {
-            $group = $this->screensGroup($text);
+            $group = $this->guarded(fn (): ?array => $this->screensGroup($text), 'screens');
             if ($group !== null) {
                 $groups[] = $group;
             }
         }
 
         return $groups;
+    }
+
+    /**
+     * A group that fails (a datasource without search field, an entity without __toString(), a menu provider that
+     * throws) is logged and left out: the other groups still answer.
+     *
+     * @param \Closure(): ?array<string, mixed> $build
+     *
+     * @return Group|null
+     */
+    private function guarded(\Closure $build, string $name): ?array
+    {
+        try {
+            /** @var Group|null */
+            return $build();
+        } catch (\Throwable $exception) {
+            $this->logger->error('Global search: the group "{group}" failed.', ['group' => $name, 'exception' => $exception]);
+
+            return null;
+        }
     }
 
     /**
@@ -90,10 +113,8 @@ class GlobalSearch
     {
         $config = $this->configProvider->get($entity['config']);
         if ($config === null) {
-            throw new \LogicException(sprintf(
-                'lle_crudit.search.entities: "%s" is not a CrudConfig of the application (a service tagged crudit.config).',
-                $entity['config'],
-            ));
+            // SearchEntitiesPass refuses it when the container is built: only a ConfigProvider built by hand gets here.
+            throw new \LogicException(sprintf('"%s" is not a CrudConfig of the application (a service tagged crudit.config).', $entity['config']));
         }
 
         $role = sprintf('ROLE_%s_%s', $config->getName(), CrudConfigInterface::SHOW);
@@ -222,7 +243,9 @@ class GlobalSearch
      */
     private function fold(string $text): string
     {
-        $folded = \Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Lower');
+        static $transliterator = false;
+        $transliterator = $transliterator === false ? \Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Lower') : $transliterator;
+        $folded = $transliterator;
 
         return $folded !== null ? (string) $folded->transliterate($text) : mb_strtolower($text);
     }

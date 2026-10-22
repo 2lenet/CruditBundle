@@ -17,6 +17,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "search-trigger": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "sidebar": {
                 "enabled": true,
                 "fetch": "eager"

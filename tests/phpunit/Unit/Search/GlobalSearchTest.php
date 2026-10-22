@@ -87,13 +87,15 @@ class GlobalSearchTest extends TestCase
         self::assertNull($search->search('mar')[0]['results'][0]['subtitle']);
     }
 
-    public function testUnknownCrudConfigIsAnError(): void
+    public function testGroupThatFailsIsLeftOutAndTheOthersStay(): void
     {
-        $search = $this->search([['config' => 'App\\Crudit\\Config\\GhostCrudConfig', 'title' => null, 'limit' => 5, 'subtitle' => null]]);
+        // The first entity is unknown (the container refuses it, here the provider does not): the second one answers.
+        $search = $this->search(
+            [['config' => 'App\\Crudit\\Config\\GhostCrudConfig', 'title' => null, 'limit' => 5, 'subtitle' => null], $this->entity()],
+            items: [$this->customer(1, 'Martin', null)],
+        );
 
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('lle_crudit.search.entities: "App\Crudit\Config\GhostCrudConfig" is not a CrudConfig');
-        $search->search('mar');
+        self::assertSame(['CUSTOMER'], array_column($search->search('mar'), 'id'));
     }
 
     public function testNothingUnderTheMinimumOfCharacters(): void
