@@ -17,7 +17,7 @@ const ok = (name) => { passed++; console.log('ok  ', name); };
 
 // One page at a time: open() closes the previous one
 let current = null;
-async function open(width, path = '/', {cookie = null, dark = false, rtl = false} = {}) {
+async function open(width, path = '/', {cookie = null, dark = false, rtl = false, platform = null} = {}) {
     if (current && !current.isClosed()) {
         await current.close();
     }
@@ -26,6 +26,14 @@ async function open(width, path = '/', {cookie = null, dark = false, rtl = false
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
     page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});
+    if (platform) {
+        // navigator.userAgentData (client hints, read first by the controllers) and navigator.platform, both.
+        await page.setUserAgent({
+            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+            userAgentMetadata: {platform: 'macOS', platformVersion: '14.0.0', architecture: 'arm', model: '', mobile: false},
+            platform,
+        });
+    }
     await page.emulateMediaFeatures([{name: 'prefers-color-scheme', value: dark ? 'dark' : 'light'}]);
     await page.deleteCookie({name: 'crudit_sidebar', url: base});
     if (cookie) {
@@ -495,6 +503,19 @@ assert.equal(await attr(page, '.crudit-search-trigger', 'aria-keyshortcuts'), 'C
 await page.evaluate(axeSource);
 assert.deepEqual(await page.evaluate(async () => (await axe.run('.crudit-search-trigger', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => v.id)), [], 'axe of the button of the search');
 ok('the button of the search is in the header, accessible');
+assert.equal(await page.$eval('.crudit-search-trigger__kbd', (e) => e.textContent), 'Ctrl K', 'the shortcut is Ctrl K outside a Mac');
+
+// The shortcut shown is the one of the platform; without a palette on the page the button hides itself.
+page = await open(1440, '/page/invoices', {platform: 'MacIntel'});
+assert.equal(await page.$eval('.crudit-search-trigger__kbd', (e) => e.textContent), '⌘ K', 'the shortcut is not ⌘ K on a Mac');
+await page.evaluate(() => {
+    const button = document.querySelector('.crudit-search-trigger');
+    document.getElementById('crudit-search').remove();
+    button.replaceWith(button.cloneNode(true));
+});
+await page.waitForFunction(() => document.querySelector('.crudit-search-trigger').hidden, {timeout: 2000});
+ok('⌘ K on a Mac, the button hidden without a palette');
+page = await open(1440, '/page/invoices');
 
 // Ctrl K from any page opens it, the focus in the field; the clients and the screens; Enter opens the active one.
 await page.keyboard.down('Control');

@@ -9,6 +9,7 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Layout\LinkElement;
 use Lle\CruditBundle\Provider\ConfigProvider;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\Exception\ExceptionInterface as PropertyAccessException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -37,6 +38,9 @@ class GlobalSearch
     /** Screens given: a menu has no more that is useful at a glance, and they are not data. */
     public const int SCREENS_LIMIT = 5;
 
+    /** The transliterator of fold(), created once; false when ext-intl cannot make it. */
+    private \Transliterator|false|null $folder = null;
+
     /**
      * @param list<array{config: string, title: ?string, limit: int, subtitle: ?string}> $entities
      */
@@ -50,6 +54,8 @@ class GlobalSearch
         private readonly array $entities,
         private readonly bool $screens,
         private readonly int $minLength,
+        private readonly ?LoggerInterface $logger = null,
+        private readonly bool $debug = false,
     ) {
     }
 
@@ -64,18 +70,35 @@ class GlobalSearch
         }
 
         $groups = [];
-        foreach ($this->entities as $entity) {
-            $group = $this->entityGroup($entity, $text);
+        $failures = [];
+        $attempts = array_map(
+            fn (array $entity): array => [$entity['config'], fn (): ?array => $this->entityGroup($entity, $text)],
+            $this->entities,
+        );
+        if ($this->screens) {
+            $attempts[] = ['screens', fn (): ?array => $this->screensGroup($text)];
+        }
+
+        foreach ($attempts as [$name, $build]) {
+            try {
+                $group = $build();
+            } catch (\Throwable $exception) {
+                // In debug, a mistake (a TypeError, a missing search field) is not hidden by the other groups.
+                if ($this->debug) {
+                    throw $exception;
+                }
+                $this->logger?->error('Global search: the group "{group}" failed.', ['group' => $name, 'exception' => $exception]);
+                $failures[] = $exception;
+                continue;
+            }
             if ($group !== null) {
                 $groups[] = $group;
             }
         }
 
-        if ($this->screens) {
-            $group = $this->screensGroup($text);
-            if ($group !== null) {
-                $groups[] = $group;
-            }
+        // Every group failed (the database is down): an error, which the palette says, not "no result".
+        if ($attempts !== [] && \count($failures) === \count($attempts)) {
+            throw $failures[0];
         }
 
         return $groups;
@@ -90,10 +113,8 @@ class GlobalSearch
     {
         $config = $this->configProvider->get($entity['config']);
         if ($config === null) {
-            throw new \LogicException(sprintf(
-                'lle_crudit.search.entities: "%s" is not a CrudConfig of the application (a service tagged crudit.config).',
-                $entity['config'],
-            ));
+            // SearchEntitiesPass refuses it when the container is built: only a ConfigProvider built by hand gets here.
+            throw new \LogicException(sprintf('"%s" is not a CrudConfig of the application (a service tagged crudit.config).', $entity['config']));
         }
 
         $role = sprintf('ROLE_%s_%s', $config->getName(), CrudConfigInterface::SHOW);
@@ -222,8 +243,8 @@ class GlobalSearch
      */
     private function fold(string $text): string
     {
-        $folded = \Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Lower');
+        $this->folder ??= \Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC; Lower') ?? false;
 
-        return $folded !== null ? (string) $folded->transliterate($text) : mb_strtolower($text);
+        return $this->folder !== false ? (string) $this->folder->transliterate($text) : mb_strtolower($text);
     }
 }

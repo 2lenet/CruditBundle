@@ -87,13 +87,41 @@ class GlobalSearchTest extends TestCase
         self::assertNull($search->search('mar')[0]['results'][0]['subtitle']);
     }
 
-    public function testUnknownCrudConfigIsAnError(): void
+    public function testGroupThatFailsIsLeftOutAndTheOthersStay(): void
     {
+        // The first entity is unknown (the container refuses it, here the provider does not): the second one answers.
+        $search = $this->search(
+            [['config' => 'App\\Crudit\\Config\\GhostCrudConfig', 'title' => null, 'limit' => 5, 'subtitle' => null], $this->entity()],
+            items: [$this->customer(1, 'Martin', null)],
+        );
+
+        self::assertSame(['CUSTOMER'], array_column($search->search('mar'), 'id'));
+    }
+
+    public function testEveryGroupThatFailsIsAnError(): void
+    {
+        // The database is down: not "no result", an error that the route answers with a 500 (the palette says it).
         $search = $this->search([['config' => 'App\\Crudit\\Config\\GhostCrudConfig', 'title' => null, 'limit' => 5, 'subtitle' => null]]);
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('lle_crudit.search.entities: "App\Crudit\Config\GhostCrudConfig" is not a CrudConfig');
         $search->search('mar');
+    }
+
+    public function testGroupThatFailsIsNotHiddenInDebug(): void
+    {
+        $search = $this->search(
+            [['config' => 'App\\Crudit\\Config\\GhostCrudConfig', 'title' => null, 'limit' => 5, 'subtitle' => null], $this->entity()],
+            items: [$this->customer(1, 'Martin', null)],
+            debug: true,
+        );
+
+        $this->expectException(\LogicException::class);
+        $search->search('mar');
+    }
+
+    public function testGroupWithoutResultIsNotAFailure(): void
+    {
+        self::assertSame([], $this->search([$this->entity()], items: [])->search('zzz'));
     }
 
     public function testNothingUnderTheMinimumOfCharacters(): void
@@ -160,7 +188,7 @@ class GlobalSearchTest extends TestCase
      * @param list<object> $items
      * @param list<object> $menu
      */
-    private function search(array $entities, array $items = [], array $menu = [], bool $screens = false, bool $translated = true): GlobalSearch
+    private function search(array $entities, array $items = [], array $menu = [], bool $screens = false, bool $translated = true, bool $debug = false): GlobalSearch
     {
         $datasource = $this->createMock(DatasourceInterface::class);
         $datasource->method('autocompleteQuery')->willReturnCallback(function (string $text, array $sorts, ?DatasourceParams $params) use ($items): array {
@@ -220,6 +248,8 @@ class GlobalSearchTest extends TestCase
             $entities,
             $screens,
             2,
+            null,
+            $debug,
         );
     }
 

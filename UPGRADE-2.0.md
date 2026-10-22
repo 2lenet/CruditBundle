@@ -311,7 +311,11 @@ lle_crudit:
 - **The entities are listed, never "all that have an autocomplete"**: the old `urls` of the `include` (entity, title,
   `destUrl`, `url`, `limit`) become this list. The search asks the `autocomplete` of the datasource of each
   CrudConfig (`getAutocompleteSearchFields()`, `getDefaultAutocompleteSort()`): a datasource that has no search field
-  raises `BadConfigException`, as its `/autocomplete` route did. **Your own `/autocomplete` routes stay**: the form
+  raises `BadConfigException` when it is searched: the search logs the error and **leaves that group out**, the
+  others and the screens still answer (when **every** group fails, the route answers 500 and the palette says so; in
+  debug, the first error is always thrown). A class that is not a CrudConfig (a service tagged `crudit.config`) is refused
+  when the container is built (`cache:clear`). `limit` is a ceiling **before the voters**: a restrictive voter can leave
+  a group with fewer results. **Your own `/autocomplete` routes stay**: the form
   types use them; the search no longer does.
 - A result opens the page `show` of the CrudConfig (`getPath('show', ['id' => …])`: your route `<root_route>_show`
   must exist). Its title is `(string) $resource`; `subtitle` is a property path (PropertyAccess) for a second line.
@@ -325,7 +329,8 @@ lle_crudit:
   the import of the route, the search is simply not shown** (no error on the pages).
 - **Blocks**: `header_search` (the button, in the bar of the header) and `search_dialog` (the palette, out of the block
   `body` like the toasts): empty them to remove the search. Ctrl K works wherever the header comes from. A page has one
-  palette with the shortcut.
+  palette with the shortcut. The button shows `⌘ K` on a Mac (`Ctrl K` elsewhere) and hides itself when the page has no
+  palette (`header_search` kept, `search_dialog` emptied): controller `search-trigger`.
 - Removed with it: the `multisearch` script of `sb-admin` and the translation `crudit.multisearch.placeholder`
   (`crudit.search.*` in their place). If you override `_multisearch.html.twig` (arhon-backend), delete the override and
   use the configuration above; to change the rendering, override `layout/_search.html.twig` (the component

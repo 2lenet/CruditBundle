@@ -7,6 +7,6 @@
     },
     "devDependencies": {
         "axe-core": "^4.14.0",
-        "puppeteer-core": "^24.0.0"
+        "puppeteer-core": "^24.21.0"
     }
 }
