@@ -84,6 +84,34 @@ class MenuBuilderTest extends TestCase
         self::assertSame(['home', '---', 'administration', 'settings'], $this->labels($this->build($elements)));
     }
 
+    /**
+     * A heading followed by a heading with children is not empty: it is the group of the items of that heading.
+     */
+    public function testHeadingFollowedByATitleWithChildren(): void
+    {
+        $users = TitleElement::new('users');
+        $users->addChild(LinkElement::new('accounts', Path::new('accounts')));
+
+        $menu = $this->build([CategoryElement::new('administration'), $users]);
+
+        self::assertSame(['administration', 'users' => ['accounts']], $this->labels($menu));
+    }
+
+    /**
+     * A separator ends the section: the heading before it has nothing under it, even if items follow the separator.
+     */
+    public function testHeadingFollowedByASeparatorIsRemoved(): void
+    {
+        $elements = [
+            LinkElement::new('home', Path::new('home')),
+            CategoryElement::new('operations'),
+            HorizontalSeparatorElement::new(),
+            LinkElement::new('clients', Path::new('clients')),
+        ];
+
+        self::assertSame(['home', '---', 'clients'], $this->labels($this->build($elements)));
+    }
+
     public function testTitleWithChildren(): void
     {
         $title = TitleElement::new('administration');

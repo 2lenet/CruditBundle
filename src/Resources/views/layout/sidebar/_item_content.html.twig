@@ -2,7 +2,8 @@
  # Content of the link of a menu item (icon, label, badges). The icon is an Iconify name or a logical name of
  # CruditUiBundle (ui_icon); without one, or when it cannot be rendered, the first letter of the label stands for it:
  # the collapsed menu (rail) shows only that. A badge is the Badge component of CruditUiBundle, with its text for
- # assistive technologies; in the rail it is replaced by a dot of its tone, and it is read in the label.
+ # assistive technologies; in the rail the badges are replaced by one dot, of the tone of the first badge (the project
+ # puts the most important one first), and they are read in the label.
  #}
 {% set svg = element.icon ? ui_icon(element.icon.icon) : '' %}
 <span class="crudit-nav__icon" aria-hidden="true">

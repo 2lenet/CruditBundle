@@ -11,8 +11,8 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 /**
- * lle_crudit.layout: nothing by default (no logo, no favicon, no link), a link of the footer has a route or an url,
- * logo_dark needs logo.
+ * lle_crudit.layout: nothing by default (no logo, no favicon, no link), a link of the footer has a route or an url
+ * (route_params with a route only), logo_dark needs logo.
  */
 class ConfigurationTest extends TestCase
 {
@@ -59,9 +59,19 @@ class ConfigurationTest extends TestCase
     public function testFooterLinkHasARouteOrAnUrl(array $link): void
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('A link of the footer has a route or an url, not both');
+        $this->expectExceptionMessage('A link of the footer needs either a route or an url');
 
         $this->process(['layout' => ['footer_links' => [$link]]]);
+    }
+
+    public function testRouteParamsWithAnUrlAreRefused(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('A link of the footer with an url has no route_params');
+
+        $this->process(['layout' => ['footer_links' => [
+            ['label' => 'footer.legal', 'url' => 'https://example.org/legal', 'route_params' => ['id' => 1]],
+        ]]]);
     }
 
     public function testLogoDarkNeedsLogo(): void

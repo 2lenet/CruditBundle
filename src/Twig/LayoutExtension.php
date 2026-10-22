@@ -53,7 +53,8 @@ class LayoutExtension extends AbstractExtension
     {
         if ($this->resolved === null) {
             $globals = $twig->getGlobals();
-            $version = $this->layout['version'] ?: ($globals['app_version'] ?? null);
+            $configured = $this->layout['version'] === '' ? null : $this->layout['version'];
+            $version = $configured ?? $globals['app_version'] ?? null;
 
             $this->resolved = [
                 ...$this->layout,

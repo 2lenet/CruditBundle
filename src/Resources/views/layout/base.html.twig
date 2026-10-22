@@ -21,7 +21,7 @@
     <title>{% block page_title %}{{ app_name ?? 'Crudit' }}{% endblock %}</title>
     {% block favicon %}
         {% set favicon = crudit_layout().favicon %}
-        {% if favicon %}<link rel="icon" href="{{ asset(favicon) }}"{% if favicon|split('?')|first ends with '.svg' %} type="image/svg+xml"{% endif %}>{% endif %}
+        {% if favicon %}<link rel="icon" href="{{ asset(favicon) }}"{% if favicon|split('?')|first|lower ends with '.svg' %} type="image/svg+xml"{% endif %}>{% endif %}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
     {% block head_stylesheets %}{% endblock %}

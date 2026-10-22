@@ -17,7 +17,8 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * The menu shown to the user, from the elements of the providers (MenuRegistry):
  * - the elements the user is not granted are removed, children included;
  * - a sub-menu or a title whose children are all removed is removed (a title with children labels them only);
- * - a heading (title, category, header) without children and with no item under it is removed;
+ * - a heading (title, category, header) without children and with no item under it (an item, or a heading with
+ *   children) is removed;
  * - a separator at the start, at the end or after another separator is removed.
  *
  * The elements of the providers are not changed: an element whose children are filtered is a copy (withChildren()).
@@ -58,7 +59,7 @@ class MenuBuilder
                     continue;
                 }
                 // Compares the instances, not the count: a child can be a copy (a sub-menu without a refused link)
-                if ($grantedChildren !== $children && $element instanceof AbstractLayoutElement) {
+                if ($grantedChildren !== $children) {
                     $element = $element->withChildren($grantedChildren);
                 }
             }
@@ -96,12 +97,20 @@ class MenuBuilder
         return $kept;
     }
 
-    /** @param list<LayoutElementInterface> $elements */
+    /**
+     * A heading with children has items (category "Administration", then title "Users" with its links); a separator
+     * ends the section, the heading before it has nothing under it.
+     *
+     * @param list<LayoutElementInterface> $elements
+     */
     private function isFollowedByItem(array $elements, int $index): bool
     {
         $next = $elements[$index + 1] ?? null;
+        if ($next === null || $next instanceof HorizontalSeparatorElement) {
+            return false;
+        }
 
-        return $next !== null && !$this->isHeading($next) && !$next instanceof HorizontalSeparatorElement;
+        return !$this->isHeading($next) || $next->getChildren() !== [];
     }
 
     /**

@@ -135,7 +135,8 @@ import './bootstrap.js';
 reviewed)*.
 
 New markup, if you rewrite the block `body`: `<div id="crudit-sidebar" role="complementary">` (logo, filter, then
-`<nav id="main-nav">` with the menu, then the button that reduces it), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
+`<nav id="main-nav">` with the menu, then the button that reduces it; the logo is `<a class="crudit-brand">`, with
+`crudit-brand__full`, `__logo`, `__name` and `__mark` for the rail), then `<div class="crudit-shell__body">` with `<header>`, `<main id="main"
 tabindex="-1">` and the footer. **Keep the ids `main` and `main-nav`**: the skip links go there. Without Bootstrap,
 the old markup of SB Admin (`#wrapper`, `#content-wrapper`, `container-fluid`) is not styled any more: the simplest
 is to stop overriding `body`, and to keep only the blocks inside it (`brand`, `menu`, `header`, `footer`, `content`).
@@ -228,13 +229,16 @@ configuration or in the `footer` block.
   (`neutral` by default, `info`, `success`, `warning`, `danger`) and a text read after it by screen readers only
   (a translation key: "12" alone means nothing). Any tone of the `Badge` component of CruditUiBundle works
   (`primary`, the extended palette, or a colour of the project with its CSS rule); a tone without its rule gives the
-  neutral colours, **without any error**: `'badge-danger'` or `'bg-danger'` (the Bootstrap classes of 1.x) become
-  neutral badges, write `'danger'`. `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, a
-  badge becomes a dot of its tone and is shown in the tooltip.
+  neutral colours, without any error. The Bootstrap classes of 1.x (`'badge-danger'`, `'bg-danger'`) are
+  **deprecated** and turned into their tone (`secondary`, `light` and `dark` give `neutral`): write `'danger'`.
+  `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, the badges become
+  one dot, of the tone of the **first** badge (put the most important one first), and are shown in the tooltip.
 - **What the user cannot see is removed before rendering** (`MenuBuilder`, used by `crudit_menu_items()`): elements
   the user is not granted (`setRole()`), children included, a sub-menu or a title whose children are all removed (a
-  title with children labels them only), a heading without children (title, category, header) followed by no item,
-  a separator at the start, at the end or after another separator.
+  title with children labels them only), a heading without children (title, category, header) followed by no item
+  (an item or a heading with children; a separator ends the section), a separator at the start, at the end or after
+  another separator. An implementation of `LayoutElementInterface` must add `withChildren()` (a copy of the element
+  with other children: the menu is filtered on copies).
   The templates no longer call `is_granted()`. A `TitleElement` renders its children after it (it crashed before).
 - `setCssClass()` with Bootstrap classes (`d-none d-md-block`) has no effect any more: remove it.
 - The constructor of `Lle\CruditBundle\Twig\CruditExtension` takes a `MenuBuilder` instead of the `MenuRegistry`:

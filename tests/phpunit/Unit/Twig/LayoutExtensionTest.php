@@ -24,6 +24,7 @@ class LayoutExtensionTest extends TestCase
         yield 'configuration' => ['2.3.1', '1.0', '2.3.1'];
         yield 'global app_version' => [null, '1.0', '1.0'];
         yield 'empty configuration falls back' => ['', '1.0', '1.0'];
+        yield 'version 0' => ['0', '1.0', '0'];
         yield 'nothing' => [null, null, null];
         yield 'empty global' => [null, '', null];
     }
