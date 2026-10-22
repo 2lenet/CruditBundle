@@ -312,7 +312,8 @@ lle_crudit:
   `destUrl`, `url`, `limit`) become this list. The search asks the `autocomplete` of the datasource of each
   CrudConfig (`getAutocompleteSearchFields()`, `getDefaultAutocompleteSort()`): a datasource that has no search field
   raises `BadConfigException` when it is searched: the search logs the error and **leaves that group out**, the
-  others and the screens still answer. A class that is not a CrudConfig (a service tagged `crudit.config`) is refused
+  others and the screens still answer (when **every** group fails, the route answers 500 and the palette says so; in
+  debug, the first error is always thrown). A class that is not a CrudConfig (a service tagged `crudit.config`) is refused
   when the container is built (`cache:clear`). `limit` is a ceiling **before the voters**: a restrictive voter can leave
   a group with fewer results. **Your own `/autocomplete` routes stay**: the form
   types use them; the search no longer does.

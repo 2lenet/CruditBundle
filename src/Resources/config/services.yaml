@@ -78,6 +78,8 @@ services:
             $entities: '%lle_crudit.search.entities%'
             $screens: '%lle_crudit.search.screens%'
             $minLength: '%lle_crudit.search.min_length%'
+            $logger: '@?logger'
+            $debug: '%kernel.debug%'
 
     Lle\CruditBundle\Twig\SearchExtension:
         arguments:
