@@ -1,0 +1,3 @@
+# The routes of the bundle: the global search
+lle_crudit:
+    resource: '@LleCruditBundle/Resources/config/routes.yaml'

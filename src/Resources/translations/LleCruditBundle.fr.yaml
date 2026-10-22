@@ -2,8 +2,15 @@ crudit:
     title:
         filter: "Filtrer les éléments"
 
-    multisearch:
-        placeholder: "Rechercher ..."
+    search:
+        button: "Rechercher"
+        hint: "un élément, un écran…"
+        title: "Recherche globale"
+        label: "Rechercher un élément ou un écran"
+        placeholder: "Élément, écran…"
+        help: "La recherche porte sur les principaux éléments de l'application et sur ses écrans."
+        screen: "Écran"
+        screens: "Écrans"
 
     layout:
         main_menu: "Menu principal"

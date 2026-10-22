@@ -13,3 +13,8 @@ lle_crudit:
         footer_links:
             - { label: 'footer.accessibility', route: 'accessibility' }
             - { label: 'footer.legal', url: 'https://example.org/legal' }
+    # Global search (Ctrl K): the clients, found by their name or e-mail, the e-mail as second line, and the screens of
+    # the menu
+    search:
+        entities:
+            - { config: 'App\Crudit\Config\ClientCrudConfig', title: 'menu.clients', subtitle: 'email' }

@@ -13,6 +13,8 @@ use Symfony\Component\Config\Definition\Processor;
 /**
  * lle_crudit.layout: nothing by default (no logo, no favicon, no link), a link of the footer has a route or an url
  * (route_params with a route only), logo_dark needs logo.
+ * lle_crudit.search: on by default, with the screens and no entity; an entity is a CrudConfig class, alone or with its
+ * options.
  */
 class ConfigurationTest extends TestCase
 {
@@ -80,6 +82,44 @@ class ConfigurationTest extends TestCase
         $this->expectExceptionMessage('lle_crudit.layout.logo_dark needs lle_crudit.layout.logo');
 
         $this->process(['layout' => ['logo_dark' => 'images/logo-dark.svg']]);
+    }
+
+    public function testSearchDefaults(): void
+    {
+        self::assertSame([
+            'enabled' => true,
+            'min_length' => 2,
+            'limit' => 10,
+            'screens' => true,
+            'entities' => [],
+        ], $this->process([])['search']);
+    }
+
+    public function testSearchEntities(): void
+    {
+        $entities = $this->process(['search' => ['entities' => [
+            'App\\Crudit\\Config\\ClientCrudConfig',
+            ['config' => 'App\\Crudit\\Config\\InvoiceCrudConfig', 'title' => 'menu.invoices', 'limit' => 3, 'subtitle' => 'customer.name'],
+        ]]])['search']['entities'];
+
+        self::assertSame([
+            ['config' => 'App\\Crudit\\Config\\ClientCrudConfig', 'title' => null, 'limit' => null, 'subtitle' => null],
+            ['config' => 'App\\Crudit\\Config\\InvoiceCrudConfig', 'title' => 'menu.invoices', 'limit' => 3, 'subtitle' => 'customer.name'],
+        ], $entities);
+    }
+
+    public function testSearchEntityNeedsItsConfig(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->process(['search' => ['entities' => [['title' => 'menu.clients']]]]);
+    }
+
+    public function testSearchLimitsAreBounded(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->process(['search' => ['limit' => 21]]);
     }
 
     /**

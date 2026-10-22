@@ -82,13 +82,6 @@ $input-height: 42px;
         transform: scale(0.7) translateX(calc(50% + 0.8rem));
     }
 
-    &.multisearch {
-        .form-control {
-            background-color: transparent !important;
-            border: none !important;
-        }
-    }
-
     & > .choice-tom-select.form-select {
         height: inherit !important;
         padding: 0 !important;

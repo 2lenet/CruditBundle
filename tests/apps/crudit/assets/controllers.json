@@ -31,6 +31,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "command-palette": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "dialog": {
                 "enabled": true,
                 "fetch": "eager"
