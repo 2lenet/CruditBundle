@@ -18,6 +18,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 2. [Change the layout you extend](#2-layout) *(lot 2.1)*
    - [Update your menu providers: icons, badges](#the-items-of-the-menu-lot-21a) *(lot 2.1.a)*
    - [Configure your logo, favicon and footer](#logo-and-footer-lot-21c) *(lot 2.1.c)*
+   - [Import the route of the global search and list its entities](#global-search-lot-22c) *(lot 2.2.c)*
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
 5. [Fix `setCssClass()` on actions](#5-css-classes-on-actions) *(lot 3.1)*
@@ -142,8 +143,8 @@ the old markup of SB Admin (`#wrapper`, `#content-wrapper`, `container-fluid`) i
 is to stop overriding `body`, and to keep only the blocks inside it (`brand`, `menu`, `header`, `footer`, `content`).
 
 Out of the block `body`, so that a project that rewrites it keeps them: the skip links (block `skip_links`), the
-toasts (block `toasts`), the confirmation of the actions (block `modal_confirmation`) and the back to the top
-button (block `scroll_top`). **Remove them from your `body` or `main` block** if you copied them there:
+toasts (block `toasts`), the global search (block `search_dialog`), the confirmation of the actions (block
+`modal_confirmation`) and the back to the top button (block `scroll_top`). **Remove them from your `body` or `main` block** if you copied them there:
 `{% include '@LleCrudit/layout/sb_admin/_flash.html.twig' %}` and
 `{% include '@LleCrudit/modal/_confirm.html.twig' with {id: 'modal-confirm'} %}` (the first one no longer exists, the
 second one would give two confirmation dialogs).
@@ -186,11 +187,12 @@ New translation keys, domain `LleCruditBundle` (`crudit.layout.*`): `sidebar`, `
 | `layout.html.twig` | `base.html.twig` |
 | `brand.html.twig` (block `logo`), `menu.html.twig` (blocks `side_header`, `side_footer`) | blocks in `base.html.twig`, content in `sidebar/_logo.html.twig`, `sidebar/_menu.html.twig` |
 | `header.html.twig` (blocks `header_nav`, `header_right`) | blocks in `base.html.twig`, content in `header/_burger.html.twig`, `header/_actions.html.twig` |
-| `elements/_user`, `elements/_multisearch`, `elements/_exit_impersonation` | `header/_user_menu`, `header/_search`, `header/_exit_impersonation` |
+| `elements/_user`, `elements/_exit_impersonation` | `header/_user_menu`, `header/_exit_impersonation` |
+| `elements/_multisearch` (TomSelect, `urls` passed to the `include`) | **replaced by the global search**: button `header/_search` (block `header_search`) and palette `layout/_search` (block `search_dialog`), see [Global search](#global-search-lot-22c). Delete your override of `_multisearch` and your `include` |
 | `footer.html.twig` | block `footer` of `base.html.twig`, `footer/_version.html.twig` |
 | `elements/_link`, `_link_element`, `_external_link`, `_title`, `_category`, `_header`, `_h_separator` | `sidebar/_link` (link or sub-menu), `sidebar/_item` (link and external link), `sidebar/_submenu`, `sidebar/_title`, `sidebar/_category`, `sidebar/_header`, `sidebar/_separator` |
 | `bricks/_bricks` | `crud/_bricks` |
-| `elements/_v_separator`, `_search`, `_message`, `_notification` | removed, **no replacement**: delete your `{% include %}` of `_v_separator` (the top bar has no separator any more). `elements/_search` (an SB Admin demo form) is not `header/_search`, which is the former `_multisearch` |
+| `elements/_v_separator`, `_search`, `_message`, `_notification` | removed, **no replacement**: delete your `{% include %}` of `_v_separator` (the top bar has no separator any more). `elements/_search` (an SB Admin demo form) is not `header/_search`, which is the button of the global search |
 
 The folder `layout/sb_admin/` no longer exists: one folder per area of the layout (`sidebar/`, `header/`, `footer/`), and
 `base.html.twig` with the fragments that belong to no area (`_skip_links`, `_toasts`, `_back_to_top`). The two new
@@ -280,6 +282,54 @@ lle_crudit:
   `release_date` adds "updated on …", in the language of the page; a date that is not `Y-m-d` is logged and not
   shown. No link by default; without link, version nor date, there is no `<footer>`. To remove it, empty the block
   `footer` (arhon).
+
+### Global search *(lot 2.2.c)*
+
+The search field of the top bar (TomSelect, `data-url` of each entity, results in the field) is replaced by the **global
+search**: a button in the header and the palette `Ctrl K` / `Cmd K`, a window with results by group. It is shown by
+default, with the screens of the menu. To search your entities, **import the route and list them**.
+
+```yaml
+# config/routes/lle_crudit.yaml
+lle_crudit:
+    resource: '@LleCruditBundle/Resources/config/routes.yaml'
+```
+
+```yaml
+# config/packages/lle_crudit.yaml
+lle_crudit:
+    search:
+        entities:                       # the groups, in this order
+            - App\Crudit\Config\ClientCrudConfig             # the CrudConfig, alone…
+            - { config: App\Crudit\Config\InvoiceCrudConfig, title: 'menu.invoices', limit: 3, subtitle: 'customer.name' }
+        screens: true                   # the group of the links of the menu (true by default)
+        limit: 10                       # results per group of entities (10 by default, 20 at most)
+        min_length: 2                   # characters before the first search (2 by default)
+        enabled: true                   # false: no button, no Ctrl K
+```
+
+- **The entities are listed, never "all that have an autocomplete"**: the old `urls` of the `include` (entity, title,
+  `destUrl`, `url`, `limit`) become this list. The search asks the `autocomplete` of the datasource of each
+  CrudConfig (`getAutocompleteSearchFields()`, `getDefaultAutocompleteSort()`): a datasource that has no search field
+  raises `BadConfigException`, as its `/autocomplete` route did. **Your own `/autocomplete` routes stay**: the form
+  types use them; the search no longer does.
+- A result opens the page `show` of the CrudConfig (`getPath('show', ['id' => …])`: your route `<root_route>_show`
+  must exist). Its title is `(string) $resource`; `subtitle` is a property path (PropertyAccess) for a second line.
+  The group is shown to a user granted `ROLE_<NAME>_SHOW`, each result is checked with the resource as subject (your
+  voters apply).
+- **The title of the group** is `title` (translation key of the domain of the CrudConfig, or text); without it, the
+  translation of `getTitle('list')`, else the name of the CrudConfig.
+- **The screens** are the links of the menu that the user sees (rights included, 5 at most, whatever `limit`), found by their label without regard
+  to the accents or the case; the name of the sub-menu is the second line.
+- The route is `GET /crudit/search?q=` (name `lle_crudit_search`, `SearchController`): JSON, never cached. **Without
+  the import of the route, the search is simply not shown** (no error on the pages).
+- **Blocks**: `header_search` (the button, in the bar of the header) and `search_dialog` (the palette, out of the block
+  `body` like the toasts): empty them to remove the search. Ctrl K works wherever the header comes from. A page has one
+  palette with the shortcut.
+- Removed with it: the `multisearch` script of `sb-admin` and the translation `crudit.multisearch.placeholder`
+  (`crudit.search.*` in their place). If you override `_multisearch.html.twig` (arhon-backend), delete the override and
+  use the configuration above; to change the rendering, override `layout/_search.html.twig` (the component
+  `LleCruditUi:CommandPalette`, documented in CruditUiBundle).
 
 ## 3. Theme: SCSS variables to CSS variables
 
@@ -379,6 +429,7 @@ Use the action options instead *(to be filled)*.
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `add_exit_impersonation_button`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
 | `layout` (`logo`, `logo_dark`, `logo_small`, `favicon`, `version`, `release_date`, `footer_links`) | New: logo, favicon and footer, see [Logo and footer](#logo-and-footer-lot-21c) |
+| `search` (`entities`, `screens`, `limit`, `min_length`, `enabled`) | New: the global search, see [Global search](#global-search-lot-22c) |
 | `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 
 ## 7. Template overrides

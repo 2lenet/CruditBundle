@@ -7,7 +7,8 @@ lot of the redesign, that what has been reworked works in a real container, in a
   (list, show, forms), a menu with one of each kind of element (`src/Crudit/CrudMenu/AppMenuProvider.php`: links
   with icon and badge, sub-menus, category, title, header, separator, external link), empty pages for the entries.
 - **PHPUnit** (`tests/apps/crudit/tests/Functional`): the layout (landmarks, skip links, menu markup, state of the
-  menu read from the cookie) and the CRUD pages (list, show, create). `AppTestCase` rebuilds the database for each
+  menu read from the cookie), the global search (button, palette, route: the clients by name and e-mail, the screens)
+  and the CRUD pages (list, show, create). `AppTestCase` rebuilds the database for each
   test.
 - **Browser** (`tests/apps/smoke.mjs`, Puppeteer and axe-core): the menu (full, rail, drawer, filter, sub-menus,
   tooltips, cookie), keyboard and focus, right to left, light and dark, 360 to 1500 px. `EXCLUDED` lists what

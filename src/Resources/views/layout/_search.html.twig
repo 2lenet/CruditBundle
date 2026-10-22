@@ -1,0 +1,16 @@
+{#
+ # Command palette of the global search: once per page, out of the block body (as the toasts), so that Ctrl K works
+ # whatever the header of the project. Asks the route lle_crudit_search (SearchController).
+ #}
+{% set search = crudit_search() %}
+{% if search %}
+    <twig:LleCruditUi:CommandPalette
+        id="crudit-search"
+        :url="search.url"
+        :minLength="search.min_length"
+        :title="'crudit.search.title'|trans(domain: 'LleCruditBundle')"
+        :label="'crudit.search.label'|trans(domain: 'LleCruditBundle')"
+        :placeholder="'crudit.search.placeholder'|trans(domain: 'LleCruditBundle')"
+        :help="'crudit.search.help'|trans(domain: 'LleCruditBundle')"
+    />
+{% endif %}

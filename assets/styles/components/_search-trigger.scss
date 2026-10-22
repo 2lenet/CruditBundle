@@ -1,0 +1,78 @@
+@use 'tools/responsive' as *;
+@use 'tools/a11y' as *;
+
+// Button of the global search in the header (layout/header/_search.html.twig): a fake field from md, an icon button
+// below. Same as `.search-trigger` of the crudit-v2 mockup (src/styles/components/_header.scss).
+.crudit-search-trigger {
+    display: flex;
+    height: var(--control-h);
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+    margin-inline-start: auto;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--c-text-muted);
+    cursor: pointer;
+    @include transition(background-color, border-color, color);
+
+    &:hover {
+        background-color: var(--c-surface-hover);
+        color: var(--c-text);
+    }
+
+    &__icon {
+        flex: none;
+        font-size: var(--font-size-lg);
+    }
+
+    &__label,
+    &__hint,
+    &__kbd {
+        @include media('<md') {
+            @include sr-only;
+        }
+    }
+
+    &__label {
+        color: var(--c-text);
+        font-weight: var(--font-weight-medium);
+    }
+
+    &__hint {
+        overflow: hidden;
+        flex: 1;
+        text-align: start;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        @include media('<xl') {
+            display: none;
+        }
+    }
+
+    &__kbd {
+        margin-inline-start: auto;
+        white-space: nowrap;
+    }
+
+    @include media('<md') {
+        width: var(--control-h);
+        justify-content: center;
+        padding: 0;
+    }
+
+    @include media('>md') {
+        width: min(100%, 26rem);
+        flex: 0 1 auto;
+        border-color: var(--c-border);
+        background-color: var(--c-surface-sunken);
+        margin-inline-start: 0;
+
+        &__icon {
+            font-size: var(--font-size-md);
+        }
+    }
+}

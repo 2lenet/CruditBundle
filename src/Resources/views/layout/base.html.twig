@@ -78,6 +78,9 @@
                     <div class="crudit-header">
                         {% include '@LleCrudit/layout/header/_burger.html.twig' %}
                         {% block header_nav %}{% endblock %}
+                        {% block header_search %}
+                            {% include '@LleCrudit/layout/header/_search.html.twig' %}
+                        {% endblock %}
                         {% block header_right %}
                             {% include '@LleCrudit/layout/header/_actions.html.twig' %}
                         {% endblock %}
@@ -107,6 +110,10 @@
 
 {% block toasts %}
     {% include '@LleCrudit/layout/_toasts.html.twig' %}
+{% endblock %}
+
+{% block search_dialog %}
+    {% include '@LleCrudit/layout/_search.html.twig' %}
 {% endblock %}
 
 {% block modal_confirmation %}
