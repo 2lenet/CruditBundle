@@ -37,7 +37,11 @@
         {% if profile or impersonation is not null %}
             <twig:LleCruditUi:Menu>
                 {% if profile %}
-                    <twig:LleCruditUi:MenuItem icon="user" href="{{ connect_url ~ 'profile' }}">{{ 'crudit.layout.profile'|trans(domain: 'LleCruditBundle') }}</twig:LleCruditUi:MenuItem>
+                    {#- In a new tab: Connect is another site, the application stays open (it was a popup) -#}
+                    <twig:LleCruditUi:MenuItem icon="user" href="{{ connect_url ~ 'profile' }}" target="_blank" rel="noopener">
+                        {{- 'crudit.layout.profile'|trans(domain: 'LleCruditBundle') -}}
+                        <span class="crudit-ui-visually-hidden">&nbsp;{{ 'crudit.layout.new_tab'|trans(domain: 'LleCruditBundle') }}</span>
+                    </twig:LleCruditUi:MenuItem>
                 {% endif %}
                 {% if impersonation is not null %}
                     <twig:LleCruditUi:MenuItem icon="impersonate" href="{{ impersonation.exit }}">{{ 'crudit.layout.back_to_account_of'|trans({'%name%': impersonation.name}, 'LleCruditBundle') }}</twig:LleCruditUi:MenuItem>
@@ -49,13 +53,17 @@
         <div class="crudit-ui-dropdown__body crudit-header__theme">
             <p id="crudit-user-menu-theme" class="crudit-ui-dropdown__title">{{ 'crudit_ui.theme.label'|trans(domain: 'LleCruditUiBundle') }}</p>
             <div class="crudit-header__theme-options" role="group" aria-labelledby="crudit-user-menu-theme" data-controller="{{ theme }}">
-                {#- Markup of the Button of CruditUiBundle: the variable of the loop is not seen inside a component -#}
-                {% for value in ['light', 'dark', 'system'] %}
-                    <button type="button" class="crudit-ui-btn crudit-ui-btn--secondary crudit-ui-btn--small" value="{{ value }}" aria-pressed="{{ value == current ? 'true' : 'false' }}" data-{{ theme }}-target="option" data-action="{{ theme }}#choose">
-                        {{- ui_icon('theme-' ~ value) -}}
-                        {{- ('crudit_ui.theme.' ~ value)|trans(domain: 'LleCruditUiBundle') -}}
-                    </button>
-                {% endfor %}
+                {#- Written out, not in a loop: the content of a component does not see the variable of a loop; the name of the
+                 # controller in full, the name of an attribute of a component cannot hold {{ }} -#}
+                <twig:LleCruditUi:Button size="small" icon="theme-light" value="light" aria-pressed="{{ current == 'light' ? 'true' : 'false' }}" data-2lenet--crudit-ui-bundle--theme-target="option" data-action="2lenet--crudit-ui-bundle--theme#choose">
+                    {{- 'crudit_ui.theme.light'|trans(domain: 'LleCruditUiBundle') -}}
+                </twig:LleCruditUi:Button>
+                <twig:LleCruditUi:Button size="small" icon="theme-dark" value="dark" aria-pressed="{{ current == 'dark' ? 'true' : 'false' }}" data-2lenet--crudit-ui-bundle--theme-target="option" data-action="2lenet--crudit-ui-bundle--theme#choose">
+                    {{- 'crudit_ui.theme.dark'|trans(domain: 'LleCruditUiBundle') -}}
+                </twig:LleCruditUi:Button>
+                <twig:LleCruditUi:Button size="small" icon="theme-system" value="system" aria-pressed="{{ current == 'system' ? 'true' : 'false' }}" data-2lenet--crudit-ui-bundle--theme-target="option" data-action="2lenet--crudit-ui-bundle--theme#choose">
+                    {{- 'crudit_ui.theme.system'|trans(domain: 'LleCruditUiBundle') -}}
+                </twig:LleCruditUi:Button>
             </div>
         </div>
 

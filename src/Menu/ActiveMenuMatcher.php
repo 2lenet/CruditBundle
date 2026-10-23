@@ -43,7 +43,7 @@ class ActiveMenuMatcher
         $link = $path->getRoute();
         // The routes of the CRUD: its name without `index`, then an action (`app_client_` + `show`)
         $crud = substr($link, 0, -\strlen('index'));
-        if (!str_ends_with(strtolower($link), '_index') || !str_contains(rtrim($crud, '_'), '_')) {
+        if (!str_ends_with($link, '_index') || !str_contains(rtrim($crud, '_'), '_')) {
             return $route === $link;
         }
 

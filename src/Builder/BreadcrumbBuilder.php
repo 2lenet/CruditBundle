@@ -62,8 +62,9 @@ class BreadcrumbBuilder
                     // A path of a provider that does not exist: a text, not an error on the page
                 }
             }
-            // The entry of the home page: the first item already, without its group
-            if (($item['url'] ?? null) === $home['url']) {
+            // The entry of the home page: the first item already, without its group (its address, or its label when it
+            // goes to a home route of the project, /dashboard)
+            if (($item['url'] ?? null) === $home['url'] || $item['label'] === $home['label']) {
                 $items = [];
                 break;
             }

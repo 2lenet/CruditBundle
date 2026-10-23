@@ -11,6 +11,8 @@ use Lle\CruditBundle\Dto\Layout\HeaderElement;
 use Lle\CruditBundle\Dto\Layout\HorizontalSeparatorElement;
 use Lle\CruditBundle\Dto\Layout\TitleElement;
 use Lle\CruditBundle\Registry\MenuRegistry;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -24,25 +26,33 @@ use Symfony\Contracts\Service\ResetInterface;
  *
  * The elements of the providers are not changed: an element whose children are filtered is a copy (withChildren()).
  * The menu is built once per request for each navid (the menu and the breadcrumb use it): the providers (badges
- * counted in the database) and the voters run once; reset between two requests (kernel.reset).
+ * counted in the database) and the voters run once; reset between two requests (kernel.reset). It is kept for the
+ * token it was built with: a menu built before the token is set (an early listener, a sub-request) is built again
+ * for the user, not kept with the rights of nobody.
  */
 class MenuBuilder implements ResetInterface
 {
-    /** @var array<string, list<LayoutElementInterface>> */
+    /** @var array<string, array{?TokenInterface, list<LayoutElementInterface>}> */
     private array $built = [];
 
     public function __construct(
         private MenuRegistry $menuRegistry,
         private AuthorizationCheckerInterface $authorizationChecker,
+        private ?TokenStorageInterface $tokenStorage = null,
     ) {
     }
 
     /** @return LayoutElementInterface[] */
     public function build(string $navid): array
     {
-        return $this->built[$navid] ??= $this->removeSeparators(
-            $this->removeEmptyHeadings($this->filterGranted($this->menuRegistry->getElements($navid))),
-        );
+        $token = $this->tokenStorage?->getToken();
+        if (!isset($this->built[$navid]) || $this->built[$navid][0] !== $token) {
+            $this->built[$navid] = [$token, $this->removeSeparators(
+                $this->removeEmptyHeadings($this->filterGranted($this->menuRegistry->getElements($navid))),
+            )];
+        }
+
+        return $this->built[$navid][1];
     }
 
     public function reset(): void

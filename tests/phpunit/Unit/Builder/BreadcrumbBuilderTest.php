@@ -127,6 +127,16 @@ class BreadcrumbBuilderTest extends TestCase
     }
 
     /**
+     * The entry "Home" of the menu goes to another route than the root (/dashboard): not "Home › Home".
+     */
+    public function testHomeEntryOnAnotherRouteIsNotRepeated(): void
+    {
+        $menu = [LinkElement::new('crudit.layout.breadcrumb_home', Path::new('app_dashboard'))];
+
+        self::assertSame([self::HOME], $this->build($menu, 'app_dashboard'));
+    }
+
+    /**
      * The page of the record on the page of its form: all the parameters of the route (a prefix /{tenant}); without a
      * route of the page of the record, a text.
      */

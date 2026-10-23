@@ -50,12 +50,13 @@ class HeaderTest extends AppTestCase
         self::assertSame('Alice Martin', $card->filter('.crudit-header__user-card-name')->text());
         self::assertSame(['Administrator', 'alice@example.org'], $card->filter('.crudit-header__user-card-detail')->each(static fn ($p) => $p->text()));
 
-        // Profile on Connect: an ordinary link, in the same tab
+        // Profile on Connect: an ordinary link, in a new tab, said to screen readers
         $profile = $menu->filter('a.crudit-ui-menu__item');
         self::assertSame('https://connect.example.org/profile', $profile->attr('href'));
-        self::assertNull($profile->attr('target'));
+        self::assertSame('_blank', $profile->attr('target'));
+        self::assertSame('noopener', $profile->attr('rel'));
         self::assertNull($profile->attr('onclick'));
-        self::assertSame('My profile', trim($profile->text()));
+        self::assertSame('My profile (new tab)', preg_replace('/\s+/u', ' ', trim($profile->text())));
     }
 
     public function testUserWithoutCruditUserInterfaceShowsItsNameOnly(): void

@@ -241,7 +241,10 @@ configuration or in the `footer` block.
   on its route and on the other pages of its CRUD (`app_client_index` on `app_client_show`, `_edit`, `_new`…). In
   1.x the route was cut at its last `_`, so a link to `app_home` was active on every `app_…` route: it no longer is.
   A link whose route ends with another word than an action of a CRUD (`app_client_list`) is active on that route
-  only. A link to `lle_crudit_crud_index` without `resource` is never active (it was an error). *(lot 2.2)*
+  only. A link to `lle_crudit_crud_index` without `resource` is never active (it was an error). A link to the list of a
+  CRUD whose routes have no prefix (`client_index`, `client_show`) is active on its route only, as `app_index` is: give
+  your routes a prefix (`app_client_index`), or make the link go to `lle_crudit_crud_index` with its `resource`.
+  *(lot 2.2)*
 - **What the user cannot see is removed before rendering** (`MenuBuilder`, used by `crudit_menu_items()`): elements
   the user is not granted (`setRole()`), children included, a sub-menu or a title whose children are all removed (a
   title with children labels them only), a heading without children (title, category, header) followed by no item
@@ -340,11 +343,16 @@ The menu sends the form to the logout of the firewall, with the CSRF field you c
 link to the logout of your own templates no longer works with `enable_csrf`: make it a form (`method="post"`, the
 hidden field `_csrf_token` with `csrf_token('logout')`, or your own parameter and id).
 
+If `path` is your route and it is declared with `methods: [GET]` (or `#[Route(..., methods: ['GET'])]`), remove that
+constraint: the router answers 405 to the POST before the firewall logs the user out. Or give a path without route
+(`path: /logout`): the firewall handles it by itself.
+
 The translation keys `crudit.action.profile` and `crudit.action.exit_impersonation` are removed (the menu uses
 `crudit.layout.profile`, `crudit.layout.back_to_account` and `back_to_account_of`): move your overrides.
 
 **The profile** (`add_connect_profile_link`, global `connect_url`) is an ordinary link to `<connect_url>profile`, in
-the same tab (it was a popup opened by `window.open`, refused by a strict Content Security Policy).
+a new tab, the application stays open (it was a popup opened by `window.open`, refused by a strict Content Security
+Policy).
 
 **The impersonation** (`switch_user` of Symfony). The option **`add_exit_impersonation_button` is removed**: remove
 it from `config/packages/lle_crudit.yaml` (else Symfony stops on "Unrecognized option"). It showed a button "Exit
