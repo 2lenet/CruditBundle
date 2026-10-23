@@ -243,8 +243,11 @@ configuration or in the `footer` block.
   A link whose route ends with another word than an action of a CRUD (`app_client_list`) is active on that route
   only. A link to `lle_crudit_crud_index` without `resource` is never active (it was an error). A link to the list of a
   CRUD whose routes have no prefix (`client_index`, `client_show`) is active on its route only, as `app_index` is: give
-  your routes a prefix (`app_client_index`), or make the link go to `lle_crudit_crud_index` with its `resource`.
-  *(lot 2.2)*
+  your routes a prefix (`app_client_index`), or make the link go to `lle_crudit_crud_index` with its `resource`. An
+  action of the project with a `_` in its name (`app_client_import_csv`) is read as another CRUD
+  (`app_client_contact_…`): `app_client_index` is not active on it. A link of the menu to another page of a CRUD
+  (`app_client_new`) is active with the list of that CRUD, two links are then current: put the lists in the menu, the
+  creation goes through the button of the list. *(lot 2.2)*
 - **What the user cannot see is removed before rendering** (`MenuBuilder`, used by `crudit_menu_items()`): elements
   the user is not granted (`setRole()`), children included, a sub-menu or a title whose children are all removed (a
   title with children labels them only), a heading without children (title, category, header) followed by no item

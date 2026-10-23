@@ -28,7 +28,8 @@ use Symfony\Contracts\Service\ResetInterface;
  * The menu is built once per request for each navid (the menu and the breadcrumb use it): the providers (badges
  * counted in the database) and the voters run once; reset between two requests (kernel.reset). It is kept for the
  * token it was built with: a menu built before the token is set (an early listener, a sub-request) is built again
- * for the user, not kept with the rights of nobody.
+ * for the user, not kept with the rights of nobody. The elements returned are shared by the menu, the breadcrumb and
+ * the next calls: a template or a provider must not change them.
  */
 class MenuBuilder implements ResetInterface
 {

@@ -26,8 +26,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *   it is under (with its children or before its links), its sub-menu (texts), then the entry (a link), until a
  *   separator. Two levels of links at most, as the menu shows them (a link of a sub-menu, not its own children);
  * - the current page given by the caller (a record, "Edit"…).
- * The entry of the home page is not repeated, nor its group. Without an entry of the menu for the page, the home page and the current
- * page only.
+ * The entry of the home page (an address of the root) is not repeated, nor its group, and a label is not repeated next to
+ * itself. Without an entry of the menu for the page, the home page and the current page only.
  */
 class BreadcrumbBuilder
 {
@@ -62,16 +62,23 @@ class BreadcrumbBuilder
                     // A path of a provider that does not exist: a text, not an error on the page
                 }
             }
-            // The entry of the home page: the first item already, without its group (its address, or its label when it
-            // goes to a home route of the project, /dashboard)
-            if (($item['url'] ?? null) === $home['url'] || $item['label'] === $home['label']) {
+            // The entry of the home page: the first item already, without its group
+            if (($item['url'] ?? null) === $home['url']) {
                 $items = [];
                 break;
             }
             $items[] = $item;
         }
 
-        return [$home, ...$items, ...$current];
+        // A label is not repeated next to itself ("Home › Home" with a home page of the menu on /dashboard)
+        $breadcrumb = [];
+        foreach ([$home, ...$items, ...$current] as $item) {
+            if ($item['label'] !== ($breadcrumb[\count($breadcrumb) - 1]['label'] ?? null)) {
+                $breadcrumb[] = $item;
+            }
+        }
+
+        return $breadcrumb;
     }
 
     /**

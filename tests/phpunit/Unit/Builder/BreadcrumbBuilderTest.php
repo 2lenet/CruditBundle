@@ -32,6 +32,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class BreadcrumbBuilderTest extends TestCase
 {
     private const array HOME = ['label' => 'crudit.layout.breadcrumb_home', 'url' => '/'];
+    // The home page of Crudit and that of the menu of the project, translated in their own domains
+    private const array HOME_LABELS = ['crudit.layout.breadcrumb_home' => 'Accueil', 'menu.home' => 'Accueil'];
+    private const array HOME_FR = ['label' => 'Accueil', 'url' => '/'];
 
     public function testHomeOnlyWithoutEntryOfTheMenu(): void
     {
@@ -127,13 +130,41 @@ class BreadcrumbBuilderTest extends TestCase
     }
 
     /**
-     * The entry "Home" of the menu goes to another route than the root (/dashboard): not "Home › Home".
+     * The entry "Home" of the menu goes to another route than the root (/dashboard): its label, next to the home page,
+     * is not repeated ("Accueil › Accueil").
      */
     public function testHomeEntryOnAnotherRouteIsNotRepeated(): void
     {
-        $menu = [LinkElement::new('crudit.layout.breadcrumb_home', Path::new('app_dashboard'))];
+        $menu = [LinkElement::new('menu.home', Path::new('app_dashboard'))];
 
-        self::assertSame([self::HOME], $this->build($menu, 'app_dashboard'));
+        self::assertSame([self::HOME_FR], $this->build($menu, 'app_dashboard', translations: self::HOME_LABELS));
+    }
+
+    /**
+     * A category named as the home page: only its label is not repeated, the rest of the breadcrumb is kept.
+     */
+    public function testCategoryNamedAsTheHomePage(): void
+    {
+        $menu = [CategoryElement::new('menu.home'), LinkElement::new('menu.clients', Path::new('app_client_index'))];
+
+        self::assertSame(
+            [self::HOME_FR, ['label' => 'menu.clients', 'url' => '/app_client_index']],
+            $this->build($menu, 'app_client_index', translations: self::HOME_LABELS),
+        );
+    }
+
+    /**
+     * An entry named as the home page further in the breadcrumb, not next to it: kept.
+     */
+    public function testEntryNamedAsTheHomePageInASubMenu(): void
+    {
+        $site = LinkElement::new('menu.site', null);
+        $site->add(LinkElement::new('menu.home', Path::new('public_home')));
+
+        self::assertSame(
+            [self::HOME_FR, ['label' => 'menu.site'], ['label' => 'Accueil', 'url' => '/public_home']],
+            $this->build([$site], 'public_home', translations: self::HOME_LABELS),
+        );
     }
 
     /**
@@ -232,10 +263,11 @@ class BreadcrumbBuilderTest extends TestCase
      * @param LayoutElementInterface[]                  $elements
      * @param list<array{label: string, url?: string}> $current
      * @param array<string, string>                    $routeParams
+     * @param array<string, string>                    $translations the keys the translator translates, the others as they are
      *
      * @return list<array{label: string, url?: string}>
      */
-    private function build(array $elements, string $route, array $current = [], string $basePath = '', ?string $crudRecord = null, array $routeParams = ['id' => '12']): array
+    private function build(array $elements, string $route, array $current = [], string $basePath = '', ?string $crudRecord = null, array $routeParams = ['id' => '12'], array $translations = []): array
     {
         $provider = new class ($elements) implements MenuProviderInterface {
             /** @param LayoutElementInterface[] $elements */
@@ -251,7 +283,7 @@ class BreadcrumbBuilderTest extends TestCase
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
         $authorizationChecker->method('isGranted')->willReturnCallback(static fn (mixed $role): bool => $role !== 'ROLE_ADMIN');
         $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        $translator->method('trans')->willReturnCallback(static fn (string $id): string => $translations[$id] ?? $id);
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturnCallback(static function (string $name, array $parameters = []) use ($basePath): string {
             if (str_starts_with($name, 'app_nopage')) {

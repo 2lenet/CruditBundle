@@ -34,7 +34,7 @@ crudit:
         profile: "Mon profil"
         back_to_account: "Revenir à mon compte"
         back_to_account_of: "Revenir à mon compte (%name%)"
-        impersonation: "Impersonation en cours"
+        impersonation: "Connexion en tant qu'un autre utilisateur"
         impersonation_text: "Vous naviguez avec le compte de %name%."
         impersonation_detail: "Les actions sont enregistrées sous ce compte."
         breadcrumb_home: "Accueil"

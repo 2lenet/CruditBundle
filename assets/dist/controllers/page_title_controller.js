@@ -8,7 +8,9 @@ import { Controller } from '@hotwired/stimulus';
  *
  * One listener for the page, set when the module is loaded: Turbo replaces <body> at each visit, and a listener of a
  * controller on it would depend on the order of its connect and of turbo:load. A visit is told from the first load by
- * event.detail.timing: Turbo gives the timing of a visit, an empty object on the first load (the only sign it gives).
+ * event.detail.timing: Turbo gives the timing of a visit, an empty object on the first load (the only sign it gives,
+ * a detail of Turbo, not a contract: check it when Turbo is upgraded). A visit back (the button of the browser, a restoration) has
+ * a timing too: the focus goes to the title then as well, on purpose.
  */
 let lastUrl = window.location.href;
 

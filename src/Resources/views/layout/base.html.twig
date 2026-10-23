@@ -81,7 +81,7 @@
                     {% endblock %}
                     <div class="crudit-header">
                         {% include '@LleCrudit/layout/header/_burger.html.twig' %}
-                        {# Below 1024 px, the logo of the menu, closed in the drawer: the same block, so an override counts twice #}
+                        {# Below 1024 px, the logo of the menu, closed in the drawer: the same block, so an override counts twice (no id in it) #}
                         <div class="crudit-header__brand">{{ block('brand') }}</div>
                         {% block header_nav %}{% endblock %}
                         {% block header_search %}
