@@ -52,6 +52,12 @@ services:
 
     Lle\CruditBundle\Builder\MenuBuilder: ~
 
+    Lle\CruditBundle\Menu\ActiveMenuMatcher: ~
+
+    Lle\CruditBundle\Builder\BreadcrumbBuilder: ~
+
+    Lle\CruditBundle\Routing\HomeUrl: ~
+
     # Tagged ux_icons.finder by autoconfiguration (ux:icons:lock)
     Lle\CruditBundle\Icon\MenuIconFinder: ~
 
@@ -62,6 +68,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@parameter_bag'
             - '@workflow.registry'
+            - '@Lle\CruditBundle\Menu\ActiveMenuMatcher'
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\SidebarExtension:
@@ -71,6 +78,19 @@ services:
     Lle\CruditBundle\Twig\LayoutExtension:
         arguments: ['%lle_crudit.layout%', '@?logger']
         tags: [twig.extension]
+
+    # Functions declared by #[AsTwigFunction] (autoconfiguration)
+    Lle\CruditBundle\Twig\UserExtension:
+        arguments:
+            $tokenStorage: '@security.token_storage'
+            $logoutUrlGenerator: '@?security.logout_url_generator'
+            $logger: '@?logger'
+            $impersonateUrlGenerator: '@?security.impersonate_url_generator'
+            $urlGenerator: '@router'
+            $homeUrl: '@Lle\CruditBundle\Routing\HomeUrl'
+            $exitRoute: '%lle_crudit.exit_impersonation_path%'
+
+    Lle\CruditBundle\Twig\BreadcrumbExtension: ~
 
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:

@@ -31,7 +31,7 @@
     {% block head_javascript %}{% endblock %}
 </head>
 
-<body data-controller="2lenet--crudit-bundle--modal-bridge">
+<body data-controller="2lenet--crudit-bundle--modal-bridge 2lenet--crudit-bundle--page-title">
 {% block skip_links %}
     {% include '@LleCrudit/layout/_skip_links.html.twig' %}
 {% endblock %}
@@ -44,7 +44,8 @@
              data-menu-label="{{ 'crudit.layout.main_menu'|trans(domain: 'LleCruditBundle') }}">
             <div class="crudit-sidebar__header">
                 {% block brand %}
-                    <a class="crudit-brand" href="/">
+                    {# The root of the application, under its base path (an application installed in /gestio) #}
+                    <a class="crudit-brand" href="{{ crudit_home_url() }}">
                         {% block logo %}
                             {% include '@LleCrudit/layout/sidebar/_logo.html.twig' %}
                         {% endblock %}
@@ -75,15 +76,24 @@
         <div class="crudit-shell__body" data-{{ ctrl }}-target="body">
             <header class="crudit-shell__header">
                 {% block header %}
+                    {% block impersonation %}
+                        {% include '@LleCrudit/layout/header/_impersonation.html.twig' %}
+                    {% endblock %}
                     <div class="crudit-header">
                         {% include '@LleCrudit/layout/header/_burger.html.twig' %}
+                        {# Below 1024 px, the logo of the menu, closed in the drawer: the same block, so an override counts twice (no id in it) #}
+                        <div class="crudit-header__brand">{{ block('brand') }}</div>
                         {% block header_nav %}{% endblock %}
                         {% block header_search %}
                             {% include '@LleCrudit/layout/header/_search.html.twig' %}
                         {% endblock %}
-                        {% block header_right %}
-                            {% include '@LleCrudit/layout/header/_actions.html.twig' %}
-                        {% endblock %}
+                        <div class="crudit-header__end">
+                            {% block header_right %}
+                                {% block user_menu %}
+                                    {% include '@LleCrudit/layout/header/_user_menu.html.twig' %}
+                                {% endblock %}
+                            {% endblock %}
+                        </div>
                     </div>
                 {% endblock %}
             </header>

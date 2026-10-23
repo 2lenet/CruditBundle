@@ -16,6 +16,8 @@ use Lle\CruditBundle\Dto\Layout\TitleElement;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Registry\MenuRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Security\Core\Authentication\Token\NullToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
@@ -166,6 +168,59 @@ class MenuBuilderTest extends TestCase
         ];
 
         self::assertSame(['home', '---', 'clients'], $this->labels($this->build($elements)));
+    }
+
+    /**
+     * The menu and the breadcrumb ask for it: the providers and the voters run once per request.
+     */
+    public function testBuiltOncePerRequest(): void
+    {
+        $provider = new class implements MenuProviderInterface {
+            public int $calls = 0;
+
+            public function getMenuEntry(): iterable
+            {
+                $this->calls++;
+
+                return [LinkElement::new('home', Path::new('home'))];
+            }
+        };
+        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
+        $authorizationChecker->method('isGranted')->willReturn(true);
+        $builder = new MenuBuilder(new MenuRegistry([$provider]), $authorizationChecker);
+
+        self::assertSame($builder->build('menu_side'), $builder->build('menu_side'));
+        self::assertSame(1, $provider->calls);
+        $builder->reset();
+        $builder->build('menu_side');
+        self::assertSame(2, $provider->calls, 'built again for the next request');
+    }
+
+    /**
+     * A menu built before the token is set (an early listener, a sub-request) is not kept for the user.
+     */
+    public function testBuiltAgainWhenTheTokenChanges(): void
+    {
+        $provider = new class implements MenuProviderInterface {
+            public int $calls = 0;
+
+            public function getMenuEntry(): iterable
+            {
+                $this->calls++;
+
+                return [LinkElement::new('home', Path::new('home'))];
+            }
+        };
+        $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
+        $authorizationChecker->method('isGranted')->willReturn(true);
+        $tokenStorage = new TokenStorage();
+        $builder = new MenuBuilder(new MenuRegistry([$provider]), $authorizationChecker, $tokenStorage);
+
+        $builder->build('menu_side');
+        $tokenStorage->setToken(new NullToken());
+        $builder->build('menu_side');
+        $builder->build('menu_side');
+        self::assertSame(2, $provider->calls, 'built again for the token, then kept');
     }
 
     public function testUserWithoutRoles(): void

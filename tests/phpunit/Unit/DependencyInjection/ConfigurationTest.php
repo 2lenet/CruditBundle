@@ -76,6 +76,17 @@ class ConfigurationTest extends TestCase
         ]]]);
     }
 
+    /**
+     * Removed in 2.0 (the banner of the impersonation is always shown): a project that keeps it is told at once.
+     */
+    public function testAddExitImpersonationButtonIsRemoved(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Unrecognized option "add_exit_impersonation_button"');
+
+        $this->process(['add_exit_impersonation_button' => true]);
+    }
+
     public function testLogoDarkNeedsLogo(): void
     {
         $this->expectException(InvalidConfigurationException::class);

@@ -1,22 +1,13 @@
 {% extends 'base.html.twig' %}
 
+{# <title>: "Page – Application" (the page first: the tab and the screen reader give it before the application) #}
 {% block page_title %}
-    {% if app_name is defined %}
-        {{ app_name }}
-    {% else %}
-        CRUD-IT
-    {% endif %}
-    {% if views|length %}
-        {% set mainView = views|first %}
-        {% if
-            mainView.config.title is defined
-            and mainView.config.title
-            and mainView.config.translation_domain is defined
-            and mainView.config.translation_domain
-        %}
-            - {{ mainView.config.title|trans({'%entity%': mainView.data.entity|default('')}, mainView.config.translation_domain) }}
-        {% endif %}
-    {% endif %}
+    {%- set application = app_name ?? 'Crudit' -%}
+    {%- set mainView = views|first -%}
+    {%- set page = mainView and (mainView.config.title ?? null) and (mainView.config.translation_domain ?? null)
+        ? mainView.config.title|trans({'%entity%': mainView.data.entity|default('')}, mainView.config.translation_domain)
+        : null -%}
+    {{- page ? page ~ ' – ' ~ application : application -}}
 {% endblock %}
 
 {% block content %}

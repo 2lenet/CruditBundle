@@ -3,7 +3,8 @@
 {% block page_title %}{{ slug|capitalize }} – {{ app_name }}{% endblock %}
 
 {% block content %}
-    <h1>{{ slug|capitalize }}</h1>
+    {# A page of the project: the PageHeader of CruditUiBundle with the breadcrumb of the menu (lot 2.2.b) #}
+    <twig:LleCruditUi:PageHeader :title="slug|capitalize" :breadcrumb="crudit_breadcrumb()"/>
     <p><a href="{{ path('home') }}" id="in-page-link">A link in the page</a> <button type="button" class="crudit-ui-btn" id="in-page-button">A button</button></p>
     {% for i in 1..60 %}<p>Paragraph {{ i }} of content, so that the page scrolls.</p>{% endfor %}
 {% endblock %}

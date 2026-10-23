@@ -9,9 +9,8 @@ use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
 /**
- * Application de démonstration sans authentification : tout est autorisé (rôles de Crudit compris), sauf le rôle
- * NOBODY, qui sert à tester ce que l'utilisateur n'a pas le droit de voir (menu).
- * À retirer le jour où une authentification est ajoutée.
+ * Application de démonstration : tout est autorisé (rôles de Crudit compris), sauf le rôle NOBODY, qui sert à tester
+ * ce que l'utilisateur n'a pas le droit de voir (menu). L'authentification (http_basic) ne sert qu'au menu utilisateur.
  */
 class AllowAllVoter implements VoterInterface
 {

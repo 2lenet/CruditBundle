@@ -80,7 +80,6 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.hide_if_disabled', $processedConfig['hide_if_disabled']);
         $container->setParameter('lle_crudit.delete_hide_if_disabled', $processedConfig['delete_hide_if_disabled']);
         $container->setParameter('lle_crudit.add_connect_profile_link', $processedConfig['add_connect_profile_link']);
-        $container->setParameter('lle_crudit.add_exit_impersonation_button', $processedConfig['add_exit_impersonation_button']);
         $container->setParameter('lle_crudit.exit_impersonation_path', $processedConfig['exit_impersonation_path']);
         $container->setParameter('lle_crudit.generate_default_role', $processedConfig['generate_default_role']);
         $container->setParameter('lle_crudit.ignore_referer_routes', $processedConfig['ignore_referer_routes']);
