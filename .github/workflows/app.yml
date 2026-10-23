@@ -1,0 +1,82 @@
+name: Test application
+
+# The bundle is installed as a project does (path repository, symlink: false) in a Symfony application
+# (tests/apps/crudit: SQLite, one entity, a menu with every kind of element). PHPUnit drives its pages (layout, menu,
+# CRUD), then a headless Chrome drives the JavaScript and checks accessibility with axe-core (tests/apps/smoke.mjs).
+# A lot that reworks a screen adds its cases to both.
+
+on:
+    push:
+        branches: [main, feature/redesign]
+    pull_request:
+        branches: [main, feature/redesign]
+
+jobs:
+    app:
+        name: "Application (${{ matrix.env }})"
+
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                env: [dev, prod]
+
+        env:
+            APP_SECRET: ci
+            APP_ENV: ${{ matrix.env }}
+
+        defaults:
+            run:
+                working-directory: tests/apps/crudit
+
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.4'
+                    tools: composer:v2
+                    extensions: intl
+
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+
+            # The bundle is copied into vendor/ (path repository, symlink: false), as a project does.
+            -   name: 'Install the application'
+                run: composer install --no-interaction --prefer-dist
+
+            # Not committed: imported as a project does before committing, which also tests the Finder.
+            -   name: 'Import the icons and the JavaScript packages'
+                run: |
+                    php bin/console ux:icons:lock
+                    php bin/console importmap:install
+                    php bin/console assets:install public
+
+            -   name: 'Database'
+                run: php bin/console app:seed
+
+            -   name: 'PHPUnit'
+                run: APP_ENV=test php bin/console app:seed && vendor/bin/phpunit
+
+            -   name: 'Compile the assets (production)'
+                if: matrix.env == 'prod'
+                run: php bin/console asset-map:compile
+
+            -   name: 'Start the server'
+                run: |
+                    php bin/console cache:warmup
+                    php -S 127.0.0.1:8080 -t public > /tmp/server.log 2>&1 &
+                    npx --yes wait-on http://127.0.0.1:8080/ --timeout 30000
+
+            -   name: 'Smoke test'
+                working-directory: tests/apps
+                env:
+                    PUPPETEER_SKIP_DOWNLOAD: '1'
+                run: |
+                    npm install --no-audit --no-fund
+                    node smoke.mjs http://127.0.0.1:8080/ "$(which google-chrome)"
+
+            -   name: 'Server log'
+                if: failure()
+                run: cat /tmp/server.log

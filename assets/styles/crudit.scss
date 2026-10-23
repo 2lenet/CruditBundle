@@ -1,0 +1,25 @@
+@use 'sass:meta';
+
+// Styles of Crudit: the layout (lot 2.1), then the CRUD screens (phase 3). Same order as CruditUiBundle (ITCSS):
+// tokens, objects, components. Built on the tokens and the tools of CruditUiBundle (vendor/, --load-path), whose
+// ui.css is loaded first. The classes are prefixed `crudit-`.
+//
+// One cascade layer, after those of CruditUiBundle: the components of Crudit win over the design system, the styles
+// of the project (not in a layer) win over both.
+@layer crudit-ui-base, crudit-ui, crudit;
+
+@layer crudit {
+    @include meta.load-css('generic/tokens');
+
+    @include meta.load-css('objects/shell');
+
+    @include meta.load-css('components/back-to-top');
+    @include meta.load-css('components/skip-links');
+    @include meta.load-css('components/header');
+    @include meta.load-css('components/search-trigger');
+    @include meta.load-css('components/footer');
+    @include meta.load-css('components/brand');
+    @include meta.load-css('components/sidebar');
+    @include meta.load-css('components/nav');
+    @include meta.load-css('components/page-header');
+}

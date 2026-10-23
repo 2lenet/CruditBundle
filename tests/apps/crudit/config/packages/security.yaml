@@ -1,0 +1,24 @@
+security:
+    # The password of a user is its identifier (src/Security/UserProvider.php)
+    password_hashers:
+        App\Security\User: plaintext
+        App\Security\PlainUser: plaintext
+
+    providers:
+        app_users:
+            id: App\Security\UserProvider
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        main:
+            lazy: true
+            provider: app_users
+            # Anonymous by default; the smoke test signs in with the Authorization header
+            http_basic: ~
+            # The user menu sends a POST with the CSRF token (lot 2.2.a)
+            logout:
+                path: /logout
+                enable_csrf: true
+            switch_user: true

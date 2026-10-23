@@ -1,0 +1,211 @@
+@use 'tools/responsive' as *;
+@use 'tools/a11y' as *;
+
+// Menu of the layout (<div id="crudit-sidebar" role="complementary">): header (logo, close), filter, items (components/nav), button that
+// reduces it. Three states from the same markup (controller sidebar): full menu, rail of icons, drawer. Same as
+// `.sidebar` of the crudit-v2 mockup (src/styles/components/_sidebar.scss).
+@mixin rail {
+    .crudit-sidebar__header {
+        justify-content: center;
+        padding-inline: var(--space-2);
+    }
+
+    // The filter has no room in a rail; the controller empties it.
+    .crudit-sidebar__filter {
+        display: none;
+    }
+
+    .crudit-sidebar__nav,
+    .crudit-sidebar__footer {
+        padding-inline: var(--space-2);
+    }
+
+    .crudit-sidebar__collapse {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .crudit-sidebar__collapse-label {
+        @include sr-only;
+    }
+
+    // The icon of the button points to the other side when the menu is reduced. `transform` adds up with the `scale`
+    // that mirrors it in right-to-left (utilities/rtl of CruditUiBundle): the two flips go back to the original.
+    .crudit-sidebar__collapse-icon {
+        transform: scaleX(-1);
+    }
+
+    // The mark instead of the logo (components/brand)
+    .crudit-brand__full {
+        display: none;
+    }
+
+    .crudit-brand__mark {
+        display: flex;
+    }
+
+    .crudit-sidebar__tooltip > .crudit-ui-tooltip {
+        display: block;
+    }
+}
+
+.crudit-sidebar {
+    display: flex;
+    flex-direction: column;
+    border-inline-end: 1px solid var(--c-border);
+    background-color: var(--c-surface);
+
+    // Tooltips of the items (components/nav) and of the button: only in the rail.
+    .crudit-ui-tooltip {
+        display: none;
+    }
+
+    // Sticky menu: its own stacking context, above the content (sticky cells of the table, header), so that its
+    // tooltips and the panels of its sub-menus (rail) do not go under it.
+    @include media('>lg') {
+        position: sticky;
+        z-index: calc(var(--z-sticky) + 1);
+        top: 0;
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    // Rail, chosen (cookie) or by default between lg and xl
+    @include media('>lg') {
+        .crudit-shell[data-sidebar='collapsed'] & {
+            @include rail;
+        }
+
+        @include media('<xl') {
+            .crudit-shell[data-sidebar='auto'] & {
+                @include rail;
+            }
+        }
+    }
+
+    // Drawer: hidden (and so not focusable) while it is closed.
+    @include media('<lg') {
+        position: fixed;
+        z-index: var(--z-drawer);
+        top: 0;
+        bottom: 0;
+        inset-inline-start: 0;
+        width: min(20rem, calc(100vw - 3.5rem));
+        box-shadow: var(--shadow-lg);
+        transform: translateX(calc(-100% * var(--dir)));
+        visibility: hidden;
+        transition:
+            transform var(--motion-slow) var(--ease-standard),
+            visibility 0s linear var(--motion-slow);
+
+        &.crudit-sidebar--open {
+            transform: none;
+            visibility: visible;
+            transition: transform var(--motion-slow) var(--ease-standard);
+        }
+    }
+
+    &__header {
+        display: flex;
+        min-height: var(--topbar-h);
+        flex: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+    }
+
+    &__close {
+        @include media('>lg') {
+            display: none;
+        }
+    }
+
+    &__filter {
+        position: relative;
+        flex: none;
+        padding: 0 var(--space-2) var(--space-2);
+    }
+
+    &__filter-icon {
+        position: absolute;
+        top: calc(50% - var(--space-1));
+        inset-inline-start: calc(var(--space-2) + var(--space-3));
+        color: var(--c-text-muted);
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+
+    &__filter-input {
+        width: 100%;
+        height: calc(var(--control-h) - 0.25rem);
+        padding-block: 0;
+        padding-inline: calc(var(--space-3) * 2 + 0.75rem) var(--space-3);
+        border: 1px solid var(--c-border-strong);
+        border-radius: var(--radius-md);
+        background-color: var(--c-surface);
+        color: var(--c-text);
+        font-size: var(--font-size-sm);
+
+        &::placeholder {
+            color: var(--c-text-muted);
+            opacity: 1;
+        }
+
+        &:focus-visible {
+            border-color: var(--c-focus);
+            outline-offset: 0;
+        }
+    }
+
+    &__nav {
+        flex: 1;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: var(--space-1) var(--space-2) var(--space-3);
+        scrollbar-width: thin;
+    }
+
+    &__empty {
+        padding: var(--space-4) var(--space-3);
+        margin: 0;
+        color: var(--c-text-muted);
+        font-size: var(--font-size-sm);
+    }
+
+    &__footer {
+        flex: none;
+        padding: var(--space-1) var(--space-2);
+        border-top: 1px solid var(--c-border);
+
+        .crudit-ui-tooltip-host {
+            display: flex;
+        }
+    }
+
+    &__collapse {
+        display: flex;
+        width: 100%;
+        min-height: var(--nav-item-h);
+        align-items: center;
+        gap: var(--space-3);
+        padding: 0 var(--space-2);
+        border: 0;
+        border-radius: var(--radius-md);
+        background-color: transparent;
+        color: var(--c-text-muted);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--c-surface-hover);
+            color: var(--c-text);
+        }
+
+        // The button is the one of the drawer's tail: no reduction below lg.
+        @include media('<lg') {
+            display: none;
+        }
+    }
+}

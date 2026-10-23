@@ -18,7 +18,7 @@ npm install bootstrap@5 sass sass-loader @fortawesome/fontawesome-free easymde -
 Just add the following lines in your template/base.html.twig
 
 ```twig
-{% extends '@LleCrudit/layout/sb_admin/layout.html.twig' %}
+{% extends '@LleCrudit/layout/base.html.twig' %}
 
 {% block stylesheets %}
     {{ encore_entry_link_tags('app') }}

@@ -1,0 +1,12 @@
+{
+    "private": true,
+    "description": "Smoke test of the test application of CruditBundle (tests/apps/crudit)",
+    "type": "module",
+    "scripts": {
+        "smoke": "node smoke.mjs"
+    },
+    "devDependencies": {
+        "axe-core": "^4.14.0",
+        "puppeteer-core": "^24.21.0"
+    }
+}

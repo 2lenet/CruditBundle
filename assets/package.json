@@ -1,0 +1,68 @@
+{
+    "name": "@2lenet/crudit-bundle",
+    "description": "Crudit: Stimulus controllers and compiled CSS of the layout and of the CRUD screens",
+    "version": "2.0.0",
+    "license": "MIT",
+    "private": true,
+    "type": "module",
+    "symfony": {
+        "controllers": {
+            "back-to-top": {
+                "main": "dist/controllers/back_to_top_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "modal-bridge": {
+                "main": "dist/controllers/modal_bridge_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "telephone": {
+                "main": "dist/controllers/telephone_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "confirm": {
+                "main": "dist/controllers/confirm_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "search-trigger": {
+                "main": "dist/controllers/search_trigger_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "sidebar": {
+                "main": "dist/controllers/sidebar_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "page-title": {
+                "main": "dist/controllers/page_title_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            }
+        },
+        "importmap": {
+            "@hotwired/stimulus": "^3.0.0"
+        }
+    },
+    "peerDependencies": {
+        "@hotwired/stimulus": "^3.0.0"
+    },
+    "devDependencies": {
+        "sass": "^1.80.0"
+    },
+    "scripts": {
+        "build": "sass --no-source-map --style=compressed --load-path=../vendor/2lenet/crudit-ui-bundle/assets/styles styles/crudit.scss:dist/crudit.css",
+        "watch": "sass --no-source-map --watch --load-path=../vendor/2lenet/crudit-ui-bundle/assets/styles styles/crudit.scss:dist/crudit.css",
+        "check": "node scripts/check-build.mjs"
+    }
+}

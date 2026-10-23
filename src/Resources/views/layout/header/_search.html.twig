@@ -1,0 +1,13 @@
+{#
+ # Button of the global search (block header_search): opens the command palette (layout/_search.html.twig), as Ctrl K
+ # does. A fake field from md, an icon button below. Not shown when the search is disabled or its route is not imported
+ # (crudit_search() is null), nor when the page has no palette (controller search-trigger).
+ #}
+{% if crudit_search() %}
+    <button type="button" class="crudit-search-trigger" data-controller="2lenet--crudit-bundle--search-trigger" commandfor="crudit-search" command="show-modal" aria-keyshortcuts="Control+K Meta+K">
+        {{- ui_icon('search', 'crudit-search-trigger__icon') -}}
+        <span class="crudit-search-trigger__label">{{ 'crudit.search.button'|trans(domain: 'LleCruditBundle') }}</span>
+        <span class="crudit-search-trigger__hint" aria-hidden="true">{{ 'crudit.search.hint'|trans(domain: 'LleCruditBundle') }}</span>
+        <kbd class="crudit-search-trigger__kbd" aria-hidden="true" data-2lenet--crudit-bundle--search-trigger-target="shortcut">Ctrl K</kbd>
+    </button>
+{% endif %}

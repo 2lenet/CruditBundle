@@ -1,0 +1,5 @@
+// Header of a page of a CRUD (brick/links, the PageHeader of CruditUiBundle): the room between it and the content,
+// as `.page` of the crudit-v2 mockup (src/styles/components/_page.scss, gap of 24 px).
+.crudit-page-header {
+    margin-block-end: var(--space-5);
+}

@@ -22,7 +22,7 @@
     </form>
 {% endblock %}
 {% block footer %}
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+    <button type="button" class="btn btn-secondary" commandfor="{{ id }}" command="close">
         {{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}
     </button>
     <button type="submit" class="btn btn-primary" form="form_{{ id }}">

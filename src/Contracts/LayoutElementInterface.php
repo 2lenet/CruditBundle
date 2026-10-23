@@ -18,4 +18,12 @@ interface LayoutElementInterface
     public function getChildren(): array;
 
     public function addChild(LayoutElementInterface $child): self;
+
+    /**
+     * Copy of the element with other children, the element is not changed: the menu shown to the user (MenuBuilder)
+     * only keeps the children the user is granted.
+     *
+     * @param LayoutElementInterface[] $children
+     */
+    public function withChildren(array $children): static;
 }

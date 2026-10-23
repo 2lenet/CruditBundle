@@ -1,0 +1,14 @@
+{#
+ # Links of the footer (lle_crudit.layout.footer_links: accessibility statement, legal notice…), none by default. The
+ # label is a translation key of the domain messages or a text; the link a route (and its parameters) or an address.
+ #}
+{% set links = crudit_layout().footer_links %}
+{% if links %}
+    <nav class="crudit-footer__nav" aria-label="{{ 'crudit.footer.links'|trans(domain: 'LleCruditBundle') }}">
+        <ul class="crudit-footer__links">
+            {% for link in links %}
+                <li><a class="crudit-footer__link" href="{{ link.route ? path(link.route, link.route_params) : link.url }}">{{ link.label|trans }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}

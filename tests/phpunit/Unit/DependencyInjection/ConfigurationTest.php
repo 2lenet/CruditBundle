@@ -1,0 +1,145 @@
+<?php
+
+declare(strict_types=1);
+
+namespace phpunit\Unit\DependencyInjection;
+
+use Lle\CruditBundle\DependencyInjection\Configuration;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Config\Definition\Processor;
+
+/**
+ * lle_crudit.layout: nothing by default (no logo, no favicon, no link), a link of the footer has a route or an url
+ * (route_params with a route only), logo_dark needs logo.
+ * lle_crudit.search: on by default, with the screens and no entity; an entity is a CrudConfig class, alone or with its
+ * options.
+ */
+class ConfigurationTest extends TestCase
+{
+    public function testLayoutDefaults(): void
+    {
+        self::assertSame([
+            'logo' => null,
+            'logo_dark' => null,
+            'logo_small' => null,
+            'favicon' => null,
+            'version' => null,
+            'release_date' => null,
+            'footer_links' => [],
+        ], $this->process([])['layout']);
+    }
+
+    public function testFooterLinks(): void
+    {
+        $layout = $this->process(['layout' => ['footer_links' => [
+            ['label' => 'footer.accessibility', 'route' => 'app_accessibility'],
+            ['label' => 'footer.legal', 'url' => 'https://example.org/legal'],
+        ]]])['layout'];
+
+        // assertEquals: the order of the keys is the one given by the project
+        self::assertEquals([
+            ['label' => 'footer.accessibility', 'route' => 'app_accessibility', 'route_params' => [], 'url' => null],
+            ['label' => 'footer.legal', 'route' => null, 'route_params' => [], 'url' => 'https://example.org/legal'],
+        ], $layout['footer_links']);
+    }
+
+    /**
+     * @return iterable<string, array{array<string, string>}>
+     */
+    public static function invalidLinks(): iterable
+    {
+        yield 'route and url' => [['label' => 'footer.legal', 'route' => 'legal', 'url' => 'https://example.org']];
+        yield 'neither' => [['label' => 'footer.legal']];
+    }
+
+    /**
+     * @param array<string, string> $link
+     */
+    #[DataProvider('invalidLinks')]
+    public function testFooterLinkHasARouteOrAnUrl(array $link): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('A link of the footer needs either a route or an url');
+
+        $this->process(['layout' => ['footer_links' => [$link]]]);
+    }
+
+    public function testRouteParamsWithAnUrlAreRefused(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('A link of the footer with an url has no route_params');
+
+        $this->process(['layout' => ['footer_links' => [
+            ['label' => 'footer.legal', 'url' => 'https://example.org/legal', 'route_params' => ['id' => 1]],
+        ]]]);
+    }
+
+    /**
+     * Removed in 2.0 (the banner of the impersonation is always shown): a project that keeps it is told at once.
+     */
+    public function testAddExitImpersonationButtonIsRemoved(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Unrecognized option "add_exit_impersonation_button"');
+
+        $this->process(['add_exit_impersonation_button' => true]);
+    }
+
+    public function testLogoDarkNeedsLogo(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('lle_crudit.layout.logo_dark needs lle_crudit.layout.logo');
+
+        $this->process(['layout' => ['logo_dark' => 'images/logo-dark.svg']]);
+    }
+
+    public function testSearchDefaults(): void
+    {
+        self::assertSame([
+            'enabled' => true,
+            'min_length' => 2,
+            'limit' => 10,
+            'screens' => true,
+            'entities' => [],
+        ], $this->process([])['search']);
+    }
+
+    public function testSearchEntities(): void
+    {
+        $entities = $this->process(['search' => ['entities' => [
+            'App\\Crudit\\Config\\ClientCrudConfig',
+            ['config' => 'App\\Crudit\\Config\\InvoiceCrudConfig', 'title' => 'menu.invoices', 'limit' => 3, 'subtitle' => 'customer.name'],
+        ]]])['search']['entities'];
+
+        self::assertSame([
+            ['config' => 'App\\Crudit\\Config\\ClientCrudConfig', 'title' => null, 'limit' => null, 'subtitle' => null],
+            ['config' => 'App\\Crudit\\Config\\InvoiceCrudConfig', 'title' => 'menu.invoices', 'limit' => 3, 'subtitle' => 'customer.name'],
+        ], $entities);
+    }
+
+    public function testSearchEntityNeedsItsConfig(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->process(['search' => ['entities' => [['title' => 'menu.clients']]]]);
+    }
+
+    public function testSearchLimitsAreBounded(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->process(['search' => ['limit' => 21]]);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     */
+    private function process(array $config): array
+    {
+        return (new Processor())->processConfiguration(new Configuration(), [$config]);
+    }
+}

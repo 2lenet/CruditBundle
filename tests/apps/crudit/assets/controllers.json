@@ -1,0 +1,77 @@
+{
+    "controllers": {
+        "@2lenet/crudit-bundle": {
+            "back-to-top": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "modal-bridge": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "telephone": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "confirm": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "search-trigger": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "sidebar": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "page-title": {
+                "enabled": true,
+                "fetch": "eager"
+            }
+        },
+        "@2lenet/crudit-ui-bundle": {
+            "alert": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "button": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "command-palette": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "dialog": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "disclosure": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "dropdown": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "tabs": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "theme": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "toasts": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "tooltip": {
+                "enabled": true,
+                "fetch": "eager"
+            }
+        }
+    },
+    "entrypoints": []
+}

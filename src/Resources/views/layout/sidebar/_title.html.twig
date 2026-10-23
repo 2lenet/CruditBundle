@@ -1,0 +1,10 @@
+{#
+ # Template of TitleElement: a heading, followed by its children (granted ones, MenuBuilder) in the same list. Without
+ # children, it labels the items that follow, as a category.
+ #}
+<li class="crudit-nav__heading crudit-nav__heading--title {{ element.cssClass|default('') }}" data-menu-kind="heading">
+    <span>{{ element.libelle|trans }}</span>
+</li>
+{% for child in element.children %}
+    {% include child.template with {'element': child} %}
+{% endfor %}

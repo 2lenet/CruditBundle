@@ -2,12 +2,48 @@ crudit:
     title:
         filter: "Filtrer les éléments"
 
-    multisearch:
-        placeholder: "Rechercher ..."
+    search:
+        button: "Rechercher"
+        hint: "un élément, un écran…"
+        title: "Recherche globale"
+        label: "Rechercher un élément ou un écran"
+        placeholder: "Élément, écran…"
+        help: "La recherche porte sur les principaux éléments de l'application et sur ses écrans."
+        screen: "Écran"
+        screens: "Écrans"
+
+    layout:
+        main_menu: "Menu principal"
+        skip_to_content: "Aller au contenu"
+        skip_to_menu: "Aller au menu"
+        back_to_top: "Revenir en haut de la page"
+        messages: "Messages"
+        sidebar: "Menu latéral"
+        open_menu: "Ouvrir le menu"
+        close_menu: "Fermer le menu"
+        filter_menu: "Filtrer le menu"
+        filter_none: "Aucun élément trouvé"
+        filter_one: "1 élément trouvé"
+        filter_many: "%count% éléments trouvés"
+        collapse_menu: "Réduire le menu"
+        expand_menu: "Déplier le menu"
+        contains_current_page: "(contient la page courante)"
+        new_tab: "(nouvel onglet)"
+        home: "%app%, accueil"
+        user_menu: "Menu de l'utilisateur"
+        profile: "Mon profil"
+        back_to_account: "Revenir à mon compte"
+        back_to_account_of: "Revenir à mon compte (%name%)"
+        impersonation: "Connexion en tant qu'un autre utilisateur"
+        impersonation_text: "Vous naviguez avec le compte de %name%."
+        impersonation_detail: "Les actions sont enregistrées sous ce compte."
+        breadcrumb_home: "Accueil"
+        breadcrumb_new: "Création"
 
     footer:
-        copyrights: "Tous droits réservés."
         release: "Version"
+        updated_on: "mise à jour le"
+        links: "Informations légales et aide"
 
     pagination:
         first: "Première"
@@ -32,8 +68,15 @@ crudit:
         logout: "Déconnexion"
         batch: "Choisir une action de masse"
         validate: "Valider"
-        profile: "Profil"
-        exit_impersonation: "Quitter l'impersonation"
+        edit: "Modifier"
+        delete: "Supprimer"
+        show: "Voir"
+        add: "Ajouter"
+        export: "Exporter"
+        filter: "Filtrer"
+        search: "Rechercher"
+        reset: "Réinitialiser"
+        close: "Fermer"
 
     message:
         success: "Succès"

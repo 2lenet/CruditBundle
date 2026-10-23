@@ -2,12 +2,48 @@ crudit:
     title:
         filter: "Artikel Auswählen"
 
-    multisearch:
-        placeholder: "Suche ..."
+    search:
+        button: "Suchen"
+        hint: "ein Element, eine Seite…"
+        title: "Globale Suche"
+        label: "Ein Element oder eine Seite suchen"
+        placeholder: "Element, Seite…"
+        help: "Die Suche umfasst die wichtigsten Elemente der Anwendung und ihre Seiten."
+        screen: "Seite"
+        screens: "Seiten"
+
+    layout:
+        main_menu: "Hauptmenü"
+        skip_to_content: "Zum Inhalt springen"
+        skip_to_menu: "Zum Menü springen"
+        back_to_top: "Zurück zum Seitenanfang"
+        messages: "Meldungen"
+        sidebar: "Seitenleiste"
+        open_menu: "Menü öffnen"
+        close_menu: "Menü schließen"
+        filter_menu: "Menü filtern"
+        filter_none: "Kein Element gefunden"
+        filter_one: "1 Element gefunden"
+        filter_many: "%count% Elemente gefunden"
+        collapse_menu: "Menü einklappen"
+        expand_menu: "Menü ausklappen"
+        contains_current_page: "(enthält die aktuelle Seite)"
+        new_tab: "(neuer Tab)"
+        home: "%app%, Startseite"
+        user_menu: "Benutzermenü"
+        profile: "Mein Profil"
+        back_to_account: "Zurück zu meinem Konto"
+        back_to_account_of: "Zurück zu meinem Konto (%name%)"
+        impersonation: "Identitätswechsel aktiv"
+        impersonation_text: "Sie verwenden das Konto von %name%."
+        impersonation_detail: "Aktionen werden unter diesem Konto gespeichert."
+        breadcrumb_home: "Startseite"
+        breadcrumb_new: "Neu"
 
     footer:
-        copyrights: "Copyrights."
         release: "Version"
+        updated_on: "aktualisiert am"
+        links: "Rechtliche Hinweise und Hilfe"
 
     pagination:
         first: "Erste"
@@ -32,8 +68,15 @@ crudit:
         logout: "Abmelden"
         validate: "Valideren"
         batch: "Massenaktion wählen"
-        profile: "Profil"
-        exit_impersonation: "Die Imitation beenden"
+        edit: "Bearbeiten"
+        delete: "Löschen"
+        show: "Anzeigen"
+        add: "Hinzufügen"
+        export: "Exportieren"
+        filter: "Filtern"
+        search: "Suchen"
+        reset: "Zurücksetzen"
+        close: "Schließen"
 
     message:
         success: "Erfolg"
@@ -49,6 +92,9 @@ crudit:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"
             notConfigured: "Export ist nicht konfiguriert"
+        transition:
+            message: "Wollen Sie den Status dieses Elements wirklich ändern?"
+            action: "Validieren"
 
     field:
         createdAt: "Erstellt am"

@@ -3,7 +3,7 @@
 {% block value %}
     {% if data['value'] %}
         <span class="filter-state">
-            <span class="badge">{{ data['value']|date("d/m/Y") }}</span>
+            <span class="badge">{{ data['value']|ui_date('short') }}</span>
         </span>
     {% endif %}
 {% endblock %}

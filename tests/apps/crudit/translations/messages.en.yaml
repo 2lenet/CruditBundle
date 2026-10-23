@@ -1,0 +1,44 @@
+menu:
+    home: "Home"
+    operations: "Operations"
+    clients: "Clients"
+    clients_to_call: "clients to call"
+    interventions: "Interventions"
+    billing: "Billing"
+    invoices: "Invoices"
+    credits: "Credit notes"
+    reminders: "Reminders"
+    lateReminders: "Late reminders"
+    stock: "Stock"
+    items: "Items"
+    movements: "Movements"
+    map: "Map"
+    administration: "Administration"
+    users: "Users"
+    settings: "Settings"
+    help: "Help"
+    documentation: "Documentation"
+    reports: "Reports"
+    planning: "Planning"
+    contracts: "Contracts"
+    suppliers: "Suppliers"
+    vehicles: "Vehicles"
+    agencies: "Agencies"
+    archives: "Archives"
+    secret: "Secret"
+    tools: "Tools"
+    exports: "Exports"
+footer:
+    accessibility: "Accessibility statement"
+    legal: "Legal notice"
+# Titles of the CRUD pages (CrudConfig::getTitle()): the <title> and, with lot 2.2.b, the <h1>
+crud:
+    title:
+        list:
+            client: "Clients"
+        show:
+            client: "%entity%"
+        edit:
+            client: "Edit %entity%"
+        new:
+            client: "New client"

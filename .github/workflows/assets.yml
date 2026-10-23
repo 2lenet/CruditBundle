@@ -1,0 +1,36 @@
+name: Assets
+
+on:
+    push:
+        branches: [main, feature/redesign]
+        tags: ['*']
+    pull_request:
+        branches: [main, feature/redesign]
+
+jobs:
+    assets:
+        name: "Compiled CSS"
+
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: "Install dependencies with Composer (CruditUiBundle, read by the build)"
+                uses: php-actions/composer@v6
+                with:
+                    php_version: 8.4
+                    version: 2
+                    args: --profile --ignore-platform-reqs --no-scripts
+
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 22
+
+            -   name: 'Install dependencies'
+                run: npm install --no-package-lock
+                working-directory: assets
+
+            -   name: 'assets/dist/crudit.css is the compilation of assets/styles'
+                run: npm run check
+                working-directory: assets

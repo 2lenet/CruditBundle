@@ -1,0 +1,10 @@
+{#
+ # Skip links: the first focusable elements of the page, shown when they have the focus (RGAA 12.7). The browser moves
+ # the focus to the target (tabindex="-1"), without JavaScript. The search adds its link in lot 2.2.c.
+ #}
+<div class="crudit-skip-links">
+    <ul class="crudit-skip-links__list">
+        <li><a id="crudit-skip-to-content" class="crudit-skip-links__link" href="#main">{{ 'crudit.layout.skip_to_content'|trans(domain: 'LleCruditBundle') }}</a></li>
+        <li><a class="crudit-skip-links__link" href="#main-nav">{{ 'crudit.layout.skip_to_menu'|trans(domain: 'LleCruditBundle') }}</a></li>
+    </ul>
+</div>

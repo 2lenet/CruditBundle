@@ -3,11 +3,11 @@
 namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Builder\MenuBuilder;
 use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
-use Lle\CruditBundle\Dto\Layout\LinkElement;
-use Lle\CruditBundle\Registry\MenuRegistry;
+use Lle\CruditBundle\Menu\ActiveMenuMatcher;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -20,11 +20,12 @@ use Twig\TwigFunction;
 class CruditExtension extends AbstractExtension
 {
     public function __construct(
-        private MenuRegistry $menuRegistry,
+        private MenuBuilder $menuBuilder,
         private RouterInterface $router,
         private EntityManagerInterface $em,
         private ParameterBagInterface $parameterBag,
         private Registry $workflowRegistry,
+        private ActiveMenuMatcher $activeMenuMatcher,
     ) {
     }
 
@@ -35,7 +36,6 @@ class CruditExtension extends AbstractExtension
             new TwigFunction('crudit_menu_active', [$this, 'menuIsActive']),
             new TwigFunction('crudit_hide_if_disabled', [$this, 'hideIfDisabled']),
             new TwigFunction('crudit_add_connect_profile_link', [$this, 'addConnectProfileLink']),
-            new TwigFunction('crudit_add_exit_impersonation_button', [$this, 'addExitImpersonationButton']),
             new TwigFunction('crudit_exit_impersonation_path', [$this, 'getExitImpersonationPath']),
             new TwigFunction('get_workflow_names', $this->getWorkflowNames(...))
         ];
@@ -51,40 +51,15 @@ class CruditExtension extends AbstractExtension
         ];
     }
 
+    /** @return LayoutElementInterface[] the menu shown to the user (granted elements, no empty heading) */
     public function menuItems(string $navid): array
     {
-        return $this->menuRegistry->getElements($navid);
+        return $this->menuBuilder->build($navid);
     }
 
     public function menuIsActive(LayoutElementInterface $item, Request $request): bool
     {
-        /** @var LinkElement $item */
-        if (\count($item->getChildren()) > 0) {
-            foreach ($item->getChildren() as $child) {
-                if ($this->menuIsActive($child, $request)) {
-                    return true;
-                }
-            }
-        }
-
-        if ($item->getPath() !== null && $item->getPath()->getRoute() !== 'lle_crudit_crud_index') {
-            $currentRoute = $request->attributes->get('_route');
-            $linkRoute = $item->getPath()->getRoute();
-            $positionLastUnderscoreCurrentRoute = (strrpos($currentRoute, '_')) ?
-                (int)strrpos($currentRoute, '_') :
-                strlen($currentRoute);
-            $positionLastUnderscoreLinkRoute = (strrpos($linkRoute, '_')) ?
-                (int)strrpos($linkRoute, '_') :
-                strlen($linkRoute);
-
-            return
-                (substr($currentRoute, 0, $positionLastUnderscoreCurrentRoute)) ===
-                (substr($linkRoute, 0, $positionLastUnderscoreLinkRoute));
-        } elseif ($item->getPath() !== null && $item->getPath()->getRoute() === 'lle_crudit_crud_index') {
-            return $item->getPath()->getParams()['resource'] === $request->attributes->get('resource');
-        }
-
-        return false;
+        return $this->activeMenuMatcher->isActive($item, $request);
     }
 
     public function jsonDecode(string $value): mixed
@@ -167,14 +142,6 @@ class CruditExtension extends AbstractExtension
     {
         /** @var bool $result */
         $result = $this->parameterBag->get('lle_crudit.add_connect_profile_link');
-
-        return $result;
-    }
-
-    public function addExitImpersonationButton(): bool
-    {
-        /** @var bool $result */
-        $result = $this->parameterBag->get('lle_crudit.add_exit_impersonation_button');
 
         return $result;
     }

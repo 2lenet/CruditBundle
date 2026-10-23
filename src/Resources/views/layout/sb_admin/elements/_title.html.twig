@@ -1,8 +1,0 @@
-<li class="sidebar-heading {{ element.cssClass|default('') }}">
-    <span class="show-toggle">{{ element.libelle|trans() }}</span>
-</li>
-{% if element.children %}
-    {% for child in element.children %}
-        {% include crudit.template(child.template) with {'element': child} %}
-    {% endfor %}
-{% endif %}

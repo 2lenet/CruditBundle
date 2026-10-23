@@ -2,12 +2,48 @@ crudit:
     title:
         filter: "Filter items"
 
-    multisearch:
-        placeholder: "Cerca ..."
+    search:
+        button: "Cerca"
+        hint: "un elemento, una schermata…"
+        title: "Ricerca globale"
+        label: "Cerca un elemento o una schermata"
+        placeholder: "Elemento, schermata…"
+        help: "La ricerca riguarda i principali elementi dell'applicazione e le sue schermate."
+        screen: "Schermata"
+        screens: "Schermate"
+
+    layout:
+        main_menu: "Menu principale"
+        skip_to_content: "Vai al contenuto"
+        skip_to_menu: "Vai al menu"
+        back_to_top: "Torna all'inizio della pagina"
+        messages: "Messaggi"
+        sidebar: "Barra laterale"
+        open_menu: "Apri il menu"
+        close_menu: "Chiudi il menu"
+        filter_menu: "Filtra il menu"
+        filter_none: "Nessun elemento trovato"
+        filter_one: "1 elemento trovato"
+        filter_many: "%count% elementi trovati"
+        collapse_menu: "Riduci il menu"
+        expand_menu: "Espandi il menu"
+        contains_current_page: "(contiene la pagina corrente)"
+        new_tab: "(nuova scheda)"
+        home: "%app%, home page"
+        user_menu: "Menu utente"
+        profile: "Il mio profilo"
+        back_to_account: "Torna al mio account"
+        back_to_account_of: "Torna al mio account (%name%)"
+        impersonation: "Impersonificazione in corso"
+        impersonation_text: "Stai navigando con l'account di %name%."
+        impersonation_detail: "Le azioni sono registrate con questo account."
+        breadcrumb_home: "Home"
+        breadcrumb_new: "Nuovo"
 
     footer:
-        copyrights: "Copyrights."
         release: "Versione"
+        updated_on: "aggiornata il"
+        links: "Note legali e aiuto"
 
     pagination:
         first: "Primo"
@@ -31,8 +67,16 @@ crudit:
         back: "Indietro"
         logout: "Disconnettersi"
         validate: "Convalidare"
-        profile: "Profilo"
-        exit_impersonation: "Esci dall'impersonificazione"
+        batch: "Scegliere un'azione di massa"
+        edit: "Modificare"
+        delete: "Eliminare"
+        show: "Visualizzare"
+        add: "Aggiungere"
+        export: "Esportare"
+        filter: "Filtrare"
+        search: "Cercare"
+        reset: "Reimpostare"
+        close: "Chiudere"
 
     message:
         success: "Successo"
@@ -48,6 +92,9 @@ crudit:
             message: "Scegliere un formato di esportazione"
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
+        transition:
+            message: "Volete davvero modificare lo stato di questo elemento?"
+            action: "Convalidare"
 
     field:
         createdAt: "Creato il"

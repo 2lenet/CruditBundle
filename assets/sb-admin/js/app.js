@@ -7,7 +7,6 @@ import './markdown_textarea';
 import './filters';
 import './flash';
 import './form';
-import './multisearch';
 import './scroll-to-top';
 import './sidebar';
 import './tag';

@@ -1,0 +1,7 @@
+# Routes of the bundle (the global search of the layout). To import in config/routes/lle_crudit.yaml:
+#
+#   lle_crudit:
+#       resource: '@LleCruditBundle/Resources/config/routes.yaml'
+lle_crudit_routes:
+    resource: '../../Controller/SearchController.php'
+    type: attribute
