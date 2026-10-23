@@ -154,6 +154,17 @@ class BreadcrumbBuilderTest extends TestCase
     }
 
     /**
+     * A sub-menu and its link of the same label: the link is kept, with its url, not the text of the sub-menu.
+     */
+    public function testSubMenuAndItsLinkOfTheSameLabel(): void
+    {
+        $clients = LinkElement::new('clients', null);
+        $clients->add(LinkElement::new('clients', Path::new('app_client_index')));
+
+        self::assertSame([self::HOME, ['label' => 'clients', 'url' => '/app_client_index']], $this->build([$clients], 'app_client_index'));
+    }
+
+    /**
      * An entry named as the home page further in the breadcrumb, not next to it: kept.
      */
     public function testEntryNamedAsTheHomePageInASubMenu(): void

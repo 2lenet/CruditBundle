@@ -70,12 +70,18 @@ class BreadcrumbBuilder
             $items[] = $item;
         }
 
-        // A label is not repeated next to itself ("Home › Home" with a home page of the menu on /dashboard)
+        // A label is not repeated next to itself ("Home › Home" with a home page of the menu on /dashboard); of the two,
+        // the one with an url is kept (a sub-menu "Clients" and its link "Clients": the link)
         $breadcrumb = [];
         foreach ([$home, ...$items, ...$current] as $item) {
-            if ($item['label'] !== ($breadcrumb[\count($breadcrumb) - 1]['label'] ?? null)) {
-                $breadcrumb[] = $item;
+            $last = \count($breadcrumb) - 1;
+            if ($last >= 0 && $item['label'] === $breadcrumb[$last]['label']) {
+                if (!isset($breadcrumb[$last]['url']) && isset($item['url'])) {
+                    $breadcrumb[$last] = $item;
+                }
+                continue;
             }
+            $breadcrumb[] = $item;
         }
 
         return $breadcrumb;
