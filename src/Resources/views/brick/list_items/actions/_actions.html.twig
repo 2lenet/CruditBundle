@@ -1,24 +1,25 @@
-{% do action.setResource(line.resource) %}
-
-{% set params = { 'id': line.resource.id } %}
-
-{% if action.modal %}
-    {% include action.modal with {action: action, id: 'modal_' ~ action.id ~ line.resource.id } %}
-{% endif %}
-
-{% set disabled = action.disabled or not
-    ((action.path.role is null or is_granted(action.path.role, line.resource))
-    and (action.role is null or is_granted(action.role, line.resource)))
-%}
-
-{% if action.isDisplayed(action.resource) and action.isDisplayedByRequest(app.request) and not (disabled and crudit_hide_if_disabled(action)) %}
-    {% block actions_item %}
-        <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
-            {% if action.template %}
-                {% include action.template %}
-            {% else %}
-                {% include '@LleCrudit/brick/list_items/actions/_action.html.twig' %}
-            {% endif %}
-        </span>
-    {% endblock %}
-{% endif %}
+{#
+ # The main action of a line (the edition): its template (setTemplate()), else _action, with its reason when it is
+ # disabled, or its label, in a Tooltip (visual only); the reason describes the button (aria-describedby).
+ # Variables: item (ActionView), line, view. Given to the templates: action, url, params, disabled, reason_id.
+ #}
+{% set action = item.action %}
+{% set url = item.url %}
+{% set params = item.params %}
+{% set disabled = item.state.disabled %}
+{% set reason = disabled ? item.state.reason|trans(domain: item.state.reasonDomain ?? view.config.translation_domain) : null %}
+{% set reason_id = disabled ? 'crudit-action-reason-' ~ action.id ~ line.id : null %}
+{% block actions_item %}
+    {%- set element -%}
+        {%- if action.template -%}
+            {% include action.template %}
+        {%- else -%}
+            {% include '@LleCrudit/brick/list_items/actions/_action.html.twig' %}
+        {%- endif -%}
+    {%- endset -%}
+    {%- set tooltip = reason ?? action.label|trans({'%entity%': line.resource}, action.translationDomain ?? view.config.translation_domain) -%}
+    <twig:LleCruditUi:Tooltip :text="tooltip" floating>{{ element }}</twig:LleCruditUi:Tooltip>
+    {%- if reason is not null -%}
+        <span id="{{ reason_id }}" class="crudit-ui-visually-hidden">{{ reason }}</span>
+    {%- endif -%}
+{% endblock %}

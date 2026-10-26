@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
+use Lle\CruditBundle\Action\PageActionsBuilder;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
@@ -19,6 +20,7 @@ class LinksFactory extends AbstractBasicBrickFactory
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         protected NavigationStack $navigationStack,
+        protected PageActionsBuilder $pageActionsBuilder,
     ) {
         parent::__construct($resourceResolver, $requestStack);
     }
@@ -34,13 +36,17 @@ class LinksFactory extends AbstractBasicBrickFactory
         /** @var \Stringable $resource */
         $resource = $this->getItem($brickConfigurator);
 
+        $actions = $this->getActions($brickConfigurator);
+
         /** @var LinksConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/links')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
-                'actions' => $this->getActions($brickConfigurator),
+                // The actions as given, for the templates of the projects; sorted for the bar (brick/links/_actions)
+                'actions' => $actions,
+                'page_actions' => $this->pageActionsBuilder->build($actions, $resource),
                 'entity' => (string)$resource,
                 'resource' => $resource,
             ]);
@@ -65,7 +71,8 @@ class LinksFactory extends AbstractBasicBrickFactory
         }
 
         if ($brickConfig->hasBack()) {
-            $action = ListAction::new('crudit.action.back', $brickConfig->getCrudConfig()->getPath());
+            $action = ListAction::new('crudit.action.back', $brickConfig->getCrudConfig()->getPath())
+                ->setTranslationDomain('LleCruditBundle');
             if ($backUrl !== null) {
                 $action->setUrl($backUrl);
             }

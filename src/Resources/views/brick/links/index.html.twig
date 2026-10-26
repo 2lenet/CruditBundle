@@ -4,12 +4,12 @@
  # - the breadcrumb comes from the menu (crudit_crud_breadcrumb(): the entry of the menu, then the record and its
  #   action); block breadcrumb to replace it, in a template that extends this one
  #   (`{% extends '@!LleCrudit/brick/links/index.html.twig' %}`);
- # - the actions keep their markup (brick/links/_actions, reworked in lot 3.1); block page_actions.
+ # - the actions (brick/links/_actions, lot 3.1.a): the primary one, the others, the menu "More"; block page_actions.
  #}
 {% set record = view.data.entity ?? '' %}
 {#- Names of their own: in the blocks of the component, `breadcrumb` is its prop -#}
 {% set links_breadcrumb %}{% block breadcrumb %}<twig:LleCruditUi:Breadcrumb :items="crudit_crud_breadcrumb(record)"/>{% endblock %}{% endset %}
-{% set links_actions %}{% block page_actions %}{% if view.data.actions|length %}{% include '@LleCrudit/brick/links/_actions.html.twig' %}{% endif %}{% endblock %}{% endset %}
+{% set links_actions %}{% block page_actions %}{% if not view.data.page_actions.empty %}{% include '@LleCrudit/brick/links/_actions.html.twig' %}{% endif %}{% endblock %}{% endset %}
 <twig:LleCruditUi:PageHeader :title="view.config.title|trans({'%entity%': record}, view.config.translation_domain)" class="crudit-page-header {{ view.data.resource.getCssClass ?? '' }}">
     <twig:block name="breadcrumb">{{ links_breadcrumb }}</twig:block>
     <twig:block name="actions">{{ links_actions }}</twig:block>

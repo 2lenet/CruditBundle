@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditUiBundle\Component\ButtonVariant;
 
 interface ActionInterface
 {
@@ -58,6 +59,26 @@ interface ActionInterface
     public function getHideIfDisabled(): ?bool;
 
     public function setHideIfDisabled(?bool $hideIfDisabled): static;
+
+    public function getVariant(): string;
+
+    public function setVariant(string|ButtonVariant $variant): static;
+
+    public function isPrimary(): bool;
+
+    public function setPrimary(bool $primary = true): static;
+
+    public function getTranslationDomain(): ?string;
+
+    public function setTranslationDomain(?string $translationDomain): static;
+
+    public function getGroup(): ?string;
+
+    public function setGroup(?string $group): static;
+
+    public function getDisabledReason(): ?string;
+
+    public function setDisabledReason(callable|string|null $disabledReason): static;
 
     public function getTemplate(): ?string;
 

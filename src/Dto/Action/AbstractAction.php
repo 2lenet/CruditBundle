@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Dto\Action;
 use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditUiBundle\Component\ButtonVariant;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractAction implements ActionInterface
@@ -39,6 +40,17 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?string $template = null;
 
+    protected string $variant = 'secondary';
+
+    protected bool $primary = false;
+
+    protected ?string $group = null;
+
+    protected ?string $translationDomain = null;
+
+    /** @var callable|string|null $disabledReason */
+    protected $disabledReason = null;
+
     /** @var callable|null $displayIf */
     protected $displayIf = null;
 
@@ -55,9 +67,12 @@ abstract class AbstractAction implements ActionInterface
         return md5('crudit_action_' . spl_object_id($this));
     }
 
+    /**
+     * The reason when the action is disabled, else its label.
+     */
     public function getTitle(): string
     {
-        return $this->getLabel();
+        return $this->getDisabledReason() ?? $this->getLabel();
     }
 
     public function getLabel(): string
@@ -82,6 +97,14 @@ abstract class AbstractAction implements ActionInterface
         $this->path = $path;
 
         return $this;
+    }
+
+    /**
+     * The role of the path (deprecated Path::setRole()), null without path (a dropdown).
+     */
+    public function getPathRole(): ?string
+    {
+        return isset($this->path) ? $this->path->getRole() : null;
     }
 
     public function getIcon(): ?Icon
@@ -113,11 +136,127 @@ abstract class AbstractAction implements ActionInterface
         return $this->cssClass;
     }
 
+    /**
+     * Classes added to the element of the action. The Bootstrap classes (btn, btn-*) have no effect since 2.0: the
+     * look comes from setVariant().
+     */
     public function setCssClass(?string $cssClass): static
     {
-        $this->cssClass = $cssClass;
+        $classes = preg_split('/\s+/', trim((string) $cssClass), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $kept = array_filter($classes, static fn (string $class): bool => preg_match('/^btn(?:-|$)/', $class) !== 1);
+        if (count($kept) !== count($classes)) {
+            trigger_deprecation(
+                '2lenet/crudit-bundle',
+                '2.0',
+                'The Bootstrap classes "%s" of the action "%s" have no effect, use setVariant().',
+                implode(' ', array_diff($classes, $kept)),
+                $this->label,
+            );
+        }
+        $this->cssClass = $kept ? implode(' ', $kept) : null;
 
         return $this;
+    }
+
+    public function getVariant(): string
+    {
+        return $this->variant;
+    }
+
+    /**
+     * The look of the action: a variant of the Button of CruditUiBundle (ButtonVariant), checked here since the
+     * component does not validate its props.
+     */
+    public function setVariant(string|ButtonVariant $variant): static
+    {
+        if (is_string($variant) && ButtonVariant::tryFrom($variant) === null) {
+            throw new \InvalidArgumentException(sprintf(
+                'The variant "%s" of the action "%s" is not one of "%s".',
+                $variant,
+                $this->label,
+                implode('", "', ButtonVariant::values()),
+            ));
+        }
+        $this->variant = $variant instanceof ButtonVariant ? $variant->value : $variant;
+
+        return $this;
+    }
+
+    public function isPrimary(): bool
+    {
+        return $this->primary;
+    }
+
+    /**
+     * The primary action of the page (a single one: the first wins, the others are secondary).
+     */
+    public function setPrimary(bool $primary = true): static
+    {
+        $this->primary = $primary;
+
+        return $this;
+    }
+
+    public function getTranslationDomain(): ?string
+    {
+        return $this->translationDomain;
+    }
+
+    /**
+     * The domain of the translation of the label, null: the one of the CRUD (the actions of the bundle: its own).
+     */
+    public function setTranslationDomain(?string $translationDomain): static
+    {
+        $this->translationDomain = $translationDomain;
+
+        return $this;
+    }
+
+    public function getGroup(): ?string
+    {
+        return $this->group;
+    }
+
+    /**
+     * The heading of the action in the menu "More" (setDropdown(true)).
+     */
+    public function setGroup(?string $group): static
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    /**
+     * Why the action cannot be used (a rule of the business, not a right): it stays shown, disabled, with this reason.
+     * Null when it can be used.
+     */
+    public function getDisabledReason(): ?string
+    {
+        if (is_callable($this->disabledReason)) {
+            return call_user_func($this->disabledReason, $this->getReasonSubject()) ?: null;
+        }
+
+        return $this->disabledReason ?: null;
+    }
+
+    /**
+     * @param callable|string|null $disabledReason a reason (a key of translation), or a callable given the resource
+     *                                             that returns the reason or null
+     */
+    public function setDisabledReason(callable|string|null $disabledReason): static
+    {
+        $this->disabledReason = $disabledReason;
+
+        return $this;
+    }
+
+    /**
+     * What the callable of setDisabledReason() is given: the resource of an item action.
+     */
+    protected function getReasonSubject(): mixed
+    {
+        return null;
     }
 
     public function isHideLabel(): bool
@@ -185,7 +324,7 @@ abstract class AbstractAction implements ActionInterface
 
     public function isDisabled(): bool
     {
-        return false;
+        return $this->getDisabledReason() !== null;
     }
 
     public function getRole(): ?string

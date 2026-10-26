@@ -84,25 +84,22 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
             CrudConfigInterface::LABEL_ACTION_LIST,
             $this->getPath(),
-            Icon::new('arrow-circle-left')
-        )
-            ->setCssClass('btn btn-sm btn-secondary mt-2 ms-1 mt-md-0 crudit-action')
-            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig');
+            Icon::new('back')
+        );
 
         $actions[CrudConfigInterface::ACTION_ADD] = ListAction::new(
             'action.add',
             $this->getPath(CrudConfigInterface::NEW),
-            Icon::new('plus')
+            Icon::new('add')
         )
-            ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action')
+            ->setPrimary()
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::NEW));
 
         $actions[CrudConfigInterface::ACTION_EXPORT] = ListAction::new(
             'action.export',
             $this->getPath(CrudConfigInterface::EXPORT),
-            Icon::new('file-export')
+            Icon::new('download')
         )
-            ->setCssClass('btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-export-action')
             ->setModal('@LleCrudit/modal/_export.html.twig')
             ->setConfig(
                 [
@@ -123,7 +120,6 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::SHOW),
             Icon::new('search')
         )
-            ->setCssClass('btn btn-primary btn-sm crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
@@ -131,15 +127,14 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )
-            ->setCssClass('btn btn-secondary btn-sm crudit-action')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
 
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
-            Icon::new('trash-alt')
+            Icon::new('delete')
         )
-            ->setCssClass('btn btn-danger btn-sm crudit-action')
+            ->setVariant('danger')
             ->setConfirmModal(true)
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 
@@ -153,10 +148,8 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
             CrudConfigInterface::LABEL_ACTION_LIST,
             $this->getPath(),
-            Icon::new('arrow-circle-left')
+            Icon::new('back')
         )
-            ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
-            ->setTemplate('@LleCrudit/brick/links/actions/_list.html.twig')
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::INDEX));
 
         $actions[CrudConfigInterface::ACTION_EDIT] = EditAction::new(
@@ -164,15 +157,15 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $this->getPath(CrudConfigInterface::EDIT),
             Icon::new('edit')
         )
-            ->setCssClass('btn btn-secondary btn-sm ms-1 crudit-action')
+            ->setPrimary()
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EDIT));
 
         $actions[CrudConfigInterface::ACTION_DELETE] = DeleteAction::new(
             'action.delete',
             $this->getPath(CrudConfigInterface::DELETE),
-            Icon::new('trash-alt')
+            Icon::new('delete')
         )
-            ->setCssClass('btn btn-danger btn-sm ms-1 crudit-action')
+            ->setVariant('danger')
             ->setConfirmModal(true)
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::DELETE));
 

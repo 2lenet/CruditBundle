@@ -1,33 +1,18 @@
+{#
+ # The main action of a line: an IconButton of CruditUiBundle, small, named after the action and the line
+ # ("Edit Bob": crudit.action.named, its label and the line). A disabled action keeps the focus (aria-disabled), described
+ # by its reason (reason_id).
+ # Variables: item (ActionView), action, line, view, reason_id.
+ #}
 {% block action %}
-    <a
-        {% block attributes %}
-            class="
-                    {{ action.cssClass ?? 'btn btn-sm btn-primary crudit-action' }}
-                    {% if disabled %} disabled{% endif %}
-                "
-            {% if action.modal %}
-                data-bs-toggle="modal"
-                data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-            {% elseif action.confirmModal %}
-                data-confirm-link="{{ path(action.path.route, params) }}"
-                data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans(domain=view.config.translation_domain) }}"
-            {% elseif not disabled %}
-                {% if action.url %}
-                    href="{{ absolute_url(action.url) }}"
-                {% else %}
-                    href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-                {% endif %}
-            {% endif %}
-            {% if action.target is defined and action.target %}
-                target="{{ action.target }}"
-            {% endif %}
-        {% endblock %}
-    >
-        {% if action.icon %}
-            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
-        {% endif %}
-        {% if not action.hideLabel and not action.icon %}
-            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
-        {% endif %}
-    </a>
+    {%- set action_label = 'crudit.action.named'|trans({
+        '%action%': action.label|trans(domain: action.translationDomain ?? view.config.translation_domain),
+        '%entity%': line.resource,
+    }, 'LleCruditBundle') -%}
+    {% component 'LleCruditUi:IconButton' with {
+        icon: action.icon.icon ?? 'edit',
+        label: action_label,
+        size: 'small',
+        href: crudit_action_href(item),
+    }|merge(crudit_action_attributes(item, view.config.translation_domain, reason_id ?? null)) %}{% endcomponent %}
 {% endblock %}

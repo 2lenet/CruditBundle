@@ -571,6 +571,72 @@ await axeHeader(page, 'header of a record at 360');
 ok('header of a CRUD page: breadcrumb from the menu, one h1, "← parent" on a phone');
 await page.close();
 
+// ---------- Actions of the header and of the lines (lot 3.1.a): one primary action, the secondary ones in the menu
+// "More" below md, the confirmation and the modals opened by commandfor, the focus given back, axe on the header,
+// the dialogs and the actions of the lines
+const shown = (page, sel) => page.$$eval(sel, (els) => els.filter((e) => e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden').length);
+const openDialog = (page) => page.evaluate(() => [...document.querySelectorAll('dialog')].find((d) => d.open)?.id ?? null);
+const focusText = (page) => page.evaluate(() => (document.activeElement?.textContent ?? '').trim());
+async function axeOn(page, selector, label) {
+    await page.evaluate(axeSource);
+    const result = await page.evaluate((selector) => axe.run({include: [[selector]]}, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']}), selector);
+    assert.deepEqual(result.violations.map((x) => `${x.id}: ${x.nodes.map((n) => n.target.join(' ')).join(' | ')}`), [], `axe ${label}`);
+    ok(`axe ${label}`);
+}
+for (const [width, options] of [[1600, {}], [1280, {dark: true}], [768, {rtl: true}], [360, {}], [360, {dark: true, rtl: true}]]) {
+    page = await open(width, '/client/', options);
+    const label = `${width}${options.dark ? ' dark' : ''}${options.rtl ? ' rtl' : ''}`;
+    assert.equal(await shown(page, '.crudit-page-actions .crudit-ui-btn--primary'), 1, `one primary action at ${label}`);
+    // From md the secondary ones are in the bar; below, in the menu "More"
+    assert.equal(await shown(page, '.crudit-page-actions__secondary'), width >= 768 ? 4 : 0, `secondary actions at ${label}`);
+    await page.click('.crudit-page-actions__more > button');
+    assert.equal(await shown(page, '.crudit-page-actions__more .crudit-page-actions__mobile-only'), width >= 768 ? 0 : 4, `the secondary ones in "More" at ${label}`);
+    await axeOn(page, '.crudit-ui-page-header', `header with the menu "More" open at ${label}`);
+    await page.keyboard.press('Escape');
+    assert.equal(await attr(page, '.crudit-page-actions__more > button', 'aria-expanded'), 'false');
+    assert.equal(await page.evaluate(() => document.activeElement === document.querySelector('.crudit-page-actions__more > button')), true, `Escape gives the focus back to "More" at ${label}`);
+    if (width === 360) {
+        const bar = await box(page, '.crudit-page-actions');
+        const primary = await box(page, '.crudit-page-actions__primary');
+        assert.ok(primary.w > bar.w / 2, 'on a phone, the primary action takes the room of the bar');
+    }
+    await shot(page, `actions-${label.replace(/ /g, '-')}`);
+}
+ok('bar of the actions from 360 to 1600 px, light and dark, left and right to left');
+
+// The lines: the edition, then the menu of the line
+page = await open(1280, '/client/');
+assert.equal(await attr(page, 'tbody tr:first-child .crudit-row-actions a.crudit-ui-icon-btn', 'href').then((h) => /\/client\/edit\/\d+$/.test(h)), true);
+await page.click('tbody tr:first-child .crudit-row-actions .crudit-ui-dropdown > button');
+assert.equal(await shown(page, 'tbody tr:first-child .crudit-row-actions .crudit-ui-menu__item'), 2);
+await axeOn(page, 'tbody tr:first-child .crudit-row-actions', 'actions of a line, menu open');
+await page.keyboard.press('Escape');
+ok('actions of a line: the edition, the menu named after the line');
+
+// A confirmation that names the element (an inactive client: Client 04), then a modal with fields, from the record
+await page.goto(base + await page.$$eval('tbody tr', (trs) => trs.find((tr) => tr.textContent.includes('Client 04')).querySelector('a[href*="/client/show/"]').getAttribute('href')), {waitUntil: 'networkidle0'});
+await page.click('.crudit-page-actions__secondary button.crudit-ui-btn--danger');
+await new Promise((r) => setTimeout(r, 200));
+assert.equal(await openDialog(page), 'crudit-confirm');
+assert.equal(await page.$eval('#crudit-confirm-title', (e) => e.textContent.trim()), 'Delete “Client 04”?');
+assert.equal(await focusText(page), 'Cancel', 'the focus on Cancel, the least destructive choice');
+await axeOn(page, '#crudit-confirm', 'confirmation');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 200));
+assert.equal(await openDialog(page), null);
+assert.equal(await focusText(page), 'Delete', 'the focus back on the action');
+await page.click('.crudit-page-actions__secondary button[commandfor^="modal_"]');
+await new Promise((r) => setTimeout(r, 200));
+const modal = await openDialog(page);
+assert.ok(modal?.startsWith('modal_'), 'the modal of the action is open');
+assert.equal(await page.evaluate(() => document.activeElement?.name), 'subject', 'the focus on the first field');
+await axeOn(page, `#${modal}`, 'modal with fields');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 200));
+assert.equal(await focusText(page), 'Send an e-mail', 'the focus back on the action');
+ok('confirmation that names the element and modal with fields, the focus given back');
+await page.close();
+
 // ---------- Focus of the title after a visit of Turbo (lot 2.2.b): turbo:load simulated, the application has no Turbo
 page = await open(1280, '/page/invoices');
 // Turbo gives the timing of a visit in turbo:load, none on the first load

@@ -551,12 +551,38 @@ class Converter
 
     protected function getPropertyAction(array $action): array
     {
+        [$variant, $cssClass] = $this->getVariantAndCssClass($action['css_class'] ?? null);
+
         return [
             'label' => isset($action['label']) ? str_replace('label', 'action', $action['label']) : null,
             'path' => isset($action['name']) ? $action['name'] : null,
             'icon' => isset($action['icon']) ? $action['icon'] : null,
-            'cssClass' => isset($action['css_class']) ? $action['css_class'] : null,
+            'variant' => $variant,
+            'cssClass' => $cssClass,
             'target' => isset($action['target']) ? $action['target'] : null,
         ];
+    }
+
+    /**
+     * The Bootstrap classes of an action (btn-primary…) give its variant (setVariant()), the other classes are kept.
+     *
+     * @return array{?string, ?string}
+     */
+    protected function getVariantAndCssClass(?string $cssClass): array
+    {
+        $variant = null;
+        $kept = [];
+        foreach (preg_split('/\s+/', trim((string) $cssClass), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $class) {
+            if (preg_match('/^btn-(?:outline-)?(\w+)$/', $class, $matches) === 1) {
+                $variant ??= match ($matches[1]) {
+                    'primary', 'secondary', 'warning', 'danger', 'link' => $matches[1],
+                    default => null,
+                };
+            } elseif ($class !== 'btn') {
+                $kept[] = $class;
+            }
+        }
+
+        return [$variant, $kept ? implode(' ', $kept) : null];
     }
 }

@@ -4,9 +4,7 @@ namespace Lle\CruditBundle\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Builder\MenuBuilder;
-use Lle\CruditBundle\Contracts\ActionInterface;
 use Lle\CruditBundle\Contracts\LayoutElementInterface;
-use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Menu\ActiveMenuMatcher;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +32,6 @@ class CruditExtension extends AbstractExtension
         return [
             new TwigFunction('crudit_menu_items', [$this, 'menuItems']),
             new TwigFunction('crudit_menu_active', [$this, 'menuIsActive']),
-            new TwigFunction('crudit_hide_if_disabled', [$this, 'hideIfDisabled']),
             new TwigFunction('crudit_add_connect_profile_link', [$this, 'addConnectProfileLink']),
             new TwigFunction('crudit_exit_impersonation_path', [$this, 'getExitImpersonationPath']),
             new TwigFunction('get_workflow_names', $this->getWorkflowNames(...))
@@ -116,26 +113,6 @@ class CruditExtension extends AbstractExtension
         }
 
         return $route . '_' . $key;
-    }
-
-    public function hideIfDisabled(ActionInterface $action): bool
-    {
-        $hideIfDisabled = false;
-        if ($action->getHideIfDisabled() !== null) {
-            $hideIfDisabled = $action->getHideIfDisabled();
-        } else {
-            if ($action instanceof DeleteAction) {
-                /** @var bool $defaultValue */
-                $defaultValue = $this->parameterBag->get('lle_crudit.delete_hide_if_disabled');
-                $hideIfDisabled = $defaultValue;
-            } else {
-                /** @var bool $defaultValue */
-                $defaultValue = $this->parameterBag->get('lle_crudit.hide_if_disabled');
-                $hideIfDisabled = $defaultValue;
-            }
-        }
-
-        return $hideIfDisabled;
     }
 
     public function addConnectProfileLink(): bool

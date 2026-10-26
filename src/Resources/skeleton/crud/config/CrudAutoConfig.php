@@ -145,7 +145,7 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
             '<?= $action['label'] ?>',
             <?php if ($action['path']) { ?>Path::new('<?= $action['path'] ?>'),<?php } else { ?>null,<?php } ?>
             <?php if ($action['icon']) { ?>Icon::new('<?= $action['icon'] ?>'),<?php } else { ?>null,<?php } ?>
-        )<?php if ($action['cssClass']) { ?>->setCssClass('<?= $action['cssClass'] ?>')<?php } ?><?php if ($action['target']) { ?>->setTarget('<?= $action['target'] ?>')<?php } ?>;
+        )<?php if ($action['variant'] ?? null) { ?>->setVariant('<?= $action['variant'] ?>')<?php } ?><?php if ($action['cssClass']) { ?>->setCssClass('<?= $action['cssClass'] ?>')<?php } ?><?php if ($action['target']) { ?>->setTarget('<?= $action['target'] ?>')<?php } ?>;
 <?php } ?>
 
         return $actions;
@@ -170,7 +170,7 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
             '<?= $action['label'] ?>',
             Path::new('<?= $action['path'] ?>'),
             Icon::new('<?= $action['icon'] ?>'),
-        )<?php if ($action['cssClass']) { ?>->setCssClass('<?= $action['cssClass'] ?>')<?php } ?><?php if ($action['target']) { ?>->setTarget('<?= $action['target'] ?>')<?php } ?>;
+        )<?php if ($action['variant'] ?? null) { ?>->setVariant('<?= $action['variant'] ?>')<?php } ?><?php if ($action['cssClass']) { ?>->setCssClass('<?= $action['cssClass'] ?>')<?php } ?><?php if ($action['target']) { ?>->setTarget('<?= $action['target'] ?>')<?php } ?>;
 <?php } ?>
 
         return $actions;
@@ -195,7 +195,7 @@ class <?= $prefixFilename ?>CrudConfig extends AbstractCrudConfig
             '<?= $action['label'] ?>',
             Path::new('<?= $action['path'] ?>'),
             Icon::new('<?= $action['icon'] ?>'),
-        )<?php if ($action['cssClass']) { ?>->setCssClass('<?= $action['cssClass'] ?>')<?php } ?><?php if ($action['target']) { ?>->setTarget('<?= $action['target'] ?>')<?php } ?>;
+        )<?php if ($action['variant'] ?? null) { ?>->setVariant('<?= $action['variant'] ?>')<?php } ?><?php if ($action['cssClass']) { ?>->setCssClass('<?= $action['cssClass'] ?>')<?php } ?><?php if ($action['target']) { ?>->setTarget('<?= $action['target'] ?>')<?php } ?>;
 <?php } ?>
 
         return $actions;

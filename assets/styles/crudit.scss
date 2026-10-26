@@ -22,4 +22,6 @@
     @include meta.load-css('components/sidebar');
     @include meta.load-css('components/nav');
     @include meta.load-css('components/page-header');
+    @include meta.load-css('components/page-actions');
+    @include meta.load-css('components/row-actions');
 }

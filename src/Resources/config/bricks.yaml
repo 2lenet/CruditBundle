@@ -37,7 +37,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\LinksBrick\LinksFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Service\NavigationStack']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Service\NavigationStack', '@Lle\CruditBundle\Action\PageActionsBuilder']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory:
