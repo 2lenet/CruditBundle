@@ -601,10 +601,35 @@ gone). The element that asks for it keeps `data-confirm-link` and `data-confirm-
 the dialog); `data-bs-toggle` and `data-bs-target` are no longer needed. A button can also open it with
 `commandfor="crudit-confirm" command="show-modal"`.
 
+**The list** (`brick/list_items/index.html.twig`, *lot 3.1.b*): the table is the `LleCruditUi:Table` component of
+CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Twig function `crudit_table(view)`
+(`TableViewBuilder`: columns, rows, groups, totals, sort, actions of the rows). The template only calls the component.
+
+- **Kept**: the path of the template and the block `autorefresh`; the ids of the rows (`list-<name>-<id>`) and of the
+  cells (`list-<name>-<id>-<field>-<label>`), so the scripts that refresh a cell still find it (the cards repeat them
+  as `data-row-id` and `data-cell-id`, the page has each id once); `Field::linkTo()` (the cell is a link and the row
+  opens it); the ruptures, subtotals and totals; the manual order (`getSortableField()`).
+- **Removed blocks**: `heading_cell`, `items_actions`, `dropdown_actions`, `actions`, `kebab_dropdown_actions`.
+  The templates `_heading_cell.html.twig` and `_footer.html.twig` are deleted. To add something above the table
+  (a help text, which used to hijack `autorefresh`), extend the template and put it in its block `before` (just above the table).
+- **Actions of a row** are data, not templates: the `EditAction` is the icon button ("Edit *name of the row*"), every
+  other action is in the menu "More actions for *name of the row*", a `DropdownAction` is a group of that menu (one
+  per named group of its actions). A disabled action stays focusable and its reason (`getTitle()` when it differs
+  from the label, else "Action unavailable") is read. `hideIfDisabled`, `displayIf`, `displayIfByRequest` and the
+  roles apply as before. `setModal()` opens its `<dialog>` with `commandfor` (the template of the modal receives
+  `action`, `id`, `line` and `view`), `setConfirmModal()` keeps `data-confirm-link` and `data-confirm-text`.
+  **`setTemplate()` on an item action has no effect any more**: replace the conditional ones (for instance an action
+  shown only in some states) by `setDisplayIf()`. `setCssClass()`: see section 5.
+- Icons of the actions: a Font Awesome name of 1.x that has an equivalent in the design system is converted
+  (`trash-alt`, `pencil`…), an Iconify name (`mdi:pencil`) is used as it is.
+- **Not in this lot** (the old markup stays for now): the pager (3.1.d), the batch actions (3.1.c: the selection boxes
+  and the bar of the batch actions are **not shown** until then), the filters (3.1.e). The sublist (3.3.c) still uses
+  the old templates (`list_items/_actions.html.twig` and `list_items/actions/*`).
+
 These paths and their main blocks are **kept**, because many projects extend them:
 `brick/form/index.html.twig`, `modal/_base_modal.html.twig`, `field/*.html.twig`
 (`value`, `icon`, `label`, `attributes`), `filter/type/*`, `filter/state/*`,
-`brick/list_items/actions/_action.html.twig`, `crud/index.html.twig`.
+`crud/index.html.twig`.
 Their *inner markup* changes (Bootstrap classes removed): check your overrides visually.
 
 The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *(lot 3.2)*.

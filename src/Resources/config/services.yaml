@@ -92,6 +92,11 @@ services:
 
     Lle\CruditBundle\Twig\BreadcrumbExtension: ~
 
+    Lle\CruditBundle\Builder\TableViewBuilder: ~
+
+    # Function declared by #[AsTwigFunction] (autoconfiguration)
+    Lle\CruditBundle\Twig\TableExtension: ~
+
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:
             $propertyAccessor: '@property_accessor'

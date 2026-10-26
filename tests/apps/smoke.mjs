@@ -720,6 +720,68 @@ errors.splice(0, errors.length, ...errors.filter((e) => !e.includes('status of 5
 ok('a server error is shown');
 await page.close();
 
+// ---------- Table of the list (lot 3.1.b): the Table of CruditUiBundle fed by the ListBrick. axe on the table only: the
+// header of the page and the pager are reworked in 3.1.a and 3.1.d.
+const axeTable = async (page, label) => {
+    await page.evaluate(axeSource);
+    assert.deepEqual(await page.evaluate(async () => (await axe.run('.crudit-ui-table', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)), [], `axe table ${label}`);
+    ok(`axe table ${label}`);
+};
+
+page = await open(1440, '/client/');
+assert.ok(await visible(page, '.crudit-ui-table__table') && !(await visible(page, '.crudit-ui-table__cards')), 'a table from md up, not the cards');
+assert.equal(await attr(page, 'th[aria-sort=ascending]', 'aria-sort'), 'ascending', 'sorted by name by default');
+assert.ok((await page.$$eval('.crudit-ui-table__row', (rows) => rows.length)) > 0, 'rows');
+ok('list: table, sorted column');
+await shot(page, 'list-desktop');
+await axeTable(page, 'desktop');
+
+// sort by the heading: a link, the order is in the address and the column says it
+await page.click('.crudit-ui-table__sort[href*="client_sort=email"]');
+await page.waitForFunction(() => location.search.includes('client_sort=email'));
+await new Promise((r) => setTimeout(r, 600));
+assert.equal(await page.$eval('th[aria-sort=ascending] .crudit-ui-table__sort', (e) => e.textContent.trim().toLowerCase().includes('email')), true);
+ok('list: sort by a heading');
+
+// the edit action is the icon, named after the row; the others are in the menu "More actions for …"
+const rowLabel = await page.$eval('.crudit-ui-table__row th[scope=row]', (e) => e.textContent.trim());
+assert.ok((await page.$eval('.crudit-ui-table__row .crudit-ui-table__action-list a', (e) => e.textContent)).includes(rowLabel), 'icon named after the row');
+await page.click('.crudit-ui-table__row .crudit-ui-dropdown > button');
+await new Promise((r) => setTimeout(r, 300));
+assert.ok(await visible(page, '.crudit-ui-table__row .crudit-ui-menu__item[data-confirm-link]'), 'the menu has the deletion');
+await axeTable(page, 'menu open');
+await shot(page, 'list-row-menu');
+
+// the deletion asks for a confirmation that names the action, Cancel closes it, focus back on the button of the row
+await page.click('.crudit-ui-table__row .crudit-ui-menu__item[data-confirm-link]');
+await new Promise((r) => setTimeout(r, 400));
+assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), true, 'the confirmation opens');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 300));
+assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), false, 'Escape closes it');
+ok('list: row actions, confirmation of the deletion');
+
+// keyboard: Tab reaches the sort links, the edit link and the menu button, in the order of the page
+await page.focus('.crudit-ui-table__sort');
+await page.keyboard.press('Tab');
+assert.ok(await page.evaluate(() => document.activeElement.classList.contains('crudit-ui-table__sort')), 'Tab goes to the next heading');
+ok('list: keyboard');
+
+// small screen: the cards (same fields), no table, no horizontal scroll of the page
+page = await open(360, '/client/');
+assert.ok(!(await visible(page, '.crudit-ui-table__table')) && await visible(page, '.crudit-ui-table__card'), 'cards below md');
+assert.ok((await page.$$eval('.crudit-ui-table__card', (c) => c[0].querySelectorAll('dt').length)) >= 3, 'the cards show the fields of the columns');
+assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, 'no horizontal scroll');
+await shot(page, 'list-mobile');
+await axeTable(page, 'mobile');
+ok('list: cards at 360');
+
+page = await open(1440, '/client/', {rtl: true, dark: true});
+assert.equal(await page.$eval('.crudit-ui-table__table', (e) => getComputedStyle(e).direction), 'rtl');
+await axeTable(page, 'dark, right to left');
+await shot(page, 'list-dark-rtl');
+await page.close();
+
 // ---------- Turbo cache hook / reduced motion: no errors
 console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
 console.log(`${passed} checks passed`);

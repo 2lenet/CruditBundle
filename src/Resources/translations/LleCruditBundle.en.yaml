@@ -45,6 +45,11 @@ crudit:
         updated_on: "updated on"
         links: "Legal information and help"
 
+    table:
+        sorted_asc: "sorted by %column% (ascending)"
+        sorted_desc: "sorted by %column% (descending)"
+        page: "page %page% of %pages%"
+
     pagination:
         first: "First"
         previous: "Previous"
@@ -77,6 +82,7 @@ crudit:
         search: "Search"
         reset: "Reset"
         close: "Close"
+        unavailable: "Action unavailable"
 
     message:
         success: "Success"

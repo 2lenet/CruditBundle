@@ -22,6 +22,47 @@ class CrudTest extends AppTestCase
         self::assertStringContainsString('bob@example.org', $crawler->filter('main')->text());
     }
 
+    public function testListIsATable(): void
+    {
+        $crawler = $this->client->request('GET', '/client/');
+
+        self::assertCount(1, $crawler->filter('main table.crudit-ui-table__table'));
+        self::assertCount(3, $crawler->filter('main tbody tr.crudit-ui-table__row'));
+        self::assertNotSame('', trim($crawler->filter('main table caption')->text()), 'the table has a caption');
+        self::assertCount(1, $crawler->filter('main th[aria-sort="ascending"]'), 'sorted by name by default');
+        self::assertCount(3, $crawler->filter('main .crudit-ui-table__card'), 'the same rows as cards for the small screens');
+    }
+
+    public function testListTemplateCanBeExtendedToPutATextAboveTheTable(): void
+    {
+        $twig = static::getContainer()->get('twig');
+        $template = $twig->createTemplate("{% extends '@LleCrudit/brick/list_items/index.html.twig' %}{% block before %}HELP{% endblock %}");
+
+        self::assertTrue($template->hasBlock('before'));
+        self::assertTrue($twig->load('@LleCrudit/brick/list_items/index.html.twig')->hasBlock('before'));
+    }
+
+    public function testListSortLinkAndOrder(): void
+    {
+        $crawler = $this->client->request('GET', '/client/?client_sort=name&client_sort_order=desc');
+
+        self::assertSame(['Chloé', 'Bob', 'Alice'], $crawler->filter('main tbody tr.crudit-ui-table__row th[scope=row]')->each(fn ($th) => trim($th->text())));
+        self::assertCount(1, $crawler->filter('main th[aria-sort="descending"]'));
+        $link = $crawler->filter('main th[aria-sort="descending"] a')->attr('href');
+        self::assertStringContainsString('client_sort_order=asc', $link, 'the link of the sorted column reverses the order');
+    }
+
+    public function testRowActions(): void
+    {
+        $id = $this->idOf('Alice');
+        $crawler = $this->client->request('GET', '/client/');
+        $row = $crawler->filter('main tr#list-client-' . $id);
+
+        self::assertSame('/client/edit/' . $id, $row->filter('.crudit-ui-table__action-list a[href]')->first()->attr('href'), 'the edit action is the icon');
+        self::assertStringContainsString('Alice', $row->filter('.crudit-ui-table__action-list')->text(), 'named after the row');
+        self::assertSame('/client/delete/' . $id, $row->filter('.crudit-ui-table__action-list [data-confirm-link]')->attr('data-confirm-link'), 'the deletion asks for a confirmation');
+    }
+
     public function testShow(): void
     {
         $id = $this->idOf('Bob');
