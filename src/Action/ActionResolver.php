@@ -52,8 +52,9 @@ class ActionResolver
 
     protected function isGranted(AbstractAction $action, ?object $resource): bool
     {
-        // The way back to the list is not checked (as before 2.0)
-        if ($action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST) {
+        // The way back to the list by the history of the navigation (LinksFactory) is not checked, as before 2.0;
+        // without it, the role of the list is
+        if ($action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST && $action->getUrl() !== null) {
             return true;
         }
 

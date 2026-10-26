@@ -9,8 +9,9 @@ use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\Action\PrintAction;
 
 /**
- * An action ready to be rendered (PageActionsBuilder): its state, its address and the parameters of its route, and
- * for a DropdownAction its groups.
+ * An action ready to be rendered (PageActionsBuilder): its state, its address and the parameters of its route, the
+ * resource it is for (the record, the line: an ItemAction is one instance for all the lines, so the templates read
+ * this one, not getResource() of the action), and for a DropdownAction its groups.
  */
 final class ActionView
 {
@@ -26,12 +27,13 @@ final class ActionView
         public readonly bool $primary = false,
         public readonly array $groups = [],
         public readonly string $modalSuffix = '',
+        public readonly ?object $resource = null,
     ) {
     }
 
     /**
-     * The variant of its Button: primary for the primary action; no colour of danger on a disabled action (decision
-     * of 20/10), else its own.
+     * The variant of its Button: primary for the primary action only (one per page: setVariant('primary') on another
+     * one gives secondary); no colour of danger on a disabled action (decision of 20/10), else its own.
      */
     public function getVariant(): string
     {
@@ -39,7 +41,7 @@ final class ActionView
 
         return match (true) {
             $this->primary => 'primary',
-            $this->state->isDisabled() && str_starts_with($variant, 'danger') => 'secondary',
+            $variant === 'primary', $this->state->isDisabled() && str_starts_with($variant, 'danger') => 'secondary',
             default => $variant,
         };
     }

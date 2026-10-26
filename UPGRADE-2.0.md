@@ -573,7 +573,9 @@ instead:
 
 The variants are those of the `Button` of CruditUiBundle (`Lle\CruditUiBundle\Component\ButtonVariant`: `primary`,
 `secondary`, `ghost`, `warning`, `danger`, `danger-outline`, `link`); another value throws an exception.
-`make:crudit` and the EasyAdmin converter write `setVariant()`.
+`make:crudit` and the EasyAdmin converter write `setPrimary()` for `btn-primary` and `setVariant()` for the others
+(`btn-outline-danger` → `danger-outline`). `setVariant('primary')` on an action that is not the primary one of the
+page gives a secondary button: one primary button per page.
 
 **The header of the pages** (`brick/links`, the `PageHeader`), as `PageActions.vue` of the mockup:
 
@@ -584,6 +586,8 @@ The variants are those of the `Button` of CruditUiBundle (`Lle\CruditUiBundle\Co
 - a `DropdownAction`: a button at its label with a menu, its groups (string keys) under a heading;
 - on a phone (below 768 px), only the primary action stays in the bar, the others go into "More actions";
 - `PrintAction::new()`: prints the page (controller `print`), no inline script.
+- the way back to the list goes back by the history of the navigation; without it, to the list, checked against
+  its role, and without the `?id=…` of the record that 1.x added to its address.
 
 **The lines of a list** (`brick/list_items/_actions.html.twig`, the lists and the sub-lists), as `RowActions.vue`:
 the edition (`EditAction`) as an icon button named "Edit Bob", the other actions in the menu of the line named "More

@@ -552,19 +552,23 @@ class Converter
     protected function getPropertyAction(array $action): array
     {
         [$variant, $cssClass] = $this->getVariantAndCssClass($action['css_class'] ?? null);
+        // btn-primary: the primary action of the page (setPrimary(), the first one wins), not a variant
+        $primary = $variant === 'primary';
 
         return [
             'label' => isset($action['label']) ? str_replace('label', 'action', $action['label']) : null,
             'path' => isset($action['name']) ? $action['name'] : null,
             'icon' => isset($action['icon']) ? $action['icon'] : null,
-            'variant' => $variant,
+            'variant' => $primary ? null : $variant,
+            'primary' => $primary,
             'cssClass' => $cssClass,
             'target' => isset($action['target']) ? $action['target'] : null,
         ];
     }
 
     /**
-     * The Bootstrap classes of an action (btn-primary…) give its variant (setVariant()), the other classes are kept.
+     * The Bootstrap classes of an action (btn-danger, btn-outline-danger…) give its variant (setVariant()), the other
+     * classes are kept.
      *
      * @return array{?string, ?string}
      */
@@ -573,9 +577,11 @@ class Converter
         $variant = null;
         $kept = [];
         foreach (preg_split('/\s+/', trim((string) $cssClass), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $class) {
-            if (preg_match('/^btn-(?:outline-)?(\w+)$/', $class, $matches) === 1) {
-                $variant ??= match ($matches[1]) {
-                    'primary', 'secondary', 'warning', 'danger', 'link' => $matches[1],
+            if (preg_match('/^btn-(outline-)?(\w+)$/', $class, $matches) === 1) {
+                $variant ??= match ($matches[1] . $matches[2]) {
+                    'primary', 'secondary', 'warning', 'danger', 'link' => $matches[2],
+                    'outline-danger' => 'danger-outline',
+                    'outline-primary', 'outline-secondary' => 'secondary',
                     default => null,
                 };
             } elseif ($class !== 'btn') {

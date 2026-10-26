@@ -8,6 +8,7 @@ use Lle\CruditBundle\Action\ActionResolver;
 use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Action\PageActions;
 use Lle\CruditBundle\Action\PageActionsBuilder;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\Action\EditAction;
@@ -97,6 +98,10 @@ class PageActionsBuilderTest extends TestCase
 
         // The primary one in primary, no colour of danger on a disabled action
         self::assertSame(['primary', 'danger', 'secondary', 'ghost'], array_map(static fn (ActionView $view): string => $view->getVariant(), $actions->inline));
+
+        // setVariant('primary') on an action that is not the primary one: secondary, one primary button per page
+        $actions = $this->build([$this->action('add')->setPrimary(), $this->action('import')->setVariant('primary')]);
+        self::assertSame(['primary', 'secondary'], array_map(static fn (ActionView $view): string => $view->getVariant(), $actions->inline));
     }
 
     public function testUrlAndParams(): void
@@ -110,6 +115,9 @@ class PageActionsBuilderTest extends TestCase
         ], $request);
 
         self::assertSame('/app_client_edit?id=7', $actions->inline[0]->url);
+        // The way back to the list is not for the record: no id
+        $back = $this->build([ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))], $request);
+        self::assertSame('/app_client_index', $back->inline[0]->url);
         self::assertSame(['id' => 9], $actions->inline[1]->params);
         self::assertSame('https://example.org', $actions->inline[2]->url);
         self::assertNull($actions->inline[3]->url);

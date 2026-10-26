@@ -72,12 +72,16 @@ class ActionResolverTest extends TestCase
         self::assertFalse($this->resolver()->resolve($action)->visible);
     }
 
-    public function testTheWayBackToTheListIsNotChecked(): void
+    /**
+     * Back by the history of the navigation (an url): not checked, as before 2.0; else the role of the list is.
+     */
+    public function testTheWayBackToTheList(): void
     {
-        $action = ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))
+        $back = static fn (): ListAction => ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))
             ->setRole('ROLE_NOBODY');
 
-        self::assertTrue($this->resolver()->resolve($action)->visible);
+        self::assertTrue($this->resolver()->resolve($back()->setUrl('/client/?page=2'))->visible);
+        self::assertFalse($this->resolver()->resolve($back())->visible);
     }
 
     public function testDeleteHasItsOwnConfiguration(): void

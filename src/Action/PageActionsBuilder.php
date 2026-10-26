@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Action;
 
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\Action\EditAction;
@@ -15,7 +16,8 @@ use Twig\Attribute\AsTwigFunction;
 /**
  * Sorts the actions of the header of a page (brick/links) for its bar (PageActions): the hidden ones removed
  * (ActionResolver), the first primary one kept as such, the actions of the menu "More" by group, a DropdownAction
- * without any action shown removed. The parameters of a route: the id of the request, then those of its path.
+ * without any action shown removed. The parameters of a route: the id of the request (not for the way back to the
+ * list), then those of its path.
  * The actions of a line of a list the same way (buildRow(), RowActions), with the id of the line.
  */
 class PageActionsBuilder
@@ -91,12 +93,20 @@ class PageActionsBuilder
         if ($action instanceof DropdownAction) {
             $groups = $this->groups($action, $resource, $id, $modalSuffix);
 
-            return $groups === [] ? null : new ActionView($action, $state, groups: $groups);
+            return $groups === [] ? null : new ActionView($action, $state, groups: $groups, resource: $resource);
         }
 
         $params = $this->params($action, $id);
 
-        return new ActionView($action, $state, $this->url($action, $params), $params, $canBePrimary && $action->isPrimary(), modalSuffix: $modalSuffix);
+        return new ActionView(
+            $action,
+            $state,
+            $this->url($action, $params),
+            $params,
+            $canBePrimary && $action->isPrimary(),
+            modalSuffix: $modalSuffix,
+            resource: $resource,
+        );
     }
 
     /**
@@ -127,8 +137,9 @@ class PageActionsBuilder
      */
     protected function params(AbstractAction $action, int|string|null $id = null): array
     {
-        if ($action instanceof PrintAction) {
-            return [];
+        // The way back to the list is not for the record (no ?id=… in its address)
+        if ($action instanceof PrintAction || $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST) {
+            return $action instanceof PrintAction ? [] : $action->getPath()->getParams();
         }
         $id ??= $this->requestStack->getCurrentRequest()?->attributes->get('id');
 

@@ -6,7 +6,6 @@ use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
-use Lle\CruditBundle\Dto\Action\ItemAction;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -84,7 +83,7 @@ class CruditActionExtension extends AbstractExtension
                 'commandfor' => 'crudit-confirm',
                 'command' => 'show-modal',
                 'data-confirm-link' => (string) $item->url,
-                'data-confirm-text' => $this->confirmQuestion($action, $domain),
+                'data-confirm-text' => $this->confirmQuestion($action, $item->resource, $domain),
                 'data-confirm-label' => $this->trans($action->getLabel(), [], $action->getTranslationDomain() ?? $domain),
             ] + (str_starts_with($item->getVariant(), 'danger') ? ['data-confirm-danger' => 'true'] : []);
         } elseif ($item->isPrint()) {
@@ -101,9 +100,8 @@ class CruditActionExtension extends AbstractExtension
      * The question of the confirmation, which names the element (decision of 20/10): the key modal.confirm.<label> of
      * the CRUD, given %entity%, else "<action> « <element> » ?" (crudit.modal.confirm.question).
      */
-    protected function confirmQuestion(AbstractAction $action, ?string $domain): string
+    protected function confirmQuestion(AbstractAction $action, ?object $resource, ?string $domain): string
     {
-        $resource = $action instanceof ItemAction ? $action->getResource() : null;
         $entity = $resource instanceof \Stringable ? (string) $resource : null;
         $key = 'modal.confirm.' . $action->getLabel();
         $question = $this->trans($key, ['%entity%' => (string) $entity], $domain);
