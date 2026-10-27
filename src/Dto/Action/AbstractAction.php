@@ -36,7 +36,7 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?bool $hideIfDisabled = null;
 
-    protected bool $dropdown = false;
+    protected ?bool $dropdown = null;
 
     protected ?string $template = null;
 
@@ -371,12 +371,24 @@ abstract class AbstractAction implements ActionInterface
         return $this;
     }
 
+    /**
+     * In a menu: the menu "More" of the header, the menu of a line.
+     */
     public function isDropdown(): bool
+    {
+        return $this->dropdown === true;
+    }
+
+    /**
+     * true: in a menu; false: shown (in the bar of the header, in a line); null (the default): the choice of the
+     * bundle, shown in the header, in the menu of a line except the edition.
+     */
+    public function getDropdown(): ?bool
     {
         return $this->dropdown;
     }
 
-    public function setDropdown(bool $dropdown): self
+    public function setDropdown(?bool $dropdown): self
     {
         $this->dropdown = $dropdown;
 

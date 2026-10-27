@@ -589,11 +589,23 @@ page gives a secondary button: one primary button per page.
 - the way back to the list goes back by the history of the navigation; without it, to the list, checked against
   its role, and without the `?id=…` of the record that 1.x added to its address. It is marked with `setBack()`: the
   action `list` of the CRUD and the button of `LinksConfig::addBack()` are; a way back of yours (renamed, or built
-  without `AbstractCrudConfig`) needs `->setBack()`, it is no longer recognised by its label `action.list`.
+  without `AbstractCrudConfig`) needs `->setBack()`. An action at the label `action.list` without it is still one
+  during 2.x, with a deprecation.
 
 **The lines of a list** (`brick/list_items/_actions.html.twig`, the lists and the sub-lists), as `RowActions.vue`:
 the edition (`EditAction`) as an icon button named "Edit Bob", the other actions in the menu of the line named "More
 actions for Bob". The label of an action of a line is no longer hidden behind its icon.
+
+| Action of a line | 1.x | 2.0 |
+|---|---|---|
+| the edition, nothing set | shown | shown |
+| another action, nothing set | shown | **in the menu of the line** |
+| `setDropdown(false)` | shown | shown (an icon button named "Archive Bob", a small button at its label without icon) |
+| `setDropdown(true)` | in the menu | in the menu, the edition too |
+
+To keep an action of a line shown, as in 1.x, add `->setDropdown(false)`. A `DropdownAction` shown is an icon
+button with its menu, named after it and the line. `setDropdown()` now takes `null` (the default: the choice of the
+bundle), `getDropdown()` gives it; in the header, `null` is shown, as before.
 
 **Disabled, hidden** (decision of 20/10: `hideIfDisabled` is for the actions of context only):
 
@@ -631,6 +643,11 @@ an Iconify name (`fa7-solid:file-export`), locked by `ux:icons:lock` (`ActionIco
 1.x are no longer known: `plus` → `add`, `trash-alt` → `delete`, `arrow-circle-left` → `back`, `file-export` →
 `download`, `search` and `edit` are unchanged. The type (`Icon::TYPE_FA`, `TYPE_FAR`) has no effect,
 `Icon::getCssClass()` is deprecated.
+
+**`ActionInterface`** has new methods (`getVariant()`, `setVariant()`, `isPrimary()`, `setPrimary()`,
+`getTranslationDomain()`, `setTranslationDomain()`, `isBack()`, `setBack()`, `getGroup()`, `setGroup()`,
+`getDisabledReason()`, `setDisabledReason()`): a class that implements it without extending `AbstractAction` has
+to add them.
 
 **New keys** (`LleCruditBundle`): `crudit.action.more`, `more_for`, `named`, `print`, `reason.forbidden`,
 `reason.unavailable`, `crudit.modal.confirm.question`, `question_entity`.
@@ -697,8 +714,9 @@ given an `item` (`ActionView`: `action`, `state`, `url`, `params`, `variant`, `e
 | `brick/links/actions/_action.html.twig` | A `Button` (block `action` kept; `attributes`, `icon`, `label` **removed**: the attributes go through `setCssClass()`, `setTarget()`) |
 | `brick/links/actions/_dropdown_actions.html.twig`, `_dropdown_action.html.twig` | A `Dropdown`, a `MenuItem` (block `action` kept; `dropdown_actions_button`, `dropdown_actions_menu`, `dropdown_actions_item` **removed**) |
 | `brick/links/actions/_list.html.twig` | No longer set on the way back to the list (`rel="noreferrer"` is given to it); kept for the projects that set it |
-| `brick/list_items/_actions.html.twig` | The actions of a line (block `items_actions` kept) |
-| `brick/list_items/actions/_action.html.twig` | The `IconButton` of the edition (block `action` kept, `attributes`, `icon`, `label` **removed**) |
+| `brick/list_items/_actions.html.twig` | The actions of a line (block `items_actions` kept): `row_actions.inline` (shown), `row_actions.others` (its menu), `row_actions.entityLabel` |
+| `brick/list_items/actions/_actions.html.twig` | One action shown in a line (block `actions_item` kept), with its reason; a `DropdownAction` as a `Dropdown` |
+| `brick/list_items/actions/_action.html.twig` | An `IconButton` (a small `Button` without icon) (block `action` kept, `attributes`, `icon`, `label` **removed**) |
 | `brick/list_items/actions/_dropdown_actions.html.twig` | The menu of a line |
 | `brick/links/actions/_kebab_dropdown_action(s).html.twig`, `brick/list_items/actions/_kebab_dropdown_action(s).html.twig` | **Removed**: the menu "More actions", the menu of the line |
 

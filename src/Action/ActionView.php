@@ -47,14 +47,21 @@ final class ActionView
     }
 
     /**
-     * The element it is for, in a text (%entity%): its __toString(), else "#<id of the route>", else empty.
+     * The element it is for, in a text (%entity%): labelOf() with the id of its route.
      */
     public function getEntityLabel(): string
     {
-        if ($this->resource instanceof \Stringable) {
-            return (string) $this->resource;
+        return self::labelOf($this->resource, $this->params['id'] ?? null);
+    }
+
+    /**
+     * An element in a text (%entity%): its __toString(), else "#<id>", else empty.
+     */
+    public static function labelOf(?object $resource, mixed $id = null): string
+    {
+        if ($resource instanceof \Stringable) {
+            return (string) $resource;
         }
-        $id = $this->params['id'] ?? null;
 
         return is_scalar($id) && $id !== '' ? '#' . $id : '';
     }

@@ -62,7 +62,21 @@ of the record). They are the buttons and menus of CruditUiBundle:
   on the list, *Edit* on the record); `setDropdown(true)` puts an action in the menu "More actions", `setGroup()`
   under a heading of it; a `DropdownAction` is a button with its own menu; on a phone, only the primary action stays
   in the bar;
-- **in a line**, the edition is an icon button, the other actions are in the menu of the line.
+- **in a line**, the edition is an icon button, the other actions are in the menu of the line; `setDropdown(false)`
+  shows one beside the edition, `setDropdown(true)` puts the edition in the menu.
+
+```php
+  public function getItemActions(): array
+  {
+      $res = parent::getItemActions();
+
+      // Shown in the line, beside the edition
+      $res['archive'] = ItemAction::new('action.archive', Path::new('app_client_archive'), Icon::new('archive'))
+          ->setDropdown(false);
+
+      return $res;
+  }
+```
 
 ```php
   public function getListActions(): array

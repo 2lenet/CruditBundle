@@ -6,31 +6,26 @@ namespace Lle\CruditBundle\Action;
 
 /**
  * The actions of a line of a list (RowActions.vue of the crudit-v2 mockup), sorted (PageActionsBuilder::buildRow()):
- * - main: the first edition (EditAction), an icon button;
- * - menu: the others, in the menu of the line, in their order; a DropdownAction is a group named after it.
+ * - inline: shown, in their order: the edition (EditAction), and the actions setDropdown(false);
+ * - others: the others, in the menu of the line, in their order; a DropdownAction is a group named after it.
  */
 final class RowActions
 {
     /**
-     * @param list<ActionView>                                     $others
+     * @param list<ActionView> $inline
+     * @param list<ActionView> $others
+     * @param string           $entityLabel the line, in a text (%entity%): ActionView::labelOf()
      */
     public function __construct(
-        public readonly ?ActionView $main = null,
+        public readonly array $inline = [],
         public readonly array $others = [],
+        public readonly string $entityLabel = '',
     ) {
     }
 
     public function isEmpty(): bool
     {
-        return $this->main === null && $this->others === [];
-    }
-
-    /**
-     * The line, in a text (%entity%): ActionView::getEntityLabel().
-     */
-    public function getEntityLabel(): string
-    {
-        return ($this->main ?? $this->others[0] ?? null)?->getEntityLabel() ?? '';
+        return $this->inline === [] && $this->others === [];
     }
 
     /**
@@ -48,6 +43,6 @@ final class RowActions
      */
     public function getModals(): array
     {
-        return PageActions::withModal($this->main === null ? $this->others : [$this->main, ...$this->others]);
+        return PageActions::withModal([...$this->inline, ...$this->others]);
     }
 }

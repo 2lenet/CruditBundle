@@ -585,7 +585,7 @@ class Converter
 
     /**
      * The Bootstrap classes of an action (btn-danger, btn-outline-danger…) give its variant (setVariant()), the other
-     * classes are kept; a class btn-* without variant (btn-outline-warning, btn-info…) is ignored, with a warning.
+     * classes are kept; a colour without variant (btn-outline-warning, btn-info…) is ignored, with a warning.
      *
      * @return array{?string, ?string, list<string>} the variant, the classes kept, the classes btn-* ignored
      */
@@ -602,8 +602,8 @@ class Converter
                     'outline-primary', 'outline-secondary' => 'secondary',
                     default => null,
                 };
-                // The size has no warning: the bar gives it
-                if ($classVariant === null && !in_array($matches[2], ['sm', 'lg', 'block'], true)) {
+                // Only a colour of Bootstrap is worth a warning (not btn-sm, btn-group, btn-block…)
+                if ($classVariant === null && ($matches[1] !== '' || in_array($matches[2], ['info', 'success', 'light', 'dark'], true))) {
                     $ignored[] = $class;
                 }
                 $variant ??= $classVariant;

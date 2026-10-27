@@ -140,8 +140,8 @@ class PageActionsBuilderTest extends TestCase
             DropdownAction::new('action.status', [[ItemAction::new('action.archive', Path::new('app_client_archive'))]]),
         ], $resource, 12);
 
-        self::assertSame('action.edit', $row->main?->action->getLabel());
-        self::assertSame('/app_client_edit?id=12', $row->main->url);
+        self::assertSame(['action.edit'], $this->labels($row->inline));
+        self::assertSame('/app_client_edit?id=12', $row->inline[0]->url);
         self::assertSame(['action.show', 'action.delete', 'action.note', 'action.status'], $this->labels($row->others));
         self::assertSame('client.active', $row->others[1]->state->reason);
         self::assertSame([null, null, null, 'action.status'], array_column($row->getMenu(), 'label'));
@@ -161,7 +161,7 @@ class PageActionsBuilderTest extends TestCase
         self::assertSame(['id' => 12, 'tab' => 'notes'], $this->builder()->buildRow([$show()], new \stdClass(), 12)->others[0]->params);
         self::assertSame(['id' => 9, 'tab' => 'notes'], $this->build([$show()], new Request(attributes: ['id' => 7]))->inline[0]->params);
         self::assertSame('/app_client_edit?id=0', $this->build([$this->action('edit')], new Request(attributes: ['id' => 0]))->inline[0]->url);
-        self::assertSame('/app_client_edit?id=0', $this->builder()->buildRow([EditAction::new('action.edit', Path::new('app_client_edit'))], new \stdClass(), 0)->main?->url);
+        self::assertSame('/app_client_edit?id=0', $this->builder()->buildRow([EditAction::new('action.edit', Path::new('app_client_edit'))], new \stdClass(), 0)->inline[0]->url);
     }
 
     /**
@@ -177,9 +177,37 @@ class PageActionsBuilderTest extends TestCase
         };
         $edit = EditAction::new('action.edit', Path::new('app_client_edit'));
 
-        self::assertSame('Bob', $this->builder()->buildRow([$edit], $stringable, 3)->getEntityLabel());
-        self::assertSame('#3', $this->builder()->buildRow([$edit], new \stdClass(), 3)->getEntityLabel());
-        self::assertSame('', (new \Lle\CruditBundle\Action\RowActions())->getEntityLabel());
+        self::assertSame('Bob', $this->builder()->buildRow([$edit], $stringable, 3)->entityLabel);
+        self::assertSame('#3', $this->builder()->buildRow([$edit], new \stdClass(), 3)->entityLabel);
+        self::assertSame('Bob', $this->builder()->buildRow([$edit], $stringable, 3)->inline[0]->getEntityLabel());
+        // The id of the line, even when the first action is a DropdownAction (no id in its parameters)
+        $dropdown = DropdownAction::new('action.status', [[ItemAction::new('action.archive', Path::new('app_client_archive'))]]);
+        self::assertSame('#5', $this->builder()->buildRow([$dropdown], new \stdClass(), 5)->entityLabel);
+    }
+
+    /**
+     * Shown in a line: the edition and the actions setDropdown(false), in their order; setDropdown(true) puts the
+     * edition in the menu; nothing set: in the menu.
+     */
+    public function testShownInALine(): void
+    {
+        $row = $this->builder()->buildRow([
+            ItemAction::new('action.show', Path::new('app_client_show')),
+            ItemAction::new('action.archive', Path::new('app_client_archive'))->setDropdown(false),
+            EditAction::new('action.edit', Path::new('app_client_edit')),
+            DropdownAction::new('action.status', [[ItemAction::new('action.close', Path::new('app_client_close'))]])->setDropdown(false),
+            DeleteAction::new('action.delete', Path::new('app_client_delete')),
+        ], new \stdClass(), 1);
+
+        self::assertSame(['action.archive', 'action.edit', 'action.status'], $this->labels($row->inline));
+        self::assertSame(['action.show', 'action.delete'], $this->labels($row->others));
+
+        $row = $this->builder()->buildRow([EditAction::new('action.edit', Path::new('app_client_edit'))->setDropdown(true)], new \stdClass(), 1);
+        self::assertSame([], $row->inline);
+        self::assertSame(['action.edit'], $this->labels($row->others));
+
+        // In the header, nothing set is shown, as before
+        self::assertSame(['action.show'], $this->labels($this->build([ItemAction::new('action.show', Path::new('app_client_show'))])->inline));
     }
 
     /**
@@ -199,7 +227,7 @@ class PageActionsBuilderTest extends TestCase
     {
         $row = $this->builder()->buildRow([EditAction::new('action.edit', Path::new('app_client_edit'))->setRole('ROLE_NOBODY')], new \stdClass(), 3);
 
-        self::assertNull($row->main);
+        self::assertSame([], $row->inline);
         self::assertTrue($row->isEmpty());
     }
 

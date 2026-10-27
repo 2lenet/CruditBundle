@@ -1,25 +1,42 @@
 {#
- # The main action of a line (the edition): its template (setTemplate()), else _action, with its reason when it is
- # disabled, or its label, in a Tooltip (visual only); the reason describes the button (aria-describedby).
- # Variables: item (ActionView), line, view. Given to the templates: action, url, params, disabled, reason_id.
+ # An action shown in a line (the edition, an action setDropdown(false)): its template (setTemplate()), else _action,
+ # with its reason when it is disabled, or its label, in a Tooltip (visual only); the reason describes the button
+ # (aria-describedby). A DropdownAction: a Dropdown named after it and the line, its groups in its menu.
+ # Variables: item (ActionView), line, view, entity_label (the line in a text, RowActions::$entityLabel). Given to the
+ # templates: action, url, params, disabled, reason_id, entity_label, mobile_only (false).
  #}
 {% set action = item.action %}
 {% set url = item.url %}
 {% set params = item.params %}
 {% set disabled = item.state.disabled %}
+{% set entity_label = entity_label ?? item.entityLabel %}
+{% set mobile_only = false %}
 {% set reason = disabled ? item.state.reason|trans(domain: item.state.reasonDomain ?? view.config.translation_domain) : null %}
 {% set reason_id = disabled ? 'crudit-action-reason-' ~ action.id ~ line.id : null %}
 {% block actions_item %}
-    {%- set element -%}
-        {%- if action.template -%}
-            {% include action.template %}
-        {%- else -%}
-            {% include '@LleCrudit/brick/list_items/actions/_action.html.twig' %}
+    {%- if item.dropdown and not disabled -%}
+        {%- set dropdown_label = 'crudit.action.named'|trans({
+            '%action%': action.label|trans(domain: action.translationDomain ?? view.config.translation_domain),
+            '%entity%': entity_label,
+        }, 'LleCruditBundle') -%}
+        {%- set dropdown_groups = item.groups -%}
+        <twig:LleCruditUi:Dropdown iconOnly floating size="small" :icon="action.icon.icon ?? null" :label="dropdown_label">
+            <twig:LleCruditUi:Menu>
+                {{- include('@LleCrudit/brick/links/actions/_menu.html.twig', {groups: dropdown_groups, view: view, mobile_only: false}, with_context: false) -}}
+            </twig:LleCruditUi:Menu>
+        </twig:LleCruditUi:Dropdown>
+    {%- else -%}
+        {%- set element -%}
+            {%- if action.template -%}
+                {% include action.template %}
+            {%- else -%}
+                {% include '@LleCrudit/brick/list_items/actions/_action.html.twig' %}
+            {%- endif -%}
+        {%- endset -%}
+        {%- set tooltip = reason ?? action.label|trans({'%entity%': entity_label}, action.translationDomain ?? view.config.translation_domain) -%}
+        <twig:LleCruditUi:Tooltip :text="tooltip" floating>{{ element }}</twig:LleCruditUi:Tooltip>
+        {%- if reason is not null -%}
+            <span id="{{ reason_id }}" class="crudit-ui-visually-hidden">{{ reason }}</span>
         {%- endif -%}
-    {%- endset -%}
-    {%- set tooltip = reason ?? action.label|trans({'%entity%': item.entityLabel}, action.translationDomain ?? view.config.translation_domain) -%}
-    <twig:LleCruditUi:Tooltip :text="tooltip" floating>{{ element }}</twig:LleCruditUi:Tooltip>
-    {%- if reason is not null -%}
-        <span id="{{ reason_id }}" class="crudit-ui-visually-hidden">{{ reason }}</span>
     {%- endif -%}
 {% endblock %}

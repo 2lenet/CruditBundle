@@ -46,5 +46,9 @@ class EasyAdminConverterTest extends TestCase
         self::assertSame(['btn-outline-warning'], $action['ignoredClasses']);
         self::assertCount(1, $warnings);
         self::assertStringContainsString('btn-outline-warning of the action action.x', $warnings[0]);
+
+        // Only a colour: not the size nor the layout
+        $action = (new \ReflectionMethod(Converter::class, 'getPropertyAction'))->invoke($converter, ['name' => 'app_x', 'css_class' => 'btn-group btn-block btn-lg btn-info btn-success']);
+        self::assertSame(['btn-info', 'btn-success'], $action['ignoredClasses']);
     }
 }

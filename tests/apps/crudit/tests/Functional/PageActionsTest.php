@@ -98,10 +98,16 @@ class PageActionsTest extends AppTestCase
         $row = $crawler->filter('tbody tr')->reduce(static fn (Crawler $tr): bool => str_contains($tr->text(), 'Chloé'))->first();
         $actions = $row->filter('.crudit-row-actions');
 
-        // The edition, an icon button named after the line; the others in the menu of the line
+        // The edition, an icon button named after the line; an action setDropdown(false) shown, a button at its label
+        // named after the line, disabled with its reason; the others in the menu of the line
         $edit = $actions->filter('a.crudit-ui-icon-btn');
         self::assertSame('Edit Chloé', $edit->text());
         self::assertMatchesRegularExpression('#^/client/edit/\d+$#', (string) $edit->attr('href'));
+        $deactivate = $actions->filter('button.crudit-ui-btn');
+        self::assertSame('Deactivate', $deactivate->text());
+        self::assertSame('Deactivate Chloé', $deactivate->attr('aria-label'));
+        self::assertSame('true', $deactivate->attr('aria-disabled'));
+        self::assertSame('This client is already inactive', $row->filter('#' . $deactivate->attr('aria-describedby'))->text());
         self::assertSame('More actions for Chloé', $actions->filter('.crudit-ui-dropdown > button')->text());
         self::assertSame(['Show', 'Delete'], $actions->filter('.crudit-ui-menu__text')->each(static fn (Crawler $item): string => $item->text()));
         self::assertSame('Delete “Chloé”?', $actions->filter('.crudit-ui-menu button')->attr('data-confirm-text'));

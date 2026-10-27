@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Brick\LinksBrick;
 use Lle\CruditBundle\Action\PageActionsBuilder;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -60,6 +61,16 @@ class LinksFactory extends AbstractBasicBrickFactory
 
         // Resolve the back URL for "back to list" actions (covers ListAction on list pages and ItemAction on show pages)
         foreach ($actions as $action) {
+            // A way back of 1.x, recognised by its label: still one during 2.x
+            if (!$action->isBack() && $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST) {
+                trigger_deprecation(
+                    '2lenet/crudit-bundle',
+                    '2.0',
+                    'The action "%s" is recognised as the way back to the list by its label, add ->setBack() to it.',
+                    CrudConfigInterface::LABEL_ACTION_LIST,
+                );
+                $action->setBack();
+            }
             if ($action->isBack() && $action->getUrl() === null && $backUrl !== null) {
                 $action->setUrl($backUrl);
             }

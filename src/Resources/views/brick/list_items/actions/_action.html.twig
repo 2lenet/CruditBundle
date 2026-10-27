@@ -1,18 +1,31 @@
 {#
- # The main action of a line: an IconButton of CruditUiBundle, small, named after the action and the line
- # ("Edit Bob": crudit.action.named, its label and the line). A disabled action keeps the focus (aria-disabled), described
- # by its reason (reason_id).
- # Variables: item (ActionView), action, line, view, reason_id.
+ # An action shown in a line: an IconButton of CruditUiBundle, small, named after the action and the line ("Edit Bob":
+ # crudit.action.named, its label and the line); without icon, a small Button at its label, named the same way. A
+ # disabled action keeps the focus (aria-disabled), described by its reason (reason_id).
+ # Variables: item (ActionView), action, line, view, reason_id, entity_label.
  #}
 {% block action %}
+    {%- set action_text = action.label|trans(domain: action.translationDomain ?? view.config.translation_domain) -%}
     {%- set action_label = 'crudit.action.named'|trans({
-        '%action%': action.label|trans(domain: action.translationDomain ?? view.config.translation_domain),
-        '%entity%': item.entityLabel,
+        '%action%': action_text,
+        '%entity%': entity_label ?? item.entityLabel,
     }, 'LleCruditBundle') -%}
-    {% component 'LleCruditUi:IconButton' with {
-        icon: action.icon.icon ?? 'edit',
-        label: action_label,
-        size: 'small',
-        href: crudit_action_href(item),
-    }|merge(crudit_action_attributes(item, view.config.translation_domain, reason_id ?? null)) %}{% endcomponent %}
+    {%- set action_attributes = crudit_action_attributes(item, view.config.translation_domain, reason_id ?? null) -%}
+    {%- if action.icon -%}
+        {% component 'LleCruditUi:IconButton' with {
+            icon: action.icon.icon,
+            label: action_label,
+            size: 'small',
+            href: crudit_action_href(item),
+        }|merge(action_attributes) %}{% endcomponent %}
+    {%- else -%}
+        {% component 'LleCruditUi:Button' with {
+            variant: item.variant,
+            size: 'small',
+            href: crudit_action_href(item),
+            'aria-label': action_label,
+        }|merge(action_attributes) %}
+            {% block content %}{{ action_text }}{% endblock %}
+        {% endcomponent %}
+    {%- endif -%}
 {% endblock %}

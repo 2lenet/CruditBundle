@@ -17,7 +17,8 @@ use Twig\Attribute\AsTwigFunction;
  * (ActionResolver), the first primary one kept as such, the actions of the menu "More" by group, a DropdownAction
  * without any action shown removed. The parameters of a route: the id of the request (not for the way back to the
  * list), then those of its path, which win.
- * The actions of a line of a list the same way (buildRow(), RowActions), with the id of the line, which wins.
+ * The actions of a line of a list the same way (buildRow(), RowActions), with the id of the line, which wins: the
+ * edition and the actions setDropdown(false) shown, the others in the menu of the line.
  */
 class PageActionsBuilder
 {
@@ -62,21 +63,22 @@ class PageActionsBuilder
     #[AsTwigFunction('crudit_row_actions')]
     public function buildRow(iterable $actions, object $resource, int|string|null $id = null): RowActions
     {
-        $main = null;
+        $inline = [];
         $others = [];
         foreach ($actions as $action) {
             $view = $this->view($action, $resource, false, $id, (string) $id);
             if ($view === null) {
                 continue;
             }
-            if ($main === null && $action instanceof EditAction) {
-                $main = $view;
-            } else {
+            // Shown: setDropdown(false), and the edition unless setDropdown(true); else in the menu of the line
+            if ($action->getDropdown() ?? !($action instanceof EditAction)) {
                 $others[] = $view;
+            } else {
+                $inline[] = $view;
             }
         }
 
-        return new RowActions($main, $others);
+        return new RowActions($inline, $others, ActionView::labelOf($resource, $id));
     }
 
     /**

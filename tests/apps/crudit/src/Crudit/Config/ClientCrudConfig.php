@@ -21,7 +21,7 @@ use Lle\CruditBundle\Dto\Path;
  * The clients. The actions show each kind of lot 3.1.a: primary, secondary, a DropdownAction, a print, the menu
  * "More" with a group, a modal without fields (About) and with fields (Send an e-mail), a confirmation, an action
  * refused by a right (shown, disabled: hide_if_disabled is false here), rules of the business (canDelete(),
- * setDisabledReason()).
+ * setDisabledReason()), an action of the lines shown beside the edition (setDropdown(false)).
  */
 class ClientCrudConfig extends AbstractCrudConfig
 {
@@ -76,6 +76,17 @@ class ClientCrudConfig extends AbstractCrudConfig
         $actions['email'] = ItemAction::new('action.send_email', $this->action('email'), Icon::new('email'))
             ->setModal('client/_email_modal.html.twig');
         $actions['deactivate'] = ItemAction::new('action.deactivate', $this->action('deactivate'))
+            ->setDisabledReason(static fn (?object $client): ?string => $client instanceof Client && !$client->isActive() ? 'client.reason.inactive' : null);
+
+        return $actions;
+    }
+
+    public function getItemActions(): array
+    {
+        $actions = parent::getItemActions();
+        // Shown in the line, beside the edition (a button at its label: no icon)
+        $actions['deactivate'] = ItemAction::new('action.deactivate', $this->action('deactivate'))
+            ->setDropdown(false)
             ->setDisabledReason(static fn (?object $client): ?string => $client instanceof Client && !$client->isActive() ? 'client.reason.inactive' : null);
 
         return $actions;
