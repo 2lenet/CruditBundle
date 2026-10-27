@@ -81,7 +81,7 @@ class PageActionsBuilderTest extends TestCase
 
         self::assertSame(['action.status'], $this->labels($actions->inline));
         $dropdown = $actions->inline[0];
-        self::assertTrue($dropdown->isDropdown());
+        self::assertTrue($dropdown->isDropdownAction());
         self::assertSame(['group.state', null], array_column($dropdown->groups, 'label'));
         self::assertSame(['archive'], $this->labels($dropdown->groups[0]['items']));
         self::assertSame([['label' => 'action.status', 'domain' => null, 'items' => [$dropdown->groups[0]['items'][0], $dropdown->groups[1]['items'][0]]]], $actions->getSecondaryGroups());

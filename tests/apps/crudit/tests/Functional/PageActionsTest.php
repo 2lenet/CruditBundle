@@ -106,6 +106,11 @@ class PageActionsTest extends AppTestCase
         $deactivate = $actions->filter('button.crudit-ui-btn');
         self::assertSame('Deactivate', $deactivate->text());
         self::assertSame('Deactivate Chloé', $deactivate->attr('aria-label'));
+        // A button at its label: a tooltip for its reason only, not to repeat its label
+        self::assertSame('This client is already inactive', $actions->filter('.crudit-ui-tooltip-host:has(> .crudit-ui-btn) .crudit-ui-tooltip')->text());
+        $bob = $crawler->filter('tbody tr')->reduce(static fn (Crawler $tr): bool => str_contains($tr->text(), 'Bob'))->first()->filter('.crudit-row-actions');
+        self::assertCount(1, $bob->filter('.crudit-ui-btn'));
+        self::assertCount(0, $bob->filter('.crudit-ui-tooltip-host .crudit-ui-btn'));
         self::assertSame('true', $deactivate->attr('aria-disabled'));
         self::assertSame('This client is already inactive', $row->filter('#' . $deactivate->attr('aria-describedby'))->text());
         self::assertSame('More actions for Chloé', $actions->filter('.crudit-ui-dropdown > button')->text());

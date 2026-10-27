@@ -17,7 +17,7 @@
 {% block actions_item %}
     <span class="crudit-page-actions__item{{ item.primary ? ' crudit-page-actions__primary' : ' crudit-page-actions__secondary' }}">
         {%- set element -%}
-            {%- if item.dropdown and not disabled -%}
+            {%- if item.dropdownAction and not disabled -%}
                 {% include '@LleCrudit/brick/links/actions/_dropdown_actions.html.twig' %}
             {%- elseif action.template -%}
                 {% include action.template %}

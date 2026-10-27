@@ -43,7 +43,7 @@ final class PageActions
     {
         $groups = [];
         foreach ($this->getSecondary() as $view) {
-            $groups[] = $view->isDropdown() && !$view->state->isDisabled()
+            $groups[] = $view->isDropdownAction() && !$view->state->isDisabled()
                 ? ['label' => $view->action->getLabel(), 'domain' => $view->action->getTranslationDomain(), 'items' => $view->getGroupItems()]
                 : ['label' => null, 'domain' => null, 'items' => [$view]];
         }

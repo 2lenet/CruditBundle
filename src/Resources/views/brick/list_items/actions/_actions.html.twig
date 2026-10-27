@@ -1,7 +1,7 @@
 {#
  # An action shown in a line (the edition, an action setDropdown(false)): its template (setTemplate()), else _action,
- # with its reason when it is disabled, or its label, in a Tooltip (visual only); the reason describes the button
- # (aria-describedby). A DropdownAction: a Dropdown named after it and the line, its groups in its menu.
+ # with its reason when it is disabled, or its label (an icon button), in a Tooltip (visual only); the reason
+ # describes the button (aria-describedby). A DropdownAction: a Dropdown named after it and the line, its groups in its menu.
  # Variables: item (ActionView), line, view, entity_label (the line in a text, RowActions::$entityLabel). Given to the
  # templates: action, url, params, disabled, reason_id, entity_label, mobile_only (false).
  #}
@@ -14,7 +14,7 @@
 {% set reason = disabled ? item.state.reason|trans(domain: item.state.reasonDomain ?? view.config.translation_domain) : null %}
 {% set reason_id = disabled ? 'crudit-action-reason-' ~ action.id ~ line.id : null %}
 {% block actions_item %}
-    {%- if item.dropdown and not disabled -%}
+    {%- if item.dropdownAction and not disabled -%}
         {%- set dropdown_label = 'crudit.action.named'|trans({
             '%action%': action.label|trans(domain: action.translationDomain ?? view.config.translation_domain),
             '%entity%': entity_label,
@@ -33,8 +33,13 @@
                 {% include '@LleCrudit/brick/list_items/actions/_action.html.twig' %}
             {%- endif -%}
         {%- endset -%}
-        {%- set tooltip = reason ?? action.label|trans({'%entity%': entity_label}, action.translationDomain ?? view.config.translation_domain) -%}
-        <twig:LleCruditUi:Tooltip :text="tooltip" floating>{{ element }}</twig:LleCruditUi:Tooltip>
+        {#- Its label in a Tooltip for an icon button only: a button at its label already shows it -#}
+        {%- set tooltip = reason ?? (action.icon ? action.label|trans({'%entity%': entity_label}, action.translationDomain ?? view.config.translation_domain) : null) -%}
+        {%- if tooltip is not null -%}
+            <twig:LleCruditUi:Tooltip :text="tooltip" floating>{{ element }}</twig:LleCruditUi:Tooltip>
+        {%- else -%}
+            {{ element }}
+        {%- endif -%}
         {%- if reason is not null -%}
             <span id="{{ reason_id }}" class="crudit-ui-visually-hidden">{{ reason }}</span>
         {%- endif -%}

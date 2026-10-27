@@ -66,7 +66,10 @@ final class ActionView
         return is_scalar($id) && $id !== '' ? '#' . $id : '';
     }
 
-    public function isDropdown(): bool
+    /**
+     * A DropdownAction (a button with its menu); not to mix up with isDropdown() of an action, in a menu.
+     */
+    public function isDropdownAction(): bool
     {
         return $this->action instanceof DropdownAction;
     }

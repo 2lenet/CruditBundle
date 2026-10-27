@@ -33,7 +33,7 @@ final class RowActions
      */
     public function getMenu(): array
     {
-        return array_map(static fn (ActionView $view): array => $view->isDropdown() && !$view->state->isDisabled()
+        return array_map(static fn (ActionView $view): array => $view->isDropdownAction() && !$view->state->isDisabled()
             ? ['label' => $view->action->getLabel(), 'domain' => $view->action->getTranslationDomain(), 'items' => $view->getGroupItems()]
             : ['label' => null, 'domain' => null, 'items' => [$view]], $this->others);
     }

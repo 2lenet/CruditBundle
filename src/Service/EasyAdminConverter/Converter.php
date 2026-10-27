@@ -602,8 +602,9 @@ class Converter
                     'outline-primary', 'outline-secondary' => 'secondary',
                     default => null,
                 };
-                // Only a colour of Bootstrap is worth a warning (not btn-sm, btn-group, btn-block…)
-                if ($classVariant === null && ($matches[1] !== '' || in_array($matches[2], ['info', 'success', 'light', 'dark'], true))) {
+                // Only a colour of Bootstrap is worth a warning: not btn-sm, btn-group, btn-block…, nor btn-light (the
+                // default, secondary)
+                if ($classVariant === null && ($matches[1] !== '' || in_array($matches[2], ['info', 'success', 'dark'], true))) {
                     $ignored[] = $class;
                 }
                 $variant ??= $classVariant;

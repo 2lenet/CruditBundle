@@ -605,7 +605,8 @@ actions for Bob". The label of an action of a line is no longer hidden behind it
 
 To keep an action of a line shown, as in 1.x, add `->setDropdown(false)`. A `DropdownAction` shown is an icon
 button with its menu, named after it and the line. `setDropdown()` now takes `null` (the default: the choice of the
-bundle), `getDropdown()` gives it; in the header, `null` is shown, as before.
+bundle), `getDropdown()` gives it; in the header, `null` is shown, as before. An action of yours that overrides
+`setDropdown(bool $dropdown)` has to take `?bool`, else PHP stops on the signature.
 
 **Disabled, hidden** (decision of 20/10: `hideIfDisabled` is for the actions of context only):
 
