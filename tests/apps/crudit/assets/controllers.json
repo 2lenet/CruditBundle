@@ -28,6 +28,10 @@
             "page-title": {
                 "enabled": true,
                 "fetch": "eager"
+            },
+            "print": {
+                "enabled": true,
+                "fetch": "eager"
             }
         },
         "@2lenet/crudit-ui-bundle": {

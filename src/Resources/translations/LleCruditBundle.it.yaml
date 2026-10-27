@@ -82,7 +82,13 @@ crudit:
         search: "Cercare"
         reset: "Reimpostare"
         close: "Chiudere"
-        unavailable: "Azione non disponibile"
+        more: "Altre azioni"
+        more_for: "Altre azioni per %entity%"
+        named: "%action% %entity%"
+        print: "Stampa"
+        reason:
+            forbidden: "Non hai i permessi per questa azione"
+            unavailable: "Questa azione non è disponibile"
 
     message:
         success: "Successo"
@@ -92,6 +98,8 @@ crudit:
         cancel: "Annullare"
         validate: "Convalidare"
         confirm:
+            question: "%action%?"
+            question_entity: "%action% «%entity%»?"
             message: "Volete davvero confermare questa azione? Questo atto è irrevocabile."
             action: "Confermare"
         export:

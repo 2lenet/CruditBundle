@@ -42,6 +42,41 @@ crud:
             client: "Edit %entity%"
         new:
             client: "New client"
-# Label of the modal action added to the clients (ClientCrudConfig::getItemActions())
+# Actions (lot 3.1.a)
 action:
+    list: "Back to the list"
+    add: "Add"
+    export: "Export"
+    show: "Show"
+    edit: "Edit"
+    delete: "Delete"
+    reports: "Reports"
+    report_month: "Report of the month"
+    report_custom: "Custom report"
+    about: "About"
+    archive_inactive: "Archive the inactive clients"
+    purge: "Purge the history"
+    send_email: "Send an e-mail"
+    deactivate: "Deactivate"
     note: "Note"
+group:
+    sales: "Sales"
+    maintenance: "Maintenance"
+modal:
+    confirm:
+        action:
+            archive_inactive: "Archive all the inactive clients?"
+client:
+    reason:
+        active: "An active client cannot be deleted: deactivate it first"
+        inactive: "This client is already inactive"
+    about:
+        title: "About the clients"
+        text: "The clients of the test application."
+        close: "Close"
+    email:
+        title: "Send an e-mail"
+        subject: "Subject"
+        message: "Message"
+        cancel: "Cancel"
+        send: "Send"

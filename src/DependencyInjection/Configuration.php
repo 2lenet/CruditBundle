@@ -49,25 +49,13 @@ class Configuration implements ConfigurationInterface
                     ->thenInvalid('Invalid alignment value %s')
                 ->end()
             ->end()
-            ->scalarNode('hide_if_disabled')
-                ->defaultValue(false)
-                ->validate()
-                    ->ifNotInArray([
-                        true,
-                        false,
-                    ])
-                    ->thenInvalid('Invalid value %s')
-                ->end()
+            ->booleanNode('hide_if_disabled')
+                ->info('Hide the actions whose right is refused, else disabled with a reason (the reasons of the business are always shown)')
+                ->defaultTrue()
             ->end()
-            ->scalarNode('delete_hide_if_disabled')
-                ->defaultValue(false)
-                ->validate()
-                    ->ifNotInArray([
-                        true,
-                        false,
-                    ])
-                    ->thenInvalid('Invalid value %s')
-                ->end()
+            ->booleanNode('delete_hide_if_disabled')
+                ->info('The same for the deletions, null: as hide_if_disabled')
+                ->defaultNull()
             ->end()
             ->scalarNode('add_connect_profile_link')
                 ->defaultValue(false)

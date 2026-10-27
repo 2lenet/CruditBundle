@@ -61,6 +61,11 @@ services:
     # Tagged ux_icons.finder by autoconfiguration (ux:icons:lock)
     Lle\CruditBundle\Icon\MenuIconFinder: ~
 
+    Lle\CruditBundle\Icon\ActionIconFinder:
+        arguments:
+            $configs: !tagged_iterator crudit.config
+            $logger: '@?logger'
+
     Lle\CruditBundle\Twig\CruditExtension:
         arguments:
             - '@Lle\CruditBundle\Builder\MenuBuilder'
@@ -91,6 +96,15 @@ services:
             $exitRoute: '%lle_crudit.exit_impersonation_path%'
 
     Lle\CruditBundle\Twig\BreadcrumbExtension: ~
+
+    # crudit_action_state() by #[AsTwigFunction]
+    Lle\CruditBundle\Action\ActionResolver:
+        arguments:
+            $authorizationChecker: '@security.authorization_checker'
+            $hideIfDisabled: '%lle_crudit.hide_if_disabled%'
+            $deleteHideIfDisabled: '%lle_crudit.delete_hide_if_disabled%'
+
+    Lle\CruditBundle\Action\PageActionsBuilder: ~
 
     Lle\CruditBundle\Builder\TableViewBuilder: ~
 

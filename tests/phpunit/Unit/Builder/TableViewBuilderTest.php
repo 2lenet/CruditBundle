@@ -17,7 +17,9 @@ use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
-use Lle\CruditBundle\Twig\CruditExtension;
+use Lle\CruditBundle\Action\ActionResolver;
+use Lle\CruditBundle\Action\PageActionsBuilder;
+use Lle\CruditBundle\Twig\CruditActionExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -99,12 +101,13 @@ class TableViewBuilderTest extends TestCase
 
     public function testActions(): void
     {
-        $edit = EditAction::new('action.edit', Path::new('app_edit'), null);
+        $edit = EditAction::new('action.edit', Path::new('app_edit'), \Lle\CruditBundle\Dto\Icon::new('pencil'));
         $show = ItemAction::new('action.show', Path::new('app_show'));
         $delete = DeleteAction::new('action.delete', Path::new('app_delete'))->setConfirmModal(true);
         $table = $this->build([Field::new('name')], [$this->line(3, [[Field::new('name'), 'A']])], actions: [$show, $edit, $delete]);
 
-        [$a, $b, $c] = $table['rows'][0]['actions'];
+        // the actions shown first (the edit icon), then the menu in their order
+        [$b, $a, $c] = $table['rows'][0]['actions'];
         self::assertFalse($a['visible'], 'the show action is in the menu');
         self::assertSame('/app_show?id=3', $a['url']);
         self::assertTrue($b['visible'], 'the edit action is shown as an icon');
@@ -112,7 +115,9 @@ class TableViewBuilderTest extends TestCase
         self::assertFalse($c['visible']);
         self::assertSame('danger', $c['tone']);
         self::assertNull($c['url'], 'a confirmation is a button');
-        self::assertSame(['data-confirm-link' => '/app_delete?id=3', 'data-confirm-text' => 'modal.confirm.action.delete'], $c['attr']);
+        self::assertSame('crudit-confirm', $c['attr']['commandfor']);
+        self::assertSame('/app_delete?id=3', $c['attr']['data-confirm-link']);
+        self::assertSame('danger', $c['tone']);
     }
 
     public function testActionWithUrlTargetAndIcon(): void
@@ -122,7 +127,7 @@ class TableViewBuilderTest extends TestCase
 
         $built = $table['rows'][0]['actions'][0];
         self::assertSame('/export', $built['url']);
-        self::assertSame(['target' => '_blank'], $built['attr']);
+        self::assertSame('_blank', $built['attr']['target']);
         self::assertSame('delete', $built['icon'], 'the Font Awesome name of 1.x becomes the name of the catalogue');
     }
 
@@ -172,13 +177,14 @@ class TableViewBuilderTest extends TestCase
         self::assertSame([], $table['modals']);
     }
 
-    public function testDisabledDropdownDisablesItsActions(): void
+    public function testDisabledDropdownIsOneDisabledEntry(): void
     {
         $this->denied = ['ROLE_MORE'];
         $dropdown = DropdownAction::new('more', [[ItemAction::new('copy', Path::new('app_copy'))]])->setRole('ROLE_MORE');
         $table = $this->build([Field::new('name')], [$this->line(2, [[Field::new('name'), 'A']])], actions: [$dropdown]);
 
-        $item = $table['rows'][0]['actions'][0]['items'][0];
+        $item = $table['rows'][0]['actions'][0];
+        self::assertArrayNotHasKey('items', $item, 'the dropdown is one disabled entry of the menu, its actions are not built');
         self::assertNull($item['url']);
         self::assertNotNull($item['disabledReason']);
     }
@@ -190,7 +196,7 @@ class TableViewBuilderTest extends TestCase
         $table = $this->build([Field::new('name')], [$this->line(1, [[Field::new('name'), 'A']])], actions: [$action]);
 
         $built = $table['rows'][0]['actions'][0];
-        self::assertSame('crudit.action.unavailable', $built['disabledReason']);
+        self::assertSame('crudit.action.reason.forbidden', $built['disabledReason']);
         self::assertNull($built['url'], 'a disabled action is not a link');
 
         $this->hideIfDisabled = true;
@@ -348,10 +354,9 @@ class TableViewBuilderTest extends TestCase
         $requests = new RequestStack();
         $requests->push(Request::create($request));
 
-        $extension = $this->createStub(CruditExtension::class);
-        $extension->method('hideIfDisabled')->willReturn($this->hideIfDisabled);
+        $actions = new PageActionsBuilder(new ActionResolver($checker, $this->hideIfDisabled), $urls, $requests);
 
-        return new TableViewBuilder($checker, $translator, $urls, $requests, $extension);
+        return new TableViewBuilder($checker, $translator, $urls, $requests, $actions, new CruditActionExtension($translator));
     }
 
     /**

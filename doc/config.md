@@ -28,9 +28,14 @@ If you want to have roles on all your bricks (sublist, form, template, etc.), yo
 
 **2. Actions**
 
-There are two different configurations for managing the display of actions (possible values: true/false):
-- `hide_if_disabled`
-- `delete_hide_if_disabled`
+Two configurations decide whether an action whose role is refused is hidden or shown disabled, with the reason
+"You do not have the rights for this action":
+- `hide_if_disabled`: `true` (hidden) by default;
+- `delete_hide_if_disabled`: the same for the deletions, `null` by default (as `hide_if_disabled`).
+
+`setHideIfDisabled()` on an action wins over them. An action disabled by a rule of your data (`canEdit()`,
+`canDelete()`, `setDisabledReason()`) is always shown, with its reason; an action whose `setDisplayIf()` returns
+false is always hidden (see [crud.md](crud.md)).
 
 **3. Others**
 

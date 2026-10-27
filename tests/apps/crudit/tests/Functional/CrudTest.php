@@ -60,7 +60,12 @@ class CrudTest extends AppTestCase
 
         self::assertSame('/client/edit/' . $id, $row->filter('.crudit-ui-table__action-list a[href]')->first()->attr('href'), 'the edit action is the icon');
         self::assertStringContainsString('Alice', $row->filter('.crudit-ui-table__action-list')->text(), 'named after the row');
-        self::assertSame('/client/delete/' . $id, $row->filter('.crudit-ui-table__action-list [data-confirm-link]')->attr('data-confirm-link'), 'the deletion asks for a confirmation');
+        // an active client cannot be deleted (disabled, no confirmation); an inactive one asks for a confirmation
+        self::assertCount(0, $row->filter('.crudit-ui-table__action-list [data-confirm-link]'));
+        $chloe = $this->idOf('Chloé');
+        $delete = $crawler->filter('main tr#list-client-' . $chloe . ' .crudit-ui-table__action-list [data-confirm-link]');
+        self::assertSame('/client/delete/' . $chloe, $delete->attr('data-confirm-link'), 'the deletion asks for a confirmation');
+        self::assertSame('Delete “Chloé”?', $delete->attr('data-confirm-text'), 'which names the row');
     }
 
     public function testEachModalIsRenderedForItsOwnRow(): void

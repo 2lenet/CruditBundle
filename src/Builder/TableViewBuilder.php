@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Builder;
 
+use Lle\CruditBundle\Action\ActionView;
+use Lle\CruditBundle\Action\PageActionsBuilder;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
-use Lle\CruditBundle\Dto\Action\DropdownAction;
-use Lle\CruditBundle\Dto\Action\EditAction;
-use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
-use Lle\CruditBundle\Twig\CruditExtension;
+use Lle\CruditBundle\Twig\CruditActionExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -28,9 +27,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * Returned by `build()`:
  * - the props of the component: `id`, `caption`, `columns`, `rows` (without ruptures) or `groups`, `totals`, `sort`,
  *   `sortable`;
- * - `modals`: the modals of the actions `setModal()`, to include after the table (`{template, id, action, line}`): the
+ * - `modals`: the modals of the actions `setModal()`, to include after the table (`{template, id, action, line, resource, params}`): the
  *   button of the row opens them with `commandfor`. The same `action` serves every row: the template binds
- *   it to the resource of `line` before each include.
+ *   it to the `resource` of its row before each include.
  *
  * The action `EditAction` is the one shown as an icon, the others are in the menu "More actions" of the row.
  *
@@ -59,7 +58,8 @@ class TableViewBuilder
         private TranslatorInterface $translator,
         private UrlGeneratorInterface $urlGenerator,
         private RequestStack $requestStack,
-        private CruditExtension $cruditExtension,
+        private PageActionsBuilder $actionsBuilder,
+        private CruditActionExtension $actionExtension,
     ) {
     }
 
@@ -286,117 +286,64 @@ class TableViewBuilder
     }
 
     /**
+     * The actions of a row sorted by PageActionsBuilder::buildRow() (rights, reasons, parameters of the route): the
+     * edition and the actions setDropdown(false) shown, the others in the menu, a DropdownAction one group per name.
+     *
      * @param AbstractAction[] $actions
      */
     private function actions(array $actions, ResourceView $line, ?string $domain, array &$modals): array
     {
+        $row = $this->actionsBuilder->buildRow($actions, $line->getResource(), $line->getId());
+
         $built = [];
-        foreach ($actions as $action) {
-            if ($action instanceof DropdownAction) {
-                foreach ($this->dropdown($action, $line, $domain, $modals) as $entry) {
-                    $built[] = $entry;
-                }
-            } elseif ($item = $this->action($action, $line, $domain, $action instanceof EditAction && !$action->isDropdown(), $modals)) {
-                $built[] = $item;
+        foreach ($row->inline as $item) {
+            $built[] = $this->action($item, $domain, true);
+        }
+        foreach ($row->others as $item) {
+            if (!$item->isDropdownAction() || $item->state->isDisabled()) {
+                $built[] = $this->action($item, $domain, false);
+                continue;
             }
+            foreach ($item->groups as $group) {
+                $label = $group['label'] ?? $item->action->getLabel();
+                $built[] = [
+                    'label' => $this->translator->trans($label, [], $group['domain'] ?? $domain),
+                    'items' => array_map(fn (ActionView $groupItem) => $this->action($groupItem, $domain, false), $group['items']),
+                ];
+            }
+        }
+        foreach ($row->getModals() as $item) {
+            $modals[] = [
+                'template' => $item->action->getModal(),
+                'id' => $item->getModalId(),
+                'action' => $item->action,
+                'line' => $line,
+                'resource' => $item->resource,
+                'params' => $item->params,
+            ];
         }
 
         return $built;
     }
 
-    /** A dropdown action (`DropdownAction`): one group of the menu "More actions" per named group of its actions. */
-    private function dropdown(DropdownAction $dropdown, ResourceView $line, ?string $domain, array &$modals): array
+    private function action(ActionView $item, ?string $domain, bool $visible): array
     {
-        $disabled = $dropdown->isDisabled() || !$this->granted($dropdown->getRole(), $line);
-        if ($disabled && $this->cruditExtension->hideIfDisabled($dropdown)) {
-            return [];
-        }
-
-        $entries = [];
-        foreach ($dropdown->getActions() as $groupName => $group) {
-            $items = [];
-            foreach ($group as $action) {
-                if ($item = $this->action($action, $line, $domain, false, $modals, $disabled)) {
-                    $items[] = $item;
-                }
-            }
-            if ($items !== []) {
-                $label = is_string($groupName) ? $groupName : $dropdown->getLabel();
-                $entries[] = ['label' => $this->translator->trans($label, [], $domain), 'items' => $items];
-            }
-        }
-
-        return $entries;
-    }
-
-    private function action(
-        AbstractAction $action,
-        ResourceView $line,
-        ?string $domain,
-        bool $visible,
-        array &$modals,
-        bool $parentDisabled = false,
-    ): ?array
-    {
-        $resource = $line->getResource();
-        if ($action instanceof ItemAction) {
-            $action->setResource($resource);
-        }
-
-        $path = $action->getPath();
-        $disabled = $parentDisabled
-            || $action->isDisabled()
-            || !($this->granted($path->getRole(), $line) && $this->granted($action->getRole(), $line));
-        if (
-            !$action->isDisplayed($resource)
-            || !$action->isDisplayedByRequest($this->request())
-            || ($disabled && $this->cruditExtension->hideIfDisabled($action))
-        ) {
-            return null;
-        }
-
-        $label = $this->translator->trans($action->getLabel(), [], $domain);
-        $url = $action->getUrl() ?? $this->urlGenerator->generate($path->getRoute(), $path->getParams(['id' => $line->getId()]));
-
-        $attr = [];
-        $reason = null;
-        if ($disabled) {
-            // focusable but inert: no link, no modal, no confirmation
-            $title = $this->translator->trans($action->getTitle(), [], $domain);
-            $reason = $title !== $label ? $title : $this->translator->trans('crudit.action.unavailable', [], 'LleCruditBundle');
-            $url = null;
-        } else {
-            if ($action->getTarget()) {
-                $attr['target'] = $action->getTarget();
-            }
-            if ($action->getModal() !== null) {
-                $id = 'modal_' . $action->getId() . $line->getId();
-                $modals[] = ['template' => $action->getModal(), 'id' => $id, 'action' => $action, 'line' => $line];
-                $attr += ['commandfor' => $id, 'command' => 'show-modal'];
-                $url = null;
-            } elseif ($action->getConfirmModal()) {
-                $attr += [
-                    'data-confirm-link' => $url,
-                    'data-confirm-text' => $this->translator->trans('modal.confirm.' . $action->getLabel(), [], $domain),
-                ];
-                $url = null;
-            }
-        }
+        $action = $item->action;
+        $disabled = $item->state->isDisabled();
 
         return [
-            'label' => $label,
+            'label' => $this->translator->trans($action->getLabel(), [], $action->getTranslationDomain() ?? $domain),
             'icon' => $this->icon($action),
-            'url' => $url,
-            'visible' => $visible,
-            'tone' => $action instanceof DeleteAction ? 'danger' : null,
-            'disabledReason' => $reason,
-            'attr' => $attr,
+            'url' => $this->actionExtension->actionHref($item),
+            // the Table shows icon buttons only: an action without icon stays in the menu
+            'visible' => $visible && $item->action->getIcon() !== null,
+            'tone' => $action instanceof DeleteAction || str_starts_with($item->getVariant(), 'danger') ? 'danger' : null,
+            // focusable but inert: the component reads the reason, there is no modal, no confirmation
+            'disabledReason' => $disabled
+                ? $this->translator->trans($item->state->reason, [], $item->state->getReasonDomain() ?? $domain)
+                : null,
+            'attr' => $disabled ? [] : $this->actionExtension->actionAttributes($item, $domain),
         ];
-    }
-
-    private function granted(?string $role, ResourceView $line): bool
-    {
-        return $role === null || $this->authorizationChecker->isGranted($role, $line->getResource());
     }
 
     /** The logical name of the design system when the icon has one, else the name given (an Iconify name `set:name`). */

@@ -8,33 +8,11 @@ class EditAction extends ItemAction
 {
     public const CALLBACK = "canEdit";
 
-    public function getTitle(): string
+    /**
+     * The reason of setDisabledReason(), else the one of canEdit() of the resource.
+     */
+    public function getDisabledReason(): ?string
     {
-        if ($this->getResource() !== null) {
-            $canEdit = true;
-            if (method_exists($this->getResource(), static::CALLBACK)) {
-                $canEdit = $this->getResource()->{static::CALLBACK}();
-            }
-
-            if (is_string($canEdit)) {
-                return $canEdit;
-            }
-        }
-
-        return parent::getLabel();
-    }
-
-    public function isDisabled(): bool
-    {
-        if ($this->getResource() !== null) {
-            $canEdit = true;
-            if (method_exists($this->getResource(), static::CALLBACK)) {
-                $canEdit = $this->getResource()->{static::CALLBACK}();
-            }
-
-            return $canEdit !== true;
-        }
-
-        return false;
+        return parent::getDisabledReason() ?? $this->getCallbackReason(static::CALLBACK);
     }
 }

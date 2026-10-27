@@ -1,23 +1,27 @@
-{% block links_actions %}
-    {% set has_dropdown = false %}
-
-    {% for action in view.data.actions %}
-        {% if crudit_is_dropdown_action(action) %}
-            {% block dropdown_actions %}
-                {{ include('@LleCrudit/brick/links/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
-            {% endblock %}
-        {% elseif not action.dropdown %}
-            {% block actions %}
-                {{ include('@LleCrudit/brick/links/actions/_actions.html.twig', {action: action, view: view}) }}
-            {% endblock %}
-        {% else %}
-            {% set has_dropdown = true %}
-        {% endif %}
-    {% endfor %}
-
-    {% if has_dropdown %}
-        {% block kebab_dropdown_actions %}
-            {{ include('@LleCrudit/brick/links/actions/_kebab_dropdown_actions.html.twig', {view: view}) }}
-        {% endblock %}
-    {% endif %}
-{% endblock %}
+{#
+ # The actions of the header of a page (PageActions.vue of the crudit-v2 mockup), sorted by PageActionsBuilder
+ # (view.data.page_actions):
+ # - in the bar, in their order (actions/_actions): the primary one (one at most), the secondary ones, hidden below md,
+ #   a DropdownAction as a Dropdown;
+ # - the menu "More" (an IconButton "More actions"): below md the secondary ones first (hidden from md), then the
+ #   actions setDropdown(true), by group. With secondary ones only, it is shown below md only;
+ # - after the bar, the dialogs of the actions with a modal (setModal(): its template, with its id modal_<id>).
+ #}
+{% set page_actions = view.data.page_actions %}
+<div class="crudit-page-actions">
+    {%- for item in page_actions.inline -%}
+        {{ include('@LleCrudit/brick/links/actions/_actions.html.twig', {item: item, view: view}, with_context: false) }}
+    {%- endfor -%}
+    {%- if page_actions.secondary or page_actions.more -%}
+        <twig:LleCruditUi:Dropdown iconOnly :label="'crudit.action.more'|trans(domain: 'LleCruditBundle')"
+            class="crudit-page-actions__more{{ page_actions.more ? '' : ' crudit-page-actions__more--mobile-only' }}">
+            <twig:LleCruditUi:Menu>
+                {{- include('@LleCrudit/brick/links/actions/_menu.html.twig', {groups: page_actions.secondaryGroups, view: view, mobile_only: true}, with_context: false) -}}
+                {{- include('@LleCrudit/brick/links/actions/_menu.html.twig', {groups: page_actions.more, view: view, mobile_only: false}, with_context: false) -}}
+            </twig:LleCruditUi:Menu>
+        </twig:LleCruditUi:Dropdown>
+    {%- endif -%}
+</div>
+{%- for item in page_actions.modals -%}
+    {% include item.action.modal with {action: item.action, id: item.modalId, params: item.params} %}
+{%- endfor -%}
