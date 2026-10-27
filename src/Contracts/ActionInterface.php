@@ -72,6 +72,10 @@ interface ActionInterface
 
     public function setTranslationDomain(?string $translationDomain): static;
 
+    public function isBack(): bool;
+
+    public function setBack(bool $back = true): static;
+
     public function getGroup(): ?string;
 
     public function setGroup(?string $group): static;

@@ -1,7 +1,8 @@
 {#
  # Items of a Menu of actions (the menu "More", a DropdownAction): the actions of a group without heading, then a
  # MenuGroup per heading. mobile_only: shown below md only (the secondary actions of the bar).
- # Variables: groups (list of {label, items: ActionView}), view, mobile_only.
+ # Variables: groups (list of {label, domain: of its label (a DropdownAction: its own), else the one of the CRUD,
+ # items: ActionView}), view, mobile_only.
  #}
 {%- for group in groups -%}
     {%- if group.label is null -%}
@@ -10,7 +11,7 @@
         {%- endfor -%}
     {%- else -%}
         {% set group_items = group.items %}
-        <twig:LleCruditUi:MenuGroup :label="group.label|trans(domain: view.config.translation_domain)" class="{{ mobile_only ? 'crudit-page-actions__mobile-only' : '' }}">
+        <twig:LleCruditUi:MenuGroup :label="group.label|trans(domain: group.domain ?? view.config.translation_domain)" class="{{ mobile_only ? 'crudit-page-actions__mobile-only' : '' }}">
             {%- for item in group_items -%}
                 {{ include('@LleCrudit/brick/links/actions/_dropdown_action.html.twig', {item: item, view: view, mobile_only: false}, with_context: false) }}
             {%- endfor -%}

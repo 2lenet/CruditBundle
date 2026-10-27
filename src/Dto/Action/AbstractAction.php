@@ -48,6 +48,8 @@ abstract class AbstractAction implements ActionInterface
 
     protected ?string $translationDomain = null;
 
+    protected bool $back = false;
+
     /** @var callable|string|null $disabledReason */
     protected $disabledReason = null;
 
@@ -212,6 +214,22 @@ abstract class AbstractAction implements ActionInterface
         return $this;
     }
 
+    public function isBack(): bool
+    {
+        return $this->back;
+    }
+
+    /**
+     * The way back to the list (the action list of the CRUD, the button of LinksConfig::addBack()): the address of
+     * the history of the navigation when there is one, no right checked then, no id of the record, no referrer.
+     */
+    public function setBack(bool $back = true): static
+    {
+        $this->back = $back;
+
+        return $this;
+    }
+
     public function getGroup(): ?string
     {
         return $this->group;
@@ -233,7 +251,8 @@ abstract class AbstractAction implements ActionInterface
      */
     public function getDisabledReason(): ?string
     {
-        if (is_callable($this->disabledReason)) {
+        // A string is always a reason, even the name of a function ('count', 'reset'…)
+        if (!is_string($this->disabledReason) && is_callable($this->disabledReason)) {
             return call_user_func($this->disabledReason, $this->getReasonSubject()) ?: null;
         }
 
@@ -241,8 +260,9 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
-     * @param callable|string|null $disabledReason a reason (a key of translation), or a callable given the resource
-     *                                             that returns the reason or null
+     * @param callable|string|null $disabledReason a reason (a key of translation, never called), or a callable (a
+     *                                             closure, [$object, 'method']) given the resource that returns the
+     *                                             reason or null
      */
     public function setDisabledReason(callable|string|null $disabledReason): static
     {

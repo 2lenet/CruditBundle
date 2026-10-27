@@ -84,7 +84,7 @@ class PageActionsBuilderTest extends TestCase
         self::assertTrue($dropdown->isDropdown());
         self::assertSame(['group.state', null], array_column($dropdown->groups, 'label'));
         self::assertSame(['archive'], $this->labels($dropdown->groups[0]['items']));
-        self::assertSame([['label' => 'action.status', 'items' => [$dropdown->groups[0]['items'][0], $dropdown->groups[1]['items'][0]]]], $actions->getSecondaryGroups());
+        self::assertSame([['label' => 'action.status', 'domain' => null, 'items' => [$dropdown->groups[0]['items'][0], $dropdown->groups[1]['items'][0]]]], $actions->getSecondaryGroups());
     }
 
     public function testVariant(): void
@@ -116,7 +116,7 @@ class PageActionsBuilderTest extends TestCase
 
         self::assertSame('/app_client_edit?id=7', $actions->inline[0]->url);
         // The way back to the list is not for the record: no id
-        $back = $this->build([ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))], $request);
+        $back = $this->build([ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))->setBack()], $request);
         self::assertSame('/app_client_index', $back->inline[0]->url);
         self::assertSame(['id' => 9], $actions->inline[1]->params);
         self::assertSame('https://example.org', $actions->inline[2]->url);
@@ -148,6 +148,51 @@ class PageActionsBuilderTest extends TestCase
         self::assertSame(['action.archive'], $this->labels($row->getMenu()[3]['items']));
         // One dialog per line
         self::assertSame('modal_' . $row->others[2]->action->getId() . '12', $row->getModals()[0]->getModalId());
+    }
+
+    /**
+     * As before 2.0: in a line, its id wins over the one of the path; in the header, the one of the path wins. An id 0
+     * is an id.
+     */
+    public function testIdOfTheLineWins(): void
+    {
+        $show = static fn (): ItemAction => ItemAction::new('action.show', Path::new('app_client_show', ['id' => 9, 'tab' => 'notes']));
+
+        self::assertSame(['id' => 12, 'tab' => 'notes'], $this->builder()->buildRow([$show()], new \stdClass(), 12)->others[0]->params);
+        self::assertSame(['id' => 9, 'tab' => 'notes'], $this->build([$show()], new Request(attributes: ['id' => 7]))->inline[0]->params);
+        self::assertSame('/app_client_edit?id=0', $this->build([$this->action('edit')], new Request(attributes: ['id' => 0]))->inline[0]->url);
+        self::assertSame('/app_client_edit?id=0', $this->builder()->buildRow([EditAction::new('action.edit', Path::new('app_client_edit'))], new \stdClass(), 0)->main?->url);
+    }
+
+    /**
+     * %entity%: the element as a string, else #<id> (an entity without __toString()).
+     */
+    public function testEntityLabel(): void
+    {
+        $stringable = new class () implements \Stringable {
+            public function __toString(): string
+            {
+                return 'Bob';
+            }
+        };
+        $edit = EditAction::new('action.edit', Path::new('app_client_edit'));
+
+        self::assertSame('Bob', $this->builder()->buildRow([$edit], $stringable, 3)->getEntityLabel());
+        self::assertSame('#3', $this->builder()->buildRow([$edit], new \stdClass(), 3)->getEntityLabel());
+        self::assertSame('', (new \Lle\CruditBundle\Action\RowActions())->getEntityLabel());
+    }
+
+    /**
+     * The heading of a DropdownAction, and of its groups, in the domain of the action.
+     */
+    public function testDomainOfTheHeadingOfADropdown(): void
+    {
+        $dropdown = DropdownAction::new('action.status', ['group.state' => [$this->action('archive')]])->setTranslationDomain('admin');
+        $actions = $this->build([$dropdown]);
+
+        self::assertSame('admin', $actions->inline[0]->groups[0]['domain']);
+        self::assertSame('admin', $actions->getSecondaryGroups()[0]['domain']);
+        self::assertSame('admin', $this->builder()->buildRow([$dropdown], new \stdClass(), 1)->getMenu()[0]['domain']);
     }
 
     public function testRowWithoutEdition(): void

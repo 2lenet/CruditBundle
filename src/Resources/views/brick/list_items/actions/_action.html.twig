@@ -7,7 +7,7 @@
 {% block action %}
     {%- set action_label = 'crudit.action.named'|trans({
         '%action%': action.label|trans(domain: action.translationDomain ?? view.config.translation_domain),
-        '%entity%': line.resource,
+        '%entity%': item.entityLabel,
     }, 'LleCruditBundle') -%}
     {% component 'LleCruditUi:IconButton' with {
         icon: action.icon.icon ?? 'edit',

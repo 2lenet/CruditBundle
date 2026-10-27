@@ -3,9 +3,12 @@
  # Dropdown for a DropdownAction (_dropdown_actions). The secondary ones go into the menu "More" below md. A disabled
  # action keeps its reason: in a Tooltip (visual only) and in a hidden text that describes the button
  # (aria-describedby).
- # Variables: item (ActionView), view. Given to the templates: action, url, params, disabled, reason_id, item, view.
+ # Variables: item (ActionView), view. Given to the templates: action, url, params, disabled, reason_id, item, view,
+ # mobile_only (false; a secondary action is also rendered in the menu "More" with true, so its template is included
+ # twice in the page: no fixed id in it).
  #}
 {% set action = item.action %}
+{% set mobile_only = false %}
 {% set url = item.url %}
 {% set params = item.params %}
 {% set disabled = item.state.disabled %}

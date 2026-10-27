@@ -587,7 +587,9 @@ page gives a secondary button: one primary button per page.
 - on a phone (below 768 px), only the primary action stays in the bar, the others go into "More actions";
 - `PrintAction::new()`: prints the page (controller `print`), no inline script.
 - the way back to the list goes back by the history of the navigation; without it, to the list, checked against
-  its role, and without the `?id=…` of the record that 1.x added to its address.
+  its role, and without the `?id=…` of the record that 1.x added to its address. It is marked with `setBack()`: the
+  action `list` of the CRUD and the button of `LinksConfig::addBack()` are; a way back of yours (renamed, or built
+  without `AbstractCrudConfig`) needs `->setBack()`, it is no longer recognised by its label `action.list`.
 
 **The lines of a list** (`brick/list_items/_actions.html.twig`, the lists and the sub-lists), as `RowActions.vue`:
 the edition (`EditAction`) as an icon button named "Edit Bob", the other actions in the menu of the line named "More
@@ -604,13 +606,18 @@ actions for Bob". The label of an action of a line is no longer hidden behind it
 - `canEdit()` / `canDelete()` return `true`, or the reason (a key of translation of the CRUD), or `false` (a generic
   reason). In 1.x, `hideIfDisabled` also hid an action refused by `canDelete()`: it is shown now, with its reason.
 - `setDisabledReason('client.archived')`, or a callable given the resource of the line or of the record, which
-  returns the reason or null: for any action.
+  returns the reason or null: for any action. A string is always a reason, never called (`'count'` is a key); a
+  callable is a closure or `[$object, 'method']`.
+- An action of yours that overrides `isDisabled()` (and `getTitle()` for its reason), as in 1.x, still works: it is
+  disabled by it, with the reason of `getTitle()`, else a generic one. Both overrides are **deprecated**: use
+  `setDisabledReason()`, or override `getDisabledReason()`.
 - `hide_if_disabled` is now `true` by default: an action refused by a right is hidden unless you set it to `false`.
 - A disabled action stays focusable (`aria-disabled`), its reason in a tooltip and read with it (in a menu, under its
   label); it has no colour of danger.
 
 **Confirmation** (`setConfirmModal(true)`): the question names the element, "Delete “Bob”?" (the key
-`modal.confirm.<label>` of your domain, given `%entity%`, else `crudit.modal.confirm.question_entity`), the button
+`modal.confirm.<label>` of your domain, given `%entity%`, else `crudit.modal.confirm.question_entity`; `%entity%` is
+the element as a string, or `#<id>` when it has no `__toString()`), the button
 that confirms is the action ("Delete"), in danger for an action in `danger`; the focus is on *Cancel*.
 
 **Modal of an action** (`setModal('client/_email_modal.html.twig')`): a template that extends
@@ -674,8 +681,14 @@ else "Confirm") and `data-confirm-danger` (that button in danger, else in primar
 
 **Actions** *(lot 3.1.a)*: the paths of the header and of the lines are kept, their markup is the components of
 CruditUiBundle (see [Actions](#5-actions)); the actions are sorted in PHP (`PageActionsBuilder`), the templates are
-given an `item` (`ActionView`: `action`, `state`, `url`, `params`, `variant`) besides `action`, `url`, `params`,
-`disabled`.
+given an `item` (`ActionView`: `action`, `state`, `url`, `params`, `variant`, `entityLabel`) besides `action`, `url`,
+`params`, `disabled`.
+
+- Read the state of the action from `item.state` (`disabled`, `reason`), not from `action.disabled` or `action.title`:
+  as in 1.x, an `ItemAction` is one instance for all the lines, each `action.*` call asks again `canEdit()` of the
+  resource.
+- Your template of an action (`setTemplate()`) is given `mobile_only`: a secondary action of the bar is rendered
+  twice, in the bar (`false`) and in the menu "More actions" below md (`true`); give no fixed `id` in it.
 
 | Template | 2.0 |
 |---|---|

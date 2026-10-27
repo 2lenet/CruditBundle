@@ -138,6 +138,9 @@ If you want to add a role for your action:
 An action whose role is refused is hidden (`hide_if_disabled`, `true` by default), or shown disabled with the reason
 "You do not have the rights for this action" (`setHideIfDisabled(false)` on the action, or `hide_if_disabled: false`).
 
+A way back to the list of your own (another label than `action.list`, or built by hand) is marked with
+`setBack()`: it goes back by the history of the navigation, without the id of the record, without checking a role.
+
 ## How to display the action under certain conditions
 
 You can add conditions to actions, using the resource or not, in order to decide whether to display the action based on the data or the request.
@@ -163,8 +166,8 @@ reason is in a tooltip and read with it (in a menu, under its label).
 
 - **Edition and deletion**: `canEdit()` / `canDelete()` on the entity return `true`, or the reason (a key of
   translation of your domain), or `false` (a generic reason).
-- **Any action**: `setDisabledReason()`, a reason, or a callable given the resource of the line or of the record that
-  returns the reason or null.
+- **Any action**: `setDisabledReason()`, a reason (a string is never called), or a closure given the resource of the
+  line or of the record that returns the reason or null.
 
 ```php
 // src/Entity/Client.php

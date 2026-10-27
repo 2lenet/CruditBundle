@@ -3,7 +3,6 @@
 namespace Lle\CruditBundle\Twig;
 
 use Lle\CruditBundle\Action\ActionView;
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -69,7 +68,7 @@ class CruditActionExtension extends AbstractExtension
             'class' => $action->getCssClass(),
             'target' => $action->getTarget(),
             // The way back to the list, an address of the history of the navigation
-            'rel' => $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST ? 'noreferrer' : null,
+            'rel' => $action->isBack() ? 'noreferrer' : null,
         ]);
 
         if ($item->state->isDisabled()) {
@@ -83,7 +82,7 @@ class CruditActionExtension extends AbstractExtension
                 'commandfor' => 'crudit-confirm',
                 'command' => 'show-modal',
                 'data-confirm-link' => (string) $item->url,
-                'data-confirm-text' => $this->confirmQuestion($action, $item->resource, $domain),
+                'data-confirm-text' => $this->confirmQuestion($action, $item->getEntityLabel(), $domain),
                 'data-confirm-label' => $this->trans($action->getLabel(), [], $action->getTranslationDomain() ?? $domain),
             ] + (str_starts_with($item->getVariant(), 'danger') ? ['data-confirm-danger' => 'true'] : []);
         } elseif ($item->isPrint()) {
@@ -100,18 +99,17 @@ class CruditActionExtension extends AbstractExtension
      * The question of the confirmation, which names the element (decision of 20/10): the key modal.confirm.<label> of
      * the CRUD, given %entity%, else "<action> « <element> » ?" (crudit.modal.confirm.question).
      */
-    protected function confirmQuestion(AbstractAction $action, ?object $resource, ?string $domain): string
+    protected function confirmQuestion(AbstractAction $action, string $entity, ?string $domain): string
     {
-        $entity = $resource instanceof \Stringable ? (string) $resource : null;
         $key = 'modal.confirm.' . $action->getLabel();
-        $question = $this->trans($key, ['%entity%' => (string) $entity], $domain);
+        $question = $this->trans($key, ['%entity%' => $entity], $domain);
         if ($question !== $key) {
             return $question;
         }
 
         $label = $this->trans($action->getLabel(), [], $action->getTranslationDomain() ?? $domain);
 
-        return $entity === null || $entity === ''
+        return $entity === ''
             ? $this->trans('crudit.modal.confirm.question', ['%action%' => $label], 'LleCruditBundle')
             : $this->trans('crudit.modal.confirm.question_entity', ['%action%' => $label, '%entity%' => $entity], 'LleCruditBundle');
     }

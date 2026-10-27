@@ -17,7 +17,7 @@ final class ActionView
 {
     /**
      * @param array<string, mixed>                                $params
-     * @param list<array{label: ?string, items: list<ActionView>}> $groups the groups of a DropdownAction
+     * @param list<array{label: ?string, domain: ?string, items: list<ActionView>}> $groups the groups of a DropdownAction
      */
     public function __construct(
         public readonly AbstractAction $action,
@@ -44,6 +44,19 @@ final class ActionView
             $variant === 'primary', $this->state->isDisabled() && str_starts_with($variant, 'danger') => 'secondary',
             default => $variant,
         };
+    }
+
+    /**
+     * The element it is for, in a text (%entity%): its __toString(), else "#<id of the route>", else empty.
+     */
+    public function getEntityLabel(): string
+    {
+        if ($this->resource instanceof \Stringable) {
+            return (string) $this->resource;
+        }
+        $id = $this->params['id'] ?? null;
+
+        return is_scalar($id) && $id !== '' ? '#' . $id : '';
     }
 
     public function isDropdown(): bool

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Action;
 
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\Action\EditAction;
@@ -17,8 +16,8 @@ use Twig\Attribute\AsTwigFunction;
  * Sorts the actions of the header of a page (brick/links) for its bar (PageActions): the hidden ones removed
  * (ActionResolver), the first primary one kept as such, the actions of the menu "More" by group, a DropdownAction
  * without any action shown removed. The parameters of a route: the id of the request (not for the way back to the
- * list), then those of its path.
- * The actions of a line of a list the same way (buildRow(), RowActions), with the id of the line.
+ * list), then those of its path, which win.
+ * The actions of a line of a list the same way (buildRow(), RowActions), with the id of the line, which wins.
  */
 class PageActionsBuilder
 {
@@ -35,8 +34,8 @@ class PageActionsBuilder
     public function build(iterable $actions, ?object $resource = null): PageActions
     {
         $inline = [];
-        /** @var array<string, array{label: ?string, items: list<ActionView>}> $more */
-        $more = ['' => ['label' => null, 'items' => []]];
+        /** @var array<string, array{label: ?string, domain: ?string, items: list<ActionView>}> $more */
+        $more = ['' => ['label' => null, 'domain' => null, 'items' => []]];
         $hasPrimary = false;
 
         foreach ($actions as $action) {
@@ -46,7 +45,7 @@ class PageActionsBuilder
             }
             if ($action->isDropdown()) {
                 $group = $action->getGroup() ?? '';
-                $more[$group] ??= ['label' => $group, 'items' => []];
+                $more[$group] ??= ['label' => $group, 'domain' => null, 'items' => []];
                 $more[$group]['items'][] = $view;
                 continue;
             }
@@ -110,7 +109,7 @@ class PageActionsBuilder
     }
 
     /**
-     * @return list<array{label: ?string, items: list<ActionView>}> the groups of a DropdownAction (a string key: its
+     * @return list<array{label: ?string, domain: ?string, items: list<ActionView>}> the groups of a DropdownAction (a string key: its
      *                                                               heading), without the actions hidden
      */
     protected function groups(DropdownAction $dropdown, ?object $resource, int|string|null $id = null, string $modalSuffix = ''): array
@@ -125,7 +124,7 @@ class PageActionsBuilder
                 }
             }
             if ($items !== []) {
-                $groups[] = ['label' => is_string($label) ? $label : null, 'items' => $items];
+                $groups[] = ['label' => is_string($label) ? $label : null, 'domain' => $dropdown->getTranslationDomain(), 'items' => $items];
             }
         }
 
@@ -138,12 +137,18 @@ class PageActionsBuilder
     protected function params(AbstractAction $action, int|string|null $id = null): array
     {
         // The way back to the list is not for the record (no ?id=… in its address)
-        if ($action instanceof PrintAction || $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST) {
+        if ($action instanceof PrintAction || $action->isBack()) {
             return $action instanceof PrintAction ? [] : $action->getPath()->getParams();
         }
-        $id ??= $this->requestStack->getCurrentRequest()?->attributes->get('id');
+        $params = $action->getPath()->getParams();
+        if ($id !== null && $id !== '') {
+            // A line: its id wins over the parameters of the path, as before 2.0
+            return [...$params, 'id' => $id];
+        }
+        $id = $this->requestStack->getCurrentRequest()?->attributes->get('id');
 
-        return $id ? ['id' => $id, ...$action->getPath()->getParams()] : $action->getPath()->getParams();
+        // The header: the parameters of the path win, as before 2.0
+        return $id !== null && $id !== '' ? ['id' => $id, ...$params] : $params;
     }
 
     /**

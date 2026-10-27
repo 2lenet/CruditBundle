@@ -234,6 +234,7 @@ class Converter
             foreach ($listAndItemActions['ignoredActions'] as $ignoredAction) {
                 yield 'warning' => 'Action ' . http_build_query($ignoredAction, '', ' ') . ' ignored';
             }
+            yield from $this->warnIgnoredClasses([...$listAndItemActions['listActions'], ...$listAndItemActions['itemActions']]);
         }
 
         $showActions = [];
@@ -243,6 +244,7 @@ class Converter
             foreach ($showActions['ignoredActions'] as $ignoredAction) {
                 yield 'warning' => 'Action ' . http_build_query($ignoredAction, '', ' ') . ' ignored';
             }
+            yield from $this->warnIgnoredClasses($showActions['showActions']);
         }
 
         $configuratorClassNameDetails = $this->generator->createClassNameDetails(
@@ -551,7 +553,7 @@ class Converter
 
     protected function getPropertyAction(array $action): array
     {
-        [$variant, $cssClass] = $this->getVariantAndCssClass($action['css_class'] ?? null);
+        [$variant, $cssClass, $ignoredClasses] = $this->getVariantAndCssClass($action['css_class'] ?? null);
         // btn-primary: the primary action of the page (setPrimary(), the first one wins), not a variant
         $primary = $variant === 'primary';
 
@@ -563,32 +565,53 @@ class Converter
             'primary' => $primary,
             'cssClass' => $cssClass,
             'target' => isset($action['target']) ? $action['target'] : null,
+            'ignoredClasses' => $ignoredClasses,
         ];
     }
 
     /**
-     * The Bootstrap classes of an action (btn-danger, btn-outline-danger…) give its variant (setVariant()), the other
-     * classes are kept.
+     * @param array<array{label: ?string, ignoredClasses: list<string>}> $actions
      *
-     * @return array{?string, ?string}
+     * @return iterable<string, string>
+     */
+    protected function warnIgnoredClasses(array $actions): iterable
+    {
+        foreach ($actions as $action) {
+            foreach ($action['ignoredClasses'] as $class) {
+                yield 'warning' => sprintf('Class %s of the action %s ignored: no variant of CruditUiBundle, use setVariant()', $class, $action['label'] ?? '');
+            }
+        }
+    }
+
+    /**
+     * The Bootstrap classes of an action (btn-danger, btn-outline-danger…) give its variant (setVariant()), the other
+     * classes are kept; a class btn-* without variant (btn-outline-warning, btn-info…) is ignored, with a warning.
+     *
+     * @return array{?string, ?string, list<string>} the variant, the classes kept, the classes btn-* ignored
      */
     protected function getVariantAndCssClass(?string $cssClass): array
     {
         $variant = null;
         $kept = [];
+        $ignored = [];
         foreach (preg_split('/\s+/', trim((string) $cssClass), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $class) {
             if (preg_match('/^btn-(outline-)?(\w+)$/', $class, $matches) === 1) {
-                $variant ??= match ($matches[1] . $matches[2]) {
+                $classVariant = match ($matches[1] . $matches[2]) {
                     'primary', 'secondary', 'warning', 'danger', 'link' => $matches[2],
                     'outline-danger' => 'danger-outline',
                     'outline-primary', 'outline-secondary' => 'secondary',
                     default => null,
                 };
+                // The size has no warning: the bar gives it
+                if ($classVariant === null && !in_array($matches[2], ['sm', 'lg', 'block'], true)) {
+                    $ignored[] = $class;
+                }
+                $variant ??= $classVariant;
             } elseif ($class !== 'btn') {
                 $kept[] = $class;
             }
         }
 
-        return [$variant, $kept ? implode(' ', $kept) : null];
+        return [$variant, $kept ? implode(' ', $kept) : null, $ignored];
     }
 }

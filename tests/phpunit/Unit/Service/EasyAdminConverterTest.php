@@ -36,4 +36,15 @@ class EasyAdminConverterTest extends TestCase
 
         self::assertSame([$variant, $primary, $kept], [$action['variant'], $action['primary'], $action['cssClass']]);
     }
+
+    public function testUnknownClassIsAWarning(): void
+    {
+        $converter = (new \ReflectionClass(Converter::class))->newInstanceWithoutConstructor();
+        $action = (new \ReflectionMethod(Converter::class, 'getPropertyAction'))->invoke($converter, ['name' => 'app_x', 'label' => 'action.x', 'css_class' => 'btn btn-outline-warning btn-sm']);
+        $warnings = iterator_to_array((new \ReflectionMethod(Converter::class, 'warnIgnoredClasses'))->invoke($converter, [$action]), false);
+
+        self::assertSame(['btn-outline-warning'], $action['ignoredClasses']);
+        self::assertCount(1, $warnings);
+        self::assertStringContainsString('btn-outline-warning of the action action.x', $warnings[0]);
+    }
 }

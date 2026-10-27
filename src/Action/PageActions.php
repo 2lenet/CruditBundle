@@ -13,7 +13,7 @@ final class PageActions
 {
     /**
      * @param list<ActionView>                                     $inline
-     * @param list<array{label: ?string, items: list<ActionView>}> $more
+     * @param list<array{label: ?string, domain: ?string, items: list<ActionView>}> $more
      */
     public function __construct(
         public readonly array $inline = [],
@@ -35,7 +35,7 @@ final class PageActions
     }
 
     /**
-     * @return list<array{label: ?string, items: list<ActionView>}> the secondary actions as entries of the menu "More"
+     * @return list<array{label: ?string, domain: ?string, items: list<ActionView>}> the secondary actions as entries of the menu "More"
      *                                                               (below md): a DropdownAction is a group named
      *                                                               after it, with the actions of all its groups
      */
@@ -44,8 +44,8 @@ final class PageActions
         $groups = [];
         foreach ($this->getSecondary() as $view) {
             $groups[] = $view->isDropdown() && !$view->state->isDisabled()
-                ? ['label' => $view->action->getLabel(), 'items' => $view->getGroupItems()]
-                : ['label' => null, 'items' => [$view]];
+                ? ['label' => $view->action->getLabel(), 'domain' => $view->action->getTranslationDomain(), 'items' => $view->getGroupItems()]
+                : ['label' => null, 'domain' => null, 'items' => [$view]];
         }
 
         return $groups;

@@ -26,13 +26,21 @@ final class RowActions
     }
 
     /**
-     * @return list<array{label: ?string, items: list<ActionView>}> the entries of the menu of the line
+     * The line, in a text (%entity%): ActionView::getEntityLabel().
+     */
+    public function getEntityLabel(): string
+    {
+        return ($this->main ?? $this->others[0] ?? null)?->getEntityLabel() ?? '';
+    }
+
+    /**
+     * @return list<array{label: ?string, domain: ?string, items: list<ActionView>}> the entries of the menu of the line
      */
     public function getMenu(): array
     {
         return array_map(static fn (ActionView $view): array => $view->isDropdown() && !$view->state->isDisabled()
-            ? ['label' => $view->action->getLabel(), 'items' => $view->getGroupItems()]
-            : ['label' => null, 'items' => [$view]], $this->others);
+            ? ['label' => $view->action->getLabel(), 'domain' => $view->action->getTranslationDomain(), 'items' => $view->getGroupItems()]
+            : ['label' => null, 'domain' => null, 'items' => [$view]], $this->others);
     }
 
     /**

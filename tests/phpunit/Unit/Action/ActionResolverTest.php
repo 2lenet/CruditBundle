@@ -73,15 +73,62 @@ class ActionResolverTest extends TestCase
     }
 
     /**
-     * Back by the history of the navigation (an url): not checked, as before 2.0; else the role of the list is.
+     * Back by the history of the navigation (an url): not checked, as before 2.0; else the role of the list is. Marked
+     * with setBack(), whatever its label.
      */
     public function testTheWayBackToTheList(): void
     {
-        $back = static fn (): ListAction => ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))
+        $back = static fn (): ListAction => ListAction::new('action.back_to_clients', Path::new('app_client_index'))
+            ->setBack()
             ->setRole('ROLE_NOBODY');
 
         self::assertTrue($this->resolver()->resolve($back()->setUrl('/client/?page=2'))->visible);
         self::assertFalse($this->resolver()->resolve($back())->visible);
+        // The label alone is no longer enough
+        $list = ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))->setRole('ROLE_NOBODY');
+        self::assertFalse($this->resolver()->resolve($list->setUrl('/client/?page=2'))->visible);
+    }
+
+    /**
+     * A string is always a reason, even the name of a function of PHP; a callable is given the resource.
+     */
+    public function testReasonThatIsTheNameOfAFunction(): void
+    {
+        self::assertSame('count', $this->resolver()->resolve($this->action()->setDisabledReason('count'))->reason);
+        self::assertSame('reset', $this->resolver()->resolve($this->action()->setDisabledReason('reset'))->reason);
+        self::assertSame('no.way', $this->resolver()->resolve($this->action()->setDisabledReason(static fn (): string => 'no.way'))->reason);
+    }
+
+    /**
+     * An action of 1.x that overrides isDisabled() (and getTitle()) is still disabled by it, deprecated.
+     */
+    public function testOverrideOf1x(): void
+    {
+        $legacy = new class ('action.legacy') extends ListAction {
+            public bool $disabled = true;
+
+            public function isDisabled(): bool
+            {
+                return $this->disabled;
+            }
+
+            public function getTitle(): string
+            {
+                return 'legacy.reason';
+            }
+        };
+        $withoutTitle = new class ('action.legacy') extends ListAction {
+            public function isDisabled(): bool
+            {
+                return true;
+            }
+        };
+        $resolver = $this->resolver();
+
+        self::assertSame('legacy.reason', $resolver->resolve($legacy->setPath(Path::new('app_x')))->reason);
+        $legacy->disabled = false;
+        self::assertFalse($resolver->resolve($legacy)->isDisabled());
+        self::assertSame(ActionState::REASON_UNAVAILABLE, $resolver->resolve($withoutTitle->setPath(Path::new('app_x')))->reason);
     }
 
     public function testDeleteHasItsOwnConfiguration(): void

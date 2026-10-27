@@ -17,7 +17,7 @@
             {% include '@LleCrudit/brick/list_items/actions/_action.html.twig' %}
         {%- endif -%}
     {%- endset -%}
-    {%- set tooltip = reason ?? action.label|trans({'%entity%': line.resource}, action.translationDomain ?? view.config.translation_domain) -%}
+    {%- set tooltip = reason ?? action.label|trans({'%entity%': item.entityLabel}, action.translationDomain ?? view.config.translation_domain) -%}
     <twig:LleCruditUi:Tooltip :text="tooltip" floating>{{ element }}</twig:LleCruditUi:Tooltip>
     {%- if reason is not null -%}
         <span id="{{ reason_id }}" class="crudit-ui-visually-hidden">{{ reason }}</span>

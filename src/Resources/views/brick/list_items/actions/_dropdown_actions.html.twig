@@ -5,7 +5,7 @@
  # Variables: row_actions (RowActions), line, view.
  #}
 {% set row_menu = row_actions.menu %}
-<twig:LleCruditUi:Dropdown iconOnly floating size="small" :label="'crudit.action.more_for'|trans({'%entity%': line.resource}, 'LleCruditBundle')">
+<twig:LleCruditUi:Dropdown iconOnly floating size="small" :label="'crudit.action.more_for'|trans({'%entity%': row_actions.entityLabel}, 'LleCruditBundle')">
     <twig:LleCruditUi:Menu>
         {{- include('@LleCrudit/brick/links/actions/_menu.html.twig', {groups: row_menu, view: view, mobile_only: false}, with_context: false) -}}
     </twig:LleCruditUi:Menu>

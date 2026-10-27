@@ -3,7 +3,7 @@
  # action that can be used, its reason under its label when it is disabled (the item stays focusable). Its template
  # (setTemplate()) in a <li> otherwise.
  # Variables: item (ActionView), view, mobile_only (shown below md only). Given to the templates: action, url, params,
- # disabled.
+ # disabled, mobile_only (true: the copy of a secondary action of the bar, see links/actions/_actions).
  #}
 {% set action = item.action %}
 {% set url = item.url %}

@@ -7,6 +7,7 @@ namespace phpunit\Unit\Twig;
 use Lle\CruditBundle\Action\ActionResolver;
 use Lle\CruditBundle\Action\PageActionsBuilder;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
+use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Twig\CruditActionExtension;
 use PHPUnit\Framework\TestCase;
@@ -29,20 +30,7 @@ class CruditActionExtensionTest extends TestCase
         $builder = $this->builder();
         $alice = $builder->buildRow([$delete], $this->client('Alice'), 1);
         $bob = $builder->buildRow([$delete], $this->client('Bob'), 2);
-        $translator = new class () implements TranslatorInterface {
-            public function trans(string $id, array $parameters = [], ?string $domain = null, ?string $locale = null): string
-            {
-                $messages = ['crudit.modal.confirm.question_entity' => '%action% “%entity%”?', 'action.delete' => 'Delete'];
-
-                return strtr($messages[$id] ?? $id, $parameters);
-            }
-
-            public function getLocale(): string
-            {
-                return 'en';
-            }
-        };
-        $extension = new CruditActionExtension($translator);
+        $extension = new CruditActionExtension($this->translator());
 
         // Built after the line of Bob, rendered after it: the line of Alice still names Alice
         $attributes = $extension->actionAttributes($alice->others[0]);
@@ -61,6 +49,33 @@ class CruditActionExtensionTest extends TestCase
 
         self::assertNull($extension->actionHref($view));
         self::assertSame(['class' => 'js-delete', 'aria-disabled' => 'true', 'aria-describedby' => 'reason'], $extension->actionAttributes($view, null, 'reason'));
+    }
+
+    public function testTheWayBackAndAnElementWithoutString(): void
+    {
+        $extension = new CruditActionExtension($this->translator());
+        $back = ListAction::new('action.back_to_clients', Path::new('app_client_index'))->setBack();
+        $delete = DeleteAction::new('action.delete', Path::new('app_client_delete'))->setConfirmModal(true);
+
+        self::assertSame('noreferrer', $extension->actionAttributes($this->builder()->build([$back])->inline[0])['rel']);
+        self::assertSame('Delete “#4”?', $extension->actionAttributes($this->builder()->buildRow([$delete], new \stdClass(), 4)->others[0])['data-confirm-text']);
+    }
+
+    private function translator(): TranslatorInterface
+    {
+        return new class () implements TranslatorInterface {
+            public function trans(string $id, array $parameters = [], ?string $domain = null, ?string $locale = null): string
+            {
+                $messages = ['crudit.modal.confirm.question_entity' => '%action% “%entity%”?', 'action.delete' => 'Delete'];
+
+                return strtr($messages[$id] ?? $id, $parameters);
+            }
+
+            public function getLocale(): string
+            {
+                return 'en';
+            }
+        };
     }
 
     private function client(string $name, bool|string $canDelete = true): object
