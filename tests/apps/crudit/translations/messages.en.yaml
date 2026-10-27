@@ -58,6 +58,7 @@ action:
     purge: "Purge the history"
     send_email: "Send an e-mail"
     deactivate: "Deactivate"
+    note: "Note"
 group:
     sales: "Sales"
     maintenance: "Maintenance"

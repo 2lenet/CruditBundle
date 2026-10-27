@@ -96,28 +96,25 @@ class PageActionsTest extends AppTestCase
     {
         $crawler = $this->client->request('GET', '/client/');
         $row = $crawler->filter('tbody tr')->reduce(static fn (Crawler $tr): bool => str_contains($tr->text(), 'Chloé'))->first();
-        $actions = $row->filter('.crudit-row-actions');
+        $actions = $row->filter('.crudit-ui-table__action-list');
 
-        // The edition, an icon button named after the line; an action setDropdown(false) shown, a button at its label
-        // named after the line, disabled with its reason; the others in the menu of the line
+        // The edition, an icon button named after the line; the others in the menu of the line
         $edit = $actions->filter('a.crudit-ui-icon-btn');
+        self::assertCount(1, $edit, 'only the edition is shown: the Table shows icon buttons only');
         self::assertSame('Edit Chloé', $edit->text());
         self::assertMatchesRegularExpression('#^/client/edit/\d+$#', (string) $edit->attr('href'));
-        $deactivate = $actions->filter('button.crudit-ui-btn');
-        self::assertSame('Deactivate', $deactivate->text());
-        self::assertSame('Deactivate Chloé', $deactivate->attr('aria-label'));
-        // A button at its label: a tooltip for its reason only, not to repeat its label
-        self::assertSame('This client is already inactive', $actions->filter('.crudit-ui-tooltip-host:has(> .crudit-ui-btn) .crudit-ui-tooltip')->text());
-        $bob = $crawler->filter('tbody tr')->reduce(static fn (Crawler $tr): bool => str_contains($tr->text(), 'Bob'))->first()->filter('.crudit-row-actions');
-        self::assertCount(1, $bob->filter('.crudit-ui-btn'));
-        self::assertCount(0, $bob->filter('.crudit-ui-tooltip-host .crudit-ui-btn'));
-        self::assertSame('true', $deactivate->attr('aria-disabled'));
-        self::assertSame('This client is already inactive', $row->filter('#' . $deactivate->attr('aria-describedby'))->text());
         self::assertSame('More actions for Chloé', $actions->filter('.crudit-ui-dropdown > button')->text());
-        self::assertSame(['Show', 'Delete'], $actions->filter('.crudit-ui-menu__text')->each(static fn (Crawler $item): string => $item->text()));
-        self::assertSame('Delete “Chloé”?', $actions->filter('.crudit-ui-menu button')->attr('data-confirm-text'));
 
-        self::assertCount(0, $crawler->filter('.crudit-row-actions')->filter('[data-bs-toggle], .btn, .dropdown-menu, i.fa'));
+        // The action setDropdown(false) has no icon: in the menu, disabled with its reason
+        $menu = $actions->filter('.crudit-ui-menu');
+        self::assertContains('Show', $menu->filter('.crudit-ui-menu__text')->each(static fn (Crawler $item): string => $item->text()));
+        $deactivate = $menu->filter('[aria-disabled="true"]');
+        self::assertCount(1, $deactivate);
+        self::assertStringContainsString('Deactivate', $deactivate->text());
+        self::assertStringContainsString('This client is already inactive', $row->text());
+        self::assertSame('Delete “Chloé”?', $actions->filter('.crudit-ui-menu button[data-confirm-text]')->attr('data-confirm-text'));
+
+        self::assertCount(0, $crawler->filter('.crudit-ui-table__action-list')->filter('[data-bs-toggle], .btn, .dropdown-menu, i.fa'));
     }
 
     /**

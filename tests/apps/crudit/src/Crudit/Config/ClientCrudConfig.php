@@ -84,6 +84,8 @@ class ClientCrudConfig extends AbstractCrudConfig
     public function getItemActions(): array
     {
         $actions = parent::getItemActions();
+        // A modal: the same action serves every row, each dialog must show its own client
+        $actions['note'] = ItemAction::new('action.note', $this->getPath(CrudConfigInterface::SHOW))->setModal('modal/client_note.html.twig');
         // Shown in the line, beside the edition (a button at its label: no icon)
         $actions['deactivate'] = ItemAction::new('action.deactivate', $this->action('deactivate'))
             ->setDropdown(false)

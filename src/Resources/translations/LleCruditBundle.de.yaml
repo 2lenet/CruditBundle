@@ -45,6 +45,11 @@ crudit:
         updated_on: "aktualisiert am"
         links: "Rechtliche Hinweise und Hilfe"
 
+    table:
+        sorted_asc: "sortiert nach %column% (aufsteigend)"
+        sorted_desc: "sortiert nach %column% (absteigend)"
+        page: "Seite %page% von %pages%"
+
     pagination:
         first: "Erste"
         previous: "Vorherige"

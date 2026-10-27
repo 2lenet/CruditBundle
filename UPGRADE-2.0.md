@@ -724,10 +724,49 @@ given an `item` (`ActionView`: `action`, `state`, `url`, `params`, `variant`, `e
 The Twig function `crudit_hide_if_disabled()` is **removed**: `crudit_action_state(action, resource)` gives
 `visible`, `disabled`, `reason`.
 
+**The list** (`brick/list_items/index.html.twig`, *lot 3.1.b*): the table is the `LleCruditUi:Table` component of
+CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Twig function `crudit_table(view)`
+(`TableViewBuilder`: columns, rows, groups, totals, sort, actions of the rows). The template only calls the component.
+
+- **Kept**: the path of the template and the block `autorefresh`; the ids of the rows (`list-<name>-<id>`) and of the
+  cells (`list-<name>-<id>-<field>-<label>`), so the scripts that refresh a cell still find it (the cards repeat them
+  as `data-row-id` and `data-cell-id`, the page has each id once); `Field::linkTo()` (the cell is a link and the row
+  opens it); the ruptures, subtotals and totals; the manual order (`getSortableField()`).
+- **Removed blocks**: `heading_cell`, `items_actions`, `dropdown_actions`, `actions`, `kebab_dropdown_actions`.
+  The templates `_heading_cell.html.twig` and `_footer.html.twig` are deleted. To add something above the table
+  (a help text, which used to hijack `autorefresh`), extend the template and put it in its block `before` (just above the table).
+- **Actions of a row** are data, not templates, sorted as in section 3.1.a (`crudit_row_actions()`, rights and
+  reasons by `ActionResolver`): the `EditAction` is the icon button ("Edit *name of the row*"), every other action is in
+  the menu "More actions for *name of the row*", a `DropdownAction` is a group of that menu (one per named group of its
+  actions). The Table shows icon buttons only: an action `setDropdown(false)` without an icon stays in the menu. A
+  disabled action stays focusable and its reason is read; it is inert (neither its modal nor its confirmation opens),
+  a disabled `DropdownAction` is one disabled entry of the menu. `setModal()` opens its `<dialog>` with `commandfor`:
+  the template of the modal receives `action`, `id`, `params`, `line` and `view`, and `action.resource` is bound to the
+  resource of its row (use the variable `id`, the one of the `commandfor`, rather than rebuilding it from `action.id`).
+  `setConfirmModal()` opens the dialog `crudit-confirm`, whose question names the row.
+  **`setTemplate()` on an item action has no effect any more**: replace the conditional ones (for instance an action
+  shown only in some states) by `setDisplayIf()`. `setCssClass()`: see section 5. The URL is `getUrl()` as is (it was
+  `absolute_url()`).
+- **Behaviours that change**:
+  - the label of a rupture (`ruptGroup1.display`) is shown as text: the HTML is stripped, and `ruptGroup1.cssClass`
+    is not used any more;
+  - the field options `view.options.noHeader` and `field.options.tableCssClass` are ignored;
+  - of `getCssClass()` on the resource, only a tone is kept: `danger`, `warning`, `success` or `info` when the class
+    contains the word (`table-danger`, `text-info`…); any other class is lost;
+  - the `path` of a total is not a link any more (it never worked: it used the variable of the last row);
+  - the name of a row ("Edit *name*") is `__toString()` of the resource when it has one, else the text of its first
+    non-empty cell: give `__toString()` to the resources whose first column is a badge, an image or a date;
+  - the pager is shown below the table only, no more above (it comes back with lot 3.1.d).
+- Icons of the actions: a Font Awesome name of 1.x that has an equivalent in the design system is converted
+  (`trash-alt`, `pencil`…), an Iconify name (`mdi:pencil`) is used as it is.
+- **Not in this lot** (the old markup stays for now): the pager (3.1.d), the batch actions (3.1.c: the selection boxes
+  and the bar of the batch actions are **not shown** until then), the filters (3.1.e). The sublist (3.3.c) still uses
+  the old templates (`list_items/_actions.html.twig` and `list_items/actions/*`).
+
 These paths and their main blocks are **kept**, because many projects extend them:
 `brick/form/index.html.twig`, `modal/_base_modal.html.twig`, `field/*.html.twig`
 (`value`, `icon`, `label`, `attributes`), `filter/type/*`, `filter/state/*`,
-`brick/list_items/actions/_action.html.twig`, `crud/index.html.twig`.
+`crud/index.html.twig`.
 Their *inner markup* changes (Bootstrap classes removed): check your overrides visually.
 
 The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *(lot 3.2)*.
