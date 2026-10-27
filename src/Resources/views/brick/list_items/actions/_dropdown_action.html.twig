@@ -1,23 +1,5 @@
-{% block action %}
-    <a
-        {% block attributes %}
-            class="{{ action.cssClass ?? 'dropdown-item crudit-action' }} {% if disabled %}disabled{% endif %}"
-            {% if action.modal %}
-                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id ~ line.resource.id }}"
-            {% elseif not action.disabled %}
-                href="{{ path(action.path.route, action.path.params({'id': line.id})) }}"
-            {% endif %}
-
-            {% if action.target is defined and action.target %}
-                target="{{ action.target }}"
-            {% endif %}
-        {% endblock %}
-    >
-        {% if action.icon %}
-            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
-        {% endif %}
-        {% if not action.hideLabel %}
-            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
-        {% endif %}
-    </a>
-{% endblock %}
+{#
+ # One action in the menu of a line: as in the menu of the header (brick/links/actions/_dropdown_action, a MenuItem).
+ # Kept for the projects that include it. Variables: item (ActionView), view.
+ #}
+{% include '@LleCrudit/brick/links/actions/_dropdown_action.html.twig' with {mobile_only: false} %}

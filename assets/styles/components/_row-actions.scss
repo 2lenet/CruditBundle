@@ -1,0 +1,11 @@
+// Actions of a line of a list (brick/list_items/_actions, RowActions.vue and _list-page.scss of the crudit-v2
+// mockup): the edition, then the menu of the line, side by side. Not printed.
+.crudit-row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+
+    @media print {
+        display: none;
+    }
+}

@@ -1,0 +1,13 @@
+{#
+ # A modal of free content, without fields (lot 3.1.a): setModal() of an action, a template that extends the base of
+ # the modals of Crudit. Variables: id (the one of the modal), action, params.
+ #}
+{% extends '@LleCrudit/modal/_base_modal.html.twig' %}
+
+{% block header %}{{ 'client.about.title'|trans }}{% endblock %}
+{% block body %}
+    <p>{{ 'client.about.text'|trans }}</p>
+{% endblock %}
+{% block footer %}
+    <twig:LleCruditUi:Button commandfor="{{ id }}" command="close" autofocus>{{ 'client.about.close'|trans }}</twig:LleCruditUi:Button>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block logo %}<span id="o-logo">MY LOGO</span>{% endblock %}
+{% block side_header %}<p id="o-side-header">Above the menu</p>{% endblock %}
+{% block side_footer %}<p id="o-side-footer">Below the menu</p>{% endblock %}
+{% block impersonation %}<p id="o-impersonation">Impersonation</p>{% endblock %}
+{% block header_search %}<span id="o-header-search">Search</span>{% endblock %}
+{% block header_nav %}<span id="o-header-nav">Header nav</span>{% endblock %}
+{% block header_right %}<span id="o-header-right">Header right</span>{% endblock %}
+{% block footer %}<footer id="o-footer">My footer</footer>{% endblock %}
+
+{# Blocks that a project can empty: the controller does not need them #}
+{% block menu_filter %}{% endblock %}
+{% block menu_toggle %}{% endblock %}
+
+{% block content %}<h1>Overrides</h1>{% endblock %}

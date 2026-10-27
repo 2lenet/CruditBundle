@@ -1,0 +1,10 @@
+{% extends '@LleCrudit/layout/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('@2lenet/crudit-ui-bundle/ui.css') }}">
+    <link rel="stylesheet" href="{{ asset('@2lenet/crudit-bundle/crudit.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ importmap('app') }}
+{% endblock %}

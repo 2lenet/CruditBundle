@@ -1,10 +1,16 @@
-<nav class="navbar navbar-light bg-light mb-2 px-2 shadow">
-    <h4 class="navbar-brand text-dark mb-0 text-wrap {% if view.data.resource.getCssClass is defined %}{{ view.data.resource.getCssClass }}{% endif %}">
-        {{ view.config.title|trans({'%entity%': view.data.entity}, view.config.translation_domain) }}
-    </h4>
-    <div class="position-relative d-inline-flex">
-        {% if view.data.actions|length %}
-            {% include('@LleCrudit/brick/links/_actions.html.twig') %}
-        {% endif %}
-    </div>
-</nav>
+{#
+ # Header of a page of a CRUD (LinksBrick, the first brick of the list, of a record and of the forms): the PageHeader
+ # of CruditUiBundle, with the only <h1> of the page (#page-title), the breadcrumb and the actions.
+ # - the breadcrumb comes from the menu (crudit_crud_breadcrumb(): the entry of the menu, then the record and its
+ #   action); block breadcrumb to replace it, in a template that extends this one
+ #   (`{% extends '@!LleCrudit/brick/links/index.html.twig' %}`);
+ # - the actions (brick/links/_actions, lot 3.1.a): the primary one, the others, the menu "More"; block page_actions.
+ #}
+{% set record = view.data.entity ?? '' %}
+{#- Names of their own: in the blocks of the component, `breadcrumb` is its prop -#}
+{% set links_breadcrumb %}{% block breadcrumb %}<twig:LleCruditUi:Breadcrumb :items="crudit_crud_breadcrumb(record)"/>{% endblock %}{% endset %}
+{% set links_actions %}{% block page_actions %}{% if not view.data.page_actions.empty %}{% include '@LleCrudit/brick/links/_actions.html.twig' %}{% endif %}{% endblock %}{% endset %}
+<twig:LleCruditUi:PageHeader :title="view.config.title|trans({'%entity%': record}, view.config.translation_domain)" class="crudit-page-header {{ view.data.resource.getCssClass ?? '' }}">
+    <twig:block name="breadcrumb">{{ links_breadcrumb }}</twig:block>
+    <twig:block name="actions">{{ links_actions }}</twig:block>
+</twig:LleCruditUi:PageHeader>

@@ -1,0 +1,22 @@
+{#
+ # Banner of the impersonation (switch_user of Symfony), above the bar of the header, always shown during one: whose
+ # account it is, and the way back (crudit_impersonation(): a GET as Symfony does it, to the route
+ # lle_crudit.exit_impersonation_path, else to the root of the application). Not printed.
+ #}
+{% set impersonation = crudit_impersonation() %}
+{% if impersonation is not null %}
+    {% set user = crudit_user() %}
+    {% set text = 'crudit.layout.impersonation_text'|trans(domain: 'LleCruditBundle')|split('%name%') %}
+    <div class="crudit-impersonation" role="region" aria-label="{{ 'crudit.layout.impersonation'|trans(domain: 'LleCruditBundle') }}">
+        <span class="crudit-impersonation__icon" aria-hidden="true">{{ ui_icon('impersonate') }}</span>
+        <p class="crudit-impersonation__text">
+            {#- The name in bold where the translation puts %name%; after it, when a translation of the project has none -#}
+            {%- if text|length > 1 %}{{ text|first }}<strong>{{ user.name }}</strong>{{ text|slice(1)|join('%name%') }}{% else %}{{ text|first }} <strong>{{ user.name }}</strong>{% endif -%}
+            {#- #} <span class="crudit-impersonation__detail">{{ 'crudit.layout.impersonation_detail'|trans(domain: 'LleCruditBundle') }}</span>
+        </p>
+        <twig:LleCruditUi:Button variant="warning" size="small" href="{{ impersonation.exit }}">
+            {{- 'crudit.layout.back_to_account'|trans(domain: 'LleCruditBundle') -}}
+            <span class="crudit-ui-visually-hidden"> ({{ impersonation.name }})</span>
+        </twig:LleCruditUi:Button>
+    </div>
+{% endif %}

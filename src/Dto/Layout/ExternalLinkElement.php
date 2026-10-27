@@ -36,7 +36,7 @@ class ExternalLinkElement extends AbstractLayoutElement
 
     public function getTemplate(): string
     {
-        return '@LleCrudit/layout/sb_admin/elements/_external_link.html.twig';
+        return '@LleCrudit/layout/sidebar/_item.html.twig';
     }
 
     public function __construct(

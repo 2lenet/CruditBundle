@@ -28,15 +28,20 @@ If you want to have roles on all your bricks (sublist, form, template, etc.), yo
 
 **2. Actions**
 
-There are two different configurations for managing the display of actions (possible values: true/false):
-- `hide_if_disabled`
-- `delete_hide_if_disabled`
+Two configurations decide whether an action whose role is refused is hidden or shown disabled, with the reason
+"You do not have the rights for this action":
+- `hide_if_disabled`: `true` (hidden) by default;
+- `delete_hide_if_disabled`: the same for the deletions, `null` by default (as `hide_if_disabled`).
+
+`setHideIfDisabled()` on an action wins over them. An action disabled by a rule of your data (`canEdit()`,
+`canDelete()`, `setDisabledReason()`) is always shown, with its reason; an action whose `setDisplayIf()` returns
+false is always hidden (see [crud.md](crud.md)).
 
 **3. Others**
 
 These configurations manage the features in your application header.
 
-`add_connect_profile_link` add a button to access your profile page.
+`add_connect_profile_link` adds a link to your profile page (`<connect_url>profile`) in the user menu of the header.
 
 You must have a `connect_url` variable in your `twig.yaml` file like this:
 
@@ -46,13 +51,12 @@ twig:
         connect_url: '%env(CONNECT_URL)%'
 ```
 
-![](img/profile_link_button.png)
+During an impersonation (`switch_user`), a banner above the header always says whose account is used and gives the
+way back, "Back to my account" (no option: `add_exit_impersonation_button` is removed in 2.0, see UPGRADE-2.0.md,
+"The header").
 
-`add_exit_impersonation_button` add a button to the header if you are impersonating someone.
-
-`exit_impersonation_path` manages the url to which you will be redirected after exiting impersonation (default: `homepage`).
-
-![](img/exit_impersonation_button.png)
+`exit_impersonation_path` is the route to which "Back to my account" leads after exiting the impersonation (default:
+`homepage`).
 
 `ignore_referer_routes` allow you to configure routes that will not be saved in the user's navigation session.
 

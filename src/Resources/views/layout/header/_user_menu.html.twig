@@ -1,0 +1,81 @@
+{#
+ # Content of the block user_menu: the menu of the user, a Dropdown of CruditUiBundle (disclosure, not an ARIA menu).
+ # Nothing without user. The user comes from crudit_user(): name, role and email of CruditUserInterface, else the name
+ # only.
+ # - the button: the avatar (initials; a flag during an impersonation), the name and the role (below 1024 px, read
+ #   only);
+ # - the panel: the user, the profile on Connect (add_connect_profile_link, global connect_url), the way back during an
+ #   impersonation, the appearance (controller theme of CruditUiBundle), the logout: a POST to the logout of the
+ #   firewall, with its CSRF field (`logout: { enable_csrf: true }`), none without logout on the firewall.
+ # To change one part, override this template (@LleCrudit/layout/header/_user_menu.html.twig).
+ #}
+{% set user = crudit_user() %}
+{% if user is not null %}
+    {% set impersonation = crudit_impersonation() %}
+    {% set theme = '2lenet--crudit-ui-bundle--theme' %}
+    {% set current = ui_theme() ?? 'system' %}
+    <twig:LleCruditUi:Dropdown id="crudit-user-menu" :label="'crudit.layout.user_menu'|trans(domain: 'LleCruditBundle')" variant="ghost" trigger:class="crudit-header__user" panel:class="crudit-header__user-panel">
+        <twig:block name="trigger">
+            <twig:LleCruditUi:Avatar :name="user.name" :impersonated="impersonation is not null"/>
+            <span class="crudit-header__user-text">
+                <span class="crudit-header__user-name">{{ user.name }}</span>
+                {%- if user.role %} <span class="crudit-header__user-role">{{ user.role }}</span>{% endif -%}
+            </span>
+            {{- ui_icon('dropdown', 'crudit-ui-dropdown__chevron crudit-header__user-chevron') -}}
+        </twig:block>
+
+        <div class="crudit-ui-dropdown__header crudit-header__user-card">
+            <twig:LleCruditUi:Avatar :name="user.name" size="large" :impersonated="impersonation is not null"/>
+            <div class="crudit-header__user-card-text">
+                <p class="crudit-header__user-card-name">{{ user.name }}</p>
+                {%- if user.role %}<p class="crudit-header__user-card-detail">{{ user.role }}</p>{% endif -%}
+                {%- if user.email %}<p class="crudit-header__user-card-detail">{{ user.email }}</p>{% endif -%}
+            </div>
+        </div>
+
+        {% set profile = crudit_add_connect_profile_link() and (connect_url ?? null) %}
+        {% if profile or impersonation is not null %}
+            <twig:LleCruditUi:Menu>
+                {% if profile %}
+                    {#- In a new tab: Connect is another site, the application stays open (it was a popup) -#}
+                    <twig:LleCruditUi:MenuItem icon="user" href="{{ connect_url ~ 'profile' }}" target="_blank" rel="noopener">
+                        {{- 'crudit.layout.profile'|trans(domain: 'LleCruditBundle') -}}
+                        <span class="crudit-ui-visually-hidden">&nbsp;{{ 'crudit.layout.new_tab'|trans(domain: 'LleCruditBundle') }}</span>
+                    </twig:LleCruditUi:MenuItem>
+                {% endif %}
+                {% if impersonation is not null %}
+                    <twig:LleCruditUi:MenuItem icon="impersonate" href="{{ impersonation.exit }}">{{ 'crudit.layout.back_to_account_of'|trans({'%name%': impersonation.name}, 'LleCruditBundle') }}</twig:LleCruditUi:MenuItem>
+                {% endif %}
+            </twig:LleCruditUi:Menu>
+        {% endif %}
+
+        {# The choice stays in the panel (not items of a Menu, which close it); aria-pressed by the server, then by the controller #}
+        <div class="crudit-ui-dropdown__body crudit-header__theme">
+            <p id="crudit-user-menu-theme" class="crudit-ui-dropdown__title">{{ 'crudit_ui.theme.label'|trans(domain: 'LleCruditUiBundle') }}</p>
+            <div class="crudit-header__theme-options" role="group" aria-labelledby="crudit-user-menu-theme" data-controller="{{ theme }}">
+                {#- Written out, not in a loop: the content of a component does not see the variable of a loop; the name of the
+                 # controller in full, the name of an attribute of a component cannot hold {{ }} -#}
+                <twig:LleCruditUi:Button size="small" icon="theme-light" value="light" aria-pressed="{{ current == 'light' ? 'true' : 'false' }}" data-2lenet--crudit-ui-bundle--theme-target="option" data-action="2lenet--crudit-ui-bundle--theme#choose">
+                    {{- 'crudit_ui.theme.light'|trans(domain: 'LleCruditUiBundle') -}}
+                </twig:LleCruditUi:Button>
+                <twig:LleCruditUi:Button size="small" icon="theme-dark" value="dark" aria-pressed="{{ current == 'dark' ? 'true' : 'false' }}" data-2lenet--crudit-ui-bundle--theme-target="option" data-action="2lenet--crudit-ui-bundle--theme#choose">
+                    {{- 'crudit_ui.theme.dark'|trans(domain: 'LleCruditUiBundle') -}}
+                </twig:LleCruditUi:Button>
+                <twig:LleCruditUi:Button size="small" icon="theme-system" value="system" aria-pressed="{{ current == 'system' ? 'true' : 'false' }}" data-2lenet--crudit-ui-bundle--theme-target="option" data-action="2lenet--crudit-ui-bundle--theme#choose">
+                    {{- 'crudit_ui.theme.system'|trans(domain: 'LleCruditUiBundle') -}}
+                </twig:LleCruditUi:Button>
+            </div>
+        </div>
+
+        {#- The path and the CSRF field configured on the firewall (crudit_logout()); nothing without logout -#}
+        {% set logout = crudit_logout() %}
+        {% if logout is not null %}
+            <form class="crudit-ui-dropdown__footer crudit-header__logout" method="post" action="{{ logout.action }}">
+                {% for name, value in logout.fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+                <twig:LleCruditUi:Menu>
+                    <twig:LleCruditUi:MenuItem icon="logout" type="submit" tone="danger">{{ 'crudit.action.logout'|trans(domain: 'LleCruditBundle') }}</twig:LleCruditUi:MenuItem>
+                </twig:LleCruditUi:Menu>
+            </form>
+        {% endif %}
+    </twig:LleCruditUi:Dropdown>
+{% endif %}

@@ -1,0 +1,16 @@
+{#
+ # Flash messages of the session, as toasts (component Toasts of CruditUiBundle), once in the layout: app.flashes
+ # empties the messages it reads. The keys of Crudit (crudit.*) are translated in its domain, the others in the
+ # domain "messages". The messages are escaped: no HTML. The region is out of <main> (block toasts): it is a landmark
+ # of its own, named.
+ #}
+{%- set tones = {success: 'success', info: 'info', notice: 'info', warning: 'warning', danger: 'danger', error: 'danger'} -%}
+<twig:LleCruditUi:Toasts :flashes="false" role="region" aria-label="{{ 'crudit.layout.messages'|trans(domain: 'LleCruditBundle') }}">
+    {%- for type, messages in app.flashes -%}
+        {%- for message in messages -%}
+            <twig:LleCruditUi:Toast tone="{{ tones[type] ?? 'info' }}">
+                {{- message starts with 'crudit.' ? message|trans(domain: 'LleCruditBundle') : message|trans -}}
+            </twig:LleCruditUi:Toast>
+        {%- endfor -%}
+    {%- endfor -%}
+</twig:LleCruditUi:Toasts>

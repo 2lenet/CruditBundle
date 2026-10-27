@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
 use Lle\CruditBundle\Brick\AbstractBrickConfig;
-use Lle\CruditBundle\Dto\Action\DropdownAction;
-use Lle\CruditBundle\Dto\Action\ItemAction;
+use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -25,7 +24,7 @@ class LinksConfig extends AbstractBrickConfig
         $this->options = $options;
     }
 
-    public function addAction(ListAction $action): self
+    public function addAction(AbstractAction $action): self
     {
         $this->actions[] = $action;
 
@@ -44,7 +43,7 @@ class LinksConfig extends AbstractBrickConfig
         return $this->back;
     }
 
-    /** @return ListAction[] */
+    /** @return AbstractAction[] */
     public function getActions(): array
     {
         return $this->actions;
@@ -52,9 +51,8 @@ class LinksConfig extends AbstractBrickConfig
 
     public function setActions(array $actions): self
     {
-        $this->actions = array_filter($actions, function (ItemAction|ListAction|DropdownAction $a) {
-            return $a instanceof DropdownAction || !$a->isBatch();
-        });
+        // The batch actions are for the list (ListBrick), not for the header
+        $this->actions = array_filter($actions, static fn (AbstractAction $a): bool => !($a instanceof ListAction && $a->isBatch()));
 
         return $this;
     }

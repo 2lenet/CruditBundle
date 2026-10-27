@@ -20,7 +20,7 @@ You need to create a template `_search.html.twig` for example, in `templates/lay
 
 To make the multiple search work, you must include the following template :
 
-`@LleCrudit/layout/sb_admin/elements/_multisearch.html.twig`
+`@LleCrudit/layout/header/_search.html.twig`
 
 Full example :
 
@@ -47,7 +47,7 @@ Full example :
 ]
 %}
 
-{% include '@LleCrudit/layout/sb_admin/elements/_multisearch.html.twig' with { 'urls': urls } %}
+{% include '@LleCrudit/layout/header/_search.html.twig' with { 'urls': urls } %}
 ```
 
 The result :

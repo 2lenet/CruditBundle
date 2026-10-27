@@ -84,7 +84,7 @@ class ExcelExporter extends AbstractExporter
                 ) {
                     if ($field->getValue()) {
                         // Showing format
-                        $format = $this->convertFormat($field->getOptions()['format']);
+                        $format = $this->convertFormat($this->getDateFormat($field));
                         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
 
                         // Value format

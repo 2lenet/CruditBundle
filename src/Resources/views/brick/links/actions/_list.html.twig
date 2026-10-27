@@ -1,42 +1,7 @@
+{#
+ # The way back to the list, as set by setTemplate() before 2.0: an action like the others (_action), which has no
+ # referrer (crudit_action_attributes()). Kept for the projects that set it.
+ #}
 {% block list_action %}
-    {% if action.url is null %}
-        {% set disabled = action.disabled or not
-            ((action.path.role is null or is_granted(action.path.role, view.data.resource))
-            and (action.role is null or is_granted(action.role, view.data.resource)))
-        %}
-    {% else %}
-        {% set disabled = action.disabled %}
-    {% endif %}
-
-    <a
-        {% block attributes %}
-            rel="noreferrer"
-            class="
-                {{ action.cssClass ?? 'btn btn-sm btn-primary mt-2 ms-1 mt-md-0 crudit-action' }}
-                {% if disabled %} disabled{% endif %}
-            "
-            {% if action.modal %}
-                data-bs-toggle="modal"
-                data-bs-target="#modal_{{ action.id }}"
-            {% elseif action.confirmModal %}
-                data-bs-toggle="modal"
-                data-bs-target="#modal-confirm"
-                data-confirm-link="{{ path(action.path.route, params) }}"
-                data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans(domain=view.config.translation_domain) }}"
-            {% elseif not disabled %}
-                href="{{ action.url ?? path(action.path.route, params) }}"
-            {% endif %}
-
-            {% if action.target is defined and action.target %}
-                target="{{ action.target }}"
-            {% endif %}
-        {% endblock %}
-    >
-        {% if action.icon %}
-            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
-        {% endif %}
-        {% if not action.hideLabel %}
-            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
-        {% endif %}
-    </a>
+    {% include '@LleCrudit/brick/links/actions/_action.html.twig' %}
 {% endblock %}

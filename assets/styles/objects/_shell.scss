@@ -1,0 +1,82 @@
+@use 'tools/responsive' as *;
+@use 'tools/a11y' as *;
+
+// Layout (layout/base.html.twig): the menu, then the column of the content (header, <main>, footer). From lg, the
+// menu is a column of the grid, full or a rail of icons: `data-sidebar` of the shell, read from the cookie by the
+// layout (auto: rail from lg to xl; collapsed: rail; expanded: full), so the page arrives in the right state, without
+// a jump. Below lg, the menu is a drawer (components/sidebar), over the content.
+// Same as `.shell` of the crudit-v2 mockup (src/styles/objects/_shell.scss).
+@mixin rail-width {
+    grid-template-columns: var(--sidebar-rail-w) minmax(0, 1fr);
+}
+
+.crudit-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    @include media('>lg') {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+        @include transition(grid-template-columns);
+
+        &[data-sidebar='collapsed'] {
+            @include rail-width;
+        }
+
+        @include media('<xl') {
+            &[data-sidebar='auto'] {
+                @include rail-width;
+            }
+        }
+
+        .crudit-shell__sidebar {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .crudit-shell__body {
+            grid-column: 2;
+            grid-row: 1;
+        }
+    }
+
+    &__sidebar {
+        min-width: 0;
+    }
+
+    &__body {
+        display: flex;
+        min-width: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        flex-direction: column;
+    }
+
+    &__header {
+        position: sticky;
+        z-index: var(--z-sticky);
+        top: 0;
+        border-bottom: 1px solid var(--c-border);
+        background-color: var(--c-surface);
+    }
+
+    &__main {
+        // No maximum width: the content takes the room the rail gives back.
+        width: 100%;
+        flex: 1;
+        padding: var(--space-3) var(--gutter) var(--space-7);
+    }
+
+    // Behind the drawer (hidden above lg and while the drawer is closed)
+    &__backdrop {
+        position: fixed;
+        z-index: calc(var(--z-drawer) - 1);
+        inset: 0;
+        background-color: var(--c-backdrop);
+    }
+}
+
+// The page behind the drawer does not scroll.
+.crudit-has-drawer {
+    overflow: hidden;
+}

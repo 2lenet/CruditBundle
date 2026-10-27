@@ -1,0 +1,23 @@
+{#
+ # A modal with fields (lot 3.1.a): a form sent to the route of the action, the submit button in the footer
+ # (form=). Variables: id (the one of the modal), action, params.
+ #}
+{% extends '@LleCrudit/modal/_base_modal.html.twig' %}
+
+{% block header %}{{ 'client.email.title'|trans }}{% endblock %}
+{% block body %}
+    <form id="{{ id }}-form" method="post" action="{{ path(action.path.route, params) }}">
+        <p>
+            <label for="{{ id }}-subject">{{ 'client.email.subject'|trans }}</label><br>
+            <input id="{{ id }}-subject" name="subject" required autofocus>
+        </p>
+        <p>
+            <label for="{{ id }}-message">{{ 'client.email.message'|trans }}</label><br>
+            <textarea id="{{ id }}-message" name="message" rows="4" required></textarea>
+        </p>
+    </form>
+{% endblock %}
+{% block footer %}
+    <twig:LleCruditUi:Button commandfor="{{ id }}" command="close">{{ 'client.email.cancel'|trans }}</twig:LleCruditUi:Button>
+    <twig:LleCruditUi:Button variant="primary" type="submit" form="{{ id }}-form" icon="send">{{ 'client.email.send'|trans }}</twig:LleCruditUi:Button>
+{% endblock %}

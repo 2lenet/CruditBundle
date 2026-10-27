@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Brick\LinksBrick;
 
+use Lle\CruditBundle\Action\PageActionsBuilder;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -19,6 +19,7 @@ class LinksFactory extends AbstractBasicBrickFactory
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         protected NavigationStack $navigationStack,
+        protected PageActionsBuilder $pageActionsBuilder,
     ) {
         parent::__construct($resourceResolver, $requestStack);
     }
@@ -34,13 +35,17 @@ class LinksFactory extends AbstractBasicBrickFactory
         /** @var \Stringable $resource */
         $resource = $this->getItem($brickConfigurator);
 
+        $actions = $this->getActions($brickConfigurator);
+
         /** @var LinksConfig $brickConfigurator */
         $view = new BrickView($brickConfigurator);
         $view
             ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/links')
             ->setConfig($brickConfigurator->getConfig($this->getRequest()))
             ->setData([
-                'actions' => $this->getActions($brickConfigurator),
+                // The actions as given, for the templates of the projects; sorted for the bar (brick/links/_actions)
+                'actions' => $actions,
+                'page_actions' => $this->pageActionsBuilder->build($actions, $resource),
                 'entity' => (string)$resource,
                 'resource' => $resource,
             ]);
@@ -55,17 +60,14 @@ class LinksFactory extends AbstractBasicBrickFactory
 
         // Resolve the back URL for "back to list" actions (covers ListAction on list pages and ItemAction on show pages)
         foreach ($actions as $action) {
-            if (
-                $action->getLabel() === CrudConfigInterface::LABEL_ACTION_LIST
-                && $action->getUrl() === null
-                && $backUrl !== null
-            ) {
+            if ($action->isBack() && $action->getUrl() === null && $backUrl !== null) {
                 $action->setUrl($backUrl);
             }
         }
 
         if ($brickConfig->hasBack()) {
-            $action = ListAction::new('crudit.action.back', $brickConfig->getCrudConfig()->getPath());
+            $action = ListAction::new('action.back', $brickConfig->getCrudConfig()->getPath())
+                ->setBack();
             if ($backUrl !== null) {
                 $action->setUrl($backUrl);
             }
