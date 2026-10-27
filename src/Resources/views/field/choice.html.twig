@@ -50,21 +50,32 @@
 {% else %}
     <span class="crudit-value crudit-value--choice">
     {%- block value -%}
-        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+        {%- import _self as fields -%}
+        {%- if value is crudit_empty -%}
             {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- elseif value is iterable -%}
+            {#- multiple: the labels, separated by commas -#}
+            {%- for item in value %}{{ fields.choice(item, options) }}{{ loop.last ? '' : ', ' }}{% endfor -%}
         {%- else -%}
-            {#- The translated label of the value (choices: label => value), in a Status when the option tones gives it a tone -#}
-            {%- set label = value -%}
-            {%- for choiceLabel, choiceValue in options.choices ?? [] -%}
-                {%- if choiceValue is same as(value) or choiceValue ~ '' == value ~ '' -%}{% set label = choiceLabel|trans(domain: options.translationDomain) %}{%- endif -%}
-            {%- endfor -%}
-            {%- set tone = (options.tones ?? [])[value ~ ''] ?? null -%}
-            {%- if tone -%}
-                <twig:LleCruditUi:Status :tone="tone" size="small">{{ label }}</twig:LleCruditUi:Status>
-            {%- else -%}
-                {{ label }}
-            {%- endif -%}
+            {{ fields.choice(value, options) }}
         {%- endif -%}
     {%- endblock -%}
     </span>
 {% endif %}
+{#-
+ # The translated label of a value (choices: label => value), in a Status when the option tones gives it a tone. A
+ # backed enum is compared by its value, another enum by its name.
+ #}
+{%- macro choice(item, options) -%}
+    {%- set key = (item.value ?? item.name ?? item) ~ '' -%}
+    {%- set label = key -%}
+    {%- for choiceLabel, choiceValue in options.choices ?? [] -%}
+        {%- if (choiceValue.value ?? choiceValue.name ?? choiceValue) ~ '' == key %}{% set label = choiceLabel|trans(domain: options.translationDomain) %}{% endif -%}
+    {%- endfor -%}
+    {%- set tone = (options.tones ?? [])[key] ?? null -%}
+    {%- if tone -%}
+        <twig:LleCruditUi:Status :tone="tone" size="small">{{ label }}</twig:LleCruditUi:Status>
+    {%- else -%}
+        {{ label }}
+    {%- endif -%}
+{%- endmacro -%}

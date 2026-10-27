@@ -67,6 +67,12 @@ modal:
         action:
             archive_inactive: "Archive all the inactive clients?"
 client:
+    priority:
+        low: "Low"
+        high: "High"
+    channel:
+        email: "E-mail"
+        phone: "Phone"
     status:
         prospect: "Prospect"
         customer: "Customer"

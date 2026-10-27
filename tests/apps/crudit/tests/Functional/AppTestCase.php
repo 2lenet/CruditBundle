@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Entity\Client;
+use App\Enum\Priority;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -35,7 +36,7 @@ abstract class AppTestCase extends WebTestCase
         // The fields of lot 3.4.a: all filled for Alice, some for Bob, none for Chloé (empty values)
         $clients['Alice']
             ->setPhone('+33612345678')
-            ->setWebsite('https://www.alice.example/shop')
+            ->setWebsite('HTTPS://WWW.alice.example/shop')
             ->setAmount('1234.50')
             ->setProgress(45)
             ->setBudgetUsed(130)
@@ -44,14 +45,16 @@ abstract class AppTestCase extends WebTestCase
             ->setStatus('customer')
             ->setBlocked(true)
             ->setTags(['vip', 'north'])
-            ->setReferrer($clients['Bob']);
+            ->setReferrer($clients['Bob'])
+            ->setPriority(Priority::High)
+            ->setChannels(['email', 'phone']);
         $clients['Bob']
             ->setWebsite('javascript:alert(1)')
             ->setAmount('20')
             ->setProgress(100)
             ->setStatus('prospect')
             ->setBlocked(false)
-            ->setTags(['since' => 2024, 'source' => 'fair']);
+            ->setTags(['since' => 2024, 'source' => 'fair', 'visits' => []]);
         $em->flush();
     }
 }

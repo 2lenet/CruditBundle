@@ -32,7 +32,7 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% else %}
-    {%- if value is not null and value is not same as('') -%}
+    {%- if value is not crudit_empty -%}
         {%- if options.property -%}
             {%- set currency = options.property|split('.')|reduce((object, property) => object ? attribute(object, property) : null, resource) -%}
         {%- else -%}
@@ -45,7 +45,7 @@
     {%- else -%}
     <span class="crudit-value crudit-value--currency">
     {%- block value -%}
-        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+        {%- if value is crudit_empty -%}
             {{ include('@LleCrudit/field/_empty.html.twig') }}
         {%- else -%}
             {{ result }}

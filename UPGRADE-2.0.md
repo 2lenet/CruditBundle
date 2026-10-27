@@ -775,20 +775,25 @@ lot 3.4.b. They had no block in 1.x: an override of a whole template still works
 |---|---|
 | all | no Bootstrap nor Font Awesome (`text-end`, `me-3`, `badge`, `progress`, `fa-*`); an empty value (`null`, `''`, an empty collection or JSON) is a dash read as "Not set" (`field/_empty.html.twig`), it was nothing |
 | `bool` | the `Boolean` of CruditUiBundle: an icon and Yes or No, written (was a coloured badge); `reverseColors` swaps the tones; `null` is a dash, No with `nullToFalse` |
-| `choice` | the **translated label** of the value (1.x showed the value); new options `tones` (a `Status` by value) and `translationDomain` |
-| `integer`, `number`, `currency` | the number alone (was in a `div.text-end.me-3`); the column is aligned by the field (see below); `removeHtml` of `currency` is kept |
+| `choice` | the **translated label** of the value (1.x showed the value), a backed enum by its value; several values (`multiple`): their labels, separated by commas; new options `tones` (a `Status` by value) and `translationDomain` |
+| `integer`, `number`, `currency` | the number alone (was in a `div.text-end.me-3`); the column is aligned by the field (see below); `removeHtml` of `currency` is kept: the value alone, outside the block `value` (an override of the block does not apply to it) |
 | `date`, `datetime` | in a `<time datetime="…">` |
 | `email`, `telephone`, `url` | a link (`telephone`: `dir="ltr"`, on one line); `url`: without its scheme nor `www.` (its host only in a cell of a list), an icon and "(new tab)" read, `rel="noopener noreferrer"`, a link only for `http(s)` |
 | `color` | the `ColorSwatch` of CruditUiBundle (the code is no longer in capitals) |
 | `doctrine_entity` | a collection: its number of elements in a `Badge` (was a pill); a link to the record as in 1.x |
 | `json` | a list gives `<ul>`, an object `<dl>`, recursively (was the values side by side); on a line in a cell of a list |
-| `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**); the headings of Markdown start at `h4` |
-| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage; new option `overMax` (`success`, `danger`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
+| `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**: what the sanitizer does not allow, an `<iframe>`, a `style`, is removed; give your own `SanitizerInterface` to allow more); the headings of Markdown start at `h4` |
+| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage (**it changes** when `min` is not 0 or `max` not 100: 1.x wrote the value followed by %); new option `overMax` (`success`, `danger`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
 | `workflow` | unchanged until lot 3.4.c |
 
 - **Alignment of a column**: by its field, `AbstractField::getAlignment()` (`start`, `end`), from the configuration
-  `default_*_alignment` (`right`: end, `left` and `center`: start). `tableCssClass` is deprecated, without effect. A
-  field of yours that extends `AbstractField` is at the start, override `getAlignment()` to change it.
+  `default_*_alignment` (`right`: end, `left` and **`center`: start**, a column is no longer centred). `tableCssClass`
+  is deprecated, without effect. A field of yours that extends `AbstractField` is at the start, override
+  `getAlignment()` to change it.
+- `TableViewBuilder` takes a `FieldRegistry` as last argument of its constructor: a decoration or an instantiation
+  by hand needs it.
+- An empty value is tested by `value is crudit_empty` (null, `''`, an empty array or collection): use it in your
+  templates of fields.
 - In a cell of a list, a long text (textarea, Markdown, rich text, JSON) is clamped to two lines, a web address shows
   its host, a JSON is on a line.
 - `FormatField` gives its options to the view (`view.options`), as the other fields.

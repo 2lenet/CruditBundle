@@ -3,7 +3,10 @@
  #}
 {%- macro json(value) -%}
     {%- import _self as fields -%}
-    {%- if value is iterable and value is not empty -%}
+    {%- if value is crudit_empty -%}
+        {#- an empty list or object inside another one -#}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- elseif value is iterable -%}
         {%- if value|keys == range(0, value|length - 1) -%}
             <ul class="crudit-value__json">{% for item in value %}<li>{{ fields.json(item) }}</li>{% endfor %}</ul>
         {%- else -%}
@@ -16,12 +19,12 @@
     {%- endif -%}
 {%- endmacro -%}
 {%- import _self as fields -%}
-<span class="crudit-value crudit-value--json crudit-value--clamp">
+<div class="crudit-value crudit-value--json crudit-value--clamp">
 {%- block value -%}
-    {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+    {%- if value is crudit_empty -%}
         {{ include('@LleCrudit/field/_empty.html.twig') }}
     {%- else -%}
         {{ fields.json(value) }}
     {%- endif -%}
 {%- endblock -%}
-</span>
+</div>

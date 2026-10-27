@@ -6,6 +6,7 @@ namespace App\Crudit\Config;
 
 use App\Crudit\Datasource\ClientDatasource;
 use App\Entity\Client;
+use App\Enum\Priority;
 use App\Form\ClientType;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
@@ -57,12 +58,24 @@ class ClientCrudConfig extends AbstractCrudConfig
         $blocked = Field::new('blocked', 'bool', ['reverseColors' => true]);
         $tags = Field::new('tags', 'json');
         $referrer = Field::new('referrer');
+        // A backed enum, and several values
+        $priority = Field::new('priority', ChoiceField::class, [
+            'choices' => ['client.priority.low' => Priority::Low, 'client.priority.high' => Priority::High],
+            'tones' => ['high' => 'danger'],
+        ]);
+        $channels = Field::new('channels', ChoiceField::class, [
+            'choices' => ['client.channel.email' => 'email', 'client.channel.phone' => 'phone'],
+            'tones' => ['phone' => 'info'],
+        ]);
 
         return match ($key) {
             CrudConfigInterface::INDEX => [
                 $name, $email, $active, $createdAt, $amount, $progress, $status, $notes, $website, $tags,
             ],
-            CrudConfigInterface::SHOW => [$name, $email, $active, $createdAt, $amount, $progress, $budgetUsed, $status, $notes, $phone, $website, $color, $blocked, $tags, $referrer],
+            CrudConfigInterface::SHOW => [
+                $name, $email, $active, $createdAt, $amount, $progress, $budgetUsed, $status, $notes, $phone, $website,
+                $color, $blocked, $tags, $referrer, $priority, $channels,
+            ],
             default => [],
         };
     }

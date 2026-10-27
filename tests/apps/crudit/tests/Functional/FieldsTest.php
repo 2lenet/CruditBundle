@@ -23,7 +23,8 @@ class FieldsTest extends AppTestCase
         // The host, then the path (hidden in a cell of a table)
         self::assertSame(['alice.example', '/shop'], [$this->value($show, 'website')->filter('.crudit-value__host')->text(), $this->value($show, 'website')->filter('.crudit-value__path')->text()]);
         $link = $this->value($show, 'website')->filter('a');
-        self::assertSame(['https://www.alice.example/shop', '_blank', 'noopener noreferrer'], [$link->attr('href'), $link->attr('target'), $link->attr('rel')]);
+        // A scheme in capitals is a web address too
+        self::assertSame(['HTTPS://WWW.alice.example/shop', '_blank', 'noopener noreferrer'], [$link->attr('href'), $link->attr('target'), $link->attr('rel')]);
         $phone = $this->value($show, 'phone')->filter('a');
         self::assertSame(['tel:+33612345678', 'ltr'], [$phone->attr('href'), $phone->attr('dir')]);
         self::assertSame('mailto:alice@example.org', $this->value($show, 'email')->filter('a')->attr('href'));
@@ -41,6 +42,21 @@ class FieldsTest extends AppTestCase
 
         self::assertSame(['vip', 'north'], $this->value($show, 'tags')->filter('ul li')->each(static fn (Crawler $item): string => $item->text()));
         self::assertSame('Bob', trim($this->value($show, 'referrer')->text()));
+
+        // A backed enum: its label and the tone of its value; several values: their labels, separated by commas
+        $priority = $this->value($show, 'priority')->filter('.crudit-ui-status');
+        self::assertSame(['High', 'crudit-ui-status crudit-ui-tone--danger crudit-ui-status--small'], [trim($priority->text()), $priority->attr('class')]);
+        self::assertSame('E-mail, Phone', trim($this->value($show, 'channels')->text()));
+        self::assertSame('Phone', trim($this->value($show, 'channels')->filter('.crudit-ui-tone--info')->text()));
+    }
+
+    public function testAJsonObjectWithAnEmptyList(): void
+    {
+        $tags = $this->value($this->show('Bob'), 'tags');
+
+        self::assertSame('div', $tags->nodeName(), 'a list in a block');
+        self::assertSame(['since', 'source', 'visits'], $tags->filter('dt')->each(static fn (Crawler $dt): string => $dt->text()));
+        self::assertSame('—Not set', trim($tags->filter('dd')->last()->text()));
     }
 
     public function testTheProgress(): void
@@ -81,7 +97,7 @@ class FieldsTest extends AppTestCase
     {
         $show = $this->show('Chloé');
 
-        foreach (['amount', 'progress', 'status', 'notes', 'phone', 'website', 'color', 'blocked', 'tags', 'referrer'] as $field) {
+        foreach (['amount', 'progress', 'status', 'notes', 'phone', 'website', 'color', 'blocked', 'tags', 'referrer', 'priority', 'channels'] as $field) {
             self::assertSame('—Not set', trim($this->value($show, $field)->filter('.crudit-ui-empty-value')->text()), $field);
         }
     }

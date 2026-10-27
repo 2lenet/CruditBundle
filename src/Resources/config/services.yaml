@@ -111,6 +111,9 @@ services:
     # Function declared by #[AsTwigFunction] (autoconfiguration)
     Lle\CruditBundle\Twig\TableExtension: ~
 
+    # Test declared by #[AsTwigTest] (autoconfiguration)
+    Lle\CruditBundle\Twig\FieldExtension: ~
+
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:
             $propertyAccessor: '@property_accessor'

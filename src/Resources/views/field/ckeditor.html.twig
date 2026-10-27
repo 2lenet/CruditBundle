@@ -3,7 +3,7 @@
  #}
 <div class="crudit-value crudit-value--ckeditor crudit-value--rich crudit-value--clamp" dir="auto">
 {%- block value -%}
-    {%- if value is null or value is same as('') -%}
+    {%- if value is crudit_empty -%}
         {{ include('@LleCrudit/field/_empty.html.twig') }}
     {%- else -%}
         {{ value|sanitize|raw }}

@@ -60,7 +60,7 @@
 {% else %}
     <span class="crudit-value crudit-value--doctrine_entity">
     {%- block value -%}
-        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+        {%- if value is crudit_empty -%}
             {{ include('@LleCrudit/field/_empty.html.twig') }}
         {%- else -%}
             {%- if value is iterable -%}

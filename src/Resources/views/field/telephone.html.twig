@@ -24,7 +24,7 @@
 {% else %}
     <span class="crudit-value crudit-value--telephone">
     {%- block value -%}
-        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+        {%- if value is crudit_empty -%}
             {{ include('@LleCrudit/field/_empty.html.twig') }}
         {%- else -%}
             <a class="crudit-value__link" href="tel:{{ value|telephoneCall }}" dir="ltr">{{ value|telephone }}</a>

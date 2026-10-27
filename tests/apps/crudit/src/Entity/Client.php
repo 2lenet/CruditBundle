@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\Priority;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -60,6 +61,13 @@ class Client
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     private ?self $referrer = null;
+
+    #[ORM\Column(length: 10, nullable: true, enumType: Priority::class)]
+    private ?Priority $priority = null;
+
+    /** @var list<string>|null the channels of contact: a ChoiceField of several values */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $channels = null;
 
     public function __construct()
     {
@@ -249,6 +257,32 @@ class Client
     public function setReferrer(?self $referrer): self
     {
         $this->referrer = $referrer;
+
+        return $this;
+    }
+
+    public function getPriority(): ?Priority
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(?Priority $priority): self
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+    /** @return list<string>|null */
+    public function getChannels(): ?array
+    {
+        return $this->channels;
+    }
+
+    /** @param list<string>|null $channels */
+    public function setChannels(?array $channels): self
+    {
+        $this->channels = $channels;
 
         return $this;
     }

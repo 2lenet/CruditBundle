@@ -26,16 +26,16 @@
 {% else %}
     <span class="crudit-value crudit-value--url">
     {%- block value -%}
-        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+        {%- if value is crudit_empty -%}
             {{ include('@LleCrudit/field/_empty.html.twig') }}
         {%- else -%}
             {#- Shown without its scheme nor www.; its host, then its path (hidden in a cell of a table); a link only for
              # http(s), never javascript: -#}
             {%- set shown = value|split('://', 2)|last -%}
-            {%- set shown = shown starts with 'www.' ? shown|slice(4) : shown -%}
+            {%- set shown = shown|lower starts with 'www.' ? shown|slice(4) : shown -%}
             {%- set host = shown|split('/', 2)|first -%}
             {%- set path = shown|slice(host|length) -%}
-            {%- if value starts with 'https://' or value starts with 'http://' -%}
+            {%- if value|lower starts with 'https://' or value|lower starts with 'http://' -%}
                 <a class="crudit-value__link" href="{{ value }}" target="_blank" rel="noopener noreferrer">
                     <span class="crudit-value__host">{{ host }}</span>{% if path %}<span class="crudit-value__path">{{ path }}</span>{% endif %}{{ ui_icon('external-link', 'crudit-value__external') }}<span class="crudit-ui-visually-hidden"> {{ 'crudit.field.new_tab'|trans(domain: 'LleCruditBundle') }}</span>
                 </a>
