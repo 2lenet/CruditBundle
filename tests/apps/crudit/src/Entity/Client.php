@@ -85,6 +85,14 @@ class Client
         return $this;
     }
 
+    /**
+     * A rule of the business (DeleteAction): an active client is not deleted, the action stays with its reason.
+     */
+    public function canDelete(): bool|string
+    {
+        return $this->active ? 'client.reason.active' : true;
+    }
+
     public function __toString(): string
     {
         return $this->name;

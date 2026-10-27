@@ -1,31 +1,23 @@
+{#
+ # The actions of a line of a list (list_items, sublist_items: RowActions.vue of the crudit-v2 mockup), sorted by
+ # PageActionsBuilder::buildRow() (crudit_row_actions()): the edition and the actions setDropdown(false) shown
+ # (actions/_actions), the others in the menu of the line, named after it (actions/_dropdown_actions); then the
+ # dialogs of the actions with a modal (modal_<id of the action><id of the line>). Lot 3.1.b puts it in the table.
+ # Variables: line (the line: its resource, its id), view.
+ #}
+{% set row_actions = crudit_row_actions(view.config.actions, line.resource, line.id) %}
 <td>
-    <div class="btn-toolbar flex-nowrap" role="toolbar">
-        {% block items_actions %}
-            <div class="btn-group btn-group-sm" role="group">
-                {% set has_dropdown = false %}
-
-                {% for action in view.config.actions %}
-                    {% if crudit_is_dropdown_action(action) %}
-                        {% block dropdown_actions %}
-                            {{ include('@LleCrudit/brick/list_items/actions/_dropdown_actions.html.twig', {dropdown_action: action, view: view}) }}
-                        {% endblock %}
-                    {% elseif not action.dropdown %}
-                        {% block actions %}
-                            {{ include('@LleCrudit/brick/list_items/actions/_actions.html.twig', {action: action, view: view}) }}
-                        {% endblock %}
-                    {% else %}
-                        {% set has_dropdown = true %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            {% if has_dropdown %}
-                <div class="btn-group btn-group-sm" role="group">
-                    {% block kebab_dropdown_actions %}
-                        {{ include('@LleCrudit/brick/list_items/actions/_kebab_dropdown_actions.html.twig', {view: view}) }}
-                    {% endblock %}
-                </div>
-            {% endif %}
-        {% endblock %}
-    </div>
+    {% block items_actions %}
+        <div class="crudit-row-actions">
+            {%- for item in row_actions.inline -%}
+                {{ include('@LleCrudit/brick/list_items/actions/_actions.html.twig', {item: item, line: line, view: view, entity_label: row_actions.entityLabel}, with_context: false) }}
+            {%- endfor -%}
+            {%- if row_actions.others -%}
+                {{ include('@LleCrudit/brick/list_items/actions/_dropdown_actions.html.twig', {row_actions: row_actions, line: line, view: view}, with_context: false) }}
+            {%- endif -%}
+        </div>
+    {% endblock %}
+    {%- for item in row_actions.modals -%}
+        {% include item.action.modal with {action: item.action, id: item.modalId, params: item.params} %}
+    {%- endfor -%}
 </td>

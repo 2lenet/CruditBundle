@@ -77,6 +77,13 @@ crudit:
         search: "Rechercher"
         reset: "Réinitialiser"
         close: "Fermer"
+        more: "Plus d'actions"
+        more_for: "Plus d'actions pour %entity%"
+        named: "%action% %entity%"
+        print: "Imprimer"
+        reason:
+            forbidden: "Vous n'avez pas les droits pour cette action"
+            unavailable: "Cette action n'est pas disponible"
 
     message:
         success: "Succès"
@@ -86,6 +93,8 @@ crudit:
         cancel: "Annuler"
         validate: "Valider"
         confirm:
+            question: "%action% ?"
+            question_entity: "%action% « %entity% » ?"
             message: "Souhaitez-vous vraiment confirmer cette action ? Cette action est irréversible."
             action: "Confirmer"
         export:

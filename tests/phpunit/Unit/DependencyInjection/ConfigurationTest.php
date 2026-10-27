@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\Processor;
  * (route_params with a route only), logo_dark needs logo.
  * lle_crudit.search: on by default, with the screens and no entity; an entity is a CrudConfig class, alone or with its
  * options.
+ * hide_if_disabled: true by default, delete_hide_if_disabled: as hide_if_disabled unless set.
  */
 class ConfigurationTest extends TestCase
 {
@@ -138,6 +139,18 @@ class ConfigurationTest extends TestCase
      *
      * @return array<string, mixed>
      */
+    /**
+     * The actions whose right is refused are hidden by default (2.0); a deletion follows hide_if_disabled unless set.
+     */
+    public function testHideIfDisabledDefaults(): void
+    {
+        $config = $this->process([]);
+
+        self::assertTrue($config['hide_if_disabled']);
+        self::assertNull($config['delete_hide_if_disabled']);
+        self::assertFalse($this->process(['delete_hide_if_disabled' => false])['delete_hide_if_disabled']);
+    }
+
     private function process(array $config): array
     {
         return (new Processor())->processConfiguration(new Configuration(), [$config]);

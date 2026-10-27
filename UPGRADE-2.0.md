@@ -23,7 +23,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Import the route of the global search and list its entities](#global-search-lot-22c) *(lot 2.2.c)*
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
-5. [Fix `setCssClass()` on actions](#5-css-classes-on-actions) *(lot 3.1)*
+5. [Fix `setCssClass()` on actions: `setVariant()`, `setPrimary()`, the reasons](#5-actions) *(lot 3.1.a)*
 6. [Review your `lle_crudit` configuration](#6-configuration) *(lots 2.1, 3.2)*
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
@@ -397,7 +397,7 @@ own risk), and its texts with the keys `crudit.layout.impersonation`, `impersona
 
 **The header of the CRUD pages** (`brick/links/index.html.twig`, the `LinksBrick` first on the list, the record and
 the forms) is the `PageHeader` of CruditUiBundle: the breadcrumb, the title in the **only `<h1>` of the page**
-(`#page-title`; it was a `<h4>` in a Bootstrap `navbar`) and the actions (their markup is reworked in lot 3.1). The
+(`#page-title`; it was a `<h4>` in a Bootstrap `navbar`) and the actions (see [Actions](#5-actions), lot 3.1.a). The
 classes `navbar`, `navbar-brand`, `bg-light` of this header are gone: retarget your CSS on `.crudit-ui-page-header`.
 `getCssClass()` of the resource is on the header. To replace the breadcrumb or the actions only, extend the template
 and override its block `breadcrumb` or `page_actions`:
@@ -551,15 +551,107 @@ Things that stop working without Bootstrap loaded: `data-bs-toggle`, `data-bs-ta
 `bootstrap.Modal`, `bootstrap.Tooltip`… in your own templates and scripts, and every Bootstrap
 class in your templates (`row`, `col-*`, `card`, `btn`, `form-control`, `d-flex`, `mb-*`…).
 
-## 5. CSS classes on actions
+## 5. Actions
 
-*Draft, completed by lot 3.1.*
+*Lot 3.1.a.*
 
-`setCssClass('btn btn-sm btn-primary')` on actions (found in most projects) no longer styles
-anything: the classes are output unchanged but, without Bootstrap, they have no effect. There is no
-compatibility layer. The `crudit-action` class stays as a styling hook.
+The actions are the `Button`, `IconButton`, `Dropdown` and `MenuItem` of CruditUiBundle: no `btn` class, no
+`data-bs-toggle`, no Font Awesome `<i>`.
 
-Use the action options instead *(to be filled)*.
+**The look: `setVariant()`, not `setCssClass()`.** `setCssClass('btn btn-sm btn-primary')` (found in most projects)
+no longer styles anything: the classes `btn` and `btn-*` are **dropped**, with a deprecation, there is no
+compatibility layer. The other classes are kept on the element (a hook of yours). Give the role of the action
+instead:
+
+| 1.x | 2.0 |
+|---|---|
+| `setCssClass('btn btn-primary …')` on the main action of the page | `setPrimary()`: one primary action per page (the first one wins), in the bar even on a phone |
+| `setCssClass('btn btn-primary …')`, `btn-secondary`, `btn-light` | nothing (`secondary`, the default) |
+| `btn-danger`, `btn-outline-danger` | `setVariant('danger')`, `setVariant('danger-outline')` |
+| `btn-warning`, `btn-link` | `setVariant('warning')`, `setVariant('link')` |
+| `btn-sm`, `mt-2 ms-1 mt-md-0`, `crudit-action` | nothing: the size and the spacing are the bar's |
+
+The variants are those of the `Button` of CruditUiBundle (`Lle\CruditUiBundle\Component\ButtonVariant`: `primary`,
+`secondary`, `ghost`, `warning`, `danger`, `danger-outline`, `link`); another value throws an exception.
+`make:crudit` and the EasyAdmin converter write `setPrimary()` for `btn-primary` and `setVariant()` for the others
+(`btn-outline-danger` → `danger-outline`). `setVariant('primary')` on an action that is not the primary one of the
+page gives a secondary button: one primary button per page.
+
+**The header of the pages** (`brick/links`, the `PageHeader`), as `PageActions.vue` of the mockup:
+
+- the actions in their order, the primary one (`setPrimary()`; by default *Add* on the list, *Edit* on the record)
+  in primary, the others in the variant of their own;
+- `setDropdown(true)`: in the menu **"More actions"** (an icon button, named), by group (`setGroup('group.x')`, a
+  heading, after those without group);
+- a `DropdownAction`: a button at its label with a menu, its groups (string keys) under a heading;
+- on a phone (below 768 px), only the primary action stays in the bar, the others go into "More actions";
+- `PrintAction::new()`: prints the page (controller `print`), no inline script.
+- the way back to the list goes back by the history of the navigation; without it, to the list, checked against
+  its role, and without the `?id=…` of the record that 1.x added to its address. It is marked with `setBack()`: the
+  action `list` of the CRUD and the button of `LinksConfig::addBack()` are; a way back of yours (renamed, or built
+  without `AbstractCrudConfig`) needs `->setBack()`. An action at the label `action.list` without it is still one
+  during 2.x, with a deprecation.
+
+**The lines of a list** (`brick/list_items/_actions.html.twig`, the lists and the sub-lists), as `RowActions.vue`:
+the edition (`EditAction`) as an icon button named "Edit Bob", the other actions in the menu of the line named "More
+actions for Bob". The label of an action of a line is no longer hidden behind its icon.
+
+| Action of a line | 1.x | 2.0 |
+|---|---|---|
+| the edition, nothing set | shown | shown |
+| another action, nothing set | shown | **in the menu of the line** |
+| `setDropdown(false)` | shown | shown (an icon button named "Archive Bob", a small button at its label without icon) |
+| `setDropdown(true)` | in the menu | in the menu, the edition too |
+
+To keep an action of a line shown, as in 1.x, add `->setDropdown(false)`. A `DropdownAction` shown is an icon
+button with its menu, named after it and the line. `setDropdown()` now takes `null` (the default: the choice of the
+bundle), `getDropdown()` gives it; in the header, `null` is shown, as before. An action of yours that overrides
+`setDropdown(bool $dropdown)` has to take `?bool`, else PHP stops on the signature.
+
+**Disabled, hidden** (decision of 20/10: `hideIfDisabled` is for the actions of context only):
+
+| Why the action cannot be used | 2.0 |
+|---|---|
+| `setDisplayIf()` (or `setDisplayIfByRequest()`) returns false | hidden, as in 1.x |
+| its role (`setRole()`, or the role of its path) is refused | hidden when `hideIfDisabled` (the action, else `hide_if_disabled`, else `delete_hide_if_disabled` for a deletion), else disabled with the reason "You do not have the rights for this action" |
+| a rule of the business: `canEdit()` / `canDelete()` of the resource, `setDisabledReason()` | **always shown**, disabled, with its reason |
+
+- `canEdit()` / `canDelete()` return `true`, or the reason (a key of translation of the CRUD), or `false` (a generic
+  reason). In 1.x, `hideIfDisabled` also hid an action refused by `canDelete()`: it is shown now, with its reason.
+- `setDisabledReason('client.archived')`, or a callable given the resource of the line or of the record, which
+  returns the reason or null: for any action. A string is always a reason, never called (`'count'` is a key); a
+  callable is a closure or `[$object, 'method']`.
+- An action of yours that overrides `isDisabled()` (and `getTitle()` for its reason), as in 1.x, still works: it is
+  disabled by it, with the reason of `getTitle()`, else a generic one. Both overrides are **deprecated**: use
+  `setDisabledReason()`, or override `getDisabledReason()`.
+- `hide_if_disabled` is now `true` by default: an action refused by a right is hidden unless you set it to `false`.
+- A disabled action stays focusable (`aria-disabled`), its reason in a tooltip and read with it (in a menu, under its
+  label); it has no colour of danger.
+
+**Confirmation** (`setConfirmModal(true)`): the question names the element, "Delete “Bob”?" (the key
+`modal.confirm.<label>` of your domain, given `%entity%`, else `crudit.modal.confirm.question_entity`; `%entity%` is
+the element as a string, or `#<id>` when it has no `__toString()`), the button
+that confirms is the action ("Delete"), in danger for an action in `danger`; the focus is on *Cancel*.
+
+**Modal of an action** (`setModal('client/_email_modal.html.twig')`): a template that extends
+`@LleCrudit/modal/_base_modal.html.twig`, with free content, with or without fields (a `<form>` to the route of the
+action, its submit button in the block `footer` with `form="…"`). Variables: `id` (`modal_<id of the action>`, then
+the id of the line in a list), `action`, `params`. It is opened by the button of the action (`commandfor`), the
+focus goes back to it, or to the menu, when it closes.
+
+**Icons**: `Icon::new()` takes a logical name of CruditUiBundle (`add`, `delete`, `back`, `download`, `print`…) or
+an Iconify name (`fa7-solid:file-export`), locked by `ux:icons:lock` (`ActionIconFinder`). The Font Awesome names of
+1.x are no longer known: `plus` → `add`, `trash-alt` → `delete`, `arrow-circle-left` → `back`, `file-export` →
+`download`, `search` and `edit` are unchanged. The type (`Icon::TYPE_FA`, `TYPE_FAR`) has no effect,
+`Icon::getCssClass()` is deprecated.
+
+**`ActionInterface`** has new methods (`getVariant()`, `setVariant()`, `isPrimary()`, `setPrimary()`,
+`getTranslationDomain()`, `setTranslationDomain()`, `isBack()`, `setBack()`, `getGroup()`, `setGroup()`,
+`getDisabledReason()`, `setDisabledReason()`): a class that implements it without extending `AbstractAction` has
+to add them.
+
+**New keys** (`LleCruditBundle`): `crudit.action.more`, `more_for`, `named`, `print`, `reason.forbidden`,
+`reason.unavailable`, `crudit.modal.confirm.question`, `question_entity`.
 
 ## 6. Configuration
 
@@ -570,7 +662,9 @@ Use the action options instead *(to be filled)*.
 | `css_class_columns_form`, `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.2.a).* |
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
-| `hide_if_disabled`, `delete_hide_if_disabled`, `add_connect_profile_link`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
+| `hide_if_disabled` | **`true` by default** (was `false`), and only for the actions refused by a right: see [Actions](#5-actions) |
+| `delete_hide_if_disabled` | `null` by default: as `hide_if_disabled`. Only for the deletions refused by a right |
+| `add_connect_profile_link`, `exit_impersonation_path`, `generate_default_role`, `ignore_referer_routes` | Unchanged |
 | `add_exit_impersonation_button` | **Removed**: the banner of the impersonation is always shown during one (and the way back in the user menu), see [The header](#the-header-lot-22a). Remove the key |
 | `layout` (`logo`, `logo_dark`, `logo_small`, `favicon`, `version`, `release_date`, `footer_links`) | New: logo, favicon and footer, see [Logo and footer](#logo-and-footer-lot-21c) |
 | `search` (`entities`, `screens`, `limit`, `min_length`, `enabled`) | New: the global search, see [Global search](#global-search-lot-22c) |
@@ -586,9 +680,10 @@ Use the action options instead *(to be filled)*.
 - Open it with a button: `<button type="button" commandfor="<id>" command="show-modal">` instead of
   `data-bs-toggle="modal" data-bs-target="#<id>"`; in JavaScript, `document.getElementById(id).showModal()` instead
   of `bootstrap.Modal`.
-- Until lot 3.1, the triggers of Crudit (`<a data-bs-toggle="modal" data-bs-target="#<id>">`, `data-bs-dismiss="modal"`)
-  still work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as
-  long as the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
+- The actions of Crudit open their modal with `commandfor` (lot 3.1.a). Until the workflows (lot 3.4.c) and the
+  batch actions (lot 3.1.c), `data-bs-toggle="modal" data-bs-target="#<id>"` and `data-bs-dismiss="modal"` still
+  work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as long as
+  the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
   header: remove your `btn-close`.
 - The block `header` is the title of the dialog, inside a `<h2>` that names it (`aria-labelledby`): put text only in it, no `<h5 class="modal-title">` (a heading in a heading).
@@ -599,7 +694,35 @@ Use the action options instead *(to be filled)*.
 controller `confirm`, id `crudit-confirm` (was `modal-confirm`; `#modal-confirm-text` and `#modal-confirm-link` are
 gone). The element that asks for it keeps `data-confirm-link` and `data-confirm-text` (the question, now the title of
 the dialog); `data-bs-toggle` and `data-bs-target` are no longer needed. A button can also open it with
-`commandfor="crudit-confirm" command="show-modal"`.
+`commandfor="crudit-confirm" command="show-modal"`. New: `data-confirm-label` (the label of the button that confirms,
+else "Confirm") and `data-confirm-danger` (that button in danger, else in primary).
+
+**Actions** *(lot 3.1.a)*: the paths of the header and of the lines are kept, their markup is the components of
+CruditUiBundle (see [Actions](#5-actions)); the actions are sorted in PHP (`PageActionsBuilder`), the templates are
+given an `item` (`ActionView`: `action`, `state`, `url`, `params`, `variant`, `entityLabel`) besides `action`, `url`,
+`params`, `disabled`.
+
+- Read the state of the action from `item.state` (`disabled`, `reason`), not from `action.disabled` or `action.title`:
+  as in 1.x, an `ItemAction` is one instance for all the lines, each `action.*` call asks again `canEdit()` of the
+  resource.
+- Your template of an action (`setTemplate()`) is given `mobile_only`: a secondary action of the bar is rendered
+  twice, in the bar (`false`) and in the menu "More actions" below md (`true`); give no fixed `id` in it.
+
+| Template | 2.0 |
+|---|---|
+| `brick/links/_actions.html.twig` | The bar (`view.data.page_actions`). Blocks `links_actions`, `dropdown_actions`, `actions`, `kebab_dropdown_actions` **removed** |
+| `brick/links/actions/_actions.html.twig` | One action of the bar (block `actions_item` kept), with its reason |
+| `brick/links/actions/_action.html.twig` | A `Button` (block `action` kept; `attributes`, `icon`, `label` **removed**: the attributes go through `setCssClass()`, `setTarget()`) |
+| `brick/links/actions/_dropdown_actions.html.twig`, `_dropdown_action.html.twig` | A `Dropdown`, a `MenuItem` (block `action` kept; `dropdown_actions_button`, `dropdown_actions_menu`, `dropdown_actions_item` **removed**) |
+| `brick/links/actions/_list.html.twig` | No longer set on the way back to the list (`rel="noreferrer"` is given to it); kept for the projects that set it |
+| `brick/list_items/_actions.html.twig` | The actions of a line (block `items_actions` kept): `row_actions.inline` (shown), `row_actions.others` (its menu), `row_actions.entityLabel` |
+| `brick/list_items/actions/_actions.html.twig` | One action shown in a line (block `actions_item` kept), with its reason; a `DropdownAction` as a `Dropdown` |
+| `brick/list_items/actions/_action.html.twig` | An `IconButton` (a small `Button` without icon) (block `action` kept, `attributes`, `icon`, `label` **removed**) |
+| `brick/list_items/actions/_dropdown_actions.html.twig` | The menu of a line |
+| `brick/links/actions/_kebab_dropdown_action(s).html.twig`, `brick/list_items/actions/_kebab_dropdown_action(s).html.twig` | **Removed**: the menu "More actions", the menu of the line |
+
+The Twig function `crudit_hide_if_disabled()` is **removed**: `crudit_action_state(action, resource)` gives
+`visible`, `disabled`, `reason`.
 
 These paths and their main blocks are **kept**, because many projects extend them:
 `brick/form/index.html.twig`, `modal/_base_modal.html.twig`, `field/*.html.twig`
@@ -620,6 +743,8 @@ renamed *(lot 3.4.b)*.
 *Draft, completed by lots 1.1 and 3.2.*
 
 - The modules of `assets/sb-admin/js` are removed. The behavior is provided by Stimulus controllers.
+- New controller `print` (`PrintAction`, lot 3.1.a): enable it in your `assets/controllers.json`, as the other
+  controllers of `@2lenet/crudit-bundle`.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
   `initChoiceTomSelect`…) no longer works. *Replacement to be filled (lot 3.2.c).*
 - Tom Select, CKEditor and EasyMDE are replaced by in-house components. HTML already saved by

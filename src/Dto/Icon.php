@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Dto;
 
+/**
+ * An icon of a menu element or of an action, rendered by ui_icon() of CruditUiBundle: a logical name of its catalogue
+ * (`add`, `delete`, `back`) or an Iconify name (`fa7-solid:users`), locked by ux:icons:lock (MenuIconFinder,
+ * ActionIconFinder). The type (fa, far, img) of 1.x has no effect anymore (the batch actions of lot 3.1.c still use
+ * getCssClass()).
+ */
 class Icon
 {
     public const TYPE_FA = 'fa';
@@ -33,6 +39,10 @@ class Icon
         return $this->type;
     }
 
+    /**
+     * @deprecated since 2.0: the icons are rendered by ui_icon() of CruditUiBundle with getIcon() (a logical name of
+     * its catalogue, or an Iconify name `prefix:name`), Font Awesome is no longer loaded
+     */
     public function getCssClass(): string
     {
         return $this->getType() . ' fa-' . $this->getIcon();

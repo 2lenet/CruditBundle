@@ -77,6 +77,13 @@ crudit:
         search: "Search"
         reset: "Reset"
         close: "Close"
+        more: "More actions"
+        more_for: "More actions for %entity%"
+        named: "%action% %entity%"
+        print: "Print"
+        reason:
+            forbidden: "You do not have the rights for this action"
+            unavailable: "This action is not available"
 
     message:
         success: "Success"
@@ -86,6 +93,8 @@ crudit:
         cancel: "Cancel"
         validate: "Validate"
         confirm:
+            question: "%action%?"
+            question_entity: "%action% “%entity%”?"
             message: "Do you really wish to confirm this action ? This action is irreversible."
             action: "Confirm"
         export:

@@ -1,36 +1,35 @@
-{% set params = action.path.params %}
-{% if view.data.resource and action.setResource is defined %}
-    {% do action.setResource(view.data.resource) %}
-{% endif %}
-
-{% set id = app.request.attributes.get('id') %}
-{% if id %}
-    {% set params = {id: id}|merge(action.path.params) %}
-{% endif %}
-
-{% if action.modal %}
-    {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
-{% endif %}
-
-{% if action.label == constant('Lle\\CruditBundle\\Contracts\\CrudConfigInterface::LABEL_ACTION_LIST') %}
-    {% set disabled = action.disabled %}
-{% else %}
-    {% set disabled = action.disabled or not
-        ((action.path.role is null or is_granted(action.path.role, view.data.resource))
-        and (action.role is null or is_granted(action.role, view.data.resource)))
-    %}
-{% endif %}
-
-{% set isDisplayed = action.isDisplayed(action.resource is defined ? action.resource : null) and action.isDisplayedByRequest(app.request) %}
-
-{% if isDisplayed and not (disabled and crudit_hide_if_disabled(action)) %}
-    {% block actions_item %}
-        <span class="btn-wrapper" title="{{ action.title|trans(domain=view.config.translation_domain) }}">
-            {% if action.template %}
+{#
+ # One action of the bar of the header (brick/links/_actions): its template (setTemplate()), else _action, else a
+ # Dropdown for a DropdownAction (_dropdown_actions). The secondary ones go into the menu "More" below md. A disabled
+ # action keeps its reason: in a Tooltip (visual only) and in a hidden text that describes the button
+ # (aria-describedby).
+ # Variables: item (ActionView), view. Given to the templates: action, url, params, disabled, reason_id, item, view,
+ # mobile_only (false; a secondary action is also rendered in the menu "More" with true, so its template is included
+ # twice in the page: no fixed id in it).
+ #}
+{% set action = item.action %}
+{% set mobile_only = false %}
+{% set url = item.url %}
+{% set params = item.params %}
+{% set disabled = item.state.disabled %}
+{% set reason = disabled ? item.state.reason|trans(domain: item.state.reasonDomain ?? view.config.translation_domain) : null %}
+{% set reason_id = disabled ? 'crudit-action-reason-' ~ action.id : null %}
+{% block actions_item %}
+    <span class="crudit-page-actions__item{{ item.primary ? ' crudit-page-actions__primary' : ' crudit-page-actions__secondary' }}">
+        {%- set element -%}
+            {%- if item.dropdownAction and not disabled -%}
+                {% include '@LleCrudit/brick/links/actions/_dropdown_actions.html.twig' %}
+            {%- elseif action.template -%}
                 {% include action.template %}
-            {% else %}
+            {%- else -%}
                 {% include '@LleCrudit/brick/links/actions/_action.html.twig' %}
-            {% endif %}
-        </span>
-    {% endblock %}
-{% endif %}
+            {%- endif -%}
+        {%- endset -%}
+        {%- if reason is not null -%}
+            <twig:LleCruditUi:Tooltip :text="reason">{{ element }}</twig:LleCruditUi:Tooltip>
+            <span id="{{ reason_id }}" class="crudit-ui-visually-hidden">{{ reason }}</span>
+        {%- else -%}
+            {{ element }}
+        {%- endif -%}
+    </span>
+{% endblock %}

@@ -1,0 +1,55 @@
+@use 'tools/responsive' as *;
+
+// Actions of the header of a page (brick/links/_actions, PageActions.vue and _list-page.scss of the crudit-v2
+// mockup): in a row, the primary one stretched on a phone; below md the secondary ones go into the menu "More"
+// (doubled there, `__mobile-only`, hidden from md). Not printed.
+.crudit-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+
+    @include media('<sm') {
+        flex-wrap: nowrap;
+        inline-size: 100%;
+
+        .crudit-page-actions__primary {
+            flex: 1;
+
+            > .crudit-ui-btn,
+            > .crudit-ui-tooltip-host,
+            > .crudit-ui-tooltip-host > .crudit-ui-btn {
+                width: 100%;
+            }
+        }
+    }
+
+    @include media('<md') {
+        .crudit-page-actions__secondary {
+            display: none;
+        }
+    }
+
+    @include media('>md') {
+        .crudit-page-actions__more--mobile-only {
+            display: none;
+        }
+    }
+
+    @media print {
+        display: none;
+    }
+}
+
+.crudit-page-actions__item {
+    display: inline-flex;
+}
+
+// In the menu "More": the secondary actions, doubled below md only. The class is on the button of a MenuItem (its
+// attributes), on the <li> of a MenuGroup.
+@include media('>md') {
+    .crudit-page-actions__mobile-only,
+    li:has(> .crudit-page-actions__mobile-only) {
+        display: none;
+    }
+}

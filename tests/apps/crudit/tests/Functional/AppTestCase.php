@@ -12,7 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * A browser on the real application (real bundle, real container, SQLite) and a database of 3 clients, rebuilt for
- * each test.
+ * each test: Alice and Bob active (not deletable: Client::canDelete()), Chloé inactive.
  */
 abstract class AppTestCase extends WebTestCase
 {
@@ -29,7 +29,7 @@ abstract class AppTestCase extends WebTestCase
         $tool->dropSchema($metadata);
         $tool->createSchema($metadata);
         foreach (['Alice', 'Bob', 'Chloé'] as $name) {
-            $em->persist((new Client())->setName($name)->setEmail(strtolower($name) . '@example.org'));
+            $em->persist((new Client())->setName($name)->setEmail(strtolower($name) . '@example.org')->setActive('Chloé' !== $name));
         }
         $em->flush();
     }

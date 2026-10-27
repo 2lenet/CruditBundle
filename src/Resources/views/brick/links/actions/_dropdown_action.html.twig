@@ -1,23 +1,30 @@
+{#
+ # One action in a menu (the menu "More", a DropdownAction): a MenuItem of CruditUiBundle, in danger for a destructive
+ # action that can be used, its reason under its label when it is disabled (the item stays focusable). Its template
+ # (setTemplate()) in a <li> otherwise.
+ # Variables: item (ActionView), view, mobile_only (shown below md only). Given to the templates: action, url, params,
+ # disabled, mobile_only (true: the copy of a secondary action of the bar, see links/actions/_actions).
+ #}
+{% set action = item.action %}
+{% set url = item.url %}
+{% set params = item.params %}
+{% set disabled = item.state.disabled %}
 {% block action %}
-    <a
-        {% block attributes %}
-            class="{{ action.cssClass ?? 'dropdown-item crudit-action' }} {% if disabled %}disabled{% endif %}"
-            {% if action.modal %}
-                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-            {% elseif not disabled %}
-                href="{{ action.url ?? path(action.path.route, params) }}"
-            {% endif %}
-
-            {% if action.target is defined and action.target %}
-                target="{{ action.target }}"
-            {% endif %}
-        {% endblock %}
-    >
-        {% if action.icon %}
-            {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
-        {% endif %}
-        {% if not action.hideLabel %}
-            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
-        {% endif %}
-    </a>
+    {%- if action.template -%}
+        <li{% if mobile_only %} class="crudit-page-actions__mobile-only"{% endif %}>{% include action.template %}</li>
+    {%- else -%}
+        {%- set action_attributes = crudit_action_attributes(item, view.config.translation_domain) -%}
+        {%- if mobile_only -%}
+            {%- set action_attributes = action_attributes|merge({class: ('crudit-page-actions__mobile-only ' ~ (action_attributes.class ?? ''))|trim}) -%}
+        {%- endif -%}
+        {%- set action_label = action.label|trans(domain: action.translationDomain ?? view.config.translation_domain) -%}
+        {% component 'LleCruditUi:MenuItem' with {
+            icon: action.icon.icon ?? null,
+            href: crudit_action_href(item),
+            tone: action.variant starts with 'danger' ? 'danger' : null,
+            reason: disabled ? item.state.reason|trans(domain: item.state.reasonDomain ?? view.config.translation_domain) : null,
+        }|merge(action_attributes) %}
+            {% block content %}{{ action_label }}{% endblock %}
+        {% endcomponent %}
+    {%- endif -%}
 {% endblock %}

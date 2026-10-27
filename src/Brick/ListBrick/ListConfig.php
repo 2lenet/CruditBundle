@@ -8,7 +8,7 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\DatasourceInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Dto\Action\DropdownAction;
+use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
@@ -132,9 +132,7 @@ class ListConfig extends AbstractBrickConfig
 
     public function setBatchActions(array $actions): self
     {
-        $this->batch_actions = array_filter($actions, function (ItemAction|ListAction|DropdownAction $a) {
-            return !$a instanceof DropdownAction && $a->isBatch();
-        });
+        $this->batch_actions = array_filter($actions, static fn (AbstractAction $a): bool => $a instanceof ListAction && $a->isBatch());
 
         return $this;
     }

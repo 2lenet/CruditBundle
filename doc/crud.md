@@ -55,60 +55,112 @@ Field::new('myField')->setCardCssClass('col-md-6');
 
 ## How to add actions:
 
-It is possible to add actions to lists, list items and shows.
-It is already possible to add action in a dropdown, adding `->setDropdown(true)` to the action object.
+It is possible to add actions to lists (the header of the list page), list items (the lines) and shows (the header
+of the record). They are the buttons and menus of CruditUiBundle:
+
+- **in the header**, the actions in their order; one of them is the **primary** one (`setPrimary()`: by default *Add*
+  on the list, *Edit* on the record); `setDropdown(true)` puts an action in the menu "More actions", `setGroup()`
+  under a heading of it; a `DropdownAction` is a button with its own menu; on a phone, only the primary action stays
+  in the bar;
+- **in a line**, the edition is an icon button, the other actions are in the menu of the line; `setDropdown(false)`
+  shows one beside the edition, `setDropdown(true)` puts the edition in the menu.
+
+```php
+  public function getItemActions(): array
+  {
+      $res = parent::getItemActions();
+
+      // Shown in the line, beside the edition
+      $res['archive'] = ItemAction::new('action.archive', Path::new('app_client_archive'), Icon::new('archive'))
+          ->setDropdown(false);
+
+      return $res;
+  }
+```
 
 ```php
   public function getListActions(): array
   {
-      $res[] = ListAction::new(
-          "action.export",
-          $this->getPath(CrudConfigInterface::EXPORT),
-          Icon::new("file-export")
-      )
-          ->setModal("@LleCrudit/modal/_export.html.twig")
-          ->setConfig(
-              [
-                  "export" => [Exporter::CSV, Exporter::EXCEL],
-              ]
-          );
-          
-      $res[] = ListAction::new(
-          'action.import.csv',
-          Path::new('import_lot_melange'),
-          Icon::new('download')
-      )->setDropdown(true);
+      $res = parent::getListActions();
 
-      $res[] = ListAction::new(
+      $res['import'] = ListAction::new('action.import.csv', Path::new('import_lot_melange'), Icon::new('upload'))
+          ->setDropdown(true);
+
+      $res['archive'] = ListAction::new('action.archive', Path::new('app_client_archive'), Icon::new('delete'))
+          ->setDropdown(true)
+          ->setGroup('group.maintenance')
+          ->setVariant('danger')
+          ->setConfirmModal(true);
+
+      $res['reports'] = DropdownAction::new('action.reports', [
+          'group.sales' => [ListAction::new('action.report_month', Path::new('app_report_month'))],
+          [ListAction::new('action.report_custom', Path::new('app_report_custom'))],
+      ], Icon::new('file'));
+
+      $res['print'] = PrintAction::new();
+
+      $res['batch'] = ListAction::new(
           'action.batch.bons_livraisons',
           Path::new('create_bons_livraisons'),
-          Icon::new('truck-loading')
+          Icon::new('fa7-solid:truck-loading')
       )->setIsBatch();
 
       return $res;
   }
 ```
 
+- **Look**: `setVariant()` (`primary`, `secondary` by default, `ghost`, `warning`, `danger`, `danger-outline`, `link`:
+  the variants of the `Button` of CruditUiBundle). `setCssClass()` adds classes of yours; the Bootstrap classes
+  (`btn`, `btn-*`) have no effect.
+- **Icons**: a logical name of CruditUiBundle (`add`, `edit`, `delete`, `back`, `download`, `upload`, `print`…) or an
+  Iconify name (`fa7-solid:truck-loading`), locked by `ux:icons:lock`.
+- **Confirmation**: `setConfirmModal(true)`. The question names the element ("Delete “Bob”?"); write your own with the
+  key `modal.confirm.<label of the action>` of your domain, given `%entity%`.
+- **Modal**: `setModal('client/_email_modal.html.twig')`, a template that extends
+  `@LleCrudit/modal/_base_modal.html.twig` (blocks `header`, `body`, `footer`; variables `id`, `action`, `params`),
+  with free content, with or without a form:
+
+```twig
+{% extends '@LleCrudit/modal/_base_modal.html.twig' %}
+
+{% block header %}{{ 'client.email.title'|trans }}{% endblock %}
+{% block body %}
+    <form id="{{ id }}-form" method="post" action="{{ path(action.path.route, params) }}">
+        <label for="{{ id }}-subject">{{ 'client.email.subject'|trans }}</label>
+        <input id="{{ id }}-subject" name="subject" required autofocus>
+    </form>
+{% endblock %}
+{% block footer %}
+    <twig:LleCruditUi:Button commandfor="{{ id }}" command="close">{{ 'client.email.cancel'|trans }}</twig:LleCruditUi:Button>
+    <twig:LleCruditUi:Button variant="primary" type="submit" form="{{ id }}-form">{{ 'client.email.send'|trans }}</twig:LleCruditUi:Button>
+{% endblock %}
+```
+
 If you want to add a role for your action:
 
 ```php
   public function getListActions(): array
-  {          
-      $res[] = ListAction::new(
-          'action.import.csv',
-          (Path::new('import_lot_melange'))->setRole('ROLE_IMPORT'),
-          Icon::new('download')
-      )->setDropdown(true);
+  {
+      $res[] = ListAction::new('action.import.csv', Path::new('import_lot_melange'), Icon::new('upload'))
+          ->setRole('ROLE_IMPORT')
+          ->setDropdown(true);
 
       return $res;
   }
 ```
 
+An action whose role is refused is hidden (`hide_if_disabled`, `true` by default), or shown disabled with the reason
+"You do not have the rights for this action" (`setHideIfDisabled(false)` on the action, or `hide_if_disabled: false`).
+
+A way back to the list of your own (another label than `action.list`, or built by hand) is marked with
+`setBack()`: it goes back by the history of the navigation, without the id of the record, without checking a role.
+
 ## How to display the action under certain conditions
 
 You can add conditions to actions, using the resource or not, in order to decide whether to display the action based on the data or the request.
 
-To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request):
+To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request): the action is
+hidden when it returns false.
 
 ```php
 $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
@@ -116,10 +168,31 @@ $actions[CrudConfigInterface::ACTION_SHOW] = ItemAction::new(
     $this->getPath(CrudConfigInterface::SHOW),
     Icon::new('search')
 )
-    ->setCssClass('btn btn-primary btn-sm crudit-action')
     ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::SHOW))
     ->setDisplayIf(fn(Resource $resource) => $resource->isActive())
     ->setDisplayIfByRequest(fn(Request $request) => $request->query->has('actif'));
+```
+
+## How to disable an action, with its reason
+
+When a rule of your data forbids an action, keep it shown and say why: the action is disabled (still focusable), its
+reason is in a tooltip and read with it (in a menu, under its label).
+
+- **Edition and deletion**: `canEdit()` / `canDelete()` on the entity return `true`, or the reason (a key of
+  translation of your domain), or `false` (a generic reason).
+- **Any action**: `setDisabledReason()`, a reason (a string is never called), or a closure given the resource of the
+  line or of the record that returns the reason or null.
+
+```php
+// src/Entity/Client.php
+public function canDelete(): bool|string
+{
+    return $this->active ? 'client.reason.active' : true;
+}
+
+// src/Crudit/Config/ClientCrudConfig.php
+$actions['deactivate'] = ItemAction::new('action.deactivate', Path::new('app_client_deactivate'))
+    ->setDisabledReason(fn (?Client $client): ?string => $client?->isActive() === false ? 'client.reason.inactive' : null);
 ```
 
 You can configure editable conditions on ```lle\src\Dto\Field``` by adding
