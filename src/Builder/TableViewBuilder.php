@@ -29,7 +29,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * - the props of the component: `id`, `caption`, `columns`, `rows` (without ruptures) or `groups`, `totals`, `sort`,
  *   `sortable`;
  * - `modals`: the modals of the actions `setModal()`, to include after the table (`{template, id, action, line}`): the
- *   button of the row opens them with `commandfor`. The `action` is a copy bound to the resource of its row.
+ *   button of the row opens them with `commandfor`. The same `action` serves every row: the template binds
+ *   it to the resource of `line` before each include.
  *
  * The action `EditAction` is the one shown as an icon, the others are in the menu "More actions" of the row.
  *
@@ -370,8 +371,7 @@ class TableViewBuilder
             }
             if ($action->getModal() !== null) {
                 $id = 'modal_' . $action->getId() . $line->getId();
-                // a copy: the same action serves every row, each modal must keep the resource of its own row
-                $modals[] = ['template' => $action->getModal(), 'id' => $id, 'action' => clone $action, 'line' => $line];
+                $modals[] = ['template' => $action->getModal(), 'id' => $id, 'action' => $action, 'line' => $line];
                 $attr += ['commandfor' => $id, 'command' => 'show-modal'];
                 $url = null;
             } elseif ($action->getConfirmModal()) {

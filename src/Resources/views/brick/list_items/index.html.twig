@@ -26,5 +26,7 @@
     </twig:block>
 </twig:LleCruditUi:Table>
 {% for modal in table.modals %}
+    {# the same action serves every row: bind it to the resource of the row of this modal #}
+    {% do modal.action.setResource(modal.line.resource) %}
     {% include modal.template with {action: modal.action, id: modal.id, line: modal.line, view: view} %}
 {% endfor %}

@@ -139,7 +139,7 @@ class TableViewBuilderTest extends TestCase
         self::assertSame(5, $table['modals'][0]['line']->getId());
     }
 
-    public function testEachModalKeepsTheResourceOfItsRow(): void
+    public function testEachModalHasItsRowAndItsOwnId(): void
     {
         $action = ItemAction::new('action.send', Path::new('app_send'))->setModal('@App/modal.html.twig');
         $first = new \stdClass();
@@ -152,8 +152,9 @@ class TableViewBuilderTest extends TestCase
 
         self::assertCount(2, $table['modals']);
         self::assertNotSame($table['modals'][0]['id'], $table['modals'][1]['id']);
-        self::assertSame($first, $table['modals'][0]['action']->getResource());
-        self::assertSame($second, $table['modals'][1]['action']->getResource());
+        self::assertSame($action, $table['modals'][0]['action'], 'same object: action.id stays the one of the button');
+        self::assertSame($first, $table['modals'][0]['line']->getResource());
+        self::assertSame($second, $table['modals'][1]['line']->getResource());
     }
 
     public function testDisabledActionWithModalOrConfirmationIsInert(): void

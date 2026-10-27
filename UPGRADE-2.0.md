@@ -621,8 +621,8 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   **`setTemplate()` on an item action has no effect any more**: replace the conditional ones (for instance an action
   shown only in some states) by `setDisplayIf()`. `setCssClass()`: see section 5.
   A disabled action (role refused, `isDisabled()`, or inside a disabled `DropdownAction`) is inert: it opens neither
-  its modal nor its confirmation. Each modal receives a copy of the action bound to the resource of its row
-  (`action.resource`). The URL is `getUrl()` as is (it was `absolute_url()`), and the confirmation asks for that URL.
+  its modal nor its confirmation. Each modal is rendered with `action.resource` bound to the resource of its row.
+  In a modal, use the variable `id` (the one of the button's `commandfor`) rather than rebuilding it from `action.id`. The URL is `getUrl()` as is (it was `absolute_url()`), and the confirmation asks for that URL.
 - **Behaviours that change**:
   - the label of a rupture (`ruptGroup1.display`) is shown as text: the HTML is stripped, and `ruptGroup1.cssClass`
     is not used any more;
