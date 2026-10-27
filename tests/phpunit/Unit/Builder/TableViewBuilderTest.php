@@ -136,8 +136,50 @@ class TableViewBuilderTest extends TestCase
         self::assertSame(['commandfor' => $id, 'command' => 'show-modal'], $built['attr']);
         self::assertNull($built['url']);
         self::assertSame('@App/modal.html.twig', $table['modals'][0]['template']);
-        self::assertSame($action, $table['modals'][0]['action']);
         self::assertSame(5, $table['modals'][0]['line']->getId());
+    }
+
+    public function testEachModalKeepsTheResourceOfItsRow(): void
+    {
+        $action = ItemAction::new('action.send', Path::new('app_send'))->setModal('@App/modal.html.twig');
+        $first = new \stdClass();
+        $second = new \stdClass();
+        $table = $this->build(
+            [Field::new('name')],
+            [$this->line(1, [[Field::new('name'), 'A']], $first), $this->line(2, [[Field::new('name'), 'B']], $second)],
+            actions: [$action],
+        );
+
+        self::assertCount(2, $table['modals']);
+        self::assertNotSame($table['modals'][0]['id'], $table['modals'][1]['id']);
+        self::assertSame($first, $table['modals'][0]['action']->getResource());
+        self::assertSame($second, $table['modals'][1]['action']->getResource());
+    }
+
+    public function testDisabledActionWithModalOrConfirmationIsInert(): void
+    {
+        $this->denied = ['ROLE_EDIT'];
+        $modal = ItemAction::new('action.send', Path::new('app_send'))->setModal('@App/modal.html.twig')->setRole('ROLE_EDIT');
+        $confirm = DeleteAction::new('action.delete', Path::new('app_delete'))->setConfirmModal(true)->setRole('ROLE_EDIT');
+        $table = $this->build([Field::new('name')], [$this->line(1, [[Field::new('name'), 'A']])], actions: [$modal, $confirm]);
+
+        foreach ($table['rows'][0]['actions'] as $built) {
+            self::assertSame([], $built['attr'], 'no commandfor, no data-confirm-link');
+            self::assertNull($built['url']);
+            self::assertNotNull($built['disabledReason']);
+        }
+        self::assertSame([], $table['modals']);
+    }
+
+    public function testDisabledDropdownDisablesItsActions(): void
+    {
+        $this->denied = ['ROLE_MORE'];
+        $dropdown = DropdownAction::new('more', [[ItemAction::new('copy', Path::new('app_copy'))]])->setRole('ROLE_MORE');
+        $table = $this->build([Field::new('name')], [$this->line(2, [[Field::new('name'), 'A']])], actions: [$dropdown]);
+
+        $item = $table['rows'][0]['actions'][0]['items'][0];
+        self::assertNull($item['url']);
+        self::assertNotNull($item['disabledReason']);
     }
 
     public function testDisabledAction(): void

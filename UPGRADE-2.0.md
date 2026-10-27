@@ -620,6 +620,19 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   `action`, `id`, `line` and `view`), `setConfirmModal()` keeps `data-confirm-link` and `data-confirm-text`.
   **`setTemplate()` on an item action has no effect any more**: replace the conditional ones (for instance an action
   shown only in some states) by `setDisplayIf()`. `setCssClass()`: see section 5.
+  A disabled action (role refused, `isDisabled()`, or inside a disabled `DropdownAction`) is inert: it opens neither
+  its modal nor its confirmation. Each modal receives a copy of the action bound to the resource of its row
+  (`action.resource`). The URL is `getUrl()` as is (it was `absolute_url()`), and the confirmation asks for that URL.
+- **Behaviours that change**:
+  - the label of a rupture (`ruptGroup1.display`) is shown as text: the HTML is stripped, and `ruptGroup1.cssClass`
+    is not used any more;
+  - the field options `view.options.noHeader` and `field.options.tableCssClass` are ignored;
+  - of `getCssClass()` on the resource, only a tone is kept: `danger`, `warning`, `success` or `info` when the class
+    contains the word (`table-danger`, `text-info`…); any other class is lost;
+  - the `path` of a total is not a link any more (it never worked: it used the variable of the last row);
+  - the name of a row ("Edit *name*") is `__toString()` of the resource when it has one, else the text of its first
+    non-empty cell: give `__toString()` to the resources whose first column is a badge, an image or a date;
+  - the pager is shown below the table only, no more above (it comes back with lot 3.1.d).
 - Icons of the actions: a Font Awesome name of 1.x that has an equivalent in the design system is converted
   (`trash-alt`, `pencil`…), an Iconify name (`mdi:pencil`) is used as it is.
 - **Not in this lot** (the old markup stays for now): the pager (3.1.d), the batch actions (3.1.c: the selection boxes

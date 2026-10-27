@@ -29,7 +29,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * - the props of the component: `id`, `caption`, `columns`, `rows` (without ruptures) or `groups`, `totals`, `sort`,
  *   `sortable`;
  * - `modals`: the modals of the actions `setModal()`, to include after the table (`{template, id, action, line}`): the
- *   button of the row opens them with `commandfor`.
+ *   button of the row opens them with `commandfor`. The `action` is a copy bound to the resource of its row.
  *
  * The action `EditAction` is the one shown as an icon, the others are in the menu "More actions" of the row.
  *
@@ -70,6 +70,7 @@ class TableViewBuilder
         $name = strtolower((string) $config['name']);
 
         $fields = array_values(array_filter($config['fields'], $this->isShown(...)));
+        $shown = array_flip(array_map(static fn (Field $field) => $field->getId(), $fields));
         [$sortField, $sortDir] = $this->currentSort($config);
 
         $columns = [];
@@ -84,7 +85,7 @@ class TableViewBuilder
         $firstGroup = null;
         $secondGroup = null;
         foreach ($data['lines'] as $line) {
-            $row = $this->row($line, $view, $name, $domain, $modals);
+            $row = $this->row($line, $view, $name, $domain, $shown, $modals);
 
             if ($line->getRuptGroup1() !== null) {
                 $break = $line->getRuptGroup1();
@@ -101,7 +102,13 @@ class TableViewBuilder
             if ($line->getRuptGroup2() !== null) {
                 $break = $line->getRuptGroup2();
                 if ($firstGroup === null) {
-                    $groups[] = ['key' => $break->key, 'label' => $this->text($break->display), 'rows' => [], 'children' => []];
+                    $groups[] = [
+                        'key' => $break->key,
+                        'label' => $this->text($break->display),
+                        'rows' => [],
+                        'children' => [],
+                        'subtotals' => [],
+                    ];
                     $firstGroup = array_key_last($groups);
                 } else {
                     $groups[$firstGroup]['children'][] = ['key' => $break->key, 'label' => $this->text($break->display), 'rows' => []];
@@ -130,7 +137,7 @@ class TableViewBuilder
 
         return [
             'id' => $view->getId(),
-            'caption' => $this->caption($config, $domain, $sortField, $sortDir),
+            'caption' => $this->caption($config, $fields, $domain, $sortField, $sortDir),
             'columns' => $columns,
             'rows' => $rows,
             'groups' => $groups,
@@ -198,7 +205,8 @@ class TableViewBuilder
         ];
     }
 
-    private function row(ResourceView $line, BrickView $view, string $name, ?string $domain, array &$modals): array
+    /** @param array<string, int> $shown the ids of the visible fields (as keys) */
+    private function row(ResourceView $line, BrickView $view, string $name, ?string $domain, array $shown, array &$modals): array
     {
         $config = $view->getConfig();
         $domId = 'list-' . $name . '-' . $line->getId();
@@ -208,7 +216,7 @@ class TableViewBuilder
         $url = null;
         foreach ($line->getFields() as $fieldView) {
             $field = $fieldView->getField();
-            if (!$this->isShown($field)) {
+            if (!isset($shown[$field->getId()])) {
                 continue;
             }
             $cellUrl = $this->fieldUrl($fieldView, $line);
@@ -227,12 +235,25 @@ class TableViewBuilder
         return [
             'id' => (string) $line->getId(),
             'domId' => $domId,
-            'label' => $label ?? '#' . $line->getId(),
+            'label' => $this->rowLabel($resource, $label) ?? '#' . $line->getId(),
             'url' => $url,
             'tone' => $this->tone($resource),
             'cells' => $cells,
             'actions' => $this->actions($config['actions'], $line, $domain, $modals),
         ];
+    }
+
+    /** The name of a row for the screen readers: `__toString()` of the resource when it has one, else its first text. */
+    private function rowLabel(object $resource, ?string $firstText): ?string
+    {
+        if (method_exists($resource, '__toString')) {
+            $text = trim((string) $resource);
+            if ($text !== '') {
+                return $text;
+            }
+        }
+
+        return $firstText;
     }
 
     private function fieldUrl(FieldView $fieldView, ResourceView $line): ?string
@@ -294,7 +315,7 @@ class TableViewBuilder
         foreach ($dropdown->getActions() as $groupName => $group) {
             $items = [];
             foreach ($group as $action) {
-                if ($item = $this->action($action, $line, $domain, false, $modals)) {
+                if ($item = $this->action($action, $line, $domain, false, $modals, $disabled)) {
                     $items[] = $item;
                 }
             }
@@ -307,7 +328,14 @@ class TableViewBuilder
         return $entries;
     }
 
-    private function action(AbstractAction $action, ResourceView $line, ?string $domain, bool $visible, array &$modals): ?array
+    private function action(
+        AbstractAction $action,
+        ResourceView $line,
+        ?string $domain,
+        bool $visible,
+        array &$modals,
+        bool $parentDisabled = false,
+    ): ?array
     {
         $resource = $line->getResource();
         if ($action instanceof ItemAction) {
@@ -315,7 +343,8 @@ class TableViewBuilder
         }
 
         $path = $action->getPath();
-        $disabled = $action->isDisabled()
+        $disabled = $parentDisabled
+            || $action->isDisabled()
             || !($this->granted($path->getRole(), $line) && $this->granted($action->getRole(), $line));
         if (
             !$action->isDisplayed($resource)
@@ -329,27 +358,29 @@ class TableViewBuilder
         $url = $action->getUrl() ?? $this->urlGenerator->generate($path->getRoute(), $path->getParams(['id' => $line->getId()]));
 
         $attr = [];
-        if ($action->getTarget()) {
-            $attr['target'] = $action->getTarget();
-        }
-        if ($action->getModal() !== null) {
-            $id = 'modal_' . $action->getId() . $line->getId();
-            $modals[] = ['template' => $action->getModal(), 'id' => $id, 'action' => $action, 'line' => $line];
-            $attr += ['commandfor' => $id, 'command' => 'show-modal'];
-            $url = null;
-        } elseif ($action->getConfirmModal()) {
-            $attr += [
-                'data-confirm-link' => $url,
-                'data-confirm-text' => $this->translator->trans('modal.confirm.' . $action->getLabel(), [], $domain),
-            ];
-            $url = null;
-        }
-
         $reason = null;
         if ($disabled) {
+            // focusable but inert: no link, no modal, no confirmation
             $title = $this->translator->trans($action->getTitle(), [], $domain);
             $reason = $title !== $label ? $title : $this->translator->trans('crudit.action.unavailable', [], 'LleCruditBundle');
             $url = null;
+        } else {
+            if ($action->getTarget()) {
+                $attr['target'] = $action->getTarget();
+            }
+            if ($action->getModal() !== null) {
+                $id = 'modal_' . $action->getId() . $line->getId();
+                // a copy: the same action serves every row, each modal must keep the resource of its own row
+                $modals[] = ['template' => $action->getModal(), 'id' => $id, 'action' => clone $action, 'line' => $line];
+                $attr += ['commandfor' => $id, 'command' => 'show-modal'];
+                $url = null;
+            } elseif ($action->getConfirmModal()) {
+                $attr += [
+                    'data-confirm-link' => $url,
+                    'data-confirm-text' => $this->translator->trans('modal.confirm.' . $action->getLabel(), [], $domain),
+                ];
+                $url = null;
+            }
         }
 
         return [
@@ -412,13 +443,14 @@ class TableViewBuilder
         return $built;
     }
 
-    private function caption(array $config, ?string $domain, ?string $sortField, string $sortDir): string
+    /** @param Field[] $fields the visible fields */
+    private function caption(array $config, array $fields, ?string $domain, ?string $sortField, string $sortDir): string
     {
         $title = $config['title'] ?? null;
         $parts = [$title ? $this->translator->trans($title, [], $domain) : (string) $config['name']];
 
         $column = null;
-        foreach ($config['fields'] as $field) {
+        foreach ($fields as $field) {
             if ($this->sortProperty($field) === $sortField) {
                 $column = $this->translator->trans($field->getLabel(), [], $domain);
                 break;
