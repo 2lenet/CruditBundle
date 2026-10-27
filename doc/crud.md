@@ -152,8 +152,11 @@ If you want to add a role for your action:
 An action whose role is refused is hidden (`hide_if_disabled`, `true` by default), or shown disabled with the reason
 "You do not have the rights for this action" (`setHideIfDisabled(false)` on the action, or `hide_if_disabled: false`).
 
-A way back to the list of your own is marked with
-`setBack()`: it goes back by the history of the navigation, without the id of the record, without checking a role.
+The default way back (list, record, `LinksConfig::addBack()`) is labelled `action.back`: translate it in the
+`messages` of your project, like `action.add`, `action.edit`…
+
+Your own way back to the list (renamed, or built by hand) is marked with `setBack()`: it goes back by the history of
+the navigation, without the id of the record, without checking a role.
 
 ## How to display the action under certain conditions
 
