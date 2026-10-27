@@ -42,3 +42,6 @@ crud:
             client: "Edit %entity%"
         new:
             client: "New client"
+# Label of the modal action added to the clients (ClientCrudConfig::getItemActions())
+action:
+    note: "Note"

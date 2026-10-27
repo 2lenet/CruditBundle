@@ -74,6 +74,7 @@ class CrudTest extends AppTestCase
             $dialog = $crawler->filter('dialog#' . $button->attr('commandfor'));
             self::assertCount(1, $dialog, 'the id of the button is the id of the dialog');
             self::assertSame($name, trim($dialog->text()), 'the modal sees the resource of its own row');
+            self::assertSame('Note', $dialog->attr('aria-label'), 'the label of the action is translated');
         }
     }
 
