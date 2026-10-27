@@ -69,7 +69,6 @@ crudit:
     action:
         save: "Speichern"
         cancel: "Abbrechen"
-        back: "Zurück"
         logout: "Abmelden"
         validate: "Valideren"
         batch: "Massenaktion wählen"
