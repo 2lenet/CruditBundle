@@ -786,18 +786,19 @@ lot 3.4.b. They had no block in 1.x: an override of a whole template still works
 | `choice` | the **translated label** of the value (1.x showed the value), a backed enum by its value; several values (`multiple`): their labels, separated by commas; new options `tones` (a `Status` by value) and `translationDomain` |
 | `integer`, `number`, `currency` | the number alone (was in a `div.text-end.me-3`); the column is aligned by the field (see below); `removeHtml` of `currency` is kept: the value alone, outside the block `value` (an override of the block does not apply to it) |
 | `date`, `datetime` | in a `<time datetime="…">` |
-| `email`, `telephone`, `url` | a link (`telephone`: `dir="ltr"`, on one line); `url`: without its scheme nor `www.` (its host only in a cell of a list), an icon and "(new tab)" read, `rel="noopener noreferrer"`, a link only for `http(s)` |
+| `email`, `telephone`, `url` | a link (`telephone`: `dir="ltr"`, on one line); `url`: without its scheme nor `www.` (its host only in a cell of a list), an icon and "(new tab)" read, `rel="noopener noreferrer"`, a link only for `http(s)`; the user and the password of the address are not shown |
 | `color` | the `ColorSwatch` of CruditUiBundle (the code is no longer in capitals) |
 | `doctrine_entity` | a collection: its number of elements in a `Badge` (was a pill); a link to the record as in 1.x |
 | `json` | a list gives `<ul>`, an object `<dl>`, recursively (was the values side by side); on a line in a cell of a list |
-| `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**: what the sanitizer does not allow, an `<iframe>`, a `style`, is removed; give your own `SanitizerInterface` to allow more); the headings of Markdown start at `h4` |
-| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage (**it changes** when `min` is not 0 or `max` not 100: 1.x wrote the value followed by %); new option `overMax` (`success`, `danger`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
+| `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**: what the sanitizer does not allow, an `<iframe>`, a `style`, is removed; give your own `SanitizerInterface` to allow more: it cleans Markdown too); the headings of Markdown start at `h4` |
+| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage (**it changes** when `min` is not 0 or `max` not 100: 1.x wrote the value followed by %); above `max`, the danger tone as in 1.x, new option `overMax` (`danger` by default, `success`: full, as at `max`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
 | `workflow` | unchanged until lot 3.4.c |
 
 - **Alignment of a column**: by its field, `AbstractField::getAlignment()` (`start`, `end`), from the configuration
   `default_*_alignment` (`right`: end, `left` and **`center`: start**, a column is no longer centred). `tableCssClass`
-  is deprecated, without effect. A field of yours that extends `AbstractField` is at the start, override
-  `getAlignment()` to change it.
+  is deprecated, without effect (and `AbstractField::getTableCssClass()`; the numbers no longer give it a default): to align **one column**, give the option
+  `alignment` (`start`, `end`) to its field, `Field::new('code', null, ['alignment' => 'end'])`. A field of yours that
+  extends `AbstractField` is at the start, override `getAlignment()` to change it for all its columns.
 - `TableViewBuilder` takes a `FieldRegistry` as last argument of its constructor: a decoration or an instantiation
   by hand needs it.
 - An empty value is tested by `value is crudit_empty` (null, `''`, an empty array or collection): use it in your

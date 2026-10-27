@@ -14,6 +14,7 @@
         }]|json_encode %}
     {% endif %}
 
+    {#- TODO lot 3.4.b: the edition in place shows the raw value, the reading its translated label -#}
     <div class="crudit-eip" data-field="{{ view.field.name }}" data-edit_url="{{ editUrl }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
@@ -64,7 +65,7 @@
 {% endif %}
 {#-
  # The translated label of a value (choices: label => value), in a Status when the option tones gives it a tone. A
- # backed enum is compared by its value, another enum by its name.
+ # backed enum is compared by its value, another enum by its name. Two choices of the same value: the last label wins.
  #}
 {%- macro choice(item, options) -%}
     {%- set key = (item.value ?? item.name ?? item) ~ '' -%}

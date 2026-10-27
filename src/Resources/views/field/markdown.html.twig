@@ -1,5 +1,6 @@
 {#
  # Markdown: converted, then cleaned (sanitize, SanitizerInterface); its headings start at h4, under those of the page.
+ # replace() is one pass (strtr): a <h1> becomes a <h4>, it is not then turned into a <h6> by the rule of <h4>.
  #}
 <div class="crudit-value crudit-value--markdown crudit-value--rich crudit-value--clamp" dir="auto">
 {%- block value -%}

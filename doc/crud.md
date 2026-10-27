@@ -308,7 +308,8 @@ to change how a type looks, extend the template and override the block.
   (`@LleCrudit/field/_empty.html.twig`).
 - The numbers (`integer`, `smallint`, `bigint`, `float`, `decimal`, `currency`) are aligned at the end of their column,
   the other types at its start: configuration `default_currency_alignment`, `default_integer_alignment`,
-  `default_number_alignment` (`right`: at the end, `left` or `center`: at the start). A field of yours chooses with
+  `default_number_alignment` (`right`: at the end, `left` or `center`: at the start). One column: the option
+  `alignment` of its field (`Field::new('code', null, ['alignment' => 'end'])`). A field of yours chooses with
   `getAlignment()` (`start`, `end`).
 - In a cell of a list, the values are compact: a long text (textarea, Markdown, rich text, JSON) stays on two lines,
   a web address shows its host, a JSON is written on a line (`a, b`; `key: value, …`). The card and the record show

@@ -29,8 +29,8 @@ class ProgressBarField extends AbstractField
             "max" => 100,
             "isBottomLabelActivate" => false,
             "bottomLabel" => null,
-            // above max: 'success' (the bar is full, as at max), or 'danger' (an alert: the budget is exceeded)
-            "overMax" => 'success',
+            // above max: 'danger' (an alert, as in 1.x: the budget is exceeded), or 'success' (the bar is full, as at max)
+            "overMax" => 'danger',
         ]);
         $optionsResolver->setAllowedValues('overMax', ['success', 'danger']);
         foreach (['barCssClass', 'progressLabelCssClass'] as $option) {

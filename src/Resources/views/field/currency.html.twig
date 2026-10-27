@@ -1,4 +1,4 @@
-{% if options['isInt'] is defined and options['isInt'] and value is not null %}
+{% if options['isInt'] is defined and options['isInt'] and value is not crudit_empty %}
     {% set value =  value / 100 %}
 {% endif %}
 {% if

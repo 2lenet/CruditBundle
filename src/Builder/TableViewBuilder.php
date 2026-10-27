@@ -208,11 +208,16 @@ class TableViewBuilder
     }
 
     /**
-     * The alignment of a column: the one of its field (AbstractField::getAlignment(), the numbers at the end), start
-     * for a field of a project that does not extend AbstractField or a type without field.
+     * The alignment of a column: the option alignment of the field (start, end), else the one of its type
+     * (AbstractField::getAlignment(), the numbers at the end), start for a field of a project that does not extend
+     * AbstractField or a type without field.
      */
     private function alignment(Field $field): string
     {
+        $alignment = $field->getOptions()['alignment'] ?? null;
+        if (\in_array($alignment, ['start', 'end'], true)) {
+            return $alignment;
+        }
         $type = $field->getType();
         if ($type === null) {
             return 'start';

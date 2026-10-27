@@ -46,7 +46,8 @@ class ClientCrudConfig extends AbstractCrudConfig
         $createdAt = Field::new('createdAt');
         $amount = Field::new('amount');
         $progress = Field::new('progress', 'progress');
-        $budgetUsed = Field::new('budgetUsed', 'progress', ['overMax' => 'danger']);
+        // Above max: danger by default (overMax)
+        $budgetUsed = Field::new('budgetUsed', 'progress');
         $status = Field::new('status', ChoiceField::class, [
             'choices' => ['client.status.prospect' => 'prospect', 'client.status.customer' => 'customer', 'client.status.lost' => 'lost'],
             'tones' => ['customer' => 'success', 'lost' => 'danger'],

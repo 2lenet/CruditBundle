@@ -71,7 +71,10 @@ abstract class AbstractField implements FieldInterface
             "edit_route" => null,
             "sortProperty" => null,
             'editRole' => null,
+            // the alignment of its column in a list (start, end), null: the one of the type (getAlignment())
+            'alignment' => null,
         ]);
+        $optionsResolver->setAllowedValues('alignment', [null, 'start', 'end']);
         $optionsResolver->setDeprecated(
             'tableCssClass',
             '2lenet/crudit-bundle',
@@ -98,6 +101,9 @@ abstract class AbstractField implements FieldInterface
         return $alignment === self::ALIGN_RIGHT ? 'end' : 'start';
     }
 
+    /**
+     * @deprecated since 2.0, without effect: a column is aligned by getAlignment() or the option alignment
+     */
     public function getTableCssClass(string $defaultAlignment): string
     {
         $alignment = 'text-end';

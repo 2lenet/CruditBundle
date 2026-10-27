@@ -22,7 +22,7 @@
         <div class="crudit-eip-value multiline">{{ value }}</div>
     </div>
 {% else %}
-    <span class="crudit-value crudit-value--textarea crudit-value--clamp" dir="auto">
+    <span class="crudit-value crudit-value--textarea crudit-value--clamp" dir="auto"{% if value is not crudit_empty %} title="{{ value }}"{% endif %}>
     {%- block value -%}
         {%- if value is crudit_empty -%}
             {{ include('@LleCrudit/field/_empty.html.twig') }}

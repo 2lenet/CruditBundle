@@ -6,6 +6,10 @@ namespace App\Tests\Functional;
 
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Field\TextAreaField;
+use Lle\CruditBundle\Registry\FieldRegistry;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -67,13 +71,40 @@ class FieldsTest extends AppTestCase
         self::assertSame(['45', '100', '45%', 'field.progress'], [$progress->attr('value'), $progress->attr('max'), $progress->attr('aria-valuetext'), $progress->attr('aria-label')]);
         self::assertStringContainsString('crudit-ui-progress--primary', (string) $this->value($show, 'progress')->filter('.crudit-value__progress')->attr('class'));
 
-        // Above max with overMax danger: an alert, the bar stays full, the real value is written
+        // Above max: an alert by default (overMax danger, as in 1.x), the bar stays full, the real value is written
         $budget = $this->value($show, 'budgetused');
         self::assertSame(['100', '130%'], [$budget->filter('progress')->attr('value'), $budget->filter('progress')->attr('aria-valuetext')]);
         self::assertStringContainsString('crudit-ui-progress--danger', (string) $budget->filter('.crudit-value__progress')->attr('class'));
 
-        // At max: success
+        // At max: success; above max with overMax success: full, as at max
         self::assertStringContainsString('crudit-ui-progress--success', (string) $this->value($this->show('Bob'), 'progress')->filter('.crudit-value__progress')->attr('class'));
+        self::assertStringContainsString('crudit-ui-progress--success', (string) $this->render(Field::new('budget', 'progress', ['overMax' => 'success']), 130)->filter('.crudit-value__progress')->attr('class'));
+    }
+
+    public function testTheWebAddressesAreShownClean(): void
+    {
+        // The user and the password are not shown; the title gives the address shown whole
+        $credentials = $this->render(Field::new('site', 'url'), 'https://user:secret@www.example.org/shop?page=2');
+        self::assertSame(['example.org', '/shop?page=2'], [$credentials->filter('.crudit-value__host')->text(), $credentials->filter('.crudit-value__path')->text()]);
+        self::assertSame('example.org/shop?page=2', $credentials->filter('a')->attr('title'));
+        self::assertStringNotContainsString('secret', $credentials->text());
+
+        // A query without a path is not in the host
+        $query = $this->render(Field::new('site', 'url'), 'https://example.org?x=1');
+        self::assertSame(['example.org', '?x=1'], [$query->filter('.crudit-value__host')->text(), $query->filter('.crudit-value__path')->text()]);
+    }
+
+    public function testValuesOfEdgeCases(): void
+    {
+        // A JSON decoded as objects
+        $json = $this->render(Field::new('tags', 'json'), json_decode('{"since": 2024, "visits": []}'));
+        self::assertSame(['since', 'visits'], $json->filter('dt')->each(static fn (Crawler $dt): string => $dt->text()));
+
+        // An empty amount in cents
+        self::assertSame('—Not set', trim($this->render(Field::new('amount', 'currency', ['isInt' => true]), '')->text()));
+
+        // A long text gives its whole text as title (it may be clamped in a cell)
+        self::assertSame("A\nlong text", $this->render(Field::new('notes', TextAreaField::class), "A\nlong text")->filter('.crudit-value')->attr('title'));
     }
 
     public function testTheRichTextIsCleaned(): void
@@ -116,6 +147,18 @@ class FieldsTest extends AppTestCase
         $main = $crawler->filter('main');
         self::assertCount(0, $main->filter('.crudit-ui-table__value [id], .crudit-ui-table__card-fields [id]'), 'no id in a value: the cell is rendered twice');
         self::assertCount(0, $main->filter('.crudit-value .text-end, .crudit-value .me-3, .crudit-value .badge, .crudit-value .progress-bar, .crudit-value i.fa'), 'no Bootstrap nor Font Awesome');
+    }
+
+    /**
+     * A value rendered by its field, outside a page.
+     */
+    private function render(Field $field, mixed $value): Crawler
+    {
+        /** @var FieldRegistry $fields */
+        $fields = static::getContainer()->get(FieldRegistry::class);
+        $view = $fields->get((string) $field->getType())->buildView(new FieldView($field, $value), $value);
+
+        return (new Crawler('<div>' . $view->getValue() . '</div>'))->filter('div')->first();
     }
 
     private function show(string $name): Crawler

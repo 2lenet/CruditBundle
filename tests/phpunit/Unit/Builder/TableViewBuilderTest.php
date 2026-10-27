@@ -61,6 +61,11 @@ class TableViewBuilderTest extends TestCase
         ];
         self::assertSame(['start', 'end', 'end', 'end', 'start', 'start'], array_column($this->build($fields, [])['columns'], 'align'));
 
+        // The option alignment of a field wins over its type
+        $code = Field::new('code', 'string', ['alignment' => 'end']);
+        $total = Field::new('total', 'decimal', ['alignment' => 'start']);
+        self::assertSame(['end', 'start'], array_column($this->build([$code, $total], [])['columns'], 'align'));
+
         // The configuration: left (or center) gives start
         $this->alignments = ['currency' => 'left', 'integer' => 'center', 'number' => 'right'];
         self::assertSame(['start', 'start', 'start', 'end', 'start', 'start'], array_column($this->build($fields, [])['columns'], 'align'));
