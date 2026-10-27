@@ -63,6 +63,20 @@ class CrudTest extends AppTestCase
         self::assertSame('/client/delete/' . $id, $row->filter('.crudit-ui-table__action-list [data-confirm-link]')->attr('data-confirm-link'), 'the deletion asks for a confirmation');
     }
 
+    public function testEachModalIsRenderedForItsOwnRow(): void
+    {
+        $crawler = $this->client->request('GET', '/client/');
+
+        foreach (['Alice', 'Bob'] as $name) {
+            $id = $this->idOf($name);
+            $button = $crawler->filter('main tr#list-client-' . $id . ' [command="show-modal"]');
+            self::assertCount(1, $button, 'the row opens its modal');
+            $dialog = $crawler->filter('dialog#' . $button->attr('commandfor'));
+            self::assertCount(1, $dialog, 'the id of the button is the id of the dialog');
+            self::assertSame($name, trim($dialog->text()), 'the modal sees the resource of its own row');
+        }
+    }
+
     public function testShow(): void
     {
         $id = $this->idOf('Bob');
