@@ -82,7 +82,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions = [];
 
         $actions[CrudConfigInterface::ACTION_LIST] = ListAction::new(
-            CrudConfigInterface::LABEL_ACTION_LIST,
+            'action.back',
             $this->getPath(),
             Icon::new('back')
         )
@@ -147,7 +147,7 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $actions = [];
 
         $actions[CrudConfigInterface::ACTION_LIST] = ItemAction::new(
-            CrudConfigInterface::LABEL_ACTION_LIST,
+            'action.back',
             $this->getPath(),
             Icon::new('back')
         )

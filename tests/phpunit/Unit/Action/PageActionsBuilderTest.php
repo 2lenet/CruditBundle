@@ -8,7 +8,6 @@ use Lle\CruditBundle\Action\ActionResolver;
 use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Action\PageActions;
 use Lle\CruditBundle\Action\PageActionsBuilder;
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\Action\EditAction;
@@ -116,7 +115,7 @@ class PageActionsBuilderTest extends TestCase
 
         self::assertSame('/app_client_edit?id=7', $actions->inline[0]->url);
         // The way back to the list is not for the record: no id
-        $back = $this->build([ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))->setBack()], $request);
+        $back = $this->build([ListAction::new('action.back', Path::new('app_client_index'))->setBack()], $request);
         self::assertSame('/app_client_index', $back->inline[0]->url);
         self::assertSame(['id' => 9], $actions->inline[1]->params);
         self::assertSame('https://example.org', $actions->inline[2]->url);

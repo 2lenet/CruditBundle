@@ -44,7 +44,7 @@ crud:
             client: "New client"
 # Actions (lot 3.1.a)
 action:
-    list: "Back to the list"
+    back: "Go back"
     add: "Add"
     export: "Export"
     show: "Show"

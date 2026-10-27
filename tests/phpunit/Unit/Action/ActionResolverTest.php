@@ -6,7 +6,6 @@ namespace phpunit\Unit\Action;
 
 use Lle\CruditBundle\Action\ActionResolver;
 use Lle\CruditBundle\Action\ActionState;
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\Action\DeleteAction;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
@@ -85,7 +84,7 @@ class ActionResolverTest extends TestCase
         self::assertTrue($this->resolver()->resolve($back()->setUrl('/client/?page=2'))->visible);
         self::assertFalse($this->resolver()->resolve($back())->visible);
         // The label alone is no longer enough
-        $list = ListAction::new(CrudConfigInterface::LABEL_ACTION_LIST, Path::new('app_client_index'))->setRole('ROLE_NOBODY');
+        $list = ListAction::new('action.back', Path::new('app_client_index'))->setRole('ROLE_NOBODY');
         self::assertFalse($this->resolver()->resolve($list->setUrl('/client/?page=2'))->visible);
     }
 

@@ -21,10 +21,14 @@ class PageActionsTest extends AppTestCase
         $crawler = $this->client->request('GET', '/client/');
         $bar = $crawler->filter('.crudit-ui-page-header .crudit-page-actions');
 
-        self::assertSame(['Back to the list', 'Add', 'Export', 'Reports', 'Print'], $bar->filter('.crudit-page-actions__item')->each(static fn (Crawler $item): string => trim($item->filter('.crudit-ui-btn')->first()->text())));
+        self::assertSame(['Go back', 'Add', 'Export', 'Reports', 'Print'], $bar->filter('.crudit-page-actions__item')->each(static fn (Crawler $item): string => trim($item->filter('.crudit-ui-btn')->first()->text())));
         self::assertCount(1, $bar->filter('.crudit-ui-btn--primary'));
         self::assertSame('/client/new', $bar->filter('.crudit-page-actions__primary a')->attr('href'));
-        self::assertSame('noreferrer', $bar->filter('a[rel]')->attr('rel'));
+        // The way back alone goes back by the history (in the bar, and its copy in the menu "More" on a phone)
+        $back = $bar->filter('.crudit-page-actions__item a[rel="noreferrer"]');
+        self::assertCount(1, $back);
+        self::assertSame('Go back', trim($back->text()));
+        self::assertCount(1, $bar->filter('.crudit-page-actions__mobile-only a[rel="noreferrer"], a.crudit-page-actions__mobile-only[rel="noreferrer"]'));
         self::assertSame('2lenet--crudit-bundle--print#print', $bar->filter('.crudit-page-actions__item button[data-action*="print"]')->attr('data-action'));
 
         // The export opens its dialog, rendered after the bar
@@ -58,6 +62,10 @@ class PageActionsTest extends AppTestCase
         $bar = $crawler->filter('.crudit-ui-page-header .crudit-page-actions');
 
         self::assertSame('Edit', trim($bar->filter('.crudit-page-actions__primary')->text()));
+        // On the record, the same way back as on the list: "Go back", to the previous page
+        $back = $bar->filter('.crudit-page-actions__item a[rel="noreferrer"]');
+        self::assertCount(1, $back);
+        self::assertSame('Go back', trim($back->text()));
 
         // The confirmation names the element, its button is the action, in danger
         $delete = $bar->filter('.crudit-page-actions__secondary button.crudit-ui-btn--danger');

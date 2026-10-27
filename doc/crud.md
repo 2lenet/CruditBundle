@@ -152,8 +152,11 @@ If you want to add a role for your action:
 An action whose role is refused is hidden (`hide_if_disabled`, `true` by default), or shown disabled with the reason
 "You do not have the rights for this action" (`setHideIfDisabled(false)` on the action, or `hide_if_disabled: false`).
 
-A way back to the list of your own (another label than `action.list`, or built by hand) is marked with
-`setBack()`: it goes back by the history of the navigation, without the id of the record, without checking a role.
+The default way back (list, record, `LinksConfig::addBack()`) is labelled `action.back`: translate it in the
+`messages` of your project, like `action.add`, `action.edit`…
+
+Your own way back to the list (renamed, or built by hand) is marked with `setBack()`: it goes back by the history of
+the navigation, without the id of the record, without checking a role.
 
 ## How to display the action under certain conditions
 
@@ -511,6 +514,19 @@ Field::new('yourDateField')->setRuptGroup(1)->setRuptDateFormat('Y-m-d'),// grou
 ```
 
 Supported format characters: `Y`, `y`, `m`, `n`, `d`, `j`, `H`, `h`, `i`, `s`. Literal separators (`-`, `/`, ` `, `:`) are passed through as-is.
+
+> :warning: The grouping uses the DQL function `DATE_FORMAT` (MySQL, MariaDB), which Doctrine does not provide: without
+> it, the list fails with "Expected known function, got 'DATE_FORMAT'". Declare it in your project, for instance with
+> `beberlei/doctrineextensions`:
+>
+> ```yaml
+> # config/packages/doctrine.yaml
+> doctrine:
+>     orm:
+>         dql:
+>             string_functions:
+>                 DATE_FORMAT: DoctrineExtensions\Query\Mysql\DateFormat
+> ```
 
 To control how the date appears in the rupture header row, use `setRuptDateDisplayFormat`. It also accepts a PHP date format string and is applied only to the header label — it has no effect on SQL grouping or data cells.
 

@@ -590,8 +590,11 @@ page gives a secondary button: one primary button per page.
 - the way back to the list goes back by the history of the navigation; without it, to the list, checked against
   its role, and without the `?id=…` of the record that 1.x added to its address. It is marked with `setBack()`: the
   action `list` of the CRUD and the button of `LinksConfig::addBack()` are; a way back of yours (renamed, or built
-  without `AbstractCrudConfig`) needs `->setBack()`. An action at the label `action.list` without it is still one
-  during 2.x, with a deprecation.
+  without `AbstractCrudConfig`) needs `->setBack()`: the label `action.list` does not make a way back any more, and
+  the constant `CrudConfigInterface::LABEL_ACTION_LIST` is removed. The default one (list, record, `addBack()`) is
+  labelled `action.back` (it was `action.list`): like the other default actions (`action.add`, `action.edit`…),
+  translate it in the `messages` domain of your project (e.g. "Go back"). It goes back to the previous page, not
+  always a list.
 
 **The lines of a list** (`brick/list_items/_actions.html.twig`, the lists and the sub-lists), as `RowActions.vue`:
 the edition (`EditAction`) as an icon button named "Edit Bob", the other actions in the menu of the line named "More
@@ -751,6 +754,11 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
 - **Behaviours that change**:
   - the label of a rupture (`ruptGroup1.display`) is shown as text: the HTML is stripped, and `ruptGroup1.cssClass`
     is not used any more;
+  - a rupture by date (`setRuptDateFormat()`) needs the DQL function `DATE_FORMAT`, which the bundle does not declare:
+    declare it in your project (`beberlei/doctrineextensions`, see [doc/crud.md](doc/crud.md#how-to-group-rows-by-a-date-part-year-month-day));
+  - the default way back (list, record and `addBack()`) is labelled `action.back` (not `action.list`): add it to
+    the `messages` of your project, like the other default actions; a way back of yours at the label `action.list`
+    needs `->setBack()` (see section 5);
   - the field options `view.options.noHeader` and `field.options.tableCssClass` are ignored (`tableCssClass` is
     deprecated, the column is aligned by its field: section 7, values of the fields);
   - of `getCssClass()` on the resource, only a tone is kept: `danger`, `warning`, `success` or `info` when the class
