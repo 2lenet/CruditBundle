@@ -606,10 +606,10 @@ ok('bar of the actions from 360 to 1600 px, light and dark, left and right to le
 
 // The lines: the edition, then the menu of the line
 page = await open(1280, '/client/');
-assert.equal(await attr(page, 'tbody tr:first-child .crudit-row-actions a.crudit-ui-icon-btn', 'href').then((h) => /\/client\/edit\/\d+$/.test(h)), true);
-await page.click('tbody tr:first-child .crudit-row-actions .crudit-ui-dropdown > button');
-assert.equal(await shown(page, 'tbody tr:first-child .crudit-row-actions .crudit-ui-menu__item'), 2);
-await axeOn(page, 'tbody tr:first-child .crudit-row-actions', 'actions of a line, menu open');
+assert.equal(await attr(page, 'tbody tr:first-child .crudit-ui-table__action-list a.crudit-ui-icon-btn', 'href').then((h) => /\/client\/edit\/\d+$/.test(h)), true);
+await page.click('tbody tr:first-child .crudit-ui-table__action-list .crudit-ui-dropdown > button');
+assert.equal(await shown(page, 'tbody tr:first-child .crudit-ui-table__action-list .crudit-ui-menu__item'), 4, 'Deactivate (no icon), Show, Delete (disabled), Note');
+await axeOn(page, 'tbody tr:first-child .crudit-ui-table__action-list', 'actions of a line, menu open');
 await page.keyboard.press('Escape');
 ok('actions of a line: the edition, the menu named after the line');
 
@@ -810,16 +810,18 @@ assert.equal(await page.$eval('th[aria-sort=ascending] .crudit-ui-table__sort', 
 ok('list: sort by a heading');
 
 // the edit action is the icon, named after the row; the others are in the menu "More actions for …"
-const rowLabel = await page.$eval('.crudit-ui-table__row th[scope=row]', (e) => e.textContent.trim());
-assert.ok((await page.$eval('.crudit-ui-table__row .crudit-ui-table__action-list a', (e) => e.textContent)).includes(rowLabel), 'icon named after the row');
-await page.click('.crudit-ui-table__row .crudit-ui-dropdown > button');
+// an active client cannot be deleted (disabled): the row of an inactive one
+const row = '#' + await page.$$eval('.crudit-ui-table__row', (rows) => rows.find((r) => r.querySelector('[data-confirm-link]')).id);
+const rowLabel = await page.$eval(`${row} th[scope=row]`, (e) => e.textContent.trim());
+assert.ok((await page.$eval(`${row} .crudit-ui-table__action-list a`, (e) => e.textContent)).includes(rowLabel), 'icon named after the row');
+await page.click(`${row} .crudit-ui-dropdown > button`);
 await new Promise((r) => setTimeout(r, 300));
-assert.ok(await visible(page, '.crudit-ui-table__row .crudit-ui-menu__item[data-confirm-link]'), 'the menu has the deletion');
+assert.ok(await visible(page, `${row} .crudit-ui-menu__item[data-confirm-link]`), 'the menu has the deletion');
 await axeTable(page, 'menu open');
 await shot(page, 'list-row-menu');
 
 // the deletion asks for a confirmation that names the action, Cancel closes it, focus back on the button of the row
-await page.click('.crudit-ui-table__row .crudit-ui-menu__item[data-confirm-link]');
+await page.click(`${row} .crudit-ui-menu__item[data-confirm-link]`);
 await new Promise((r) => setTimeout(r, 400));
 assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), true, 'the confirmation opens');
 await page.keyboard.press('Escape');

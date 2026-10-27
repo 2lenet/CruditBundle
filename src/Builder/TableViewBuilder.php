@@ -329,7 +329,8 @@ class TableViewBuilder
     private function action(ActionView $item, ?string $domain, bool $visible): array
     {
         $action = $item->action;
-        $disabled = $item->state->isDisabled();
+        $reason = $item->state->reason;
+        $disabled = $reason !== null;
 
         return [
             'label' => $this->translator->trans($action->getLabel(), [], $action->getTranslationDomain() ?? $domain),
@@ -339,8 +340,8 @@ class TableViewBuilder
             'visible' => $visible && $item->action->getIcon() !== null,
             'tone' => $action instanceof DeleteAction || str_starts_with($item->getVariant(), 'danger') ? 'danger' : null,
             // focusable but inert: the component reads the reason, there is no modal, no confirmation
-            'disabledReason' => $disabled
-                ? $this->translator->trans($item->state->reason, [], $item->state->getReasonDomain() ?? $domain)
+            'disabledReason' => $reason !== null
+                ? $this->translator->trans($reason, [], $item->state->getReasonDomain() ?? $domain)
                 : null,
             'attr' => $disabled ? [] : $this->actionExtension->actionAttributes($item, $domain),
         ];
