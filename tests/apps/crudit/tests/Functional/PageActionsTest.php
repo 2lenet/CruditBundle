@@ -21,7 +21,7 @@ class PageActionsTest extends AppTestCase
         $crawler = $this->client->request('GET', '/client/');
         $bar = $crawler->filter('.crudit-ui-page-header .crudit-page-actions');
 
-        self::assertSame(['Back to the list', 'Add', 'Export', 'Reports', 'Print'], $bar->filter('.crudit-page-actions__item')->each(static fn (Crawler $item): string => trim($item->filter('.crudit-ui-btn')->first()->text())));
+        self::assertSame(['Go back', 'Add', 'Export', 'Reports', 'Print'], $bar->filter('.crudit-page-actions__item')->each(static fn (Crawler $item): string => trim($item->filter('.crudit-ui-btn')->first()->text())));
         self::assertCount(1, $bar->filter('.crudit-ui-btn--primary'));
         self::assertSame('/client/new', $bar->filter('.crudit-page-actions__primary a')->attr('href'));
         self::assertSame('noreferrer', $bar->filter('a[rel]')->attr('rel'));
@@ -58,6 +58,8 @@ class PageActionsTest extends AppTestCase
         $bar = $crawler->filter('.crudit-ui-page-header .crudit-page-actions');
 
         self::assertSame('Edit', trim($bar->filter('.crudit-page-actions__primary')->text()));
+        // On the record, the same way back as on the list: "Go back", to the previous page
+        self::assertSame('Go back', trim($bar->filter('a[rel="noreferrer"]')->text()));
 
         // The confirmation names the element, its button is the action, in danger
         $delete = $bar->filter('.crudit-page-actions__secondary button.crudit-ui-btn--danger');

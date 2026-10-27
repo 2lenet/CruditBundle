@@ -69,7 +69,6 @@ crudit:
     action:
         save: "Save"
         cancel: "Cancel"
-        back: "Go back"
         logout: "Logout"
         batch: "Choose a batch action"
         validate: "Validate"
