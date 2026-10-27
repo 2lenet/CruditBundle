@@ -57,27 +57,31 @@
         </form>
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
-{% elseif value %}
-    {% if value is iterable %}
-        <span class="badge bg-primary rounded-pill">{{ value|length }}</span>
-    {% elseif not view.options.link %}
-        {{ value }}
-    {% elseif view.options.route %}
-        {% if view.options.routeRole is defined and view.options.routeRole is not null and is_granted(view.options.routeRole) %}
-            <a href="{{ path(view.options.route, {'id': value.id}) }}">{{ value }}</a>
-        {% else %}
-            {{ value }}
-        {% endif %}
-    {% elseif value|get_crudit_routename is null %}
-        {{ value }}
-    {% else %}
-        {% set route = value|get_crudit_routename %}
-        {% set role = route|replace({'app_crudit': 'role'})|upper %}
-
-        {% if is_granted(role) %}
-            <a href="{{ path(value|get_crudit_routename, {'id': value.id}) }}">{{ value }}</a>
-        {% else %}
-            {{ value }}
-        {% endif %}
-    {% endif %}
+{% else %}
+    <span class="crudit-value crudit-value--doctrine_entity">
+    {%- block value -%}
+        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
+            {%- if value is iterable -%}
+                {#- A collection: its number of elements -#}
+                <twig:LleCruditUi:Badge>{{ 'crudit.field.count'|trans({'%count%': value|length}, 'LleCruditBundle') }}</twig:LleCruditUi:Badge>
+            {%- else -%}
+                {#- A link to its record when the right is granted (the route of the option, else the one of its CRUD) -#}
+                {%- set url = null -%}
+                {%- if view.options.link and view.options.route -%}
+                    {%- if view.options.routeRole is not null and is_granted(view.options.routeRole) %}{% set url = path(view.options.route, {id: value.id}) %}{% endif -%}
+                {%- elseif view.options.link and value|get_crudit_routename is not null -%}
+                    {%- set route = value|get_crudit_routename -%}
+                    {%- if is_granted(route|replace({'app_crudit': 'role'})|upper) %}{% set url = path(route, {id: value.id}) %}{% endif -%}
+                {%- endif -%}
+                {%- if url -%}
+                    <a class="crudit-value__link" href="{{ url }}">{{ value }}</a>
+                {%- else -%}
+                    {{ value }}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}

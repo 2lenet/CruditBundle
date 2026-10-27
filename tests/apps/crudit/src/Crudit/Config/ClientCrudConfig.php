@@ -16,6 +16,10 @@ use Lle\CruditBundle\Dto\Action\PrintAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Field\ChoiceField;
+use Lle\CruditBundle\Field\ColorField;
+use Lle\CruditBundle\Field\MarkdownField;
+use Lle\CruditBundle\Field\TelephoneField;
 
 /**
  * The clients. The actions show each kind of lot 3.1.a: primary, secondary, a DropdownAction, a print, the menu
@@ -39,9 +43,26 @@ class ClientCrudConfig extends AbstractCrudConfig
         $email = Field::new('email');
         $active = Field::new('active');
         $createdAt = Field::new('createdAt');
+        $amount = Field::new('amount');
+        $progress = Field::new('progress', 'progress');
+        $budgetUsed = Field::new('budgetUsed', 'progress', ['overMax' => 'danger']);
+        $status = Field::new('status', ChoiceField::class, [
+            'choices' => ['client.status.prospect' => 'prospect', 'client.status.customer' => 'customer', 'client.status.lost' => 'lost'],
+            'tones' => ['customer' => 'success', 'lost' => 'danger'],
+        ]);
+        $notes = Field::new('notes', MarkdownField::class);
+        $phone = Field::new('phone', TelephoneField::class);
+        $website = Field::new('website', 'url');
+        $color = Field::new('color', ColorField::class);
+        $blocked = Field::new('blocked', 'bool', ['reverseColors' => true]);
+        $tags = Field::new('tags', 'json');
+        $referrer = Field::new('referrer');
 
         return match ($key) {
-            CrudConfigInterface::INDEX, CrudConfigInterface::SHOW => [$name, $email, $active, $createdAt],
+            CrudConfigInterface::INDEX => [
+                $name, $email, $active, $createdAt, $amount, $progress, $status, $notes, $website, $tags,
+            ],
+            CrudConfigInterface::SHOW => [$name, $email, $active, $createdAt, $amount, $progress, $budgetUsed, $status, $notes, $phone, $website, $color, $blocked, $tags, $referrer],
             default => [],
         };
     }

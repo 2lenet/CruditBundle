@@ -1,3 +1,12 @@
-<div class="markdown-field">
-    {{ value|default("") |markdown_to_html |sanitize |raw }}
+{#
+ # Markdown: converted, then cleaned (sanitize, SanitizerInterface); its headings start at h4, under those of the page.
+ #}
+<div class="crudit-value crudit-value--markdown crudit-value--rich crudit-value--clamp" dir="auto">
+{%- block value -%}
+    {%- if value is null or value is same as('') -%}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- else -%}
+        {{ (value|markdown_to_html)|replace({'<h1': '<h4', '</h1>': '</h4>', '<h2': '<h5', '</h2>': '</h5>', '<h3': '<h6', '</h3>': '</h6>', '<h4': '<h6', '</h4>': '</h6>', '<h5': '<h6', '</h5>': '</h6>'})|sanitize|raw }}
+    {%- endif -%}
+{%- endblock -%}
 </div>

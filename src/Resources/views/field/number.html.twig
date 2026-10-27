@@ -21,18 +21,19 @@
         </form>
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
-{% elseif value is not null %}
-    {% set tableCssClass = options.tableCssClass %}
-    {% if view.field.options is defined and view.field.options and view.field.options['tableCssClass'] is defined %}
-        {% set tableCssClass = view.field.options['tableCssClass'] %}
-    {% endif %}
-
-    <div class="{{ tableCssClass|default('text-end') }} me-3">
-        {% if options.decimal_separator is null and options.thousands_separator is null %}
-            {{ value|ui_number({min_fraction_digit: options.decimals, max_fraction_digit: options.decimals}) }}
-        {% else %}
-            {# a separator given by the project: the other one keeps its former default #}
-            {{ value|number_format(options.decimals, options.decimal_separator ?? ',', options.thousands_separator ?? ' ') }}
-        {% endif %}
-    </div>
+{% else %}
+    <span class="crudit-value crudit-value--number">
+    {%- block value -%}
+        {%- if value is null or value is same as('') or (value is iterable and value is empty) -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
+            {%- if options.decimal_separator is null and options.thousands_separator is null -%}
+                {{ value|ui_number({min_fraction_digit: options.decimals, max_fraction_digit: options.decimals}) }}
+            {%- else -%}
+                {#- a separator given by the project: the other one keeps its former default -#}
+                {{ value|number_format(options.decimals, options.decimal_separator ?? ',', options.thousands_separator ?? ' ') }}
+            {%- endif -%}
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}

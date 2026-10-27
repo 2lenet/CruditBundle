@@ -26,6 +26,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 5. [Fix `setCssClass()` on actions: `setVariant()`, `setPrimary()`, the reasons](#5-actions) *(lot 3.1.a)*
 6. [Review your `lle_crudit` configuration](#6-configuration) *(lots 2.1, 3.2)*
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
+   - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` without effect](#7-template-overrides) *(lot 3.4.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -750,7 +751,8 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
 - **Behaviours that change**:
   - the label of a rupture (`ruptGroup1.display`) is shown as text: the HTML is stripped, and `ruptGroup1.cssClass`
     is not used any more;
-  - the field options `view.options.noHeader` and `field.options.tableCssClass` are ignored;
+  - the field options `view.options.noHeader` and `field.options.tableCssClass` are ignored (`tableCssClass` is
+    deprecated, the column is aligned by its field: section 7, values of the fields);
   - of `getCssClass()` on the resource, only a tone is kept: `danger`, `warning`, `success` or `info` when the class
     contains the word (`table-danger`, `text-info`…); any other class is lost;
   - the `path` of a total is not a link any more (it never worked: it used the variable of the last row);
@@ -763,9 +765,39 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   and the bar of the batch actions are **not shown** until then), the filters (3.1.e). The sublist (3.3.c) still uses
   the old templates (`list_items/_actions.html.twig` and `list_items/actions/*`).
 
+**Values of the fields** *(lot 3.4.a)*: `field/<type>.html.twig` keep their paths and their variables (`value`,
+`view`, `options`, `resource`). The value is in a new block `value`, inside `<span class="crudit-value
+crudit-value--<type>">` (a `<div>` for Markdown and rich text): to change a type, extend its template and override the
+block (see [doc/crud.md](doc/crud.md#how-a-field-shows-its-value)). The edition in place around it is unchanged until
+lot 3.4.b. They had no block in 1.x: an override of a whole template still works, but loses the look below.
+
+| Type | 2.0 |
+|---|---|
+| all | no Bootstrap nor Font Awesome (`text-end`, `me-3`, `badge`, `progress`, `fa-*`); an empty value (`null`, `''`, an empty collection or JSON) is a dash read as "Not set" (`field/_empty.html.twig`), it was nothing |
+| `bool` | the `Boolean` of CruditUiBundle: an icon and Yes or No, written (was a coloured badge); `reverseColors` swaps the tones; `null` is a dash, No with `nullToFalse` |
+| `choice` | the **translated label** of the value (1.x showed the value); new options `tones` (a `Status` by value) and `translationDomain` |
+| `integer`, `number`, `currency` | the number alone (was in a `div.text-end.me-3`); the column is aligned by the field (see below); `removeHtml` of `currency` is kept |
+| `date`, `datetime` | in a `<time datetime="…">` |
+| `email`, `telephone`, `url` | a link (`telephone`: `dir="ltr"`, on one line); `url`: without its scheme nor `www.` (its host only in a cell of a list), an icon and "(new tab)" read, `rel="noopener noreferrer"`, a link only for `http(s)` |
+| `color` | the `ColorSwatch` of CruditUiBundle (the code is no longer in capitals) |
+| `doctrine_entity` | a collection: its number of elements in a `Badge` (was a pill); a link to the record as in 1.x |
+| `json` | a list gives `<ul>`, an object `<dl>`, recursively (was the values side by side); on a line in a cell of a list |
+| `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**); the headings of Markdown start at `h4` |
+| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage; new option `overMax` (`success`, `danger`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
+| `workflow` | unchanged until lot 3.4.c |
+
+- **Alignment of a column**: by its field, `AbstractField::getAlignment()` (`start`, `end`), from the configuration
+  `default_*_alignment` (`right`: end, `left` and `center`: start). `tableCssClass` is deprecated, without effect. A
+  field of yours that extends `AbstractField` is at the start, override `getAlignment()` to change it.
+- In a cell of a list, a long text (textarea, Markdown, rich text, JSON) is clamped to two lines, a web address shows
+  its host, a JSON is on a line.
+- `FormatField` gives its options to the view (`view.options`), as the other fields.
+- `MarkdownField` needs a Markdown library for `twig/markdown-extra`, `league/commonmark` for example (see
+  [doc/markdown.md](doc/markdown.md)).
+
 These paths and their main blocks are **kept**, because many projects extend them:
 `brick/form/index.html.twig`, `modal/_base_modal.html.twig`, `field/*.html.twig`
-(`value`, `icon`, `label`, `attributes`), `filter/type/*`, `filter/state/*`,
+(`value`), `filter/type/*`, `filter/state/*`,
 `crud/index.html.twig`.
 Their *inner markup* changes (Bootstrap classes removed): check your overrides visually.
 
@@ -773,7 +805,8 @@ The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *
 
 Renamed or removed blocks: *to be filled lot by lot.*
 
-CSS hooks you may rely on: `crudit-field` and `crudit-action` are kept. `crudit-flash` is gone
+CSS hooks you may rely on: `crudit-field` (the block of a field on the record) and `crudit-action` are kept; the value
+of a field is `crudit-value crudit-value--<type>` *(lot 3.4.a)*. `crudit-flash` is gone
 (toasts). Workflow states: `crudit-wf-state-<state>` is **removed**: declare a color per state in the workflow configuration (named palette, or your own `--crudit-ui-badge-<name>-bg` / `-fg` variables) *(details: lot 3.4)*. Edit in place `crudit-eip-*`:
 renamed *(lot 3.4.b)*.
 

@@ -9,28 +9,31 @@ $value = Field::new("value", ProgressBarField::class);
 ```
 And it's done !
 
-### Attributs
+The value is shown as a bar (the native `<progress>`, named by the label of the field) and written as a percentage
+of the interval `min`–`max`, in the format of the locale (`45 %` in French). The bar stays between `min` and `max`, the
+value written is the real one (`130 %`). The bar is in the primary tone, in the success one from `max`.
 
-You can customize your ProgressField with the following options:
+### Options
 
-- 'barCssClass' => Defines the color of the progress bar with a Bootstrap class,
-- 'progressLabel' => Change the label displayed on the progress bar,
-- 'progressLabelCssClass' => Defines the Bootstrap class for the label to customize it,
-- 'min' => Integer who defines the minimum value,
-- 'max' => integer who defines the maximum value,
-- 'isBottomLabelActivate' => activates or deactivates the bottom label with true/false,
-- 'bottomLabel' => Change the label under the bar,
+- 'min' => the minimum value (0),
+- 'max' => the maximum value (100),
+- 'overMax' => the tone above `max`: 'success' (default, as at `max`), or 'danger' (above `max` is an alert, a budget
+  exceeded),
+- 'progressLabel' => the text written instead of the percentage,
+- 'isBottomLabelActivate' => adds a line under the bar (true/false),
+- 'bottomLabel' => the text of that line (the percentage by default),
+- 'barCssClass', 'progressLabelCssClass' => **deprecated in 2.0, without effect**: the bar and its value have the look
+  of the design system (use 'overMax' for the tone above `max`).
 
 ### Example:
 
 ```php
-$nbDeplacement = Field::new('nbDeplacement', ProgressBarField::class)
+$budget = Field::new('budgetUsed', ProgressBarField::class)
     ->setOptions(
             [
-                "barCssClass" => "bg-info",
-                "progressLabel" => "Example"
-                "progressLabelCssClass" => "lh-sm fa-sm text-black"
+                "overMax" => "danger",
                 "isBottomLabelActivate" => true,
+                "bottomLabel" => "of the budget",
             ]
         );
 ```

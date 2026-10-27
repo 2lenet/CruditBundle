@@ -1,4 +1,9 @@
-<div class="crudit-color">
-    <span class="crudit-color-block" style="background-color: {{ value }};"></span>
-    {{ value|upper }}
-</div>
+<span class="crudit-value crudit-value--color">
+{%- block value -%}
+    {%- if value is null or value is same as('') -%}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- else -%}
+        <twig:LleCruditUi:ColorSwatch :value="value"/>
+    {%- endif -%}
+{%- endblock -%}
+</span>

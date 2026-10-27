@@ -28,6 +28,14 @@ class NumberField extends AbstractField
         return '@LleCrudit/field/number.html.twig';
     }
 
+    public function getAlignment(): string
+    {
+        /** @var string $alignment */
+        $alignment = $this->parameterBag->get('lle_crudit.default_number_alignment');
+
+        return $this->logicalAlignment($alignment);
+    }
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         /** @var string $defaultNumberAlignment */

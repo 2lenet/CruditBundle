@@ -1,30 +1,24 @@
-<div class="position-relative d-flex">
-    <div class="progress w-100" role="progressbar" aria-valuenow="{{ value }}"
-         aria-valuemin="{{ options.min }}" aria-valuemax="{{ options.max }}">
-        <div class="progress-bar
-            {% if value > options.max %} bg-danger 
-            {% else %} bg-primary {% endif %}
-            {% if options.barCssClass %} {{ options.barCssClass }}{% endif %}
-            progress-bar-animated" style="width: {{ value }}%;">
-        </div>
-    </div>
-    <div class="d-flex position-absolute justify-content-center align-items-center w-100">
-        <span class="{% if value > options.max %} text-white {% endif %}
-            {% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
-            {% else %} lh-sm fa-sm {% endif %}">
-            {% if options.progressLabel %}
-                {{ options.progressLabel }}
-            {% else %} {{ value }} % {% endif %}
+{#
+ # Progress: the native <progress> and the value, written (FieldValue.vue of the mockup). The bar stays between min
+ # and max, the value written is the real one. Tone: success from max; above max, the option overMax ('success' by
+ # default, 'danger': above max is an alert). progressLabel replaces the value written, bottomLabel adds a line.
+ #}
+<span class="crudit-value crudit-value--progressbar">
+{%- block value -%}
+    {%- if value is null or value is same as('') -%}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- else -%}
+        {%- set span = options.max - options.min -%}
+        {%- set ratio = span > 0 ? (value - options.min) / span : 0 -%}
+        {%- set tone = value > options.max and options.overMax == 'danger' ? 'danger' : (value >= options.max ? 'success' : 'primary') -%}
+        {%- set text = options.progressLabel ?? ratio|ui_number(style: 'percent') -%}
+        <span class="crudit-value__progress crudit-ui-progress--{{ tone }}">
+            <progress class="crudit-ui-progress__track" value="{{ min(max(value, options.min), options.max) - options.min }}" max="{{ span > 0 ? span : 1 }}" aria-label="{{ view.field.label|trans(domain: view.config.translationDomain ?? null) }}" aria-valuetext="{{ text }}">{{ text }}</progress>
+            <span class="crudit-value__progress-value" aria-hidden="true">{{ text }}</span>
         </span>
-    </div>
-</div>
-
-{% if options.isBottomLabelActivate %}
-    <div>
-        <span class="{% if options.progressLabelCssClass %} {{ options.progressLabelCssClass }}
-            {% else %} lh-sm fa-sm {% endif %}">
-            {% if options.bottomLabel %} {{ options.bottomLabel }}
-            {% else %} {{ value }} % {% endif %}
-        </span>
-    </div>
-{% endif %}
+        {%- if options.isBottomLabelActivate -%}
+            <span class="crudit-value__progress-bottom">{{ options.bottomLabel ?? ratio|ui_number(style: 'percent') }}</span>
+        {%- endif -%}
+    {%- endif -%}
+{%- endblock -%}
+</span>

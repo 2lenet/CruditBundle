@@ -28,9 +28,30 @@ abstract class AppTestCase extends WebTestCase
         $metadata = $em->getMetadataFactory()->getAllMetadata();
         $tool->dropSchema($metadata);
         $tool->createSchema($metadata);
+        $clients = [];
         foreach (['Alice', 'Bob', 'Chloé'] as $name) {
-            $em->persist((new Client())->setName($name)->setEmail(strtolower($name) . '@example.org')->setActive('Chloé' !== $name));
+            $em->persist($clients[$name] = (new Client())->setName($name)->setEmail(strtolower($name) . '@example.org')->setActive('Chloé' !== $name));
         }
+        // The fields of lot 3.4.a: all filled for Alice, some for Bob, none for Chloé (empty values)
+        $clients['Alice']
+            ->setPhone('+33612345678')
+            ->setWebsite('https://www.alice.example/shop')
+            ->setAmount('1234.50')
+            ->setProgress(45)
+            ->setBudgetUsed(130)
+            ->setColor('#0077a8')
+            ->setNotes("# Notes\n\nA **good** client.<script>alert(1)</script>\n\n" . str_repeat('A long line of notes. ', 20))
+            ->setStatus('customer')
+            ->setBlocked(true)
+            ->setTags(['vip', 'north'])
+            ->setReferrer($clients['Bob']);
+        $clients['Bob']
+            ->setWebsite('javascript:alert(1)')
+            ->setAmount('20')
+            ->setProgress(100)
+            ->setStatus('prospect')
+            ->setBlocked(false)
+            ->setTags(['since' => 2024, 'source' => 'fair']);
         $em->flush();
     }
 }

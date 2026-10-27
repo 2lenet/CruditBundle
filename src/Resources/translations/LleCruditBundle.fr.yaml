@@ -116,6 +116,8 @@ crudit:
         updatedAt: "Édité le"
         updatedBy: "Édité par"
         modification: "{0}n'a pas de modification|{1} 1 modification|]1,Inf[ %count% modifications"
+        new_tab: "(nouvel onglet)"
+        count: "{1} %count% élément|]1,Inf[ %count% éléments"
 
     filter:
         action: "Filtrer"

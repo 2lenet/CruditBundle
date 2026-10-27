@@ -1,1 +1,12 @@
-{{ value|raw }}
+{#
+ # Rich text (CKEditor): always cleaned (sanitize, SanitizerInterface), never shown as typed.
+ #}
+<div class="crudit-value crudit-value--ckeditor crudit-value--rich crudit-value--clamp" dir="auto">
+{%- block value -%}
+    {%- if value is null or value is same as('') -%}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- else -%}
+        {{ value|sanitize|raw }}
+    {%- endif -%}
+{%- endblock -%}
+</div>

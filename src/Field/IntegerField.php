@@ -27,6 +27,14 @@ class IntegerField extends AbstractField
         return '@LleCrudit/field/integer.html.twig';
     }
 
+    public function getAlignment(): string
+    {
+        /** @var string $alignment */
+        $alignment = $this->parameterBag->get('lle_crudit.default_integer_alignment');
+
+        return $this->logicalAlignment($alignment);
+    }
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         /** @var string $defaultIntegerAlignment */

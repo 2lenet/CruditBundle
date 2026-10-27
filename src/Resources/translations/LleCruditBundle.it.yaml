@@ -116,6 +116,8 @@ crudit:
         updatedAt: "Aggiornato il"
         updatedBy: "Aggiornato da"
         modification: "{0}non ha alcun cambiamento|{1} 1 cambia|]1,Inf[ %count% cambiamenti"
+        new_tab: "(nuova scheda)"
+        count: "{1} %count% elemento|]1,Inf[ %count% elementi"
 
     filter:
         action: "Selezionare"
