@@ -32,6 +32,9 @@ use Symfony\Contracts\Service\Attribute\Required;
 
 abstract class AbstractCrudConfig implements CrudConfigInterface
 {
+    public const SORT_FIELD_PATTERN = '/^[a-z_]\w*(\.[a-z_]\w*)*$/i';
+    public const SORT_ORDERS = ['ASC', 'DESC'];
+
     protected DatasourceInterface $datasource;
 
     protected ParameterBagInterface $parameterBag;
@@ -208,13 +211,21 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
 
         $sortField = $request->query->get(strtolower($name) . '_sort');
         $sortOrder = $request->query->get(strtolower($name) . '_sort_order');
-        if ($sortField !== null) {
-            $params['sorts'] = [[$sortField, $sortOrder]];
+        // Le tri est concaténé dans le ORDER BY DQL : seul un chemin de propriété et un sens ASC/DESC passent.
+        if ($sortField !== null && preg_match(self::SORT_FIELD_PATTERN, $sortField) === 1) {
+            $params['sorts'] = [[$sortField, $this->normalizeSortOrder($sortOrder)]];
         }
 
         $request->getSession()->set($sessionKey, $params);
 
         return new DatasourceParams(...array_values($params));
+    }
+
+    protected function normalizeSortOrder(?string $sortOrder): ?string
+    {
+        $sortOrder = strtoupper((string)$sortOrder);
+
+        return in_array($sortOrder, self::SORT_ORDERS, true) ? $sortOrder : null;
     }
 
     public function getDatasourceParamsKey(): string
