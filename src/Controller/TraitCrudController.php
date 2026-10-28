@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Controller;
 
+use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
+use Lle\CruditBundle\Field\WorkflowField;
 use Lle\CruditBundle\Filter\FilterState;
+use Lle\CruditBundle\Resolver\FieldResolver;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Lle\CruditBundle\Service\NavigationStack;
+use Lle\CruditBundle\Workflow\WorkflowStates;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +26,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait TraitCrudController
@@ -329,29 +333,106 @@ trait TraitCrudController
         return $response;
     }
 
-    #[Route('/workflow/{id}')]
-    public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
-    {
-        $transition = $request->query->get("transition");
-        $workflowName = $request->query->get("name");
+    /**
+     * Applies a transition of a workflow (field/workflow.html.twig, controller workflow): POST with its CSRF token, the
+     * workflow `name` and the `transition`; the role ROLE_<WORKFLOW>_WF_<TRANSITION> and the guards (can()) are
+     * checked. Asked in JSON, it answers the HTML of the field (`field`, found in the fields of the CRUD) and the
+     * message; else a flash and back to the page.
+     */
+    #[Route('/workflow/{id}', methods: ['POST'])]
+    public function workflowTransition(
+        Request $request,
+        WorkflowStates $workflowStates,
+        FieldResolver $fieldResolver,
+        TranslatorInterface $translator,
+        string $id,
+    ): Response {
+        $json = in_array('application/json', $request->getAcceptableContentTypes(), true);
+        $fail = function (string $message, int $status) use ($json, $request, $translator): Response {
+            $message = $translator->trans($message, [], 'LleCruditBundle');
+            if ($json) {
+                return new JsonResponse(['status' => 'ko', 'message' => $message], $status);
+            }
+            $this->addFlash('danger', $message);
+
+            return $this->redirectToReferrer($request);
+        };
+
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
+        if ($item === null) {
+            return $fail('crudit.flash.error.resource_not_found', Response::HTTP_NOT_FOUND);
+        }
 
-        if ($item && $transition) {
-            $roleTransition = str_replace("-", "_", strtoupper($transition));
-            $this->denyAccessUnlessGranted(
-                "ROLE_" . strtoupper($workflowName) . "_WF_" . $roleTransition
-            );
+        if (!$this->isCsrfTokenValid('crudit_workflow_' . $id, (string) $request->request->get('_token'))) {
+            return $fail('crudit.workflow.expired', Response::HTTP_FORBIDDEN);
+        }
 
-            foreach ($wfRegistry->all($item) as $wf) {
-                if ($wf->can($item, $transition)) {
-                    $wf->apply($item, $transition);
-                    $dataSource->save($item);
+        $transition = (string) $request->request->get('transition');
+        try {
+            $workflow = $workflowStates->workflow($item, $request->request->get('name') ?: null);
+        } catch (\InvalidArgumentException) {
+            return $fail('crudit.workflow.error', Response::HTTP_BAD_REQUEST);
+        }
+
+        if (!$workflowStates->isGranted($workflow->getName(), $transition)) {
+            return $fail('crudit.workflow.forbidden', Response::HTTP_FORBIDDEN);
+        }
+
+        if ($transition === '' || !$workflow->can($item, $transition)) {
+            return $fail('crudit.workflow.unavailable', Response::HTTP_CONFLICT);
+        }
+
+        $label = fn (object $subject): string => implode(', ', array_map(
+            fn (int|string $place): string => $translator->trans('wf.state.' . $place),
+            array_keys($workflow->getMarking($subject)->getPlaces()),
+        ));
+        $from = $label($item);
+        $workflow->apply($item, $transition);
+        if (!$dataSource->save($item)) {
+            return $fail('crudit.workflow.error', Response::HTTP_BAD_REQUEST);
+        }
+
+        $entity = ActionView::labelOf($item, $id);
+        $parameters = ['%entity%' => $entity, '%from%' => $from, '%to%' => $label($item)];
+        $message = $translator->trans(
+            $entity !== '' ? 'crudit.workflow.success_entity' : 'crudit.workflow.success',
+            $parameters,
+            'LleCruditBundle',
+        );
+
+        if (!$json) {
+            $this->addFlash('success', $message);
+
+            return $this->redirectToReferrer($request);
+        }
+
+        $field = $this->findWorkflowField((string) $request->request->get('field'), $workflow->getName());
+
+        return new JsonResponse([
+            'status' => 'ok',
+            'message' => $message,
+            'html' => $fieldResolver->resolveView($field, $item, $dataSource, $this->config)->getValue(),
+        ]);
+    }
+
+    /**
+     * The WorkflowField of the CRUD named so (list, then record, to keep its options and its template), else a new
+     * one on the workflow.
+     */
+    private function findWorkflowField(string $name, string $workflowName): Field
+    {
+        foreach ([CrudConfigInterface::INDEX, CrudConfigInterface::SHOW] as $key) {
+            foreach ($this->config->getFields($key) as $field) {
+                foreach (is_array($field) ? $field : [$field] as $candidate) {
+                    if ($candidate instanceof Field && $candidate->getName() === $name) {
+                        return $candidate;
+                    }
                 }
             }
         }
 
-        return $this->redirectToReferrer($request);
+        return Field::new($name, WorkflowField::class, ['name' => $workflowName]);
     }
 
     private function getResource(Request $request, $allowCreate = true): ?object

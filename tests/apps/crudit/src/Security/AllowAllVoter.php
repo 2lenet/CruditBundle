@@ -10,14 +10,18 @@ use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
 /**
  * Application de démonstration : tout est autorisé (rôles de Crudit compris), sauf le rôle NOBODY, qui sert à tester
- * ce que l'utilisateur n'a pas le droit de voir (menu). L'authentification (http_basic) ne sert qu'au menu utilisateur.
+ * ce que l'utilisateur n'a pas le droit de voir (menu), et la transition « archive » du workflow des interventions
+ * (lot 3.4.c). L'authentification (http_basic) ne sert qu'au menu utilisateur.
  */
 class AllowAllVoter implements VoterInterface
 {
     public const NOBODY = 'ROLE_NOBODY';
+    public const ARCHIVE = 'ROLE_INTERVENTION_WF_ARCHIVE';
 
     public function vote(TokenInterface $token, mixed $subject, array $attributes, ?Vote $vote = null): int
     {
-        return \in_array(self::NOBODY, $attributes, true) ? self::ACCESS_DENIED : self::ACCESS_GRANTED;
+        return \in_array(self::NOBODY, $attributes, true) || \in_array(self::ARCHIVE, $attributes, true)
+            ? self::ACCESS_DENIED
+            : self::ACCESS_GRANTED;
     }
 }

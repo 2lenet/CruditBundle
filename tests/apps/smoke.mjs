@@ -850,6 +850,98 @@ await axeTable(page, 'dark, right to left');
 await shot(page, 'list-dark-rtl');
 await page.close();
 
+// ---------- Workflow (lot 3.4.c): the status, the menu of the states its transitions lead to, the confirmation in the
+// dialog of the layout, the transition sent without a reload (toast, focus back on the status), an error said, the
+// counters. app:seed: INT-01 without technician (cannot be planned), INT-02 to plan, INT-03 planned.
+const wfRow = (page, reference) => page.$$eval('.crudit-ui-table__row', (rows, reference) => '#' + rows.find((r) => r.querySelector('th[scope=row]')?.textContent.trim() === reference).id, reference);
+const text = (page, sel) => page.$eval(sel, (e) => e.textContent.replace(/\s+/g, ' ').trim());
+
+page = await open(1440, '/intervention/');
+await page.evaluate(() => { window.notReloaded = true; });
+let wf = await wfRow(page, 'INT-02');
+assert.equal(await text(page, `${wf} .crudit-workflow__trigger`), 'To plan, change the status of INT-02');
+await page.focus(`${wf} .crudit-workflow__trigger`);
+await page.keyboard.press('Enter');
+await new Promise((r) => setTimeout(r, 300));
+assert.equal(await attr(page, `${wf} .crudit-workflow__trigger`, 'aria-expanded'), 'true', 'Enter opens the menu');
+assert.deepEqual(await page.$$eval(`${wf} .crudit-workflow .crudit-ui-menu__item`, (items) => items.map((i) => i.textContent.trim())), ['Planned', 'Cancelled']);
+await axeOn(page, '.crudit-ui-table', 'workflow menu open');
+await shot(page, 'workflow-menu');
+
+// The item opens the confirmation, which names the element; Cancel has the focus
+await page.focus(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=plan]`);
+await page.keyboard.press('Enter');
+await new Promise((r) => setTimeout(r, 400));
+assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), true, 'the confirmation opens');
+assert.equal(await text(page, '#crudit-confirm-title'), 'INT-02: move to “Planned”?');
+assert.equal(await page.evaluate(() => document.activeElement.closest('#crudit-confirm') !== null && document.activeElement.textContent.trim()), 'Cancel', 'focus on Cancel');
+assert.ok(await page.$eval('#crudit-confirm .crudit-action', (e) => e.classList.contains('crudit-ui-btn--primary')), 'not destructive: primary');
+await axeOn(page, '#crudit-confirm', 'workflow confirmation');
+
+// Confirm: no reload, the status changes, a toast says it, the focus is back on the status
+await page.click('#crudit-confirm .crudit-action');
+await page.waitForFunction((wf) => document.querySelector(`${wf} .crudit-workflow__trigger`)?.textContent.includes('Planned'), {timeout: 5000}, wf);
+assert.equal(await page.evaluate(() => window.notReloaded), true, 'no reload');
+assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), false, 'the confirmation is closed');
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('INT-02: status changed from “To plan” to “Planned”.'), {timeout: 3000});
+assert.equal(await page.evaluate((wf) => document.activeElement === document.querySelector(`${wf} .crudit-workflow__trigger`), wf), true, 'focus back on the status');
+// The card of the line (phones) is up to date too; a status carries no id (its HTML is in the table and the card)
+const card = await page.evaluate(() => {
+    const field = [...document.querySelectorAll('.crudit-ui-table__card .crudit-workflow')].find((f) => f.textContent.includes('INT-02'));
+    return {
+        trigger: field.querySelector('.crudit-workflow__trigger').textContent.replace(/\s+/g, ' ').trim(),
+        items: [...field.querySelectorAll('.crudit-ui-menu__item')].map((i) => i.textContent.trim()),
+        ids: document.querySelectorAll('.crudit-workflow [id]').length,
+    };
+});
+assert.deepEqual(card, {trigger: 'Planned, change the status of INT-02', items: ['In progress', 'Cancelled'], ids: 0}, 'the card is up to date');
+ok('workflow: a transition from the keyboard, without a reload');
+
+// A destructive transition: Confirm in danger
+wf = await wfRow(page, 'INT-01');
+assert.deepEqual(await page.$$eval(`${wf} .crudit-workflow .crudit-ui-menu__item`, (items) => items.map((i) => i.textContent.trim())), ['Cancelled'], 'plan refused by its guard');
+await page.click(`${wf} .crudit-workflow__trigger`);
+await new Promise((r) => setTimeout(r, 300));
+await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=cancel]`);
+await new Promise((r) => setTimeout(r, 400));
+assert.ok(await page.$eval('#crudit-confirm .crudit-action', (e) => e.classList.contains('crudit-ui-btn--danger')), 'destructive: danger');
+await page.keyboard.press('Escape');
+await new Promise((r) => setTimeout(r, 300));
+ok('workflow: a destructive transition is confirmed in danger');
+
+// Refused by the server: the status stays, the message is said
+wf = await wfRow(page, 'INT-03');
+await page.setRequestInterception(true);
+const refuse = (request) => request.url().includes('/workflow/') ? request.respond({status: 409, contentType: 'application/json', body: JSON.stringify({status: 'ko', message: 'Refused by the server.'})}) : request.continue();
+page.on('request', refuse);
+await page.click(`${wf} .crudit-workflow__trigger`);
+await new Promise((r) => setTimeout(r, 300));
+await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=start]`);
+await new Promise((r) => setTimeout(r, 400));
+await page.click('#crudit-confirm .crudit-action');
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Refused by the server.'), {timeout: 3000});
+assert.ok((await text(page, `${wf} .crudit-workflow__trigger`)).startsWith('Planned'), 'the status has not changed');
+assert.equal(await attr(page, `${wf} .crudit-workflow__trigger`, 'aria-busy'), null, 'no longer busy');
+page.off('request', refuse);
+await page.setRequestInterception(false);
+errors.splice(0, errors.length, ...errors.filter((error) => !error.includes('409')));
+ok('workflow: a refusal of the server is said, the status stays');
+
+// The cards of the phones show the status too; dark, right to left
+page = await open(360, '/intervention/');
+assert.ok(await visible(page, '.crudit-ui-table__card .crudit-workflow__trigger'), 'the status in the cards');
+await axeOn(page, '.crudit-ui-table', 'workflow cards');
+page = await open(1440, '/intervention/', {rtl: true, dark: true});
+await axeOn(page, '.crudit-ui-table', 'workflow dark, right to left');
+await shot(page, 'workflow-dark-rtl');
+
+// The counters: the status of each state (its tone), then its number, in the order of the places
+page = await open(1440, '/intervention/counters');
+assert.deepEqual(await page.$$eval('.crudit-ui-counter', (counters) => counters.map((c) => c.textContent.replace(/\s+/g, '').trim())), ['Toplan1', 'Planned2', 'Inprogress1', 'Done1', 'Cancelled1', 'Archived0']);
+await axeOn(page, '.crudit-ui-counters', 'counters');
+await shot(page, 'workflow-counters');
+ok('workflow: counters');
+
 // ---------- Turbo cache hook / reduced motion: no errors
 console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
 console.log(`${passed} checks passed`);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Client;
+use App\Entity\Intervention;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -34,8 +35,15 @@ class SeedCommand extends Command
                 ->setActive(0 !== $i % 4)
                 ->setCreatedAt(new \DateTime(sprintf('2026-01-%02d', $i))));
         }
+        // Interventions in each state of their workflow (lot 3.4.c); INT-01 has no technician: it cannot be planned
+        foreach (['to_plan', 'to_plan', 'planned', 'in_progress', 'done', 'cancelled'] as $i => $status) {
+            $this->em->persist((new Intervention())
+                ->setReference(sprintf('INT-%02d', $i + 1))
+                ->setTechnician(0 === $i ? null : 'Camille Martin')
+                ->setStatus($status));
+        }
         $this->em->flush();
-        $output->writeln('25 clients.');
+        $output->writeln('25 clients, 6 interventions.');
 
         return Command::SUCCESS;
     }

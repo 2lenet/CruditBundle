@@ -111,6 +111,16 @@ services:
     # Function declared by #[AsTwigFunction] (autoconfiguration)
     Lle\CruditBundle\Twig\TableExtension: ~
 
+    Lle\CruditBundle\Workflow\WorkflowStates:
+        arguments:
+            $registry: '@workflow.registry'
+            $authorizationChecker: '@security.authorization_checker'
+
+    Lle\CruditBundle\Workflow\WorkflowCounter: ~
+
+    # crudit_workflow() and crudit_workflow_counters() by #[AsTwigFunction]
+    Lle\CruditBundle\Twig\WorkflowExtension: ~
+
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:
             $propertyAccessor: '@property_accessor'

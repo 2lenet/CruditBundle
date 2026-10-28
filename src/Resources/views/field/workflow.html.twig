@@ -1,69 +1,82 @@
-{# Get allowed transitions #}
-
-{% set workflow_name = options.name|default(get_workflow_names(resource)|first) %}
-
-{% set transitions = workflow_transitions(resource, workflow_name) %}
-
-{# Filter by user role #}
-{% if view.config %}
-    {% set transitions = transitions | filter(t => is_granted('ROLE_' ~ (workflow_name|upper) ~ '_WF_' ~ (t.name | upper | replace({'-': '_'})))) %}
-{% endif %}
-
-{% if transitions is not empty %}
-    {# There are allowed transitions #}
-    <div class="dropdown crudit-wf-dropdown">
-        <span class="badge rounded-pill {{ options.backgroundColor|default('bg-primary') }} text-start crudit-wf-badge crudit-wf-state-{{ value }}"
-              data-bs-toggle="dropdown">
-            <div
-                class="dropdown-toggle text-decoration-none align-middle"
-                role="button">
-                {{ ('wf.state.' ~ value) | trans }}
-            </div>
-        </span>
-        <ul class="dropdown-menu">
-            {% for transition in transitions %}
-                <button
-                    class="dropdown-item crudit-wf-transition-{{ transition.name }}"
-                    data-bs-toggle="modal"
-                    data-bs-target="#validate-action-{{ transition.name }}-{{ view.resource.id }}"
-                >
-                    {{ ('wf.transition.' ~ transition.name) | trans }}
-                </button>
-            {% endfor %}
-        </ul>
-    </div>
-
-    {% for transition in transitions %}
-        <div class="modal fade" id="validate-action-{{ transition.name }}-{{ view.resource.id }}" tabindex="-1"
-             aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        {{ 'crudit.modal.transition.message' | trans({}, 'LleCruditBundle') }}
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">
-                            {{ 'crudit.modal.cancel' | trans({}, 'LleCruditBundle') }}
-                        </button>
-                        <a
-                            href="{{ view.config ? path(view.config.rootRoute ~ '_workflowtransition', {
-                                id : resource.id,
-                                transition: transition.name,
-                                field: view.field.name,
-                                name: workflow_name,
-                            }) : '#' }}"
-                            class="btn btn-primary">
-                            {{ 'crudit.modal.transition.action'|trans({}, 'LleCruditBundle') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-
-{% else %}
-    {# There are no allowed transitions #}
-    <span class="badge rounded-pill {{ options.backgroundColor|default('bg-primary') }} text-start crudit-wf-badge crudit-wf-state-{{ value }}">
-        {{ ('wf.state.' ~ value) | trans }}
-    </span>
-{% endif %}
+{#
+ # State of an element in a workflow (WorkflowField, WorkflowStates): a Status of CruditUiBundle, in the tone of its
+ # place (metadata `tone`), its label `wf.state.<place>` always written.
+ #
+ # If the user may apply transitions (the guards of the workflow and the role ROLE_<WORKFLOW>_WF_<TRANSITION>; the
+ # others are hidden), the status is the button of a menu, named "Prospect, change the status of Bob", which lists the
+ # states the transitions lead to. A transition is confirmed in the dialog of the layout (crudit-confirm), then sent by
+ # the controller workflow: the field is replaced by the answer, a toast says the change, the focus goes back to the
+ # status. Variables are prefixed `wf_`: inside a component, its props (label, size…) hide the variables.
+ #}
+{%- set wf = crudit_workflow(resource, options.name) -%}
+{%- set wf_transitions = view.config ? wf.transitions : [] -%}
+{%- set wf_controller = '2lenet--crudit-bundle--workflow' -%}
+{%- set wf_entity = wf.entityLabel -%}
+{#- A <div> around the Dropdown (a <div>), a <span> around a status alone -#}
+{%- set wf_tag = wf_transitions is empty ? 'span' : 'div' -%}
+<{{ wf_tag }} class="crudit-value crudit-value--workflow crudit-workflow"
+    {%- if wf_transitions is not empty %}
+    data-controller="{{ wf_controller }}"
+    data-action="2lenet--crudit-bundle--confirm:confirmed->{{ wf_controller }}#apply"
+    data-{{ wf_controller }}-url-value="{{ path(view.config.rootRoute ~ '_workflowtransition', {id: resource.id}) }}"
+    data-{{ wf_controller }}-token-value="{{ csrf_token('crudit_workflow_' ~ resource.id) }}"
+    data-{{ wf_controller }}-name-value="{{ wf.name }}"
+    data-{{ wf_controller }}-field-value="{{ view.field.name }}"
+    data-{{ wf_controller }}-error-value="{{ 'crudit.workflow.error'|trans(domain: 'LleCruditBundle') }}"
+    {%- endif %}>
+    {%- if wf.states is empty -%}
+        {#- No state: a dash, read as "Not set", as LleCruditUi:Boolean -#}
+        <span class="crudit-ui-empty-value"><span aria-hidden="true">—</span><span class="crudit-ui-visually-hidden">{{ 'crudit_ui.value.empty'|trans(domain: 'LleCruditUiBundle') }}</span></span>
+    {%- elseif wf_transitions is empty -%}
+        {%- for wf_state in wf.states -%}
+            <twig:LleCruditUi:Status tone="{{ wf_state.tone }}" size="small">{{ ('wf.state.' ~ wf_state.place)|trans }}</twig:LleCruditUi:Status>
+        {%- endfor -%}
+    {%- else -%}
+        {%- set wf_current = wf.states|map(wf_state => ('wf.state.' ~ wf_state.place)|trans)|join(', ') -%}
+        {%- set wf_change = wf_entity != ''
+            ? 'crudit.workflow.change_entity'|trans({'%entity%': wf_entity}, 'LleCruditBundle')
+            : 'crudit.workflow.change'|trans(domain: 'LleCruditBundle') -%}
+        {%- set wf_menu = wf_entity != ''
+            ? 'crudit.workflow.menu_entity'|trans({'%entity%': wf_entity}, 'LleCruditBundle')
+            : 'crudit.workflow.menu'|trans(domain: 'LleCruditBundle') -%}
+        {%- component 'LleCruditUi:Dropdown' with {
+            label: wf_current ~ wf_change,
+            floating: true,
+            align: 'start',
+            'trigger:class': 'crudit-workflow__trigger',
+            ('trigger:data-' ~ wf_controller ~ '-target'): 'trigger',
+            'panel:class': 'crudit-ui-dropdown__panel crudit-ui-dropdown__panel--start crudit-ui-dropdown__panel--floating crudit-workflow__panel',
+        } -%}
+            {%- block trigger -%}
+                {%- for wf_state in wf.states -%}
+                    <twig:LleCruditUi:Status tone="{{ wf_state.tone }}" size="small">{{ ('wf.state.' ~ wf_state.place)|trans }}</twig:LleCruditUi:Status>
+                {%- endfor -%}
+                {{- ui_icon('dropdown', 'crudit-workflow__chevron') -}}
+                <span class="crudit-ui-visually-hidden">{{ wf_change }}</span>
+            {%- endblock -%}
+            {%- block content -%}
+                <twig:LleCruditUi:Menu aria-label="{{ wf_menu }}">
+                    {%- for wf_transition in wf_transitions -%}
+                        {%- set wf_to = ('wf.state.' ~ wf_transition.to.place)|trans -%}
+                        {%- component 'LleCruditUi:MenuItem' with {
+                            commandfor: 'crudit-confirm',
+                            command: 'show-modal',
+                            'data-transition': wf_transition.name,
+                            'data-to': wf_to,
+                            'data-confirm-dispatch': true,
+                            'data-confirm-text': wf_entity != ''
+                                ? 'crudit.workflow.question_entity'|trans({'%entity%': wf_entity, '%state%': wf_to}, 'LleCruditBundle')
+                                : 'crudit.workflow.question'|trans({'%state%': wf_to}, 'LleCruditBundle'),
+                            'data-confirm-label': 'crudit.workflow.confirm'|trans(domain: 'LleCruditBundle'),
+                            'data-confirm-danger': wf_transition.danger,
+                        } -%}
+                            {%- block content -%}
+                                <twig:LleCruditUi:Status tone="{{ wf_transition.to.tone }}" size="small">{{ wf_to }}</twig:LleCruditUi:Status>
+                            {%- endblock -%}
+                        {%- endcomponent -%}
+                    {%- endfor -%}
+                </twig:LleCruditUi:Menu>
+            {%- endblock -%}
+        {%- endcomponent -%}
+    {%- endif -%}
+</{{ wf_tag }}>

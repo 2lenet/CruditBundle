@@ -105,9 +105,21 @@ crudit:
             message: "Choisissez un format d'export"
             action: "Exporter"
             notConfigured: "L'export n'est pas configuré"
-        transition:
-            message: "Voulez-vous vraiment modifier le statut de cet élément ?"
-            action: "Valider"
+
+    workflow:
+        change: ", changer le statut"
+        change_entity: ", changer le statut de %entity%"
+        menu: "Nouveau statut"
+        menu_entity: "Nouveau statut pour %entity%"
+        question: "Passer à « %state% » ?"
+        question_entity: "%entity% : passer à « %state% » ?"
+        confirm: "Confirmer"
+        success: "Statut passé de « %from% » à « %to% »."
+        success_entity: "%entity% : statut passé de « %from% » à « %to% »."
+        unavailable: "Ce changement de statut n'est plus possible : le statut n'a pas changé."
+        forbidden: "Vous n'avez pas le droit de faire ce changement de statut."
+        expired: "La page a expiré : rechargez-la, puis recommencez."
+        error: "Le statut n'a pas pu être changé."
 
     field:
         createdAt: "Créé le"
