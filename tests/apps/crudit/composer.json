@@ -28,6 +28,7 @@
         "symfony/security-bundle": "^8.0",
         "symfony/serializer": "^8.0",
         "symfony/stimulus-bundle": "^3.0",
+        "symfony/stopwatch": "^8.0",
         "symfony/translation": "^8.0",
         "symfony/twig-bundle": "^8.0",
         "symfony/ux-icons": "^3.5",

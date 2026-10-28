@@ -105,9 +105,21 @@ crudit:
             message: "Wählen Sie ein Exportformat"
             action: "Exportieren"
             notConfigured: "Export ist nicht konfiguriert"
-        transition:
-            message: "Wollen Sie den Status dieses Elements wirklich ändern?"
-            action: "Validieren"
+
+    workflow:
+        change: ", Status ändern"
+        change_entity: ", Status von %entity% ändern"
+        menu: "Neuer Status"
+        menu_entity: "Neuer Status für %entity%"
+        question: "Zu „%state%“ wechseln?"
+        question_entity: "%entity%: zu „%state%“ wechseln?"
+        confirm: "Bestätigen"
+        success: "Status von „%from%“ zu „%to%“ geändert."
+        success_entity: "%entity%: Status von „%from%“ zu „%to%“ geändert."
+        unavailable: "Dieser Statuswechsel ist nicht mehr möglich: Der Status wurde nicht geändert."
+        forbidden: "Sie dürfen diesen Statuswechsel nicht vornehmen."
+        expired: "Die Seite ist abgelaufen: Laden Sie sie neu und versuchen Sie es erneut."
+        error: "Der Status konnte nicht geändert werden."
 
     field:
         createdAt: "Erstellt am"

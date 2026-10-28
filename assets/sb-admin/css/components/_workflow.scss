@@ -1,13 +1,5 @@
-.crudit-wf-badge {
-    min-width: 120px;
-
-    // position the toggle arrow inside the badge
-    .dropdown-toggle::after {
-        float: right;
-        margin-top: 0.25rem;
-    }
-}
-
+// The state of a workflow is styled by Crudit (assets/styles/components/_workflow.scss, lot 3.4.c); the filter
+// remains here until lot 3.1.e.
 .crudit-filter-workflow .tom-select {
     // prevent rounding on the left side
     border-radius: 0 0.35rem 0.35rem 0;

@@ -36,6 +36,7 @@ crud:
     title:
         list:
             client: "Clients"
+            intervention: "Interventions"
         show:
             client: "%entity%"
         edit:
@@ -80,3 +81,12 @@ client:
         message: "Message"
         cancel: "Cancel"
         send: "Send"
+# States of the workflow "intervention" (lot 3.4.c)
+wf:
+    state:
+        to_plan: "To plan"
+        planned: "Planned"
+        in_progress: "In progress"
+        done: "Done"
+        cancelled: "Cancelled"
+        archived: "Archived"
