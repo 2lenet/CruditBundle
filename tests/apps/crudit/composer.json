@@ -8,6 +8,7 @@
         "2lenet/crudit-bundle": "@dev",
         "doctrine/doctrine-bundle": "^3.0",
         "doctrine/orm": "^3.0",
+        "league/commonmark": "^2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",

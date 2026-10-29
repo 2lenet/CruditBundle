@@ -1,3 +1,30 @@
-{% for item in value %}
-    {{ item }}
-{% endfor %}
+{#
+ # JSON: a list gives <ul>, an object <dl> (key: value), recursively (FieldValue.vue of the mockup).
+ #}
+{%- macro json(value) -%}
+    {%- import _self as fields -%}
+    {%- if value is crudit_empty -%}
+        {#- an empty list or object inside another one -#}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- elseif value is iterable -%}
+        {%- if value|keys == range(0, value|length - 1) -%}
+            <ul class="crudit-value__json">{% for item in value %}<li>{{ fields.json(item) }}</li>{% endfor %}</ul>
+        {%- else -%}
+            <dl class="crudit-value__json crudit-value__json--pairs">{% for key, item in value %}<div class="crudit-value__json-pair"><dt>{{ key }}</dt><dd>{{ fields.json(item) }}</dd></div>{% endfor %}</dl>
+        {%- endif -%}
+    {%- elseif value is same as(true) or value is same as(false) -%}
+        {{ value ? 'true' : 'false' }}
+    {%- else -%}
+        {{ value }}
+    {%- endif -%}
+{%- endmacro -%}
+{%- import _self as fields -%}
+<div class="crudit-value crudit-value--json crudit-value--clamp">
+{%- block value -%}
+    {%- if value is crudit_empty -%}
+        {{ include('@LleCrudit/field/_empty.html.twig') }}
+    {%- else -%}
+        {{ fields.json(value) }}
+    {%- endif -%}
+{%- endblock -%}
+</div>

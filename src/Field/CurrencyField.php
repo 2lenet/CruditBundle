@@ -27,14 +27,18 @@ class CurrencyField extends AbstractField
         return '@LleCrudit/field/currency.html.twig';
     }
 
+    public function getAlignment(): string
+    {
+        /** @var string $alignment */
+        $alignment = $this->parameterBag->get('lle_crudit.default_currency_alignment');
+
+        return $this->logicalAlignment($alignment);
+    }
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        /** @var string $defaultCurrencyAlignment */
-        $defaultCurrencyAlignment = $this->parameterBag->get('lle_crudit.default_currency_alignment');
-
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'tableCssClass' => $this->getTableCssClass($defaultCurrencyAlignment),
             // null: locale of the request, in Latin digits
             'locale' => null,
             'currency' => 'EUR',

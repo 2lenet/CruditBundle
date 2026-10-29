@@ -29,6 +29,17 @@ class ProgressBarField extends AbstractField
             "max" => 100,
             "isBottomLabelActivate" => false,
             "bottomLabel" => null,
+            // above max: 'danger' (an alert, as in 1.x: the budget is exceeded), or 'success' (the bar is full, as at max)
+            "overMax" => 'danger',
         ]);
+        $optionsResolver->setAllowedValues('overMax', ['success', 'danger']);
+        foreach (['barCssClass', 'progressLabelCssClass'] as $option) {
+            $optionsResolver->setDeprecated(
+                $option,
+                '2lenet/crudit-bundle',
+                '2.0',
+                'The option "%name%" has no effect any more: the bar and its value have the look of the design system (option overMax for the tone above max).',
+            );
+        }
     }
 }

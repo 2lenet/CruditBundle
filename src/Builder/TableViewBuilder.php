@@ -12,6 +12,9 @@ use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
+use Lle\CruditBundle\Exception\CruditException;
+use Lle\CruditBundle\Field\AbstractField;
+use Lle\CruditBundle\Registry\FieldRegistry;
 use Lle\CruditBundle\Twig\CruditActionExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -37,9 +40,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TableViewBuilder
 {
-    /** Types of fields whose value is a number: aligned at the end of the cell. */
-    private const NUMERIC_TYPES = ['number', 'integer', 'decimal', 'float', 'currency'];
-
     /** Names of the icons of CruditBundle 1.x (Font Awesome) that have another name in the catalogue of the design system. */
     private const ICONS = [
         'trash-alt' => 'delete',
@@ -60,6 +60,7 @@ class TableViewBuilder
         private RequestStack $requestStack,
         private PageActionsBuilder $actionsBuilder,
         private CruditActionExtension $actionExtension,
+        private FieldRegistry $fieldRegistry,
     ) {
     }
 
@@ -199,11 +200,35 @@ class TableViewBuilder
             'id' => $field->getId(),
             'label' => $this->translator->trans($field->getLabel(), [], $domain),
             'sortUrl' => $url,
-            'align' => in_array($field->getType(), self::NUMERIC_TYPES, true) ? 'end' : 'start',
+            'align' => $this->alignment($field),
             'primary' => $primary,
             'card' => true,
             'info' => $field->getInfo() ? $this->translator->trans($field->getInfo()) : null,
         ];
+    }
+
+    /**
+     * The alignment of a column: the option alignment of the field (start, end), else the one of its type
+     * (AbstractField::getAlignment(), the numbers at the end), start for a field of a project that does not extend
+     * AbstractField or a type without field.
+     */
+    private function alignment(Field $field): string
+    {
+        $alignment = $field->getOptions()['alignment'] ?? null;
+        if (\in_array($alignment, ['start', 'end'], true)) {
+            return $alignment;
+        }
+        $type = $field->getType();
+        if ($type === null) {
+            return 'start';
+        }
+        try {
+            $fieldType = $this->fieldRegistry->get($type);
+        } catch (CruditException) {
+            return 'start';
+        }
+
+        return $fieldType instanceof AbstractField ? $fieldType->getAlignment() : 'start';
     }
 
     /** @param array<string, int> $shown the ids of the visible fields (as keys) */

@@ -25,6 +25,14 @@
         </form>
         <div class="crudit-eip-value">{{ (options.format ? value|date(options.format) : value|ui_datetime('short', 'short')) }}</div>
     </div>
-{% elseif value %}
-    {{ (options.format ? value|date(options.format) : value|ui_datetime('short', 'short')) }}
+{% else %}
+    <span class="crudit-value crudit-value--datetime">
+    {%- block value -%}
+        {%- if value is crudit_empty -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
+            <time datetime="{{ value|date('c') }}">{{ options.format ? value|date(options.format) : value|ui_datetime('short', 'short') }}</time>
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}

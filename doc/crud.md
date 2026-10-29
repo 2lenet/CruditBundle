@@ -292,6 +292,47 @@ public function getTotalFields(): array
 > :warning: **Don't forget to specify the type of your field, as Crudit is unable to determine this itself.**
 
 You can also use totals on your sublist by adding `getSubListTotalFields` method to the CruditConfig file.
+## How a field shows its value
+
+Each type has its template, `@LleCrudit/field/<type>.html.twig`, rendered in a cell of the list, in a card (small
+screens) and on the record. Its value is in a block `value`, inside `<span class="crudit-value crudit-value--<type>">`:
+to change how a type looks, extend the template and override the block.
+
+```twig
+{# templates/crudit/field/amount.html.twig, given by Field::new('amount')->setTemplate(...) #}
+{% extends '@LleCrudit/field/currency.html.twig' %}
+{% block value %}{{ parent() }} <small>excl. tax</small>{% endblock %}
+```
+
+- An empty value (`null`, `''`, an empty collection or JSON) is a dash read as "Not set"
+  (`@LleCrudit/field/_empty.html.twig`).
+- The numbers (`integer`, `smallint`, `bigint`, `float`, `decimal`, `currency`) are aligned at the end of their column,
+  the other types at its start: configuration `default_currency_alignment`, `default_integer_alignment`,
+  `default_number_alignment` (`right`: at the end, `left` or `center`: at the start). One column: the option
+  `alignment` of its field (`Field::new('code', null, ['alignment' => 'end'])`). A field of yours chooses with
+  `getAlignment()` (`start`, `end`).
+- In a cell of a list, the values are compact: a long text (textarea, Markdown, rich text, JSON) stays on two lines,
+  a web address shows its host, a JSON is written on a line (`a, b`; `key: value, …`). The card and the record show
+  them whole.
+- Markdown and rich text (CKEditor) are always cleaned (the `sanitize` filter, `SanitizerInterface`); the headings of
+  Markdown start at `h4`.
+- A choice (`ChoiceField`) shows the translated label of its value (`choices`: label => value; domain
+  `translationDomain`, `messages` by default). `tones` gives a tone by value, the label is then a status:
+
+```php
+Field::new('status', ChoiceField::class, [
+    'choices' => ['status.prospect' => 'prospect', 'status.customer' => 'customer', 'status.lost' => 'lost'],
+    'tones' => ['customer' => 'success', 'lost' => 'danger'],
+]);
+```
+
+- A boolean: an icon and Yes or No, written; `reverseColors` puts Yes in the danger tone and No in the success one
+  (when Yes is the bad news, as "Blocked"); `nullToFalse` shows No for `null` (else a dash).
+- A web address: without its scheme (its host only in a cell), opened in a new tab (said to the screen readers); only
+  `http(s)` makes a link.
+- A collection (`DoctrineEntityField`): its number of elements.
+- The progress: see [progressbar_field.md](progressbar_field.md).
+
 ## Configure route for DoctrineEntityField
 
 To configure route for DoctrineEntityField, you must set the `route` options:

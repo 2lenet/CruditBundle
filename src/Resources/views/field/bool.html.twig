@@ -13,20 +13,10 @@
         </div>
     </div>
 {% else %}
-    {% set yes_cssclass = 'text-bg-success bg-success' %}
-    {% set no_cssclass = 'text-bg-danger bg-danger' %}
-    {% if options.reverseColors %}
-        {% set yes_cssclass = 'text-bg-danger bg-danger' %}
-        {% set no_cssclass = 'text-bg-success bg-success' %}
-    {% endif %}
-
-    {% if value == true %}
-        <span class="badge badge-boolean text-white {{ yes_cssclass }}">
-            {{ 'crudit.boolean.yes'|trans({}, 'LleCruditBundle') }}
-        </span>
-    {% elseif value is same as(false) or (not value and options.nullToFalse == true) %}
-        <span class="badge badge-boolean text-white {{ no_cssclass }}">
-            {{ 'crudit.boolean.no'|trans({}, 'LleCruditBundle') }}
-        </span>
-    {% endif %}
+    <span class="crudit-value crudit-value--bool">
+    {%- block value -%}
+        {#- null: a dash, or No with nullToFalse; reverseColors: Yes in danger, No in success -#}
+        <twig:LleCruditUi:Boolean :value="value is null and not options.nullToFalse ? null : (value ? true : false)" :reverse="options.reverseColors"/>
+    {%- endblock -%}
+    </span>
 {% endif %}

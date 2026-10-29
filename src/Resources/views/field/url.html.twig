@@ -24,5 +24,33 @@
         </div>
     </div>
 {% else %}
-    <a href="{{ value }}" target="_blank">{{ value }}</a>
+    <span class="crudit-value crudit-value--url">
+    {%- block value -%}
+        {%- if value is crudit_empty -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
+            {#- Shown without its scheme nor www.; its host, then its path (hidden in a cell of a table, the title gives
+             # it); a link only for http(s), never javascript: -#}
+            {#- the authority ends at the first /, ? or #; the user and the password before @ are not shown. Without
+             # ://, the value is shown as it is (jean@example.org, mailto:…) -#}
+            {%- if '://' in value -%}
+                {%- set rest = value|split('://', 2)|last -%}
+                {%- set authority = rest|split('/', 2)|first|split('?', 2)|first|split('#', 2)|first -%}
+                {%- set path = rest|slice(authority|length) -%}
+                {%- set host = authority|split('@')|last -%}
+                {%- set host = host|lower starts with 'www.' ? host|slice(4) : host -%}
+            {%- else -%}
+                {%- set host = value -%}
+                {%- set path = '' -%}
+            {%- endif -%}
+            {%- if value|lower starts with 'https://' or value|lower starts with 'http://' -%}
+                <a class="crudit-value__link" href="{{ value }}" target="_blank" rel="noopener noreferrer"{% if path %} title="{{ host ~ path }}"{% endif %}>
+                    <span class="crudit-value__host">{{ host }}</span>{% if path %}<span class="crudit-value__path">{{ path }}</span>{% endif %}{{ ui_icon('external-link', 'crudit-value__external') }}<span class="crudit-ui-visually-hidden"> {{ 'crudit.field.new_tab'|trans(domain: 'LleCruditBundle') }}</span>
+                </a>
+            {%- else -%}
+                {{ host ~ path }}
+            {%- endif -%}
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}

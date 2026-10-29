@@ -115,6 +115,8 @@ crudit:
         updatedAt: "Updated at"
         updatedBy: "Updated by"
         modification: "{0}has no change|{1} 1 change|]1,Inf[ %count% changes"
+        new_tab: "(new tab)"
+        count: "{1} %count% item|]1,Inf[ %count% items"
 
     filter:
         action: "Filter"

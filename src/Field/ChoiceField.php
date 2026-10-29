@@ -22,6 +22,12 @@ class ChoiceField extends AbstractField
         $optionsResolver->setDefaults([
             'choices' => null,
             'required' => false,
+            // a tone (neutral, info, success, warning, danger, or a hue of the palette) by value: the label in a Status
+            'tones' => [],
+            // domain of the labels of the choices (null: messages)
+            'translationDomain' => null,
         ]);
+        $optionsResolver->setAllowedTypes('tones', 'array');
+        $optionsResolver->setAllowedTypes('translationDomain', ['null', 'string']);
     }
 }

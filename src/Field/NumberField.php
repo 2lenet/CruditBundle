@@ -28,14 +28,18 @@ class NumberField extends AbstractField
         return '@LleCrudit/field/number.html.twig';
     }
 
+    public function getAlignment(): string
+    {
+        /** @var string $alignment */
+        $alignment = $this->parameterBag->get('lle_crudit.default_number_alignment');
+
+        return $this->logicalAlignment($alignment);
+    }
+
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
-        /** @var string $defaultNumberAlignment */
-        $defaultNumberAlignment = $this->parameterBag->get('lle_crudit.default_number_alignment');
-
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            'tableCssClass' => $this->getTableCssClass($defaultNumberAlignment),
             'decimals' => 2,
             // null: separators of the locale of the request (1 234,56 in fr, 1,234.56 in en)
             'decimal_separator' => null,
