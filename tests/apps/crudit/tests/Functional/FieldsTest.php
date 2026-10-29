@@ -92,6 +92,16 @@ class FieldsTest extends AppTestCase
         // A query without a path is not in the host
         $query = $this->render(Field::new('site', 'url'), 'https://example.org?x=1');
         self::assertSame(['example.org', '?x=1'], [$query->filter('.crudit-value__host')->text(), $query->filter('.crudit-value__path')->text()]);
+
+        // Without a path, no title: the text shown is the whole address
+        self::assertNull($this->render(Field::new('site', 'url'), 'https://www.example.org')->filter('a')->attr('title'));
+
+        // Without ://, shown as it is, not cut at the @
+        foreach (['jean@example.org', 'mailto:jean@example.org'] as $address) {
+            $text = $this->render(Field::new('site', 'url'), $address);
+            self::assertSame($address, trim($text->text()));
+            self::assertCount(0, $text->filter('a'));
+        }
     }
 
     public function testValuesOfEdgeCases(): void
@@ -99,6 +109,10 @@ class FieldsTest extends AppTestCase
         // A JSON decoded as objects
         $json = $this->render(Field::new('tags', 'json'), json_decode('{"since": 2024, "visits": []}'));
         self::assertSame(['since', 'visits'], $json->filter('dt')->each(static fn (Crawler $dt): string => $dt->text()));
+
+        // A list of objects: converted at every depth
+        $list = $this->render(Field::new('tags', 'json'), json_decode('[{"a": 1}, {"b": 2}]'));
+        self::assertSame(['a', 'b'], $list->filter('ul > li dt')->each(static fn (Crawler $dt): string => $dt->text()));
 
         // An empty amount in cents
         self::assertSame('—Not set', trim($this->render(Field::new('amount', 'currency', ['isInt' => true]), '')->text()));
