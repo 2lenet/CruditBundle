@@ -26,6 +26,16 @@ lle_crudit:
 If you want to have roles on all your bricks (sublist, form, template, etc.), you can add the following configuration:
 - `generate_default_role`
 
+`eip_strict` (default: `true`) makes the `editdata` route refuse the fields that are not declared editable in place
+in the crud config (see [Which fields can be edited in place](crud.md#which-fields-can-be-edited-in-place)).
+Set it to `false` only temporarily while migrating an application: the undeclared fields are then saved,
+and a warning is logged for each of them.
+
+```yaml
+lle_crudit:
+    eip_strict: false
+```
+
 **2. Actions**
 
 There are two different configurations for managing the display of actions (possible values: true/false):

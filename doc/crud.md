@@ -310,6 +310,43 @@ public function eipToUpdate(int|string $id): array
 }
 ```
 
+## Which fields can be edited in place
+
+The `editdata` route only modifies the fields returned by `getEipFields()` of the crud config that owns the route.
+For each submitted field, it also checks server side the rules the templates apply before displaying the edit in place:
+the field `role`, its `editRole` (granted on the resource) and its `editableIf` callback.
+Any other field is refused with a 403 response and a warning is logged.
+
+By default, `getEipFields()` returns the fields set editable in place:
+- in `getFields()`, for each key of `BASIC_FIELDS_KEYS` (`INDEX`, `SHOW`, `EDIT`, `NEW`, `DELETE`, `EXPORT`) and `ADDITIONAL_FIELDS_KEYS`,
+- in the list, show and sublist bricks of this crud (tabs included) that display its own resources.
+
+If your editable fields come from a custom `getFields()` key, add it to `ADDITIONAL_FIELDS_KEYS`:
+
+```php
+class YourEntityCrudConfig extends AbstractCrudConfig
+{
+    public const ADDITIONAL_FIELDS_KEYS = ['SUBLIST'];
+}
+```
+
+If they are rendered elsewhere (sublist fields built by a helper method and displayed in another crud,
+custom template, custom JS...), declare them by overriding `getEipFields()` in the crud config that owns the `editdata` route:
+
+```php
+public function getEipFields(): array
+{
+    return array_merge(parent::getEipFields(), [
+        Field::new('qte')->setEditable('app_crudit_yourentity_editdata', 'ROLE_YOURENTITY_QTE_EIP'),
+    ]);
+}
+```
+
+The fields are matched on the key sent by the edit in place (the field id, i.e. its name with `.` replaced by `_`, or its name).
+
+While migrating an application, you can set `eip_strict: false` (see [Config](config.md)):
+undeclared fields are then still saved, and a warning is logged for each of them.
+
 ## How to auto refresh the page:
 
 It is possible to auto refresh the page for the list and/or the show using the `getListAutoRefresh`/`getShowAutoRefresh` methods.

@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -104,6 +105,14 @@ interface CrudConfigInterface
     public function fieldsToUpdate(int|string $id): array;
 
     public function eipToUpdate(int|string $id): array;
+
+    /**
+     * Fields that may be modified through the editdata route (edit in place).
+     * Any other field sent to editdata is refused (see the lle_crudit.eip_strict parameter).
+     *
+     * @return Field[]
+     */
+    public function getEipFields(): array;
 
     public function getTotalFields(): array;
 
