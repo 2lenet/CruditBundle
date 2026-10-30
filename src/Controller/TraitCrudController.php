@@ -6,6 +6,7 @@ namespace Lle\CruditBundle\Controller;
 
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
@@ -205,12 +206,14 @@ trait TraitCrudController
 
             $item = $this->getResource($request);
 
-            if (!$item) {
+            if (!$item || !is_array($data)) {
                 return new JsonResponse([
                     "status" => "ko",
                     "message" => $translator->trans("crudit.flash.error.eip.bad_request", [], "LleCruditBundle"),
                 ], Response::HTTP_BAD_REQUEST);
             }
+
+            $this->denyAccessUnlessEipGranted($request, $item, $data);
 
             $dataSource->fillFromData($item, $data, $request->query->all());
             $errors = $validator->validate($item);
@@ -366,6 +369,59 @@ trait TraitCrudController
         }
 
         return $resource;
+    }
+
+    /**
+     * Replays server side the checks done by the field templates before displaying an edit in place:
+     * the field must be declared in CrudConfigInterface::getEipFields(),
+     * and its role, editRole and editableIf must be satisfied for the current user and resource.
+     */
+    private function denyAccessUnlessEipGranted(Request $request, object $item, array $data): void
+    {
+        $eipFields = $this->config->getEipFields();
+        $strict = (bool)$this->getParameter('lle_crudit.eip_strict');
+
+        foreach (array_keys($data) as $key) {
+            if ($key === 'id') {
+                continue;
+            }
+
+            $fields = array_filter(
+                $eipFields,
+                fn(Field $field) => $field->getEditInPlace()
+                    && in_array($key, [$field->getId(), $field->getName()], true)
+            );
+
+            if (array_filter($fields, fn(Field $field) => $this->isEipGranted($field, $item))) {
+                continue;
+            }
+
+            $this->getLogger()?->warning(
+                'Edit in place of "{field}" {outcome} on route "{route}": {reason}.',
+                [
+                    'field' => $key,
+                    'outcome' => $strict ? 'refused' : 'allowed because lle_crudit.eip_strict is false',
+                    'route' => $request->attributes->get('_route'),
+                    'reason' => $fields
+                        ? 'role, editRole or editableIf not satisfied'
+                        : sprintf('not declared in %s::getEipFields()', get_class($this->config)),
+                ]
+            );
+
+            if ($strict) {
+                throw new AccessDeniedException(sprintf('Field "%s" is not editable in place.', $key));
+            }
+        }
+    }
+
+    private function isEipGranted(Field $field, object $item): bool
+    {
+        $editRole = $field->getOptions()['editRole'] ?? null;
+        $editableIf = $field->getEditableIf();
+
+        return ($field->getRole() === null || $this->isGranted($field->getRole()))
+            && (!$editRole || $this->isGranted($editRole, $item))
+            && (!$editableIf || $editableIf($item));
     }
 
     protected function redirectToReferrer(Request $request, string $default = "/"): RedirectResponse

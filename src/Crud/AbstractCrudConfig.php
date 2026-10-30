@@ -10,6 +10,7 @@ use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
+use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
@@ -405,6 +406,44 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
     public function eipToUpdate(int|string $id): array
     {
         return [];
+    }
+
+    /**
+     * By default: the fields set editable in place in getFields() (for BASIC_FIELDS_KEYS and ADDITIONAL_FIELDS_KEYS)
+     * and in the list, show and sublist bricks of this crud that display its own resources (tabs included).
+     * Override it to allow fields rendered elsewhere: sublist of another crud, custom template, custom JS...
+     *
+     * @return Field[]
+     */
+    public function getEipFields(): array
+    {
+        $fields = [];
+        foreach (array_merge(static::BASIC_FIELDS_KEYS, static::ADDITIONAL_FIELDS_KEYS) as $key) {
+            $fields[] = $this->getFields($key);
+        }
+
+        $className = $this->getDatasource()->getClassName();
+        foreach ($this->getBrickConfigs() as $brickConfigs) {
+            foreach ($brickConfigs as $brickConfig) {
+                foreach (array_merge([$brickConfig], $brickConfig->getChildren()) as $brick) {
+                    if (
+                        ($brick instanceof ListConfig || $brick instanceof ShowConfig || $brick instanceof SublistConfig)
+                        && $brick->setCrudConfig($this)->getDatasource()->getClassName() === $className
+                    ) {
+                        $fields[] = $brick->getFields();
+                    }
+                }
+            }
+        }
+
+        $eipFields = [];
+        array_walk_recursive($fields, function (mixed $field) use (&$eipFields): void {
+            if ($field instanceof Field && $field->getEditInPlace()) {
+                $eipFields[] = $field;
+            }
+        });
+
+        return $eipFields;
     }
 
     public function getTotalFields(): array

@@ -118,6 +118,10 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('number_cards_per_row')
                 ->defaultValue(1)
+            ->end()
+            ->booleanNode('eip_strict')
+                ->info('Refuse the edit in place of fields not declared in CrudConfigInterface::getEipFields()')
+                ->defaultTrue()
             ->end();
 
         return $treeBuilder;

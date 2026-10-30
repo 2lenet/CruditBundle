@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Controller;
 use Doctrine\Persistence\ManagerRegistry;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Builder\BrickBuilder;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -19,6 +20,7 @@ abstract class AbstractCrudController extends AbstractController
         $subscribeds[SerializerInterface::class] = '?' . SerializerInterface::class;
         $subscribeds[BrickResponseCollector::class] = '?' . BrickResponseCollector::class;
         $subscribeds['doctrine'] = '?' . ManagerRegistry::class;
+        $subscribeds['logger'] = '?' . LoggerInterface::class;
 
         return $subscribeds;
     }
@@ -41,5 +43,10 @@ abstract class AbstractCrudController extends AbstractController
     protected function getDoctrine(): ManagerRegistry
     {
         return $this->container->get('doctrine');
+    }
+
+    protected function getLogger(): ?LoggerInterface
+    {
+        return $this->container->has('logger') ? $this->container->get('logger') : null;
     }
 }
