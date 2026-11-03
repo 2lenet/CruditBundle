@@ -105,9 +105,21 @@ crudit:
             message: "Scegliere un formato di esportazione"
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
-        transition:
-            message: "Volete davvero modificare lo stato di questo elemento?"
-            action: "Convalidare"
+
+    workflow:
+        change: ", cambia lo stato"
+        change_entity: ", cambia lo stato di %entity%"
+        menu: "Nuovo stato"
+        menu_entity: "Nuovo stato per %entity%"
+        question: "Passare a «%state%»?"
+        question_entity: "%entity%: passare a «%state%»?"
+        confirm: "Conferma"
+        success: "Stato cambiato da «%from%» a «%to%»."
+        success_entity: "%entity%: stato cambiato da «%from%» a «%to%»."
+        unavailable: "Questo cambio di stato non è più possibile: lo stato non è cambiato."
+        forbidden: "Non hai il diritto di effettuare questo cambio di stato."
+        expired: "La pagina è scaduta: ricaricala e riprova."
+        error: "Non è stato possibile cambiare lo stato."
 
     field:
         createdAt: "Creato il"

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <twig:LleCruditUi:PageHeader title="Interventions by state"/>
+    {# Each counter opens the list filtered on its state (the WorkflowFilterType "status" of InterventionFilterset) #}
+    <twig:LleCruditUi:Counters label="Interventions by state">
+        {% for item in crudit_workflow_counters('App\\Entity\\Intervention', 'intervention', crud, 'status') %}
+            <twig:LleCruditUi:Counter :value="item.count" tone="{{ item.state.tone }}" :href="item.url">{{ ('wf.state.' ~ item.state.place)|trans }}</twig:LleCruditUi:Counter>
+        {% endfor %}
+    </twig:LleCruditUi:Counters>
+{% endblock %}

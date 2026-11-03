@@ -32,6 +32,10 @@
             "print": {
                 "enabled": true,
                 "fetch": "eager"
+            },
+            "workflow": {
+                "enabled": true,
+                "fetch": "eager"
             }
         },
         "@2lenet/crudit-ui-bundle": {

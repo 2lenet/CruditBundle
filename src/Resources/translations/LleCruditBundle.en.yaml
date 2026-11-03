@@ -105,9 +105,21 @@ crudit:
             message: "Choose your export format"
             action: "Export"
             notConfigured: "Export is not configured"
-        transition:
-            message: "Do you really want to change the status of this item?"
-            action: "Validate"
+
+    workflow:
+        change: ", change the status"
+        change_entity: ", change the status of %entity%"
+        menu: "New status"
+        menu_entity: "New status for %entity%"
+        question: "Move to “%state%”?"
+        question_entity: "%entity%: move to “%state%”?"
+        confirm: "Confirm"
+        success: "Status changed from “%from%” to “%to%”."
+        success_entity: "%entity%: status changed from “%from%” to “%to%”."
+        unavailable: "This change of status is no longer possible: the status has not changed."
+        forbidden: "You are not allowed to make this change of status."
+        expired: "The page has expired: reload it, then try again."
+        error: "The status could not be changed."
 
     field:
         createdAt: "Created at"

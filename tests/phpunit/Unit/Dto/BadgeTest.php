@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace phpunit\Unit\Dto;
 
 use Lle\CruditBundle\Dto\Badge;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * A badge has a tone (neutral by default, not checked: any tone of CruditUiBundle or of the project) and an optional
- * text for assistive technologies. The Bootstrap classes of 1.x are deprecated and turned into their tone.
+ * text for assistive technologies. The Bootstrap classes of 1.x are not converted.
  */
 class BadgeTest extends TestCase
 {
@@ -37,42 +36,26 @@ class BadgeTest extends TestCase
         self::assertSame('project-colour', Badge::new('12', 'project-colour')->getTone());
     }
 
-    /**
-     * @return iterable<string, array{string, string}>
-     */
-    public static function bootstrapClasses(): iterable
+    public function testABootstrapClassOf1xIsKeptAsIsAndDeprecated(): void
     {
-        yield 'badge-danger' => ['badge-danger', 'danger'];
-        yield 'bg-success' => ['bg-success', 'success'];
-        yield 'badge-secondary' => ['badge-secondary', 'neutral'];
-        yield 'bg-dark' => ['bg-dark', 'neutral'];
-    }
-
-    #[DataProvider('bootstrapClasses')]
-    public function testBootstrapClassIsDeprecatedAndTurnedIntoItsTone(string $class, string $tone): void
-    {
-        $deprecations = [];
-        set_error_handler(static function (int $level, string $message) use (&$deprecations): bool {
-            $deprecations[] = $message;
+        $messages = [];
+        set_error_handler(static function (int $level, string $message) use (&$messages): bool {
+            $messages[] = $message;
 
             return true;
         }, \E_USER_DEPRECATED);
         try {
-            $badge = Badge::new('3', $class);
+            // Not converted: an unknown tone, shown in the neutral colours (UPGRADE: write 'danger')
+            self::assertSame('bg-danger', Badge::new('3', 'bg-danger')->getTone());
+            self::assertSame('badge-secondary', Badge::new('3', 'badge-secondary')->getTone());
+            // Not a colour of Bootstrap: a tone of the project, nothing said
+            self::assertSame('badge-project', Badge::new('3', 'badge-project')->getTone());
+            self::assertSame('danger', Badge::new('3', 'danger')->getTone());
         } finally {
             restore_error_handler();
         }
 
-        self::assertSame($tone, $badge->getTone());
-        self::assertSame([\sprintf(
-            'Since 2lenet/crudit-bundle 2.0: The tone "%s" of a badge (a Bootstrap class) is deprecated, use "%s".',
-            $class,
-            $tone,
-        )], $deprecations);
-    }
-
-    public function testUnknownBootstrapLikeToneIsKept(): void
-    {
-        self::assertSame('badge-project', Badge::new('3', 'badge-project')->getTone());
+        $message = 'Since 2lenet/crudit-bundle 2.0: The tone "%s" of a badge is a Bootstrap class: it is not converted and gives a neutral badge, use "%s".';
+        self::assertSame([sprintf($message, 'bg-danger', 'danger'), sprintf($message, 'badge-secondary', 'neutral')], $messages);
     }
 }

@@ -1,2 +1,37 @@
 framework:
-    workflows: null
+    workflows:
+        # Lot 3.4.c: a tone per state (metadata of the places), a guard (plan needs a technician), a destructive
+        # transition (cancel, confirmed in danger) and one refused by its role (archive: AllowAllVoter).
+        intervention:
+            type: state_machine
+            marking_store:
+                type: method
+                property: status
+            supports:
+                - App\Entity\Intervention
+            initial_marking: to_plan
+            places:
+                to_plan: {metadata: {tone: warning}}
+                planned: {metadata: {tone: info}}
+                in_progress: {metadata: {tone: teal}}
+                done: {metadata: {tone: success}}
+                cancelled: {metadata: {tone: gray}}
+                archived: ~
+            transitions:
+                plan:
+                    from: to_plan
+                    to: planned
+                    guard: "subject.getTechnician() !== null"
+                start:
+                    from: planned
+                    to: in_progress
+                finish:
+                    from: in_progress
+                    to: done
+                cancel:
+                    from: [to_plan, planned]
+                    to: cancelled
+                    metadata: {danger: true}
+                archive:
+                    from: done
+                    to: archived

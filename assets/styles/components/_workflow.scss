@@ -1,0 +1,48 @@
+@use 'tools/a11y' as *;
+
+// State of a workflow (field/workflow.html.twig, WorkflowStatus.vue and _fields.scss of the crudit-v2 mockup): the
+// Status of CruditUiBundle, and, with transitions, the button of a menu without a frame of its own (the status with a
+// halo on hover and while open, a chevron).
+.crudit-workflow {
+    display: inline-flex;
+
+    &__trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: 0.125rem;
+        border: 0;
+        border-radius: var(--radius-full);
+        background-color: transparent;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+
+        &:hover .crudit-ui-status,
+        &[aria-expanded='true'] .crudit-ui-status {
+            box-shadow: 0 0 0 3px var(--c-surface-active);
+        }
+
+        &:focus-visible {
+            @include focus-ring;
+        }
+
+        // While the transition is sent (controller workflow)
+        &[aria-busy='true'] {
+            cursor: progress;
+        }
+    }
+
+    &__chevron {
+        width: 0.625rem;
+        height: 0.625rem;
+        color: var(--c-text-muted);
+    }
+
+    // As wide as its statuses (the mockup had a title in it: 17rem)
+    &__panel {
+        width: max-content;
+        min-width: 8rem;
+        white-space: normal;
+    }
+}

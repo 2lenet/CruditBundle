@@ -26,6 +26,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 5. [Fix `setCssClass()` on actions: `setVariant()`, `setPrimary()`, the reasons](#5-actions) *(lot 3.1.a)*
 6. [Review your `lle_crudit` configuration](#6-configuration) *(lots 2.1, 3.2)*
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
+   - [Declare a tone per state of your workflows, replace your links to the transitions](#workflows-lot-34c) *(lot 3.4.c)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` without effect](#7-template-overrides) *(lot 3.4.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
@@ -234,8 +235,10 @@ configuration or in the `footer` block.
   (`neutral` by default, `info`, `success`, `warning`, `danger`) and a text read after it by screen readers only
   (a translation key: "12" alone means nothing). Any tone of the `Badge` component of CruditUiBundle works
   (`primary`, the extended palette, or a colour of the project with its CSS rule); a tone without its rule gives the
-  neutral colours, without any error. The Bootstrap classes of 1.x (`'badge-danger'`, `'bg-danger'`) are
-  **deprecated** and turned into their tone (`secondary`, `light` and `dark` give `neutral`): write `'danger'`.
+  neutral colours, without any error. The Bootstrap classes of 1.x (`'badge-danger'`, `'bg-danger'`) are **not
+  converted**: they give a neutral badge, and a deprecation names the tone to write (look for "is a Bootstrap
+  class" in the deprecations of the profiler or of the logs): `'danger'` for `'bg-danger'`, `'neutral'` for
+  `'bg-secondary'`, `'bg-light'` and `'bg-dark'`.
   `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, the badges become
   one dot, of the tone of the **first** badge (put the most important one first), and are shown in the tooltip.
 - **The entry of the current page** (`aria-current`, sub-menu open, and the breadcrumb of lot 2.2.b): a link is active
@@ -684,9 +687,9 @@ to add them.
 - Open it with a button: `<button type="button" commandfor="<id>" command="show-modal">` instead of
   `data-bs-toggle="modal" data-bs-target="#<id>"`; in JavaScript, `document.getElementById(id).showModal()` instead
   of `bootstrap.Modal`.
-- The actions of Crudit open their modal with `commandfor` (lot 3.1.a). Until the workflows (lot 3.4.c) and the
-  batch actions (lot 3.1.c), `data-bs-toggle="modal" data-bs-target="#<id>"` and `data-bs-dismiss="modal"` still
-  work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as long as
+- The actions of Crudit open their modal with `commandfor` (lot 3.1.a), the workflows their confirmation too (lot
+  3.4.c). Until the batch actions (lot 3.1.c), `data-bs-toggle="modal" data-bs-target="#<id>"` and
+  `data-bs-dismiss="modal"` still work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as long as
   the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
   header: remove your `btn-close`.
@@ -699,7 +702,9 @@ controller `confirm`, id `crudit-confirm` (was `modal-confirm`; `#modal-confirm-
 gone). The element that asks for it keeps `data-confirm-link` and `data-confirm-text` (the question, now the title of
 the dialog); `data-bs-toggle` and `data-bs-target` are no longer needed. A button can also open it with
 `commandfor="crudit-confirm" command="show-modal"`. New: `data-confirm-label` (the label of the button that confirms,
-else "Confirm") and `data-confirm-danger` (that button in danger, else in primary).
+else "Confirm") and `data-confirm-danger` (that button in danger, else in primary). With `data-confirm-dispatch`
+(the workflows), "Confirm" does not follow the link: it closes the dialog and dispatches
+`2lenet--crudit-bundle--confirm:confirmed` on the element that opened it.
 
 **Actions** *(lot 3.1.a)*: the paths of the header and of the lines are kept, their markup is the components of
 CruditUiBundle (see [Actions](#5-actions)); the actions are sorted in PHP (`PageActionsBuilder`), the templates are
@@ -821,8 +826,64 @@ Renamed or removed blocks: *to be filled lot by lot.*
 
 CSS hooks you may rely on: `crudit-field` (the block of a field on the record) and `crudit-action` are kept; the value
 of a field is `crudit-value crudit-value--<type>` *(lot 3.4.a)*. `crudit-flash` is gone
-(toasts). Workflow states: `crudit-wf-state-<state>` is **removed**: declare a color per state in the workflow configuration (named palette, or your own `--crudit-ui-badge-<name>-bg` / `-fg` variables) *(details: lot 3.4)*. Edit in place `crudit-eip-*`:
+(toasts). Workflow states: `crudit-wf-state-<state>` is **removed**: declare a tone per state in the workflow
+configuration (a tone, a hue of the extended palette, or a colour of the project: `--c-<name>-bg` / `--c-<name>-text`
+and the rule `.crudit-ui-tone--<name>`), see [Workflows](#workflows-lot-34c). Edit in place `crudit-eip-*`:
 renamed *(lot 3.4.b)*.
+
+### Workflows *(lot 3.4.c)*
+
+The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Status` of CruditUiBundle, its label
+`wf.state.<place>` always written; with transitions, the button of a menu. Its markup is all new: an override of
+`field/workflow.html.twig` is to be rewritten on the Twig function `crudit_workflow(resource, name)` (see
+[doc/workflow.md](doc/workflow.md)).
+
+- **Colours**: declare a tone per place, in the metadata of the workflow. A tone of CruditUiBundle (`neutral`,
+  `info`, `primary`, `success`, `warning`, `danger`), a hue of its extended palette (`blue`, `teal`, `green`, `lime`,
+  `yellow`, `orange`, `red`, `pink`, `purple`, `indigo`, `gray`) or a colour of the project: its two tokens
+  `--c-<name>-bg` / `--c-<name>-text` and the rule `.crudit-ui-tone--<name>` (see the documentation of the
+  components of CruditUiBundle). Without a tone, a state is neutral (it was `bg-primary` for all).
+
+  ```yaml
+  places:
+      to_plan: {metadata: {tone: warning}}
+      planned: {metadata: {tone: info}}
+      cancelled: {metadata: {tone: gray}}
+  ```
+- The option **`backgroundColor`** has **no effect** any more (deprecated): declare the tone of each place instead,
+  as above (`bg-danger` → `tone: danger`).
+- **The menu** lists the states the transitions lead to, not the transitions: `wf.transition.<name>` is no longer
+  read. As in 1.x, a transition refused by a guard or by its role (`ROLE_<WORKFLOW>_WF_<TRANSITION>`: the name of the
+  workflow, not of the CRUD) is hidden. The role is now asked **with the element as subject**: a voter of yours that
+  votes on these roles receives it (the `RoleVoter` of Symfony ignores it).
+- **The roles of a screen** (`Field::setRole()`, `ROLE_<CRUD>_SHOW`…) are rules of display, as in 1.x: they hide the
+  status on that screen, they do not forbid the transitions (a status displayed elsewhere offers them). To forbid a
+  transition, or to limit the elements it applies to (company, own elements), take its role
+  `ROLE_<WORKFLOW>_WF_<TRANSITION>` away or refuse it in a voter, which receives the element.
+- **An element without state** (`null`) shows "Not set" and no transition: displaying it no longer puts it in the
+  initial place nor dispatches the events `entered` (1.x called `Workflow::getMarking()` while rendering).
+- **Confirmation**: the dialog of the layout (`crudit-confirm`), which names the element ("INT-0412: move to
+  “Planned”?") instead of one Bootstrap modal per line and per transition. A transition with the metadata
+  `danger: true` (`transitions: {cancel: {metadata: {danger: true}}}`) has its button in danger.
+- **The route** `<root>_workflowtransition` (`/workflow/{id}`) only answers **POST** with its CSRF token
+  (`crudit_workflow_<workflow>_<id>`): a link of yours in GET (`path('app_x_workflowtransition', {id, transition, name})`) gets a
+  405. It applies the transition of the workflow named, no more of every workflow of the element that allows it, and
+  says the result: a toast, without a reload (controller `workflow`: enable it in your `assets/controllers.json`), or a
+  flash and back to the page without JavaScript. `symfony/security-csrf` is now a dependency of the bundle, and
+  **`framework.csrf_protection` must be enabled** (it is by default once `symfony/security-csrf` is installed): if
+  your project sets it to `false`, the field of a workflow fails as soon as it is displayed (`csrf_token()` unknown).
+  A transition refused by a listener (an exception of the component Workflow) answers a 409 and a message, no
+  longer an error page. Changed from anywhere (list, record, sublist of any key, a template of yours), the status is
+  replaced by `field/workflow.html.twig` rendered for the element; a template given to the field (`setTemplate()`)
+  is not used by the answer. It renders the template with `resource`, `options.name`, `view.config` and
+  `view.field.name` only (`view` is an array, not a `FieldView`): an override of `field/workflow.html.twig` must
+  read nothing else, or it fails after a transition.
+- **Removed**: the classes `crudit-wf-dropdown`, `crudit-wf-badge`, `crudit-wf-state-<state>` and
+  `crudit-wf-transition-<transition>`, the translations `crudit.modal.transition.message` and
+  `crudit.modal.transition.action`.
+- **New**: the counters by state, `crudit_workflow_counters()` (PHP: `WorkflowCounter`) for the `Counters` component
+  of CruditUiBundle. With a `CrudConfig`, they count the elements of its datasource (its restrictions; a datasource
+  that is not Doctrine or of another class throws a `LogicException`); **without one, the whole table**.
 
 ## 8. JavaScript
 
@@ -831,6 +892,7 @@ renamed *(lot 3.4.b)*.
 - The modules of `assets/sb-admin/js` are removed. The behavior is provided by Stimulus controllers.
 - New controller `print` (`PrintAction`, lot 3.1.a): enable it in your `assets/controllers.json`, as the other
   controllers of `@2lenet/crudit-bundle`.
+- New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
   `initChoiceTomSelect`…) no longer works. *Replacement to be filled (lot 3.2.c).*
 - Tom Select, CKEditor and EasyMDE are replaced by in-house components. HTML already saved by
