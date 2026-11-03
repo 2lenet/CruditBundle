@@ -23,8 +23,8 @@ class Intervention implements \Stringable
     #[ORM\Column(length: 120, nullable: true)]
     private ?string $technician = null;
 
-    #[ORM\Column(length: 20)]
-    private string $status = 'to_plan';
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = 'to_plan';
 
     public function getId(): ?int
     {
@@ -55,12 +55,12 @@ class Intervention implements \Stringable
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 

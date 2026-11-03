@@ -154,15 +154,111 @@ class WorkflowTest extends AppTestCase
         self::assertSame([403, 'The page has expired: reload it, then try again.'], $post('INT-2', 'plan', 'wrong'));
         // The token of an element is not the one of another
         self::assertSame(403, $post('INT-2', 'plan', $this->token($crawler, 'INT-3'))[0]);
+        // It names the workflow: not valid for another one (an element of another class with the same id), nor
+        // without a name
+        foreach (['other', ''] as $name) {
+            $this->client->request('POST', '/intervention/workflow/' . $this->idOf('INT-2'), [
+                '_token' => $this->token($crawler, 'INT-2'),
+                'transition' => 'plan',
+                'name' => $name,
+            ], [], ['HTTP_ACCEPT' => 'application/json']);
+            self::assertResponseStatusCodeSame(403);
+        }
         // The role is checked before the workflow: archive is refused to everybody (AllowAllVoter)
         self::assertSame([403, 'You are not allowed to make this change of status.'], $post('INT-2', 'archive'));
         // Refused by the guard (no technician), or not from this state
         self::assertSame([409, 'This change of status is no longer possible: the status has not changed.'], $post('INT-1', 'plan'));
         self::assertSame(409, $post('INT-3', 'finish')[0]);
+        // No transition: before the role
+        self::assertSame(409, $post('INT-2', '')[0]);
         self::assertSame(['to_plan', 'to_plan', 'planned'], [$this->statusOf('INT-1'), $this->statusOf('INT-2'), $this->statusOf('INT-3')]);
 
-        $this->client->request('POST', '/intervention/workflow/999', [], [], ['HTTP_ACCEPT' => 'application/json']);
-        self::assertResponseStatusCodeSame(404);
+        // The token is checked before the element is loaded: an unknown id is not told apart from a known one
+        $this->client->request('POST', '/intervention/workflow/999', ['transition' => 'plan'], [], ['HTTP_ACCEPT' => 'application/json']);
+        self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testATransitionRefusedByAListenerIsAConflict(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->persist((new Intervention())->setReference('INT-LOCKED')->setTechnician('Camille')->setStatus('planned'));
+        $em->flush();
+        $crawler = $this->client->request('GET', '/intervention/');
+
+        // can() says yes, the listener of "transition" (LockedInterventionListener) refuses: a 409 in JSON, no 500
+        $this->client->request('POST', '/intervention/workflow/' . $this->idOf('INT-LOCKED'), [
+            '_token' => $this->token($crawler, 'INT-LOCKED'),
+            'transition' => 'start',
+            'name' => 'intervention',
+            'field' => 'status',
+        ], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        self::assertResponseStatusCodeSame(409);
+        self::assertResponseHeaderSame('Content-Type', 'application/json');
+        /** @var array{status: string, message: string} $data */
+        $data = json_decode((string) $this->client->getResponse()->getContent(), true);
+        self::assertSame(['ko', 'This change of status is no longer possible: the status has not changed.'], [$data['status'], $data['message']]);
+        self::assertSame('planned', $this->statusOf('INT-LOCKED'));
+    }
+
+    public function testTheStatusIsRenderedWhateverTheField(): void
+    {
+        $crawler = $this->client->request('GET', '/intervention/');
+        $tokens = ['INT-2' => $this->token($crawler, 'INT-2'), 'INT-3' => $this->token($crawler, 'INT-3'), 'INT-4' => $this->token($crawler, 'INT-4')];
+
+        // Changed from anywhere (a sublist, a key of the project, a template): the field is never looked for, its name
+        // only names the copies to replace (escaped)
+        foreach (['INT-2' => ['plan', 'unknown.reference'], 'INT-3' => ['start', '"><b>x</b>'], 'INT-4' => ['finish', '']] as $reference => [$transition, $field]) {
+            $this->client->request('POST', '/intervention/workflow/' . $this->idOf($reference), [
+                '_token' => $tokens[$reference],
+                'transition' => $transition,
+                'name' => 'intervention',
+                'field' => $field,
+            ], [], ['HTTP_ACCEPT' => 'application/json']);
+
+            self::assertResponseIsSuccessful();
+            /** @var array{status: string, html: string} $data */
+            $data = json_decode((string) $this->client->getResponse()->getContent(), true);
+            self::assertSame('ok', $data['status'], $field);
+            $status = (new Crawler($data['html']))->filter('.crudit-workflow');
+            self::assertCount(1, $status, $field);
+            self::assertCount(0, $status->filter('b'), $field);
+            if ('INT-4' !== $reference) {
+                self::assertSame($field, $status->attr('data-2lenet--crudit-bundle--workflow-field-value'));
+            }
+        }
+        self::assertSame(['planned', 'in_progress', 'done'], [$this->statusOf('INT-2'), $this->statusOf('INT-3'), $this->statusOf('INT-4')]);
+    }
+
+    public function testAnElementWithoutState(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->persist((new Intervention())->setReference('INT-NULL')->setTechnician('Camille'));
+        $em->flush();
+        $id = $this->idOf('INT-NULL');
+        // Its token while it has a state, to send a transition once it has none
+        $token = $this->token($this->client->request('GET', '/intervention/'), 'INT-NULL');
+        $em->createQuery('UPDATE ' . Intervention::class . ' i SET i.status = NULL WHERE i.id = :id')->execute(['id' => $id]);
+
+        // A dash read "Not set", no menu; displaying it neither marks it ("to_plan") nor saves it
+        $field = $this->field($this->client->request('GET', '/intervention/'), 'INT-NULL');
+        self::assertSame('span', $field->nodeName());
+        self::assertSame('—Not set', $field->text());
+        self::assertCount(0, $field->filter('button'));
+        $this->client->request('GET', '/intervention/show/' . $id);
+        self::assertResponseIsSuccessful();
+        self::assertNull($this->statusOf('INT-NULL'));
+
+        // A transition sent anyway is refused: can() would have put it in the initial place
+        $this->client->request('POST', '/intervention/workflow/' . $id, [
+            '_token' => $token,
+            'transition' => 'plan',
+            'name' => 'intervention',
+        ], [], ['HTTP_ACCEPT' => 'application/json']);
+        self::assertResponseStatusCodeSame(409);
+        self::assertNull($this->statusOf('INT-NULL'));
     }
 
     public function testTheRecordShowsTheStatus(): void
@@ -185,6 +281,14 @@ class WorkflowTest extends AppTestCase
         $link = '/intervention/?filter_intervention_status_op=in&filter_intervention_status_value=to_plan&intervention_offset=0';
         self::assertSame($link, $counters->first()->attr('href'));
 
+        // The datasource of the CRUD: an intervention of another company is not counted
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->persist((new Intervention())->setReference('OTHER-1')->setStatus('to_plan'));
+        $em->flush();
+        $crawler = $this->client->request('GET', '/intervention/counters');
+        self::assertSame('2', $crawler->filter('.crudit-ui-counter__value')->first()->text());
+
         // The link opens the list filtered on the state
         $list = $this->client->request('GET', $link);
         self::assertSame(['INT-1', 'INT-2'], $list->filter('tbody tr th[scope=row]')->each(static fn (Crawler $cell): string => trim($cell->text())));
@@ -196,6 +300,11 @@ class WorkflowTest extends AppTestCase
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $withTechnician = $em->createQueryBuilder()->select('i')->from(Intervention::class, 'i')->where('i.technician IS NOT NULL')->orderBy('i.reference');
         self::assertSame([1, 1, 1, 1, 1, 0], array_map(static fn ($count): int => $count->count, $counter->count(Intervention::class, null, $withTechnician)));
+        // A to-many join (here a cross join on the clients, 3 of them) does not count an element twice
+        $joined = $em->createQueryBuilder()->select('i')->from(Intervention::class, 'i')->join(\App\Entity\Client::class, 'c', 'WITH', '1 = 1');
+        self::assertSame(3, $counter->count(Intervention::class, null, $joined)[0]->count);
+        // Without a CRUD, the whole table: the other company too
+        self::assertSame(3, $counter->count(Intervention::class)[0]->count);
         self::assertNull($counter->count(Intervention::class)[0]->url);
     }
 
@@ -217,7 +326,7 @@ class WorkflowTest extends AppTestCase
         return (int) $this->intervention($reference)->getId();
     }
 
-    private function statusOf(string $reference): string
+    private function statusOf(string $reference): ?string
     {
         /** @var EntityManagerInterface $em */
         $em = static::getContainer()->get(EntityManagerInterface::class);

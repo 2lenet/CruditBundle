@@ -16,7 +16,11 @@ use Symfony\Component\Workflow\WorkflowInterface;
  *   success, warning, danger), a hue of its extended palette (blue, teal…) or a colour of the project; neutral by
  *   default.
  * - A transition is offered if the workflow allows it (its guards) and if the user has the role
- *   ROLE_<WORKFLOW>_WF_<TRANSITION> (upper case, "-" turned into "_"), as in 1.x.
+ *   ROLE_<WORKFLOW>_WF_<TRANSITION> (upper case, "-" turned into "_"), as in 1.x, asked with the element as subject:
+ *   a voter of the project may decide element by element (its perimeter: company, own elements…).
+ * - The marking is read from the marking store, never by Workflow::getMarking(): on an element without state, that one
+ *   puts it in the initial place and dispatches the events "entered" (while a page is displayed). An element without
+ *   state has no state and no transition (the field shows "Not set").
  */
 class WorkflowStates
 {
@@ -45,20 +49,28 @@ class WorkflowStates
         return $workflows[0];
     }
 
-    public function view(object $subject, ?string $name = null): WorkflowView
+    /**
+     * @param bool $withTransitions false: the states only (a field displayed outside a CRUD, which cannot apply them)
+     */
+    public function view(object $subject, ?string $name = null, bool $withTransitions = true): WorkflowView
     {
         $workflow = $this->workflow($subject, $name);
 
         $states = [];
-        foreach (array_keys($workflow->getMarking($subject)->getPlaces()) as $place) {
-            $states[] = $this->state($workflow, (string) $place);
+        foreach ($this->places($workflow, $subject) as $place) {
+            $states[] = $this->state($workflow, $place);
         }
 
         $transitions = [];
-        foreach ($workflow->getEnabledTransitions($subject) as $transition) {
+        // getEnabledTransitions() would mark an element without state (Workflow::getMarking())
+        $enabled = $withTransitions && $states !== [] ? $workflow->getEnabledTransitions($subject) : [];
+        foreach ($enabled as $transition) {
             $transitionName = $transition->getName();
             // The same name from several places (a state machine): offered once.
-            if (isset($transitions[$transitionName]) || !$this->isGranted($workflow->getName(), $transitionName)) {
+            if (
+                isset($transitions[$transitionName])
+                || !$this->isGranted($workflow->getName(), $transitionName, $subject)
+            ) {
                 continue;
             }
 
@@ -83,9 +95,19 @@ class WorkflowStates
         return new WorkflowState($place, is_string($tone) && $tone !== '' ? $tone : self::DEFAULT_TONE);
     }
 
-    public function isGranted(string $workflowName, string $transition): bool
+    /**
+     * The places of the element, read from the marking store (without side effect); empty if it has no state.
+     *
+     * @return list<string>
+     */
+    public function places(WorkflowInterface $workflow, object $subject): array
     {
-        return $this->authorizationChecker->isGranted(self::role($workflowName, $transition));
+        return array_map('strval', array_keys($workflow->getMarkingStore()->getMarking($subject)->getPlaces()));
+    }
+
+    public function isGranted(string $workflowName, string $transition, ?object $subject = null): bool
+    {
+        return $this->authorizationChecker->isGranted(self::role($workflowName, $transition), $subject);
     }
 
     public static function role(string $workflowName, string $transition): string

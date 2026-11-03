@@ -39,12 +39,12 @@ export default class extends Controller {
                 headers: {Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
             });
             data = await response.json();
-            ok = response.ok && data.status === 'ok' && typeof data.html === 'string';
+            ok = response.ok && data.status === 'ok';
         } catch {
             data = null;
         }
 
-        if (ok) {
+        if (ok && typeof data.html === 'string') {
             const template = document.createElement('template');
             template.innerHTML = data.html.trim();
             const field = template.content.firstElementChild;

@@ -6,9 +6,11 @@
  # others are hidden), the status is the button of a menu, named "Prospect, change the status of Bob", which lists the
  # states the transitions lead to. A transition is confirmed in the dialog of the layout (crudit-confirm), then sent by
  # the controller workflow: the field is replaced by the answer, a toast says the change, the focus goes back to the
- # status. Variables are prefixed `wf_`: inside a component, its props (label, size…) hide the variables.
+ # status: the answer renders this template for the element, wherever it is included (list, record, sublist, template
+ # of a project). Variables are prefixed `wf_`: inside a component, its props (label, size…) hide the variables.
  #}
-{%- set wf = crudit_workflow(resource, options.name) -%}
+{#- Without a CRUD (view.config), no route to apply a transition: the states only -#}
+{%- set wf = crudit_workflow(resource, options.name, view.config is not null) -%}
 {%- set wf_transitions = view.config ? wf.transitions : [] -%}
 {%- set wf_controller = '2lenet--crudit-bundle--workflow' -%}
 {%- set wf_entity = wf.entityLabel -%}
@@ -19,7 +21,7 @@
     data-controller="{{ wf_controller }}"
     data-action="2lenet--crudit-bundle--confirm:confirmed->{{ wf_controller }}#apply"
     data-{{ wf_controller }}-url-value="{{ path(view.config.rootRoute ~ '_workflowtransition', {id: resource.id}) }}"
-    data-{{ wf_controller }}-token-value="{{ csrf_token('crudit_workflow_' ~ resource.id) }}"
+    data-{{ wf_controller }}-token-value="{{ csrf_token('crudit_workflow_' ~ wf.name ~ '_' ~ resource.id) }}"
     data-{{ wf_controller }}-name-value="{{ wf.name }}"
     data-{{ wf_controller }}-field-value="{{ view.field.name }}"
     data-{{ wf_controller }}-error-value="{{ 'crudit.workflow.error'|trans(domain: 'LleCruditBundle') }}"

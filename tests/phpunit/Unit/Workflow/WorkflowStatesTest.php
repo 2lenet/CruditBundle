@@ -19,11 +19,15 @@ use Symfony\Component\Workflow\Transition;
 
 /**
  * States and transitions of an element: the tone of a place (metadata `tone`, neutral by default), the transitions
- * allowed by the guards and by the role ROLE_<WORKFLOW>_WF_<TRANSITION>, the state they lead to, `danger`.
+ * allowed by the guards and by the role ROLE_<WORKFLOW>_WF_<TRANSITION> (asked with the element), the state they lead
+ * to, `danger`; an element without state, read without being marked.
  */
 class WorkflowStatesTest extends TestCase
 {
     private EventDispatcher $dispatcher;
+
+    /** @var list<array{mixed, mixed}> the role and the subject of each isGranted() */
+    private array $asked = [];
 
     protected function setUp(): void
     {
@@ -74,6 +78,48 @@ class WorkflowStatesTest extends TestCase
         $states->workflow(new \stdClass());
     }
 
+    public function testTheRoleIsAskedWithTheElement(): void
+    {
+        $ticket = new WorkflowTicket('open');
+        $states = $this->states(['ROLE_TICKET_WF_START', 'ROLE_TICKET_WF_CANCEL']);
+        $states->view($ticket);
+        $states->isGranted('ticket', 'start', $ticket);
+
+        self::assertSame(
+            [['ROLE_TICKET_WF_START', $ticket], ['ROLE_TICKET_WF_CANCEL', $ticket], ['ROLE_TICKET_WF_START', $ticket]],
+            $this->asked,
+        );
+    }
+
+    public function testAnElementWithoutStateIsNotMarked(): void
+    {
+        $entered = false;
+        $this->dispatcher->addListener('workflow.ticket.entered', function () use (&$entered): void {
+            $entered = true;
+        });
+        $ticket = new WorkflowTicket(null);
+        $states = $this->states(['ROLE_TICKET_WF_START', 'ROLE_TICKET_WF_CANCEL']);
+
+        $view = $states->view($ticket);
+
+        // No state, no transition; Workflow::getMarking() would have put it in "open" and dispatched "entered"
+        self::assertSame([[], []], [$view->states, $view->transitions]);
+        self::assertSame([], $states->places($states->workflow($ticket), $ticket));
+        self::assertNull($ticket->getStatus());
+        self::assertFalse($entered);
+        self::assertSame([], $this->asked);
+    }
+
+    public function testTheStatesOnlyWithoutTransitions(): void
+    {
+        $view = $this->states(['ROLE_TICKET_WF_START'])->view(new WorkflowTicket('open'), null, false);
+
+        self::assertSame(['open'], array_map(fn ($state) => $state->place, $view->states));
+        self::assertSame([], $view->transitions);
+        // Nothing asked to the voters
+        self::assertSame([], $this->asked);
+    }
+
     public function testRole(): void
     {
         self::assertSame('ROLE_TICKET_WF_SEND_BACK', WorkflowStates::role('ticket', 'send-back'));
@@ -107,7 +153,11 @@ class WorkflowStatesTest extends TestCase
         );
 
         $authorizationChecker = $this->createStub(AuthorizationCheckerInterface::class);
-        $authorizationChecker->method('isGranted')->willReturnCallback(fn (mixed $role) => in_array($role, $roles, true));
+        $authorizationChecker->method('isGranted')->willReturnCallback(function (mixed $role, mixed $subject = null) use ($roles): bool {
+            $this->asked[] = [$role, $subject];
+
+            return in_array($role, $roles, true);
+        });
 
         return new WorkflowStates($registry, $authorizationChecker);
     }
@@ -115,7 +165,7 @@ class WorkflowStatesTest extends TestCase
 
 class WorkflowTicket implements \Stringable
 {
-    public function __construct(private string $status)
+    public function __construct(private ?string $status)
     {
     }
 
@@ -124,12 +174,12 @@ class WorkflowTicket implements \Stringable
         return 1;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): void
+    public function setStatus(?string $status): void
     {
         $this->status = $status;
     }

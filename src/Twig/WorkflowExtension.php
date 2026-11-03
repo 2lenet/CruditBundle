@@ -12,11 +12,11 @@ use Lle\CruditBundle\Workflow\WorkflowView;
 use Twig\Attribute\AsTwigFunction;
 
 /**
- * - `crudit_workflow(resource, name)`: the states of an element and the transitions the user may
+ * - `crudit_workflow(resource, name, withTransitions)`: the states of an element and the transitions the user may
  *   apply (WorkflowStates), for field/workflow.html.twig;
  * - `crudit_workflow_counters(class, name, crud, filter)`: the number of elements in each state (WorkflowCounter),
- *   for the Counters of CruditUiBundle; with a CrudConfig and the id of its WorkflowFilterType, each one links to the
- *   list filtered on its state.
+ *   for the Counters of CruditUiBundle: the elements of the datasource of the CrudConfig (its restrictions), else the
+ *   whole table; with the id of its WorkflowFilterType, each one links to the list filtered on its state.
  */
 class WorkflowExtension
 {
@@ -25,9 +25,9 @@ class WorkflowExtension
     }
 
     #[AsTwigFunction('crudit_workflow')]
-    public function workflow(object $resource, ?string $name = null): WorkflowView
+    public function workflow(object $resource, ?string $name = null, bool $withTransitions = true): WorkflowView
     {
-        return $this->states->view($resource, $name);
+        return $this->states->view($resource, $name, $withTransitions);
     }
 
     /**

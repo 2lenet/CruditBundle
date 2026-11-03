@@ -851,8 +851,8 @@ await shot(page, 'list-dark-rtl');
 await page.close();
 
 // ---------- Workflow (lot 3.4.c): the status, the menu of the states its transitions lead to, the confirmation in the
-// dialog of the layout, the transition sent without a reload (toast, focus back on the status), an error said, the
-// counters. app:seed: INT-01 without technician (cannot be planned), INT-02 to plan, INT-03 planned.
+// dialog of the layout, the transition sent without a reload (toast, focus back on the status), an error said, a field
+// not found (reload), the counters. app:seed: INT-01 without technician (cannot be planned), INT-02 to plan, INT-03 planned.
 const wfRow = (page, reference) => page.$$eval('.crudit-ui-table__row', (rows, reference) => '#' + rows.find((r) => r.querySelector('th[scope=row]')?.textContent.trim() === reference).id, reference);
 const text = (page, sel) => page.$eval(sel, (e) => e.textContent.replace(/\s+/g, ' ').trim());
 
@@ -927,6 +927,21 @@ await page.setRequestInterception(false);
 errors.splice(0, errors.length, ...errors.filter((error) => !error.includes('409')));
 ok('workflow: a refusal of the server is said, the status stays');
 
+// Changed from anywhere (a sublist, a key of the project, a template): the server renders the status whatever the
+// field, without a reload
+await page.$eval(`${wf} .crudit-workflow`, (field) => field.setAttribute('data-2lenet--crudit-bundle--workflow-field-value', 'unknown'));
+await page.evaluate(() => { window.notReloaded = true; });
+await page.click(`${wf} .crudit-workflow__trigger`);
+await new Promise((r) => setTimeout(r, 300));
+await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=start]`);
+await new Promise((r) => setTimeout(r, 400));
+await page.click('#crudit-confirm .crudit-action');
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts')?.textContent.includes('INT-03: status changed from “Planned” to “In progress”.'), {timeout: 3000});
+assert.equal(await page.evaluate(() => window.notReloaded), true, 'not reloaded');
+wf = await wfRow(page, 'INT-03');
+assert.ok((await text(page, `${wf} .crudit-workflow__trigger`)).startsWith('In progress'), 'the new status');
+ok('workflow: the status is rendered whatever the field, without a reload');
+
 // The cards of the phones show the status too; dark, right to left
 page = await open(360, '/intervention/');
 assert.ok(await visible(page, '.crudit-ui-table__card .crudit-workflow__trigger'), 'the status in the cards');
@@ -937,7 +952,7 @@ await shot(page, 'workflow-dark-rtl');
 
 // The counters: the status of each state (its tone), then its number, in the order of the places
 page = await open(1440, '/intervention/counters');
-assert.deepEqual(await page.$$eval('.crudit-ui-counter', (counters) => counters.map((c) => c.textContent.replace(/\s+/g, '').trim())), ['Toplan1', 'Planned2', 'Inprogress1', 'Done1', 'Cancelled1', 'Archived0']);
+assert.deepEqual(await page.$$eval('.crudit-ui-counter', (counters) => counters.map((c) => c.textContent.replace(/\s+/g, '').trim())), ['Toplan1', 'Planned1', 'Inprogress2', 'Done1', 'Cancelled1', 'Archived0']);
 await axeOn(page, '.crudit-ui-counters', 'counters');
 await shot(page, 'workflow-counters');
 ok('workflow: counters');

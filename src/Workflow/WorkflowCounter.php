@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
+use Lle\CruditBundle\Datasource\AbstractDoctrineDatasource;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Workflow\MarkingStore\MethodMarkingStore;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -16,6 +17,10 @@ use Symfony\Component\Workflow\WorkflowInterface;
  * The number of elements in each state of a workflow, in the order of its places (a state without element counts 0),
  * with the tone of the state and the link to the list filtered on it. One query (GROUP BY on the property of the
  * marking): a workflow of type state_machine, whose marking is one place in a column.
+ *
+ * What is counted: the QueryBuilder given; else, with a CRUD whose datasource is Doctrine, the elements of its
+ * datasource (AbstractDoctrineDatasource::buildQueryBuilder(), where a project restricts its data: company, rights),
+ * without the filters of the user; else **the whole table**.
  */
 class WorkflowCounter
 {
@@ -29,8 +34,9 @@ class WorkflowCounter
     /**
      * @param class-string      $class        the entity
      * @param string|null       $name         the workflow, else the first one of the entity
-     * @param QueryBuilder|null $queryBuilder to count part of the elements (its root entity is $class)
-     * @param CrudConfigInterface|null $crud the CRUD whose list the counters open
+     * @param QueryBuilder|null $queryBuilder to count part of the elements (its root entity is $class); else the
+     *                                        datasource of $crud, else the whole table
+     * @param CrudConfigInterface|null $crud the CRUD whose list the counters open, and whose datasource is counted
      * @param string|null       $filter       the id of the WorkflowFilterType of its filterset that the link fills
      *                                        ("status"; no link without a filterset)
      *
@@ -46,12 +52,17 @@ class WorkflowCounter
         $workflow = $this->states->workflow((new \ReflectionClass($class))->newInstanceWithoutConstructor(), $name);
         $property = $this->markingProperty($workflow);
 
-        $queryBuilder = $queryBuilder !== null
-            ? clone $queryBuilder
-            : $this->entityManager->createQueryBuilder()->from($class, 'e');
+        $datasource = $crud?->getDatasource();
+        $queryBuilder = match (true) {
+            $queryBuilder !== null => clone $queryBuilder,
+            $datasource instanceof AbstractDoctrineDatasource && is_a($datasource->getClassName(), $class, true)
+                => $datasource->buildQueryBuilder(null),
+            default => $this->entityManager->createQueryBuilder()->from($class, 'e'),
+        };
         $alias = $queryBuilder->getRootAliases()[0];
         $queryBuilder
-            ->select(sprintf('%1$s.%2$s AS place, COUNT(%1$s) AS total', $alias, $property))
+            // DISTINCT: a to-many join of the QueryBuilder would count an element several times
+            ->select(sprintf('%1$s.%2$s AS place, COUNT(DISTINCT %1$s) AS total', $alias, $property))
             ->groupBy(sprintf('%s.%s', $alias, $property))
             ->resetDQLPart('orderBy')
             ->setFirstResult(null)

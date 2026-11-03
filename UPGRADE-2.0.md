@@ -235,7 +235,8 @@ configuration or in the `footer` block.
   (a translation key: "12" alone means nothing). Any tone of the `Badge` component of CruditUiBundle works
   (`primary`, the extended palette, or a colour of the project with its CSS rule); a tone without its rule gives the
   neutral colours, without any error. The Bootstrap classes of 1.x (`'badge-danger'`, `'bg-danger'`) are **not
-  converted**: they give a neutral badge. Write the tone: `'danger'` for `'bg-danger'`, `'neutral'` for
+  converted**: they give a neutral badge, and a deprecation names the tone to write (look for "is a Bootstrap
+  class" in the deprecations of the profiler or of the logs): `'danger'` for `'bg-danger'`, `'neutral'` for
   `'bg-secondary'`, `'bg-light'` and `'bg-dark'`.
   `cssClass` and `getCssClass()` are removed, and so is the default `badge-success`. In the rail, the badges become
   one dot, of the tone of the **first** badge (put the most important one first), and are shown in the tooltip.
@@ -814,20 +815,34 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
   as above (`bg-danger` → `tone: danger`).
 - **The menu** lists the states the transitions lead to, not the transitions: `wf.transition.<name>` is no longer
   read. As in 1.x, a transition refused by a guard or by its role (`ROLE_<WORKFLOW>_WF_<TRANSITION>`: the name of the
-  workflow, not of the CRUD) is hidden.
+  workflow, not of the CRUD) is hidden. The role is now asked **with the element as subject**: a voter of yours that
+  votes on these roles receives it (the `RoleVoter` of Symfony ignores it).
+- **The roles of a screen** (`Field::setRole()`, `ROLE_<CRUD>_SHOW`…) are rules of display, as in 1.x: they hide the
+  status on that screen, they do not forbid the transitions (a status displayed elsewhere offers them). To forbid a
+  transition, or to limit the elements it applies to (company, own elements), take its role
+  `ROLE_<WORKFLOW>_WF_<TRANSITION>` away or refuse it in a voter, which receives the element.
+- **An element without state** (`null`) shows "Not set" and no transition: displaying it no longer puts it in the
+  initial place nor dispatches the events `entered` (1.x called `Workflow::getMarking()` while rendering).
 - **Confirmation**: the dialog of the layout (`crudit-confirm`), which names the element ("INT-0412: move to
   “Planned”?") instead of one Bootstrap modal per line and per transition. A transition with the metadata
   `danger: true` (`transitions: {cancel: {metadata: {danger: true}}}`) has its button in danger.
 - **The route** `<root>_workflowtransition` (`/workflow/{id}`) only answers **POST** with its CSRF token
-  (`crudit_workflow_<id>`): a link of yours in GET (`path('app_x_workflowtransition', {id, transition, name})`) gets a
+  (`crudit_workflow_<workflow>_<id>`): a link of yours in GET (`path('app_x_workflowtransition', {id, transition, name})`) gets a
   405. It applies the transition of the workflow named, no more of every workflow of the element that allows it, and
   says the result: a toast, without a reload (controller `workflow`: enable it in your `assets/controllers.json`), or a
-  flash and back to the page without JavaScript. `symfony/security-csrf` is now a dependency of the bundle.
+  flash and back to the page without JavaScript. `symfony/security-csrf` is now a dependency of the bundle, and
+  **`framework.csrf_protection` must be enabled** (it is by default once `symfony/security-csrf` is installed): if
+  your project sets it to `false`, the field of a workflow fails as soon as it is displayed (`csrf_token()` unknown).
+  A transition refused by a listener (an exception of the component Workflow) answers a 409 and a message, no
+  longer an error page. Changed from anywhere (list, record, sublist of any key, a template of yours), the status is
+  replaced by `field/workflow.html.twig` rendered for the element; a template given to the field (`setTemplate()`)
+  is not used by the answer.
 - **Removed**: the classes `crudit-wf-dropdown`, `crudit-wf-badge`, `crudit-wf-state-<state>` and
   `crudit-wf-transition-<transition>`, the translations `crudit.modal.transition.message` and
   `crudit.modal.transition.action`.
 - **New**: the counters by state, `crudit_workflow_counters()` (PHP: `WorkflowCounter`) for the `Counters` component
-  of CruditUiBundle.
+  of CruditUiBundle. With a `CrudConfig`, they count the elements of its datasource (its restrictions); **without
+  one, the whole table**.
 
 ## 8. JavaScript
 
