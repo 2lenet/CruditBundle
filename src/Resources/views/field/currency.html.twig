@@ -1,4 +1,4 @@
-{% if options['isInt'] is defined and options['isInt'] %}
+{% if options['isInt'] is defined and options['isInt'] and value is not crudit_empty %}
     {% set value =  value / 100 %}
 {% endif %}
 {% if
@@ -31,26 +31,26 @@
         </form>
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
-{% elseif value is not null %}
-    {% if options.property %}
-        {% set currency = options.property|split('.')|reduce(
-            (object, property) => object ? attribute(object, property) : null, resource
-            ) %}
-        {% set result = options.locale ? value|format_currency(currency, options.params, options.locale) : value|ui_currency(currency, options.params) %}
-    {% else %}
-        {% set result = options.locale ? value|format_currency(options.currency, options.params, options.locale) : value|ui_currency(options.currency, options.params) %}
-    {% endif %}
-
-    {% if options.removeHtml %}
-        {{ result }}
-    {% else %}
-        {% set tableCssClass = options.tableCssClass %}
-        {% if view.field.options is defined and view.field.options and view.field.options['tableCssClass'] is defined %}
-            {% set tableCssClass = view.field.options['tableCssClass'] %}
-        {% endif %}
-
-        <div class="{{ tableCssClass|default('text-end') }} me-3">
+{% else %}
+    {%- if value is not crudit_empty -%}
+        {%- if options.property -%}
+            {%- set currency = options.property|split('.')|reduce((object, property) => object ? attribute(object, property) : null, resource) -%}
+        {%- else -%}
+            {%- set currency = options.currency -%}
+        {%- endif -%}
+        {%- set result = options.locale ? value|format_currency(currency, options.params, options.locale) : value|ui_currency(currency, options.params) -%}
+    {%- endif -%}
+    {%- if options.removeHtml -%}
+        {{ result ?? '' }}
+    {%- else -%}
+    <span class="crudit-value crudit-value--currency">
+    {%- block value -%}
+        {%- if value is crudit_empty -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
             {{ result }}
-        </div>
-    {% endif %}
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
+    {%- endif -%}
 {% endif %}

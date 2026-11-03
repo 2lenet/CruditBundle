@@ -850,6 +850,43 @@ await axeTable(page, 'dark, right to left');
 await shot(page, 'list-dark-rtl');
 await page.close();
 
+// ---------- Values of the fields (lot 3.4.a): the amounts at the end (their column), a long text on two lines in a cell and whole in
+// its card, axe on the values of a record (its grid is lot 3.3.a), in light and in dark.
+const axeValues = async (page, label) => {
+    await page.evaluate(axeSource);
+    assert.deepEqual(await page.evaluate(async () => (await axe.run({include: [...document.querySelectorAll('.crudit-value')].map((e) => [e])}, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)), [], `axe values ${label}`);
+    ok(`axe values ${label}`);
+};
+page = await open(1440, '/client/');
+// The class only: its CSS is the one of the Table of CruditUiBundle
+assert.ok(await page.$eval('tbody tr:first-child td[id$="-amount-amount"]', (e) => e.classList.contains('crudit-ui-table__cell--end')), 'the amount at the end');
+const lineHeight = await page.$eval('tbody tr:first-child .crudit-value--markdown', (e) => parseFloat(getComputedStyle(e).lineHeight));
+assert.ok(await page.$eval('tbody tr:first-child .crudit-value--markdown', (e) => e.getBoundingClientRect().height) <= lineHeight * 2 + 1, 'the notes on two lines in a cell');
+assert.ok(await page.$eval('tbody tr:first-child .crudit-value--markdown', (e) => e.getBoundingClientRect().width >= 14 * parseFloat(getComputedStyle(document.documentElement).fontSize) - 1), 'the notes not squeezed in a wide table');
+await shot(page, 'fields-list');
+await page.setViewport({width: 360, height: 800});
+await new Promise((r) => setTimeout(r, 200));
+assert.ok(await page.$eval('.crudit-ui-table__card .crudit-value--markdown', (e) => e.getBoundingClientRect().height) > lineHeight * 2 + 1, 'the notes whole in a card');
+await page.close();
+// In a cell, a web address shows its host and a JSON is on a line; the record shows them whole
+page = await open(1440, '/client/');
+await page.goto(base + await page.$eval('main a[href*="/client/show/"]', (a) => a.getAttribute('href')), {waitUntil: 'networkidle0'});
+assert.notEqual(await page.$eval('.crudit-value__path', (e) => getComputedStyle(e).display), 'none', 'the path of the address on the record');
+assert.equal(await page.$eval('.crudit-value__json > li', (e) => getComputedStyle(e).display), 'list-item', 'the JSON as a list on the record');
+await page.goto(base + '/client/', {waitUntil: 'networkidle0'});
+assert.equal(await page.$eval('td .crudit-value__path', (e) => getComputedStyle(e).display), 'none', 'the host only in a cell');
+assert.equal(await page.$eval('td .crudit-value__json > li', (e) => getComputedStyle(e).display), 'inline', 'the JSON on a line in a cell');
+await page.close();
+for (const dark of [false, true]) {
+    page = await open(1280, '/client/', {dark});
+    await page.goto(base + await page.$eval('main a[href*="/client/show/"]', (a) => a.getAttribute('href')), {waitUntil: 'networkidle0'});
+    assert.ok((await page.$$eval('.crudit-value', (v) => v.length)) >= 15, 'every field has a value');
+    await shot(page, dark ? 'fields-show-dark' : 'fields-show');
+    await axeValues(page, dark ? 'of a record, dark' : 'of a record');
+    await page.close();
+}
+ok('fields: alignment, two lines in a cell, values of a record');
+
 // ---------- Turbo cache hook / reduced motion: no errors
 console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
 console.log(`${passed} checks passed`);

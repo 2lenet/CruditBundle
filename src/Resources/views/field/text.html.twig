@@ -22,5 +22,13 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% else %}
-    {{ value }}
+    <span class="crudit-value crudit-value--text">
+    {%- block value -%}
+        {%- if value is crudit_empty -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
+            {{ value }}
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}

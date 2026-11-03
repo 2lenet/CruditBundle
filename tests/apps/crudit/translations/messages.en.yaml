@@ -67,6 +67,16 @@ modal:
         action:
             archive_inactive: "Archive all the inactive clients?"
 client:
+    priority:
+        low: "Low"
+        high: "High"
+    channel:
+        email: "E-mail"
+        phone: "Phone"
+    status:
+        prospect: "Prospect"
+        customer: "Customer"
+        lost: "Lost"
     reason:
         active: "An active client cannot be deleted: deactivate it first"
         inactive: "This client is already inactive"

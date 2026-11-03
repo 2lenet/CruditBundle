@@ -22,5 +22,13 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% else %}
-    <a href="mailto:{{ value }}">{{ value }}</a>
+    <span class="crudit-value crudit-value--email">
+    {%- block value -%}
+        {%- if value is crudit_empty -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- else -%}
+            <a class="crudit-value__link" href="mailto:{{ value }}">{{ value }}</a>
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}

@@ -14,6 +14,7 @@
         }]|json_encode %}
     {% endif %}
 
+    {#- TODO lot 3.4.b: the edition in place shows the raw value, the reading its translated label -#}
     <div class="crudit-eip" data-field="{{ view.field.name }}" data-edit_url="{{ editUrl }}">
         <form class="form-inline d-none">
             <div class="control-group form-group d-flex justify-content-around align-items-center">
@@ -48,5 +49,34 @@
         <div class="crudit-eip-value">{{ value }}</div>
     </div>
 {% else %}
-    {{ value }}
+    <span class="crudit-value crudit-value--choice">
+    {%- block value -%}
+        {%- import _self as fields -%}
+        {%- if value is crudit_empty -%}
+            {{ include('@LleCrudit/field/_empty.html.twig') }}
+        {%- elseif value is iterable -%}
+            {#- multiple: the labels, separated by commas -#}
+            {%- for item in value %}{{ fields.choice(item, options) }}{{ loop.last ? '' : ', ' }}{% endfor -%}
+        {%- else -%}
+            {{ fields.choice(value, options) }}
+        {%- endif -%}
+    {%- endblock -%}
+    </span>
 {% endif %}
+{#-
+ # The translated label of a value (choices: label => value), in a Status when the option tones gives it a tone. A
+ # backed enum is compared by its value, another enum by its name. Two choices of the same value: the last label wins.
+ #}
+{%- macro choice(item, options) -%}
+    {%- set key = (item.value ?? item.name ?? item) ~ '' -%}
+    {%- set label = key -%}
+    {%- for choiceLabel, choiceValue in options.choices ?? [] -%}
+        {%- if (choiceValue.value ?? choiceValue.name ?? choiceValue) ~ '' == key %}{% set label = choiceLabel|trans(domain: options.translationDomain) %}{% endif -%}
+    {%- endfor -%}
+    {%- set tone = (options.tones ?? [])[key] ?? null -%}
+    {%- if tone -%}
+        <twig:LleCruditUi:Status :tone="tone" size="small">{{ label }}</twig:LleCruditUi:Status>
+    {%- else -%}
+        {{ label }}
+    {%- endif -%}
+{%- endmacro -%}
