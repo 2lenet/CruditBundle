@@ -75,8 +75,9 @@ Example: `ROLE_INTERVENTION_WF_CANCEL`
 
 The role is asked with the element as subject (`isGranted('ROLE_INTERVENTION_WF_CANCEL', $intervention)`): a voter
 of your project may decide element by element, and so limit the elements a user may change (company, own
-elements…). The `RoleVoter` of Symfony ignores the subject, so the roles alone work
-as before.
+elements…). The `RoleVoter` of Symfony ignores the subject, so the roles alone work as before. The route loads the
+element by its id (`find()` of the datasource), not through `buildQueryBuilder()`: as for the record and the edit
+screens, the perimeter of a user is the job of your voter.
 
 The roles of a screen (`Field::setRole()`, `ROLE_<CRUD>_SHOW`…) only decide what is displayed there (list, record,
 sublist): they do not forbid the transitions. A status displayed elsewhere (a sublist, a widget, a template of yours)
@@ -88,13 +89,16 @@ element ("INT-0412: move to “Planned”?"); a transition with the metadata `da
 
 The transition is sent in POST, with a CSRF token, to the route `<root route>_workflowtransition` (`/workflow/{id}`),
 by the Stimulus controller `workflow` of the bundle (enable it in `assets/controllers.json`): the status changes
-without a reload, a toast says it, the focus goes back to the status. The server checks the token, the role
-of the transition and the guards again (not the roles of a screen); an error is said in a toast and the status stays as it was. So does a transition refused by a listener
-of the workflow (an exception of the component Workflow, `LogicException`) or applied in the meantime by another user:
+without a reload, a toast says it, the focus goes back to the status. The server checks the token, the role of the
+transition and the guards again (not the roles of a screen); an error is said in a toast and the status stays as it
+was. So does a transition refused by a listener of the workflow (an exception of the component Workflow, `LogicException`) or applied in the meantime by another user:
 the answer is a 409, not an error page. The new status is `field/workflow.html.twig` rendered for the element, from
 wherever the status was changed (list, record, sublist, a template of yours that includes it): only the status
 (`.crudit-workflow`) is replaced, the markup of your template around it stays. A template given to the field
-(`setTemplate()`) is not used by the answer. The CSRF token is `crudit_workflow_<workflow>_<id>`: a template of yours
+(`setTemplate()`) is not used by the answer. The answer renders the template with `resource`, `options.name`,
+`view.config` and `view.field.name` only (`view` is an array, not a `FieldView`): an override of
+`field/workflow.html.twig` must read nothing else, or it fails after a transition while it displays well with the
+page. The CSRF token is `crudit_workflow_<workflow>_<id>`: a template of yours
 that sends the transition itself gives it with the field `_token`, and the fields `name` (the workflow) and
 `transition`.
 
@@ -120,9 +124,10 @@ The number of elements in each state, in the order of the places, for the `Count
 the `CrudConfig` whose list a counter opens (here `crud`, given by the controller: `$this->config`) and the id of the
 `WorkflowFilterType` of its filterset that the link fills; without them, or without a filterset, no link.
 
-What is counted: with a `CrudConfig` whose datasource is Doctrine, the elements of its datasource
-(`buildQueryBuilder()`, where your project restricts its data: company, rights), without the filters of the user.
-**Without a `CrudConfig`, the whole table is counted**, the data of every company included. In PHP,
+What is counted: with a `CrudConfig`, the elements of its datasource (`buildQueryBuilder()`, where your project
+restricts its data: company, rights), without the filters of the user; its datasource must be Doctrine and of the
+class counted, else a `LogicException` is thrown (a typo, a CRUD of another entity: never the whole table in
+silence). **Without a `CrudConfig`, the whole table is counted**, the data of every company included. In PHP,
 `Lle\CruditBundle\Workflow\WorkflowCounter::count()` also takes a `QueryBuilder` to count part of the elements
 (`COUNT(DISTINCT …)`: a join does not count an element twice). One query (`GROUP BY` on the property of the
 marking): the workflow must be a `state_machine`, whose marking is one place in a column.

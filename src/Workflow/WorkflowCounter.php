@@ -20,7 +20,8 @@ use Symfony\Component\Workflow\WorkflowInterface;
  *
  * What is counted: the QueryBuilder given; else, with a CRUD whose datasource is Doctrine, the elements of its
  * datasource (AbstractDoctrineDatasource::buildQueryBuilder(), where a project restricts its data: company, rights),
- * without the filters of the user; else **the whole table**.
+ * without the filters of the user; else **the whole table**. A CRUD whose datasource cannot be counted (not Doctrine,
+ * or of another class) is an error, never the whole table in silence.
  */
 class WorkflowCounter
 {
@@ -41,6 +42,8 @@ class WorkflowCounter
      *                                        ("status"; no link without a filterset)
      *
      * @return list<WorkflowCount>
+     *
+     * @throws \LogicException a CRUD given without QueryBuilder whose datasource is not Doctrine or not of $class
      */
     public function count(
         string $class,
@@ -52,11 +55,9 @@ class WorkflowCounter
         $workflow = $this->states->workflow((new \ReflectionClass($class))->newInstanceWithoutConstructor(), $name);
         $property = $this->markingProperty($workflow);
 
-        $datasource = $crud?->getDatasource();
         $queryBuilder = match (true) {
             $queryBuilder !== null => clone $queryBuilder,
-            $datasource instanceof AbstractDoctrineDatasource && is_a($datasource->getClassName(), $class, true)
-                => $datasource->buildQueryBuilder(null),
+            $crud !== null => $this->datasourceQueryBuilder($crud, $class),
             default => $this->entityManager->createQueryBuilder()->from($class, 'e'),
         };
         $alias = $queryBuilder->getRootAliases()[0];
@@ -106,6 +107,28 @@ class WorkflowCounter
             $key . '_value' => $place,
             strtolower((string) $crud->getName()) . '_offset' => 0,
         ]);
+    }
+
+    /**
+     * The elements of the datasource of the CRUD; an error if it cannot be counted (a typo in Twig, a CRUD of another
+     * entity): counting the whole table instead would look filtered.
+     *
+     * @param class-string $class
+     */
+    private function datasourceQueryBuilder(CrudConfigInterface $crud, string $class): QueryBuilder
+    {
+        $datasource = $crud->getDatasource();
+        if (!$datasource instanceof AbstractDoctrineDatasource || !is_a($datasource->getClassName(), $class, true)) {
+            throw new \LogicException(sprintf(
+                'The datasource of the CRUD "%s" (%s) cannot be counted for "%s": it must be a Doctrine datasource of'
+                . ' this class. Pass a QueryBuilder, or no CRUD to count the whole table.',
+                $crud->getName(),
+                $datasource->getClassName(),
+                $class,
+            ));
+        }
+
+        return $datasource->buildQueryBuilder(null);
     }
 
     private function markingProperty(WorkflowInterface $workflow): string

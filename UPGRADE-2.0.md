@@ -836,13 +836,15 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
   A transition refused by a listener (an exception of the component Workflow) answers a 409 and a message, no
   longer an error page. Changed from anywhere (list, record, sublist of any key, a template of yours), the status is
   replaced by `field/workflow.html.twig` rendered for the element; a template given to the field (`setTemplate()`)
-  is not used by the answer.
+  is not used by the answer. It renders the template with `resource`, `options.name`, `view.config` and
+  `view.field.name` only (`view` is an array, not a `FieldView`): an override of `field/workflow.html.twig` must
+  read nothing else, or it fails after a transition.
 - **Removed**: the classes `crudit-wf-dropdown`, `crudit-wf-badge`, `crudit-wf-state-<state>` and
   `crudit-wf-transition-<transition>`, the translations `crudit.modal.transition.message` and
   `crudit.modal.transition.action`.
 - **New**: the counters by state, `crudit_workflow_counters()` (PHP: `WorkflowCounter`) for the `Counters` component
-  of CruditUiBundle. With a `CrudConfig`, they count the elements of its datasource (its restrictions); **without
-  one, the whole table**.
+  of CruditUiBundle. With a `CrudConfig`, they count the elements of its datasource (its restrictions; a datasource
+  that is not Doctrine or of another class throws a `LogicException`); **without one, the whole table**.
 
 ## 8. JavaScript
 

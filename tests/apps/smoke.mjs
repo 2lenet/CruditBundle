@@ -942,6 +942,22 @@ wf = await wfRow(page, 'INT-03');
 assert.ok((await text(page, `${wf} .crudit-workflow__trigger`)).startsWith('In progress'), 'the new status');
 ok('workflow: the status is rendered whatever the field, without a reload');
 
+// A success without usable HTML: the page is reloaded (the status has changed), no toast of error
+await page.evaluate(() => { window.notReloaded = true; });
+await page.setRequestInterception(true);
+const noHtml = (request) => request.url().includes('/workflow/') ? request.respond({status: 200, contentType: 'application/json', body: JSON.stringify({status: 'ok', message: 'Changed.'})}) : request.continue();
+page.on('request', noHtml);
+await page.click(`${wf} .crudit-workflow__trigger`);
+await new Promise((r) => setTimeout(r, 300));
+await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=finish]`);
+await new Promise((r) => setTimeout(r, 400));
+await Promise.all([page.waitForNavigation({timeout: 5000}), page.click('#crudit-confirm .crudit-action')]);
+assert.equal(await page.evaluate(() => window.notReloaded), undefined, 'reloaded');
+assert.equal(await page.$('#crudit-ui-toasts .crudit-ui-toast--danger'), null, 'no toast of error');
+page.off('request', noHtml);
+await page.setRequestInterception(false);
+ok('workflow: a success without HTML reloads the page');
+
 // The cards of the phones show the status too; dark, right to left
 page = await open(360, '/intervention/');
 assert.ok(await visible(page, '.crudit-ui-table__card .crudit-workflow__trigger'), 'the status in the cards');

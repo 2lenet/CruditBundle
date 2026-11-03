@@ -6,8 +6,9 @@ import { Controller } from '@hotwired/stimulus';
  * the item. The controller then sends the transition (POST, CSRF token) and, on success, replaces the field by the one
  * of the answer, says the change in a toast and gives the focus back to the status. The other copies of the field of
  * the same element (the table of a list renders a cell twice: its line and its card, for the phones) are replaced
- * too. The field carries no id (its Dropdown has none), so a copy is the same HTML. On an error, the status stays as
- * it was and the message of the server (or the generic one, error-value) is shown in a toast that stays.
+ * too. The field carries no id (its Dropdown has none), so a copy is the same HTML. A success without usable HTML
+ * reloads the page (the status has changed). On an error, the status stays as it was and the message of the server
+ * (or the generic one, error-value) is shown in a toast that stays.
  */
 export default class extends Controller {
     static targets = ['trigger'];
@@ -44,25 +45,29 @@ export default class extends Controller {
             data = null;
         }
 
-        if (ok && typeof data.html === 'string') {
+        if (ok) {
             const template = document.createElement('template');
-            template.innerHTML = data.html.trim();
+            template.innerHTML = typeof data.html === 'string' ? data.html.trim() : '';
             const field = template.content.firstElementChild;
-            if (field !== null) {
-                this.copies().forEach((copy) => copy.replaceWith(field.cloneNode(true)));
-                this.element.replaceWith(field);
-                this.toast(data.message, 'success');
-                // The status of the new field: its button, else the field itself (no transition left).
-                const target = field.querySelector('[data-2lenet--crudit-bundle--workflow-target="trigger"]');
-                if (target !== null) {
-                    target.focus();
-                } else {
-                    field.setAttribute('tabindex', '-1');
-                    field.focus();
-                }
+            if (field === null) {
+                window.location.reload();
 
                 return;
             }
+
+            this.copies().forEach((copy) => copy.replaceWith(field.cloneNode(true)));
+            this.element.replaceWith(field);
+            this.toast(data.message, 'success');
+            // The status of the new field: its button, else the field itself (no transition left).
+            const target = field.querySelector('[data-2lenet--crudit-bundle--workflow-target="trigger"]');
+            if (target !== null) {
+                target.focus();
+            } else {
+                field.setAttribute('tabindex', '-1');
+                field.focus();
+            }
+
+            return;
         }
 
         this.busy = false;
