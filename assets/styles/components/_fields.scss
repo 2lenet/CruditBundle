@@ -1,0 +1,171 @@
+// Values of the fields (views/field), in a cell of a list, a card and a record: from FieldValue.vue and _fields.scss
+// of the crudit-v2 mockup. The root of a value is `.crudit-value.crudit-value--<type>` (`.crudit-field` is the block
+// of a field in the record: its label and its value); the booleans, the colours, the statuses and the badges are the
+// components of CruditUiBundle.
+.crudit-value {
+    // A long text keeps its line breaks, in the direction of its content (dir="auto")
+    &--textarea {
+        white-space: pre-line;
+    }
+
+    &--telephone,
+    &--date,
+    &--datetime {
+        white-space: nowrap;
+    }
+
+    &--integer,
+    &--number,
+    &--currency {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    &__link {
+        color: var(--c-link);
+    }
+
+    &__external {
+        margin-inline-start: 0.125rem;
+        font-size: 0.75em;
+    }
+
+    // Markdown and rich text: a typography for reading, tight margins
+    &--rich {
+        max-width: 48rem;
+
+        > :first-child {
+            margin-block-start: 0;
+        }
+
+        > :last-child {
+            margin-block-end: 0;
+        }
+
+        p,
+        ul,
+        ol,
+        blockquote {
+            margin: 0 0 var(--space-2);
+        }
+
+        ul,
+        ol {
+            padding-inline-start: var(--space-5);
+        }
+
+        h4,
+        h5,
+        h6 {
+            margin: var(--space-3) 0 var(--space-1);
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        blockquote {
+            padding-inline-start: var(--space-3);
+            border-inline-start: 3px solid var(--c-border-strong);
+            color: var(--c-text-muted);
+        }
+
+        code {
+            padding: 0 var(--space-1);
+            border-radius: var(--radius-sm);
+            background-color: var(--c-surface-sunken);
+            font-size: var(--font-size-sm);
+        }
+
+        a {
+            color: var(--c-link);
+        }
+    }
+
+    // JSON: a list, or pairs of key and value
+    &__json {
+        padding-inline-start: var(--space-5);
+        margin: 0;
+
+        &--pairs {
+            display: grid;
+            gap: var(--space-1);
+            padding-inline-start: 0;
+        }
+    }
+
+    &__json-pair {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 var(--space-2);
+
+        dt {
+            color: var(--c-text-muted);
+            font-weight: var(--font-weight-regular);
+
+            &::after {
+                content: '\00a0:';
+            }
+        }
+
+        dd {
+            margin: 0;
+        }
+    }
+
+    // Progress: the bar (the <progress> of CruditUiBundle) and its value, on one line
+    &__progress {
+        display: inline-flex;
+        min-width: 5.5rem;
+        align-items: center;
+        gap: var(--space-2);
+
+        .crudit-ui-progress__track {
+            height: 0.375rem;
+            flex: 1;
+        }
+    }
+
+    &__progress-value,
+    &__progress-bottom {
+        color: var(--c-text-muted);
+        font-size: var(--font-size-xs);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    &__progress-bottom {
+        display: block;
+    }
+}
+
+// In a cell of a table, compact values: a long text stays on two lines, a web address shows its host, a JSON is
+// written on a line (a, b, c; key: value, …). The HTML is the same in the card and on the record, which show them whole.
+.crudit-ui-table__cell {
+    // A width of its own: a wide table shrinks its columns to their minimum, which is one word for a text
+    .crudit-value--clamp {
+        display: -webkit-box;
+        min-width: 14rem;
+        max-width: 24rem;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+
+    .crudit-value__path {
+        display: none;
+    }
+
+    .crudit-value__json,
+    .crudit-value__json > li,
+    .crudit-value__json-pair,
+    .crudit-value__json-pair > dt,
+    .crudit-value__json-pair > dd {
+        display: inline;
+        padding: 0;
+    }
+
+    .crudit-value__json > li:not(:last-child)::after,
+    .crudit-value__json-pair:not(:last-child)::after {
+        content: ', ';
+    }
+}

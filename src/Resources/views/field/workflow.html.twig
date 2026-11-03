@@ -27,8 +27,8 @@
     data-{{ wf_controller }}-error-value="{{ 'crudit.workflow.error'|trans(domain: 'LleCruditBundle') }}"
     {%- endif %}>
     {%- if wf.states is empty -%}
-        {#- No state: a dash, read as "Not set", as LleCruditUi:Boolean -#}
-        <span class="crudit-ui-empty-value"><span aria-hidden="true">—</span><span class="crudit-ui-visually-hidden">{{ 'crudit_ui.value.empty'|trans(domain: 'LleCruditUiBundle') }}</span></span>
+        {#- No state: a dash, read as "Not set", as an empty value of any field -#}
+        {{- include('@LleCrudit/field/_empty.html.twig') -}}
     {%- elseif wf_transitions is empty -%}
         {%- for wf_state in wf.states -%}
             <twig:LleCruditUi:Status tone="{{ wf_state.tone }}" size="small">{{ ('wf.state.' ~ wf_state.place)|trans }}</twig:LleCruditUi:Status>

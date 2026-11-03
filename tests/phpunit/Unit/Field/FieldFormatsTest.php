@@ -10,6 +10,7 @@ use Lle\CruditBundle\Field\DateField;
 use Lle\CruditBundle\Field\DateTimeField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
+use Lle\CruditBundle\Twig\FieldExtension;
 use Lle\CruditUiBundle\Format\Formatter;
 use Lle\CruditUiBundle\Locale\RequestLocale;
 use Lle\CruditUiBundle\Twig\FormatExtension;
@@ -168,6 +169,7 @@ class FieldFormatsTest extends TestCase
         $formatExtension = new FormatExtension(new Formatter(new RequestLocale($requestStack, 'en'), $twig));
         $twig->addExtension(new IntlExtension());
         $twig->addExtension(new AttributeExtension(FormatExtension::class));
+        $twig->addExtension(new AttributeExtension(FieldExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([FormatExtension::class => static fn () => $formatExtension]));
         // Functions of the edit in place branch, not rendered here
         $twig->addFunction(new TwigFunction('path', static fn (): string => ''));

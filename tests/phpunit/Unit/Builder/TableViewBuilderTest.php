@@ -19,13 +19,21 @@ use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Dto\ResourceView;
 use Lle\CruditBundle\Action\ActionResolver;
 use Lle\CruditBundle\Action\PageActionsBuilder;
+use Lle\CruditBundle\Field\CurrencyField;
+use Lle\CruditBundle\Field\IntegerField;
+use Lle\CruditBundle\Field\NumberField;
+use Lle\CruditBundle\Field\TextField;
+use Lle\CruditBundle\Registry\FieldRegistry;
 use Lle\CruditBundle\Twig\CruditActionExtension;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
 
 /**
  * The data of the Table of CruditUiBundle for a list: columns and sort links, rows and their cells, tone, actions
@@ -37,6 +45,31 @@ class TableViewBuilderTest extends TestCase
     private array $denied = [];
 
     private bool $hideIfDisabled = false;
+
+    /** @var array<string, string> the configuration lle_crudit.default_*_alignment */
+    private array $alignments = ['currency' => 'right', 'integer' => 'right', 'number' => 'right'];
+
+    public function testTheFieldAlignsItsColumn(): void
+    {
+        $fields = [
+            Field::new('name', 'string'),
+            Field::new('amount', 'decimal'),
+            Field::new('count', 'smallint'),
+            Field::new('rate', NumberField::class),
+            Field::new('other'),
+            Field::new('unknown', 'no_such_type'),
+        ];
+        self::assertSame(['start', 'end', 'end', 'end', 'start', 'start'], array_column($this->build($fields, [])['columns'], 'align'));
+
+        // The option alignment of a field wins over its type
+        $code = Field::new('code', 'string', ['alignment' => 'end']);
+        $total = Field::new('total', 'decimal', ['alignment' => 'start']);
+        self::assertSame(['end', 'start'], array_column($this->build([$code, $total], [])['columns'], 'align'));
+
+        // The configuration: left (or center) gives start
+        $this->alignments = ['currency' => 'left', 'integer' => 'center', 'number' => 'right'];
+        self::assertSame(['start', 'start', 'start', 'end', 'start', 'start'], array_column($this->build($fields, [])['columns'], 'align'));
+    }
 
     public function testColumnsAndSort(): void
     {
@@ -356,7 +389,20 @@ class TableViewBuilderTest extends TestCase
 
         $actions = new PageActionsBuilder(new ActionResolver($checker, $this->hideIfDisabled), $urls, $requests);
 
-        return new TableViewBuilder($checker, $translator, $urls, $requests, $actions, new CruditActionExtension($translator));
+        $twig = new Environment(new ArrayLoader());
+        $parameters = new ParameterBag([
+            'lle_crudit.default_currency_alignment' => $this->alignments['currency'],
+            'lle_crudit.default_integer_alignment' => $this->alignments['integer'],
+            'lle_crudit.default_number_alignment' => $this->alignments['number'],
+        ]);
+        $fields = new FieldRegistry([
+            new TextField($twig, $parameters),
+            new CurrencyField($twig, $parameters),
+            new IntegerField($twig, $parameters),
+            new NumberField($twig, $parameters),
+        ]);
+
+        return new TableViewBuilder($checker, $translator, $urls, $requests, $actions, new CruditActionExtension($translator), $fields);
     }
 
     /**

@@ -121,6 +121,9 @@ services:
     # crudit_workflow() and crudit_workflow_counters() by #[AsTwigFunction]
     Lle\CruditBundle\Twig\WorkflowExtension: ~
 
+    # Test declared by #[AsTwigTest] (autoconfiguration)
+    Lle\CruditBundle\Twig\FieldExtension: ~
+
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:
             $propertyAccessor: '@property_accessor'

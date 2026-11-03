@@ -20,6 +20,8 @@ class FormatField extends AbstractField
         $optionResolver = new OptionsResolver();
         $this->configureOptions($optionResolver);
         $options = $optionResolver->resolve($fieldView->getField()->getOptions());
+        // The options of the view, as the other fields: the record and the templates read view.options
+        $fieldView->setOptions($options);
         $template = $this->twig->createTemplate($options['format']);
 
         return $fieldView->setStringValue(
