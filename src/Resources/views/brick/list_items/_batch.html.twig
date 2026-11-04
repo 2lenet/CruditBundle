@@ -1,97 +1,59 @@
-{% set allowed_actions = view.data.batch_actions|filter(a => (a.action.path.role is null or is_granted(a.action.path.role)) and (a.action.role is null or is_granted(a.action.role))) %}
-{% if allowed_actions is not empty %}
-    <div class="row mt-2 crudit-batch-list d-none">
-        <div class="col-md-2 dropdown">
-            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownBatchActions"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                {{ 'crudit.action.batch'|trans({}, 'LleCruditBundle') }}
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownBatchActions">
-                {% for key, batch_action in allowed_actions %}
-                    {% set action = batch_action.action %}
-                    {% set params = action.path.params %}
-                    {% if batch_action.form is not null %}
-                        {% set form = batch_action.form %}
-                    {% endif %}
-                    {% if
-                        (action.path.role is null or is_granted(action.path.role))
-                        and (action.role is null or is_granted(action.role))
-                    %}
-                        <a
-                            class="{{ action.cssClass ?? 'btn btn-sm crudit-batch-dropdown-item dropdown-item' }}"
-                            {% if action.modal %}
-                                data-bs-toggle="modal" data-bs-target="#modal_{{ action.id }}"
-                            {% elseif action.confirmModal %}
-                                data-confirm-link="{{ path(action.path.route, params) }}"
-                                data-confirm-text="{{ ('modal.confirm.' ~ action.label)|trans(domain=view.config.translation_domain) }}"
-                            {% elseif form %}
-                                data-form="batch-form-{{ key ~ '-' ~ view.id }}"
-                            {% else %}
-                                href="{{ action.url ?? path(action.path.route, params) }}"
-                            {% endif %}
-                            title="{{ action.label|trans }}"
-                            {% if action.target is defined and action.target %}
-                                target="{{ action.target }}"
-                            {% endif %}
-                        >
-                            {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                            {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
-                        </a>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
-
-        {% for key, batch_action in view.data.batch_actions %}
-            {% set action = batch_action.action %}
-            {% set params = action.path.params %}
-
-            {% if batch_action.form is not null %}
-                {% set form = batch_action.form %}
-            {% endif %}
-
-            {% if
-                (action.path.role is null or is_granted(action.path.role))
-                and (action.role is null or is_granted(action.role))
-            %}
-                {% if action.modal %}
-                    {% include action.modal with {action: action, id: 'modal_' ~ action.id, params: params} %}
+{#
+ # The batch actions of a list: the SelectionBar of CruditUiBundle, shown when a row is checked. It gives the selection
+ # to the action: `ids` (separated by commas) and `all_page` (1 when the whole list is selected, not only the page),
+ # in the address of a link, or in the fields `ids` and `all_page` of the form of the action (a dialog). The dialog of an
+ # action with its own template (`setModal()`) is fed when it opens: its fields and forms marked
+ # `data-selection-field="ids"` / `"all_page"` are filled, its links marked `data-selection-link` get the selection in
+ # their address, and `data-ids` / `data-all-page` are set on the dialog (event `crudit-ui:selection` for a script).
+ # Variable: list (crudit_table(view): selectable, batch, total, id; not `table`: the component SelectionBar has a prop of that name, which its blocks would see). The actions are those of `setIsBatch()`.
+ #}
+{% if list.selectable %}
+    {% set fill = '2lenet--crudit-ui-bundle--selection-bar#fill' %}
+    <twig:LleCruditUi:SelectionBar :table="list.id" :total="list.total">
+        <twig:block name="actions">
+            {% for item in list.batch %}
+                {% set dialog = list.id ~ '-' ~ item.id %}
+                {% if item.kind == 'link' %}
+                    <twig:LleCruditUi:Button :href="item.url" :variant="item.variant" :icon="item.icon" size="small" data-action="click->{{ fill }}" target="{{ item.target }}">{{ item.label }}</twig:LleCruditUi:Button>
+                {% else %}
+                    <twig:LleCruditUi:Button :variant="item.variant" :icon="item.icon" size="small" commandfor="{{ dialog }}" command="show-modal" data-action="click->2lenet--crudit-ui-bundle--selection-bar#fillDialog">{{ item.label }}</twig:LleCruditUi:Button>
                 {% endif %}
-            {% endif %}
-
-            {% if form %}
-                {{ form_start(form, {
-                    'attr': {
-                        'class': 'col-md-10 form-horizontal needs-validation batch-action-form',
-                        'novalidate': 'novalidate',
-                        'autocomplete': 'off',
-                        'action': path(action.path.route),
-                        'id': 'batch-form-' ~ key ~ '-' ~ view.id
-                    }
-                }) }}
-                <div class="row">
-                    {% for field in form.children %}
-                        {% if field.vars.name != '_token' %}
-                            {% set classes = 'col-xxxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap' %}
-                            {% set classes = (field.vars.block_prefixes[1] == 'hidden') ? 'd-none' : classes %}
-                            <div class="{{ classes }}">
-                                <div class="form-floating">
-                                    {{ form_widget(field) }}
-                                    {{ form_label(field) }}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <div class="col-xxxl-3 col-xl-4 col-lg-6 col-xs-12 mb-2 flex-nowrap">
-                        <button type="submit" class="btn btn-sm btn-primary">
-                            <i class="fas fa-check"></i>&nbsp;
-                            {{ 'crudit.action.validate'|trans({}, 'LleCruditBundle') }}
-                            {% if action and action.label is defined and action.label is not null %}&nbsp;"{{ action.label|trans }}"{% endif %}
-                        </button>
-                    </div>
-                </div>
-                {{ form_end(form) }}
-            {% endif %}
-        {% endfor %}
-    </div>
+            {% endfor %}
+        </twig:block>
+        <twig:block name="after">
+            {% for item in list.batch %}
+                {% set dialog = list.id ~ '-' ~ item.id %}
+                {% if item.kind == 'form' %}
+                    {% set form = item.form %}
+                    <twig:LleCruditUi:Dialog id="{{ dialog }}" :title="item.label">
+                        <twig:block name="content">
+                            {{ form_start(form, {action: item.url, attr: {id: dialog ~ '-form', novalidate: 'novalidate', autocomplete: 'off', 'data-action': 'submit->' ~ fill}}) }}
+                            {% for field in form.children %}
+                                {% if field.vars.name in ['ids', 'all_page'] %}
+                                    {{ form_widget(field, {attr: {'data-selection-field': field.vars.name}}) }}
+                                {% elseif field.vars.name != '_token' %}
+                                    {{ form_row(field) }}
+                                {% endif %}
+                            {% endfor %}
+                            {{ form_rest(form) }}
+                            {{ form_end(form, {render_rest: false}) }}
+                        </twig:block>
+                        <twig:block name="footer">
+                            <twig:LleCruditUi:Button variant="ghost" data-action="2lenet--crudit-ui-bundle--dialog#dismiss">{{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+                            <twig:LleCruditUi:Button type="submit" variant="primary" form="{{ dialog }}-form">{{ 'crudit.modal.validate'|trans({}, 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+                        </twig:block>
+                    </twig:LleCruditUi:Dialog>
+                {% elseif item.kind == 'confirm' %}
+                    <twig:LleCruditUi:Dialog id="{{ dialog }}" :title="item.label" :description="item.confirmText">
+                        <twig:block name="footer">
+                            <twig:LleCruditUi:Button variant="ghost" data-action="2lenet--crudit-ui-bundle--dialog#dismiss" autofocus>{{ 'crudit.modal.cancel'|trans({}, 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+                            <twig:LleCruditUi:Button :href="item.url" :variant="item.variant == 'secondary' ? 'primary' : item.variant" data-action="click->{{ fill }}">{{ item.label }}</twig:LleCruditUi:Button>
+                        </twig:block>
+                    </twig:LleCruditUi:Dialog>
+                {% elseif item.kind == 'modal' %}
+                    {% include item.modal with {action: item.action, id: dialog, params: item.params} %}
+                {% endif %}
+            {% endfor %}
+        </twig:block>
+    </twig:LleCruditUi:SelectionBar>
 {% endif %}

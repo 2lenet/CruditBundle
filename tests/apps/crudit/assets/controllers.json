@@ -63,6 +63,18 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "selection-bar": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "table": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "table-sort": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "tabs": {
                 "enabled": true,
                 "fetch": "eager"

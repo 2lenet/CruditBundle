@@ -1,6 +1,6 @@
 {#
  # The list: the Table of CruditUiBundle, fed by crudit_table() (TableViewBuilder: columns, rows, groups, totals, sort,
- # actions). A project puts a text above the table in the block `before`. The pager (3.1.d), the selection and the batch actions (3.1.c) and the filters (3.1.e) follow in their lots.
+ # actions). A project puts a text above the table in the block `before`. The selection and the batch actions are the SelectionBar (`_batch`); the pager (3.1.d) and the filters (3.1.e) follow in their lots.
  #}
 {% block autorefresh %}
     {% if view.data.auto_refresh is defined and view.data.auto_refresh %}
@@ -20,11 +20,13 @@
     :totals="table.totals"
     :sort="table.sort"
     :sortable="table.sortable"
+    :selectable="table.selectable"
 >
     <twig:block name="footer">
         {% include '@LleCrudit/brick/list_items/_pager.html.twig' %}
     </twig:block>
 </twig:LleCruditUi:Table>
+{% include '@LleCrudit/brick/list_items/_batch.html.twig' with {list: table} only %}
 {% for modal in table.modals %}
     {# the same action serves every row: bind it to the resource of the row of this modal #}
     {% if modal.action.setResource is defined %}{% do modal.action.setResource(modal.resource) %}{% endif %}
