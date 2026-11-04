@@ -56,6 +56,7 @@ action:
     report_custom: "Custom report"
     about: "About"
     batch_export: "Export"
+    batch_custom: "Custom button"
     batch_status: "Change the status"
     batch_archive: "Archive"
     batch_message: "Send a message"

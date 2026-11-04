@@ -100,7 +100,11 @@ class ClientCrudConfig extends AbstractCrudConfig
             ->setConfirmModal(true);
         // Lot 3.1.c: the batch actions of the SelectionBar: a link, a form in a dialog, a confirmation
         $actions['batch_export'] = ListAction::new('action.batch_export', Path::new('app_client_batch', ['action' => 'export']), Icon::new('download'))
-            ->setIsBatch();
+            ->setIsBatch()
+            ->setHideLabel(true);
+        $actions['batch_custom'] = ListAction::new('action.batch_custom', Path::new('app_client_batch', ['action' => 'custom']), Icon::new('send'))
+            ->setIsBatch()
+            ->setTemplate('client/_batch_custom_button.html.twig');
         $actions['batch_status'] = ListAction::new('action.batch_status', Path::new('app_client_batch', ['action' => 'status']), Icon::new('edit'))
             ->setIsBatch()
             ->setForm(ClientBatchType::class);

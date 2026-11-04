@@ -862,6 +862,23 @@ results, and has a "Deselect all" button.
   on several pages. A sort, a filter, a reload, a return to the list or running an action start from an empty selection
   (acting on rows the user no longer sees is dangerous). "All the results" is kept the same way. The pager must
   change only the page parameter (`page` or `<list>_offset`).
+- **Template of an action** (`setTemplate()`): it is supported again, with a new role. In 1.x it was the markup of the
+  action in the dropdown of the batch actions; it is now **the button of the bar, in its place**. Variables: `action`,
+  `params`, `form`, `view`, `list`, `item` (the data of the action) and `dialog` (the id of its dialog). To open the
+  dialog of a form, a modal or a confirmation, use `commandfor="{{ dialog }}" command="show-modal"` on a `<button>`; for a
+  link that carries the selection, `data-action="click->2lenet--crudit-ui-bundle--selection-bar#fill"`.
+- **Icon only** (`setHideLabel(true)` with an icon): the bar shows the icon, and the label stays for the screen readers.
+  `setCssClass()` has no effect on a batch action any more (`setVariant()`).
+- **Free modal** (`setModal()`): its **id** is `modal_<id of the action>` as in 1.x (it was not the one of the dialogs
+  of the forms and confirmations, `batch-<view>-<n>`, which are new). The template of the modal sees `action`, `id`,
+  `params` and now `view`, `list` and `item`, but **not the rest of the context of the page** (it did in 1.x): pass what
+  it needs through the view or the action.
+- **The form of an action** is sent to `item.url`, the address of the action **with its parameters** (`Path::new(route,
+  params)`, or `setUrl()`); 1.x sent it to `path(route)` without parameters.
+- **A big selection** (the pager keeps it from a page to the other) makes a long address for an action that is a link:
+  for such an action (an export of thousands of rows…), prefer an action with a form (`setForm()`) or a modal with a
+  `<form method="post">`.
+- **Removed**: the translations `crudit.action.batch`, `crudit.text.current_page` and `crudit.text.all_page`.
 - **Removed**: `assets/sb-admin/js/batch_actions.js` (and its import in `app.js`), `list_items/actions/_batch_action.html.twig`
   and `_batch_actions.html.twig`. The block of the batch actions is `list_items/_batch.html.twig`: override it to change
   the buttons.

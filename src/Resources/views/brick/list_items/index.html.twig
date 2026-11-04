@@ -26,7 +26,7 @@
         {% include '@LleCrudit/brick/list_items/_pager.html.twig' %}
     </twig:block>
 </twig:LleCruditUi:Table>
-{% include '@LleCrudit/brick/list_items/_batch.html.twig' with {list: table} only %}
+{% include '@LleCrudit/brick/list_items/_batch.html.twig' with {list: table, view: view} only %}
 {% for modal in table.modals %}
     {# the same action serves every row: bind it to the resource of the row of this modal #}
     {% if modal.action.setResource is defined %}{% do modal.action.setResource(modal.resource) %}{% endif %}

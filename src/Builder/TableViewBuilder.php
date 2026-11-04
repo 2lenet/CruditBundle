@@ -37,8 +37,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * The action `EditAction` is the one shown as an icon, the others are in the menu "More actions" of the row.
  *
  * - `selectable`, `batch`, `total`: the selection and the batch actions (`setIsBatch()`), for the SelectionBar. `batch` holds
- *   the allowed actions (`{id, label, icon, variant, kind, url, target, form, modal, confirm}`; `kind`: `link`, `form`,
- *   `modal` (own template) or `confirm`); `total` is the number of results of the list, all pages.
+ *   the allowed actions (`{id, label, icon, hideLabel, variant, kind, url, target, form, modal, template, action, params,
+ *   confirmText}`; `kind`: `link`, `form`, `modal` (own template) or `confirm`); `id` is the one of its dialog (unique in
+ *   the page; `modal_<id of the action>` for a modal of its own, as in 1.x); `template` replaces the button of the bar
+ *   (`setTemplate()`); `total` is the number of results of the list, all pages.
  *
  * Left to the next lots: the pager (3.1.d), the filters (3.1.e).
  */
@@ -414,7 +416,7 @@ class TableViewBuilder
             };
 
             $built[] = [
-                'id' => 'batch-' . $viewId . '-' . $key,
+                'id' => $kind === 'modal' ? 'modal_' . $action->getId() : 'batch-' . $viewId . '-' . $key,
                 'label' => $label,
                 'icon' => $this->icon($action),
                 'hideLabel' => $action->isHideLabel(),
@@ -424,6 +426,7 @@ class TableViewBuilder
                 'target' => $action->getTarget(),
                 'form' => $form,
                 'modal' => $action->getModal(),
+                'template' => $action->getTemplate(),
                 'action' => $action,
                 'params' => $params,
                 'confirmText' => $kind === 'confirm' ? $this->translator->trans('modal.confirm.' . $action->getLabel(), [], $domain) : null,

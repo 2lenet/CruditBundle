@@ -42,7 +42,8 @@ class BatchActionsTest extends AppTestCase
 
         $link = $crawler->filter('main .crudit-ui-selection-bar__actions a[href*="/client/batch/export"]');
         self::assertCount(1, $link);
-        self::assertSame(self::BAR . '#fill', ltrim((string) $link->attr('data-action'), 'click->'));
+        self::assertSame('click->' . self::BAR . '#fill', $link->attr('data-action'));
+        self::assertNull($link->getNode(0)?->attributes?->getNamedItem('target'), 'no target="" when there is none');
     }
 
     public function testAFreeModalIsFedWithTheSelectionWhenItOpens(): void
@@ -56,6 +57,35 @@ class BatchActionsTest extends AppTestCase
         self::assertCount(1, $dialog);
         self::assertCount(1, $dialog->filter('input[data-selection-field="ids"]'));
         self::assertCount(1, $dialog->filter('input[data-selection-field="all_page"]'));
+    }
+
+    public function testAnIconOnlyActionKeepsItsLabelForScreenReaders(): void
+    {
+        $crawler = $this->client->request('GET', '/client/');
+
+        $link = $crawler->filter('main .crudit-ui-selection-bar__actions a[href*="/client/batch/export"]');
+        self::assertCount(1, $link);
+        self::assertCount(1, $link->filter('.crudit-ui-visually-hidden'));
+        self::assertSame('Export', trim($link->filter('.crudit-ui-visually-hidden')->text()));
+    }
+
+    public function testTheTemplateOfAnActionReplacesItsButton(): void
+    {
+        $crawler = $this->client->request('GET', '/client/');
+
+        $custom = $crawler->filter('main .crudit-ui-selection-bar__actions a#batch-custom');
+        self::assertCount(1, $custom);
+        self::assertSame('Custom button', trim($custom->text()));
+        self::assertNotSame('', (string) $custom->attr('data-view'), 'the template sees the view');
+    }
+
+    public function testAFreeModalKeepsItsIdOf1xAndSeesTheView(): void
+    {
+        $crawler = $this->client->request('GET', '/client/');
+
+        $dialog = $crawler->filter('main dialog[id^="modal_"] [data-view]');
+        self::assertCount(1, $dialog, 'the id is modal_<id of the action>, as before 2.0');
+        self::assertNotSame('', (string) $dialog->attr('data-view'), 'the modal sees the view');
     }
 
     public function testTheIdOfTheTableIsNotThatOfTheWrapperOfTheBrick(): void

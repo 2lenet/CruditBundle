@@ -1,12 +1,13 @@
 {#
  # A modal of free content for a batch action (lot 3.1.c): setModal() + setIsBatch(). Its form has the fields
  # data-selection-field="ids" and "all_page": the SelectionBar fills them when the dialog opens.
- # Variables: id (the one of the modal), action, params.
+ # Variables: id (the one of the modal), action, params, view, list, item.
  #}
 {% extends '@LleCrudit/modal/_base_modal.html.twig' %}
 
 {% block header %}{{ 'client.batch_message.title'|trans }}{% endblock %}
 {% block body %}
+    <p class="visually-hidden" data-view="{{ view.id }}"></p>
     <form id="{{ id }}-form" method="post" action="{{ path(action.path.route, params) }}">
         <input type="hidden" name="ids" data-selection-field="ids">
         <input type="hidden" name="all_page" data-selection-field="all_page">

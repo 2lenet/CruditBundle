@@ -857,7 +857,7 @@ ok('batch action: link');
 page = await open(1440, '/client/');
 await page.click('tbody tr:nth-child(2) input[type=checkbox]');
 const second = await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (b) => b.dataset.id);
-await page.click('.crudit-ui-selection-bar__actions button[command=show-modal]');
+await (await page.$$('.crudit-ui-selection-bar__actions button[command=show-modal]')).reduce(async (done, b) => (await done) || ((await b.evaluate((e) => e.textContent.includes('Change the status'))) ? b.click() || true : false), Promise.resolve(false));
 assert.ok(await visible(page, 'dialog[open] form'), 'the form opens in a dialog');
 await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('dialog[open] button[type=submit]')]);
 assert.ok((await page.$eval('body', (b) => b.textContent)).includes(`status: ids=${second} all_page=0`), 'the form received the selection');

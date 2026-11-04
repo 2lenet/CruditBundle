@@ -5,24 +5,36 @@
  # action with its own template (`setModal()`) is fed when it opens: its fields and forms marked
  # `data-selection-field="ids"` / `"all_page"` are filled, its links marked `data-selection-link` get the selection in
  # their address, and `data-ids` / `data-all-page` are set on the dialog (event `crudit-ui:selection` for a script).
- # Variable: list (crudit_table(view): selectable, batch, total, id; not `table`: the component SelectionBar has a prop of that name, which its blocks would see). The actions are those of `setIsBatch()`.
+ # The button of an action with `setTemplate()` is that template, in place of the button of the bar: it opens the
+ # dialog of the action with `commandfor="{{ dialog }}" command="show-modal"` (a modal or a form), or is a link with
+ # `data-action="click->2lenet--crudit-ui-bundle--selection-bar#fill"`. Variables of the templates (button, modal):
+ # action, params, form, view, list, item (the data of the action: id, label, url…), dialog (its id).
+ # An action `setHideLabel()` with an icon shows the icon, its label stays for the screen readers. `setCssClass()` has
+ # no effect (`setVariant()`).
+ # Variables: list (crudit_table(view): selectable, batch, total, id; not `table`: the component SelectionBar has a prop of that name, which its blocks would see), view. The actions are those of `setIsBatch()`.
  #}
 {% if list.selectable %}
     {% set fill = '2lenet--crudit-ui-bundle--selection-bar#fill' %}
     <twig:LleCruditUi:SelectionBar :table="list.id" :total="list.total">
         <twig:block name="actions">
             {% for item in list.batch %}
-                {% set dialog = list.id ~ '-' ~ item.id %}
-                {% if item.kind == 'link' %}
-                    <twig:LleCruditUi:Button :href="item.url" :variant="item.variant" :icon="item.icon" size="small" data-action="click->{{ fill }}" target="{{ item.target }}">{{ item.label }}</twig:LleCruditUi:Button>
+                {% set dialog = item.id %}
+                {% if item.template %}
+                    {% include item.template with {action: item.action, params: item.params, form: item.form, view: view, list: list, item: item, dialog: dialog} %}
+                {% elseif item.kind == 'link' %}
+                    <twig:LleCruditUi:Button :href="item.url" :variant="item.variant" :icon="item.icon" size="small" data-action="click->{{ fill }}" {{ ...(item.target ? {target: item.target} : {}) }}>
+                        {%- if item.hideLabel and item.icon %}<span class="crudit-ui-visually-hidden">{{ item.label }}</span>{% else %}{{ item.label }}{% endif -%}
+                    </twig:LleCruditUi:Button>
                 {% else %}
-                    <twig:LleCruditUi:Button :variant="item.variant" :icon="item.icon" size="small" commandfor="{{ dialog }}" command="show-modal" data-action="click->2lenet--crudit-ui-bundle--selection-bar#fillDialog">{{ item.label }}</twig:LleCruditUi:Button>
+                    <twig:LleCruditUi:Button :variant="item.variant" :icon="item.icon" size="small" commandfor="{{ dialog }}" command="show-modal" data-action="click->2lenet--crudit-ui-bundle--selection-bar#fillDialog">
+                        {%- if item.hideLabel and item.icon %}<span class="crudit-ui-visually-hidden">{{ item.label }}</span>{% else %}{{ item.label }}{% endif -%}
+                    </twig:LleCruditUi:Button>
                 {% endif %}
             {% endfor %}
         </twig:block>
         <twig:block name="after">
             {% for item in list.batch %}
-                {% set dialog = list.id ~ '-' ~ item.id %}
+                {% set dialog = item.id %}
                 {% if item.kind == 'form' %}
                     {% set form = item.form %}
                     <twig:LleCruditUi:Dialog id="{{ dialog }}" :title="item.label">
@@ -51,7 +63,8 @@
                         </twig:block>
                     </twig:LleCruditUi:Dialog>
                 {% elseif item.kind == 'modal' %}
-                    {% include item.modal with {action: item.action, id: dialog, params: item.params} %}
+                    {# the same variables as the modal of a row, plus the view and the data of the action #}
+                    {% include item.modal with {action: item.action, id: dialog, params: item.params, view: view, list: list, item: item} %}
                 {% endif %}
             {% endfor %}
         </twig:block>

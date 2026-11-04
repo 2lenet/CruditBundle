@@ -1,0 +1,5 @@
+{#
+ # The button of a batch action with setTemplate() (lot 3.1.c): replaces the button of the bar. A link that carries the
+ # selection (data-action fill). Variables: action, params, form, view, list, item, dialog.
+ #}
+<a class="crudit-ui-btn crudit-ui-btn--secondary crudit-ui-btn--small" id="batch-custom" data-view="{{ view.id }}" href="{{ path(action.path.route, params) }}" data-action="click->2lenet--crudit-ui-bundle--selection-bar#fill">{{ 'action.batch_custom'|trans }}</a>
