@@ -835,6 +835,69 @@ await page.keyboard.press('Tab');
 assert.ok(await page.evaluate(() => document.activeElement.classList.contains('crudit-ui-table__sort')), 'Tab goes to the next heading');
 ok('list: keyboard');
 
+// ---------- Selection and batch actions (lot 3.1.c): the SelectionBar of CruditUiBundle under the table
+page = await open(1440, '/client/');
+assert.ok(!(await visible(page, '.crudit-ui-selection-bar')), 'no bar while no row is checked');
+await page.click('tbody tr:first-child input[type=checkbox]');
+assert.ok(await visible(page, '.crudit-ui-selection-bar'), 'the bar shows when a row is checked');
+assert.match(await page.$eval('.crudit-ui-selection-bar__count', (e) => e.textContent.trim()), /^1 row selected/);
+assert.match(await page.$eval('[data-controller~="2lenet--crudit-ui-bundle--selection-bar"] [role=status]', (e) => e.textContent), /1 row selected/, 'announced in a live region');
+await page.click('thead input[type=checkbox]');
+const pageRows = await page.$$eval('tbody tr.crudit-ui-table__row', (rows) => rows.length);
+assert.match(await page.$eval('.crudit-ui-selection-bar__count', (e) => e.textContent.trim()), new RegExp(`^${pageRows} rows selected`));
+assert.ok((await page.$eval('thead input[type=checkbox]', (e) => e.checked)), 'the box of the header is checked');
+await axeOn(page, '.crudit-ui-selection-bar', 'selection bar');
+ok('list: selection bar');
+// a link of the bar receives the ids and all_page
+const ids = await page.$$eval('tbody tr.crudit-ui-table__row input[type=checkbox]', (boxes) => boxes.map((b) => b.dataset.id).join(','));
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('.crudit-ui-selection-bar__actions a[href*="/client/batch/export"]')]);
+assert.ok((await page.$eval('body', (b) => b.textContent)).includes(`export: ids=${ids} all_page=0`), 'the link received the selection');
+ok('batch action: link');
+// the form of an action, in a dialog: the fields of the selection are filled when it is sent
+page = await open(1440, '/client/');
+await page.click('tbody tr:nth-child(2) input[type=checkbox]');
+const second = await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (b) => b.dataset.id);
+await (await page.$$('.crudit-ui-selection-bar__actions button[command=show-modal]')).reduce(async (done, b) => (await done) || ((await b.evaluate((e) => e.textContent.includes('Change the status'))) ? b.click() || true : false), Promise.resolve(false));
+assert.ok(await visible(page, 'dialog[open] form'), 'the form opens in a dialog');
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('dialog[open] button[type=submit]')]);
+assert.ok((await page.$eval('body', (b) => b.textContent)).includes(`status: ids=${second} all_page=0`), 'the form received the selection');
+ok('batch action: form in a dialog');
+// a free modal (setModal) receives the selection when it opens
+page = await open(1440, '/client/');
+await page.click('tbody tr:first-child input[type=checkbox]');
+const first = await page.$eval('tbody tr:first-child input[type=checkbox]', (b) => b.dataset.id);
+await (await page.$$('.crudit-ui-selection-bar__actions button[command=show-modal]')).reduce(async (done, b) => (await done) || ((await b.evaluate((e) => e.textContent.includes('Send a message'))) ? b.click() || true : false), Promise.resolve(false));
+assert.ok(await visible(page, 'dialog[open] textarea'), 'the free modal opens');
+await page.type('dialog[open] textarea', 'hello');
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('dialog[open] button[type=submit]')]);
+assert.ok((await page.$eval('body', (b) => b.textContent)).includes(`message: ids=${first} all_page=0`), 'the free modal received the selection');
+ok('batch action: free modal');
+// the selection follows the pager, and only the pager
+page = await open(1440, '/client/?client_limit=10');
+await page.click('tbody tr:nth-child(2) input[type=checkbox]');
+const kept = await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (b) => b.dataset.id);
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('nav[aria-label] a[href*="client_offset=10"]')]);
+assert.ok(!(await page.$eval('tbody tr:first-child input[type=checkbox]', (e) => e.checked)), 'the rows of the page 2 are not checked');
+assert.match(await page.$eval('.crudit-ui-selection-bar__count', (e) => e.textContent.trim()), /^1 row selected/, 'the row of the page 1 is still counted');
+await page.click('tbody tr:nth-child(3) input[type=checkbox]');
+assert.match(await page.$eval('.crudit-ui-selection-bar__count', (e) => e.textContent.trim()), /^2 rows selected/);
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.evaluate(() => [...document.querySelectorAll('nav[aria-label=navigation] a[href*="client_offset=0"]')].find((a) => a.offsetParent).click())]);
+assert.ok(await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (e) => e.checked), 'back on the page 1, the row is checked');
+assert.equal(await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (b) => b.dataset.id), kept);
+await page.reload({waitUntil: 'networkidle0'});
+assert.ok(!(await visible(page, '.crudit-ui-selection-bar')), 'a reload starts from an empty selection');
+await page.click('tbody tr:nth-child(2) input[type=checkbox]');
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('.crudit-ui-table__sort[href*="client_sort=email"]')]);
+assert.ok(!(await visible(page, '.crudit-ui-selection-bar')), 'a sort starts from an empty selection');
+ok('selection: follows the pager only');
+// Clear
+page = await open(1440, '/client/');
+await page.click('tbody tr:first-child input[type=checkbox]');
+await page.click('[data-2lenet--crudit-ui-bundle--selection-bar-target=clearButton]');
+assert.ok(!(await visible(page, '.crudit-ui-selection-bar')), 'the bar is hidden once the selection is cleared');
+assert.ok(!(await page.$eval('tbody tr:first-child input[type=checkbox]', (e) => e.checked)), 'the row is unchecked');
+ok('selection: clear');
+
 // small screen: the cards (same fields), no table, no horizontal scroll of the page
 page = await open(360, '/client/');
 assert.ok(!(await visible(page, '.crudit-ui-table__table')) && await visible(page, '.crudit-ui-table__card'), 'cards below md');

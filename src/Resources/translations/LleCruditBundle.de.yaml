@@ -71,7 +71,6 @@ crudit:
         cancel: "Abbrechen"
         logout: "Abmelden"
         validate: "Valideren"
-        batch: "Massenaktion wählen"
         edit: "Bearbeiten"
         delete: "Löschen"
         show: "Anzeigen"
@@ -191,10 +190,6 @@ crudit:
             title: "Fehler 403"
             text: "Sie haben nicht die Rechte, auf diese Seite zuzugreifen. Sie können Ihre Navigation über den unten stehenden Link fortsetzen."
             link: "Zurück zur Übersicht"
-
-    text:
-        current_page: "Nur auf der aktuellen Seite"
-        all_page: "Auf allen Seiten"
 
     sortable:
         handle: "Zum Neuanordnen ziehen"

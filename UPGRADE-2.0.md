@@ -27,6 +27,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 6. [Review your `lle_crudit` configuration](#6-configuration) *(lots 2.1, 3.2)*
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
    - [Declare a tone per state of your workflows, replace your links to the transitions](#workflows-lot-34c) *(lot 3.4.c)*
+   - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` without effect](#7-template-overrides) *(lot 3.4.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
@@ -688,7 +689,7 @@ to add them.
   `data-bs-toggle="modal" data-bs-target="#<id>"`; in JavaScript, `document.getElementById(id).showModal()` instead
   of `bootstrap.Modal`.
 - The actions of Crudit open their modal with `commandfor` (lot 3.1.a), the workflows their confirmation too (lot
-  3.4.c). Until the batch actions (lot 3.1.c), `data-bs-toggle="modal" data-bs-target="#<id>"` and
+  3.4.c), and the batch actions (lot 3.1.c). `data-bs-toggle="modal" data-bs-target="#<id>"` and
   `data-bs-dismiss="modal"` still work: the controller `modal-bridge`, on `<body>`, opens and closes the dialog on a click. Yours work too, as long as
   the target is a `<dialog>` (`_base_modal`); a Bootstrap modal written by hand no longer does.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
@@ -774,8 +775,8 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   - the pager is shown below the table only, no more above (it comes back with lot 3.1.d).
 - Icons of the actions: a Font Awesome name of 1.x that has an equivalent in the design system is converted
   (`trash-alt`, `pencil`…), an Iconify name (`mdi:pencil`) is used as it is.
-- **Not in this lot** (the old markup stays for now): the pager (3.1.d), the batch actions (3.1.c: the selection boxes
-  and the bar of the batch actions are **not shown** until then), the filters (3.1.e). The sublist (3.3.c) still uses
+- **Not in this lot** (the old markup stays for now): the pager (3.1.d), the filters (3.1.e). The batch actions are
+  back with lot 3.1.c (see [Batch actions](#batch-actions-lot-31c)). The sublist (3.3.c) still uses
   the old templates (`list_items/_actions.html.twig` and `list_items/actions/*`).
 
 **Values of the fields** *(lot 3.4.a)*: `field/<type>.html.twig` keep their paths and their variables (`value`,
@@ -830,6 +831,60 @@ of a field is `crudit-value crudit-value--<type>` *(lot 3.4.a)*. `crudit-flash` 
 configuration (a tone, a hue of the extended palette, or a colour of the project: `--c-<name>-bg` / `--c-<name>-text`
 and the rule `.crudit-ui-tone--<name>`), see [Workflows](#workflows-lot-34c). Edit in place `crudit-eip-*`:
 renamed *(lot 3.4.b)*.
+
+### Batch actions *(lot 3.1.c)*
+
+The actions declared with `setIsBatch()` are back (they were not shown between lots 3.1.b and 3.1.c): a box on each row
+and in the header, and a bar stuck at the bottom of the screen (`LleCruditUi:SelectionBar`) that says "3 rows selected"
+(read aloud by screen readers), offers "Select all N results" when the whole page is checked and the list has more
+results, and has a "Deselect all" button.
+
+- **Enable the controller** `selection-bar` in your `assets/controllers.json`, in `@2lenet/crudit-ui-bundle`
+  (`"selection-bar": {"enabled": true, "fetch": "eager"}`), then `bin/console cache:clear` (AssetMapper) or rebuild
+  (Encore). Without it, the boxes are shown but the bar never appears. The Flex recipe of 2.0 adds it.
+- **The contract of the 1.x is kept**: an action receives `ids` (separated by commas) and `all_page` (`1` when "all the
+  results" is chosen, else `0`). A plain action gets them in its address (`?ids=1,2,3&all_page=0`); an action with
+  `setForm()` opens the form in a dialog, its fields `ids` and `all_page` filled when it is sent; `setConfirmModal()`
+  asks for confirmation in a dialog that names the action.
+- **Actions with `setModal()`** (free content) now receive the selection too, which they did not in 1.x. When the dialog
+  opens, the bar fills in it the fields marked `data-selection-field="ids"` and `data-selection-field="all_page"`, the
+  links marked `data-selection-link` (in their address), and sets `data-ids` and `data-all-page` on the `<dialog>`; the
+  event `crudit-ui:selection` (`detail.ids`, `detail.allPage`) is for a script of yours:
+
+  ```twig
+  <form method="post" action="{{ path(action.path.route, params) }}">
+      <input type="hidden" name="ids" data-selection-field="ids">
+      <input type="hidden" name="all_page" data-selection-field="all_page">
+      …
+  </form>
+  ```
+- **The selection follows the pager only**: checked rows stay checked when the user goes to another page, so she can select
+  on several pages. A sort, a filter, a reload, a return to the list or running an action start from an empty selection
+  (acting on rows the user no longer sees is dangerous). "All the results" is kept the same way. The pager must
+  change only the page parameter (`page` or `<list>_offset`).
+- **Template of an action** (`setTemplate()`): it is supported again, with a new role. In 1.x it was the markup of the
+  action in the dropdown of the batch actions; it is now **the button of the bar, in its place**. Variables: `action`,
+  `params`, `form`, `view`, `list`, `item` (the data of the action) and `dialog` (the id of its dialog). To open the
+  dialog of a form, a modal or a confirmation, use `commandfor="{{ dialog }}" command="show-modal"` on a `<button>`; for a
+  link that carries the selection, `data-action="click->2lenet--crudit-ui-bundle--selection-bar#fill"`.
+- **Icon only** (`setHideLabel(true)` with an icon): the bar shows the icon, and the label stays for the screen readers.
+  `setCssClass()` has no effect on a batch action any more (`setVariant()`).
+- **Free modal** (`setModal()`): its **id** is `modal_<id of the action>`, the same form as the modals of the lines. The id of an action is generated
+  (not stable, not predictable): do not target `#modal_xxx` by hand, use the button of the action (`commandfor`). The dialogs
+  of the forms and confirmations, `batch-<view>-<n>`, are new. The template of the modal sees `action`, `id`,
+  `params` and now `view`, `list` and `item`, but **not the rest of the context of the page** (it did in 1.x): pass what
+  it needs through the view or the action.
+- **The form of an action** is sent to `item.url`, the address of the action **with its parameters** (`Path::new(route,
+  params)`, or `setUrl()`); 1.x sent it to `path(route)` without parameters.
+- **A big selection** (the pager keeps it from a page to the other) makes a long address for an action that is a link:
+  for such an action (an export of thousands of rows…), prefer an action with a form (`setForm()`) or a modal with a
+  `<form method="post">`.
+- **Removed**: the translations `crudit.action.batch`, `crudit.text.current_page` and `crudit.text.all_page`.
+- **Removed**: `assets/sb-admin/js/batch_actions.js` (and its import in `app.js`), `list_items/actions/_batch_action.html.twig`
+  and `_batch_actions.html.twig`. The block of the batch actions is `list_items/_batch.html.twig`: override it to change
+  the buttons.
+- **Id of the table**: the `<table>` of a list has now the id `<view id>_table` (it had the one of the view, which the
+  wrapper of the brick already has: an id must be unique). Update a CSS or JS of yours that targeted it.
 
 ### Workflows *(lot 3.4.c)*
 
@@ -892,6 +947,7 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
 - The modules of `assets/sb-admin/js` are removed. The behavior is provided by Stimulus controllers.
 - New controller `print` (`PrintAction`, lot 3.1.a): enable it in your `assets/controllers.json`, as the other
   controllers of `@2lenet/crudit-bundle`.
+- New controller `selection-bar` (batch actions, lot 3.1.c): enable it in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`.
 - New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
   `initChoiceTomSelect`…) no longer works. *Replacement to be filled (lot 3.2.c).*

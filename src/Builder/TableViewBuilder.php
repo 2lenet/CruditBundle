@@ -36,7 +36,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *
  * The action `EditAction` is the one shown as an icon, the others are in the menu "More actions" of the row.
  *
- * Left to the next lots: the selection and the bar of the batch actions (3.1.c), the pager (3.1.d), the filters (3.1.e).
+ * - `selectable`, `batch`, `total`: the selection and the batch actions (`setIsBatch()`), for the SelectionBar. `batch` holds
+ *   the allowed actions (`{id, label, icon, hideLabel, variant, kind, url, target, form, modal, template, action, params,
+ *   confirmText}`; `kind`: `link`, `form`, `modal` (own template) or `confirm`); `id` is the one of its dialog (unique in
+ *   the page; `modal_<id of the action>` for a modal of its own, as in 1.x); `template` replaces the button of the bar
+ *   (`setTemplate()`); `total` is the number of results of the list, all pages.
+ *
+ * Left to the next lots: the pager (3.1.d), the filters (3.1.e).
  */
 class TableViewBuilder
 {
@@ -137,8 +143,14 @@ class TableViewBuilder
         }
         unset($group);
 
+        $batch = $this->batch($data['batch_actions'] ?? [], $view->getId(), $domain);
+
         return [
-            'id' => $view->getId(),
+            'selectable' => $batch !== [],
+            'batch' => $batch,
+            'total' => (int) (($config['datasource_params'] ?? null)?->getCount() ?? 0),
+            // not the id of the view: the wrapper of the brick (crud/_bricks) carries it, an id is unique in a page
+            'id' => $view->getId() . '_table',
             'caption' => $this->caption($config, $fields, $domain, $sortField, $sortDir),
             'columns' => $columns,
             'rows' => $rows,
@@ -370,6 +382,58 @@ class TableViewBuilder
                 : null,
             'attr' => $disabled ? [] : $this->actionExtension->actionAttributes($item, $domain),
         ];
+    }
+
+    /**
+     * The batch actions the user may use, for the SelectionBar. A form is the Symfony view built by the ListFactory.
+     *
+     * @param array<int, array{action: AbstractAction, form: mixed}> $batchActions
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function batch(array $batchActions, string $viewId, ?string $domain): array
+    {
+        $built = [];
+        foreach ($batchActions as $key => $item) {
+            $action = $item['action'];
+            $form = $item['form'] ?: null;
+            $role = $action->getPath()->getRole();
+            $actionRole = $action->getRole();
+            $denied = ($role !== null && !$this->authorizationChecker->isGranted($role))
+                || ($actionRole !== null && !$this->authorizationChecker->isGranted($actionRole));
+            if ($denied || !$action->isDisplayed()) {
+                continue;
+            }
+
+            $params = $action->getPath()->getParams();
+            $url = $action->getUrl() ?? $this->urlGenerator->generate($action->getPath()->getRoute(), $params);
+            $label = $this->translator->trans($action->getLabel(), [], $action->getTranslationDomain() ?? $domain);
+            $kind = match (true) {
+                $form !== null => 'form',
+                $action->getModal() !== null => 'modal',
+                $action->getConfirmModal() => 'confirm',
+                default => 'link',
+            };
+
+            $built[] = [
+                'id' => $kind === 'modal' ? 'modal_' . $action->getId() : 'batch-' . $viewId . '-' . $key,
+                'label' => $label,
+                'icon' => $this->icon($action),
+                'hideLabel' => $action->isHideLabel(),
+                'variant' => $action->getVariant(),
+                'kind' => $kind,
+                'url' => $url,
+                'target' => $action->getTarget(),
+                'form' => $form,
+                'modal' => $action->getModal(),
+                'template' => $action->getTemplate(),
+                'action' => $action,
+                'params' => $params,
+                'confirmText' => $kind === 'confirm' ? $this->translator->trans('modal.confirm.' . $action->getLabel(), [], $domain) : null,
+            ];
+        }
+
+        return $built;
     }
 
     /** The logical name of the design system when the icon has one, else the name given (an Iconify name `set:name`). */

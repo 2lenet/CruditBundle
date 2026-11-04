@@ -60,22 +60,21 @@
                 <twig:LleCruditUi:Menu aria-label="{{ wf_menu }}">
                     {%- for wf_transition in wf_transitions -%}
                         {%- set wf_to = ('wf.state.' ~ wf_transition.to.place)|trans -%}
-                        {%- component 'LleCruditUi:MenuItem' with {
-                            commandfor: 'crudit-confirm',
-                            command: 'show-modal',
-                            'data-transition': wf_transition.name,
-                            'data-to': wf_to,
-                            'data-confirm-dispatch': true,
-                            'data-confirm-text': wf_entity != ''
-                                ? 'crudit.workflow.question_entity'|trans({'%entity%': wf_entity, '%state%': wf_to}, 'LleCruditBundle')
-                                : 'crudit.workflow.question'|trans({'%state%': wf_to}, 'LleCruditBundle'),
-                            'data-confirm-label': 'crudit.workflow.confirm'|trans(domain: 'LleCruditBundle'),
-                            'data-confirm-danger': wf_transition.danger,
-                        } -%}
-                            {%- block content -%}
-                                <twig:LleCruditUi:Status tone="{{ wf_transition.to.tone }}" size="small">{{ wf_to }}</twig:LleCruditUi:Status>
-                            {%- endblock -%}
-                        {%- endcomponent -%}
+                        {%- set wf_confirm = wf_entity != ''
+                            ? 'crudit.workflow.question_entity'|trans({'%entity%': wf_entity, '%state%': wf_to}, 'LleCruditBundle')
+                            : 'crudit.workflow.question'|trans({'%state%': wf_to}, 'LleCruditBundle') -%}
+                        <twig:LleCruditUi:MenuItem
+                            commandfor="crudit-confirm"
+                            command="show-modal"
+                            data-transition="{{ wf_transition.name }}"
+                            data-to="{{ wf_to }}"
+                            :data-confirm-dispatch="true"
+                            data-confirm-text="{{ wf_confirm }}"
+                            data-confirm-label="{{ 'crudit.workflow.confirm'|trans(domain: 'LleCruditBundle') }}"
+                            :data-confirm-danger="wf_transition.danger"
+                        >
+                            <twig:LleCruditUi:Status tone="{{ wf_transition.to.tone }}" size="small">{{ wf_to }}</twig:LleCruditUi:Status>
+                        </twig:LleCruditUi:MenuItem>
                     {%- endfor -%}
                 </twig:LleCruditUi:Menu>
             {%- endblock -%}

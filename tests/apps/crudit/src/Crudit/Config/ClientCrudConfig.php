@@ -7,6 +7,7 @@ namespace App\Crudit\Config;
 use App\Crudit\Datasource\ClientDatasource;
 use App\Entity\Client;
 use App\Enum\Priority;
+use App\Form\ClientBatchType;
 use App\Form\ClientType;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
@@ -95,6 +96,23 @@ class ClientCrudConfig extends AbstractCrudConfig
         $actions['archive'] = ListAction::new('action.archive_inactive', $this->action('archive'), Icon::new('delete'))
             ->setDropdown(true)
             ->setGroup('group.maintenance')
+            ->setVariant('danger')
+            ->setConfirmModal(true);
+        // Lot 3.1.c: the batch actions of the SelectionBar: a link, a form in a dialog, a confirmation
+        $actions['batch_export'] = ListAction::new('action.batch_export', Path::new('app_client_batch', ['action' => 'export']), Icon::new('download'))
+            ->setIsBatch()
+            ->setHideLabel(true);
+        $actions['batch_custom'] = ListAction::new('action.batch_custom', Path::new('app_client_batch', ['action' => 'custom']), Icon::new('send'))
+            ->setIsBatch()
+            ->setTemplate('client/_batch_custom_button.html.twig');
+        $actions['batch_status'] = ListAction::new('action.batch_status', Path::new('app_client_batch', ['action' => 'status']), Icon::new('edit'))
+            ->setIsBatch()
+            ->setForm(ClientBatchType::class);
+        $actions['batch_message'] = ListAction::new('action.batch_message', Path::new('app_client_batch', ['action' => 'message']), Icon::new('send'))
+            ->setIsBatch()
+            ->setModal('client/_batch_message_modal.html.twig');
+        $actions['batch_archive'] = ListAction::new('action.batch_archive', Path::new('app_client_batch', ['action' => 'archive']), Icon::new('delete'))
+            ->setIsBatch()
             ->setVariant('danger')
             ->setConfirmModal(true);
         $actions['purge'] = ListAction::new('action.purge', $this->action('purge'))

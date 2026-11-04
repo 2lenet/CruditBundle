@@ -55,6 +55,11 @@ action:
     report_month: "Report of the month"
     report_custom: "Custom report"
     about: "About"
+    batch_export: "Export"
+    batch_custom: "Custom button"
+    batch_status: "Change the status"
+    batch_archive: "Archive"
+    batch_message: "Send a message"
     archive_inactive: "Archive the inactive clients"
     purge: "Purge the history"
     send_email: "Send an e-mail"
@@ -67,6 +72,7 @@ modal:
     confirm:
         action:
             archive_inactive: "Archive all the inactive clients?"
+            batch_archive: "Archive the selected clients?"
 client:
     priority:
         low: "Low"
@@ -85,6 +91,8 @@ client:
         title: "About the clients"
         text: "The clients of the test application."
         close: "Close"
+    batch_message:
+        title: "Message to the selected clients"
     email:
         title: "Send an e-mail"
         subject: "Subject"
