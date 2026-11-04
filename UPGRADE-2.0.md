@@ -869,8 +869,9 @@ results, and has a "Deselect all" button.
   link that carries the selection, `data-action="click->2lenet--crudit-ui-bundle--selection-bar#fill"`.
 - **Icon only** (`setHideLabel(true)` with an icon): the bar shows the icon, and the label stays for the screen readers.
   `setCssClass()` has no effect on a batch action any more (`setVariant()`).
-- **Free modal** (`setModal()`): its **id** is `modal_<id of the action>` as in 1.x (it was not the one of the dialogs
-  of the forms and confirmations, `batch-<view>-<n>`, which are new). The template of the modal sees `action`, `id`,
+- **Free modal** (`setModal()`): its **id** is `modal_<id of the action>`, the same form as the modals of the lines. The id of an action is generated
+  (not stable, not predictable): do not target `#modal_xxx` by hand, use the button of the action (`commandfor`). The dialogs
+  of the forms and confirmations, `batch-<view>-<n>`, are new. The template of the modal sees `action`, `id`,
   `params` and now `view`, `list` and `item`, but **not the rest of the context of the page** (it did in 1.x): pass what
   it needs through the view or the action.
 - **The form of an action** is sent to `item.url`, the address of the action **with its parameters** (`Path::new(route,
