@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\FilterBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
+use Lle\CruditBundle\Builder\FilterViewBuilder;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Dto\BrickView;
@@ -17,16 +18,19 @@ class FilterFactory extends AbstractBasicBrickFactory
 {
     private FilterState $filterState;
     private Security $security;
+    private FilterViewBuilder $filterViewBuilder;
 
     public function __construct(
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         FilterState $filterState,
         Security $security,
+        FilterViewBuilder $filterViewBuilder,
     ) {
         parent::__construct($resourceResolver, $requestStack);
         $this->filterState = $filterState;
         $this->security = $security;
+        $this->filterViewBuilder = $filterViewBuilder;
     }
 
     public function support(BrickConfigInterface $brickConfigurator): bool
@@ -42,11 +46,14 @@ class FilterFactory extends AbstractBasicBrickFactory
             $filterset = $brickConfigurator->getCrudConfig()->getFilterset();
             $view
                 ->setTemplate($brickConfigurator->getTemplate() ?? '@LleCrudit/brick/filter')
-                ->setConfig($brickConfigurator->getConfig($this->getRequest()))
-                ->setData([
-                    'filters' => $this->buildFilterMap($filterset),
-                    'filterset' => $filterset,
-                ]);
+                ->setConfig($brickConfigurator->getConfig($this->getRequest()));
+            $filters = $this->buildFilterMap($filterset);
+            $view->setData([
+                'filters' => $filters,
+                'filterset' => $filterset,
+                // The props of the Filter:Bar of CruditUiBundle (FilterViewBuilder).
+                'bar' => $this->filterViewBuilder->build($filterset, $filters, $view),
+            ]);
         }
 
         return $view;

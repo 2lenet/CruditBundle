@@ -1,9 +1,0 @@
-{% extends '@LleCrudit/filter/state/_base_filter.html.twig' %}
-
-{% block value %}
-    <span class="badge bg-secondary">
-        {{ data.value is defined and data.value != '' ? data.value|ui_date('short') : '...' }}
-        -
-        {{ data.to is defined and data.to != '' ? data.to|ui_date('short') : '...' }}
-    </span>
-{% endblock %}

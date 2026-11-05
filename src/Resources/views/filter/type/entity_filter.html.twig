@@ -1,24 +1,16 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
+{# A list of boxes: `<id>_value[]`. `choices`: the list of {value, label}. #}
 {% block input %}
-    {% if data.items is not defined and data.value is defined and data.value != '' %}
-        {% set data = data|merge({
-            items: data.value|split(',')|map((v) => entity_id_to_tomselect(v, filter.entityClass))|json_encode
-        }) %}
-    {% endif %}
-
-    <div class="form-floating">
-        <input type="hidden" id="input_{{ id|replace({':': "_"}) }}_items" name="{{ id }}_items"
-               value="{{ data["items"]|default("[]")|escape('html_attr') }}"/>
-        <input id="input_{{ id|replace({':': "_"}) }}"
-               class="form-control entity-select"
-               name="{{ id }}_value"
-               value="{{ data['value']|default('') }}"
-               placeholder=""
-               autocomplete="new-password"
-               data-url="{{ path(filter.dataRoute) }}"
-               data-options="{{ data["items"]|default("[]")|escape('html_attr') }}"
-        />
-        <label>{{ filter.label|trans(domain=view.config.translation_domain) }}</label>
-    </div>
+    {% set chosen = value ? value|split(',') : [] %}
+    <ul class="crudit-ui-filter-field__choices">
+        {% for choice in choices %}
+            <li>
+                <label class="crudit-ui-filter-field__choice">
+                    <input type="checkbox" name="{{ id }}_value[]" value="{{ choice.value }}"{{ choice.value in chosen ? ' checked' : '' }}>
+                    <span>{{ choice.label }}</span>
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

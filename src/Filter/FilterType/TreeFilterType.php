@@ -22,10 +22,6 @@ class TreeFilterType extends EntityFilterType
         parent::apply($queryBuilder);
     }
 
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/entity_filter.html.twig';
-    }
 
     public function getTemplate(): string
     {

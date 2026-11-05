@@ -11,6 +11,9 @@ class EntityFilterType extends AbstractFilterType
 
     protected ?string $dataRoute;
 
+    /** @var (callable(QueryBuilder, string): void)|null */
+    protected $choicesQuery = null;
+
     public static function new(string $fieldname, string $entityClass, ?string $dataRoute = null): static
     {
         return (new static($fieldname))
@@ -35,6 +38,28 @@ class EntityFilterType extends AbstractFilterType
         $this->dataRoute = $dataRoute;
 
         return $this;
+    }
+
+    /**
+     * Restricts the entities the filter lists (rights, tenant, archived ones…): `function (QueryBuilder $qb, string $alias): void`
+     * adds its conditions to the query of the entity. The list of the bar no longer goes through the autocomplete route
+     * (`dataRoute`), so a restriction made in the controller of that route does not apply to it: give it here.
+     *
+     * @param (callable(QueryBuilder, string): void)|null $choicesQuery
+     */
+    public function setChoicesQuery(?callable $choicesQuery): static
+    {
+        $this->choicesQuery = $choicesQuery;
+
+        return $this;
+    }
+
+    /**
+     * @return (callable(QueryBuilder, string): void)|null
+     */
+    public function getChoicesQuery(): ?callable
+    {
+        return $this->choicesQuery;
     }
 
     public function getOperators(): array

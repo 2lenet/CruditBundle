@@ -1073,6 +1073,71 @@ for (const dark of [false, true]) {
 }
 ok('fields: alignment, two lines in a cell, values of a record');
 
+// ---------- Filters (lot 3.1.e): the bar, the panel, the chips; the state is kept by the server (session)
+const rowsOf = (page) => page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows.length);
+const filterNav = async (page, action) => {
+    await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), action()]);
+};
+page = await open(1440, '/client/');
+const allRows = await rowsOf(page);
+assert.ok(allRows > 1, 'the list has rows');
+assert.equal(await attr(page, 'main form.crudit-ui-filter-bar', 'role'), 'search');
+// A main filter applies at once, typed text after a pause.
+await page.click('[data-filter-quick="name"] button[aria-expanded]');
+await filterNav(page, () => page.type('[name="filter_client_name_value"]', 'Client 0'));
+assert.ok((await rowsOf(page)) < allRows, 'the list is filtered');
+assert.ok(page.url().includes('filter_client_name_value=Client+0') || page.url().includes('filter_client_name_value=Client%200'), 'the filter is in the address of the form');
+assert.ok(await visible(page, '[data-filter-quick="name"] .crudit-ui-filter-bar__quick-button--active'), 'the main filter shows it is active');
+// Found again without a parameter after another page: still filtered (the session).
+const filtered = await rowsOf(page);
+await page.goto(base + '/client/', {waitUntil: 'networkidle0'});
+assert.equal(await rowsOf(page), filtered, 'the filter is kept in the session');
+assert.equal(await page.$eval('[name="filter_client_name_value"]', (input) => input.value), 'Client 0');
+ok('filters: a main filter applies at once and is kept');
+// The panel: in the page, not modal, kept open after a reload.
+await page.click('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]');
+assert.deepEqual(await page.evaluate(() => {
+    const panel = document.querySelector('dialog.crudit-ui-filter-panel');
+    return [panel.open, panel.matches(':modal'), document.querySelector('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]').getAttribute('aria-expanded')];
+}), [true, false, 'true'], 'filters: the panel opens in the page');
+await new Promise((resolve) => setTimeout(resolve, 400));
+await shot(page, 'filters-panel');
+await axe(page, 'filters, panel open');
+// A filter of the panel applies with "Apply", and is a chip.
+await page.click('dialog.crudit-ui-filter-panel label:has([name="filter_client_active_value"][value="true"])');
+await filterNav(page, () => page.click('dialog.crudit-ui-filter-panel button[type="submit"]'));
+assert.ok(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open), 'filters: the panel stays open after Apply');
+assert.equal(await page.$$eval('main ul.crudit-ui-chips > li', (chips) => chips.length), 1, 'filters: one chip, the name is a main filter');
+assert.ok((await page.$eval('main ul.crudit-ui-chips > li', (chip) => chip.textContent)).includes('Active'), 'filters: the chip names its filter');
+// The chip removes its filter.
+await filterNav(page, () => page.click('main ul.crudit-ui-chips button.crudit-ui-chip__remove'));
+assert.equal(await page.$$eval('main ul.crudit-ui-chips > li', (chips) => chips.length), 0, 'filters: the chip is gone');
+assert.equal(await page.$eval('[name="filter_client_name_value"]', (input) => input.value), 'Client 0', 'filters: the other filter stays');
+// Reset: the link of the panel.
+await filterNav(page, () => page.click('dialog.crudit-ui-filter-panel a[href*="client_reset=1"]'));
+assert.equal(await rowsOf(page), allRows, 'filters: reset brings all the rows back');
+ok('filters: the panel, a chip, reset');
+await page.close();
+// A phone: the main filters are in the side panel, modal.
+page = await open(360, '/client/');
+await page.click('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]');
+await new Promise((resolve) => setTimeout(resolve, 400));
+assert.deepEqual(await page.evaluate(() => {
+    const panel = document.querySelector('dialog.crudit-ui-filter-panel');
+    return [panel.matches(':modal'), panel.querySelector('[name="filter_client_name_value"]') !== null, document.documentElement.scrollWidth <= window.innerWidth];
+}), [true, true, true], 'filters: a modal panel with the main filters on a phone');
+await shot(page, 'filters-phone');
+await axe(page, 'filters, phone');
+await page.close();
+for (const [dark, rtl] of [[true, false], [false, true]]) {
+    page = await open(1440, '/client/', {dark, rtl});
+    await page.click('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]');
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    await axe(page, `filters, panel open${dark ? ', dark' : ''}${rtl ? ', right to left' : ''}`);
+    await page.close();
+}
+ok('filters: a phone, dark, right to left');
+
 // ---------- Turbo cache hook / reduced motion: no errors
 console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
 console.log(`${passed} checks passed`);

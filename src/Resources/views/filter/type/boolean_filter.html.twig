@@ -1,16 +1,13 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
+{# All / Yes / No, sent as `all`, `true` or `false`. #}
 {% block input %}
-    <div class="form-floating">
-        <select class="form-control" name="{{ id }}_value" id="input_{{ id }}">
-            <option value="all">{{ 'crudit.boolean.all'|trans({}, 'LleCruditBundle') }}</option>
-            <option
-                value="true" {% if filtertype.isSelected(data, 'true') %} selected="selected" {% endif %}>{{ 'crudit.boolean.yes'|trans({}, 'LleCruditBundle') }}</option>
-            <option
-                value="false" {% if filtertype.isSelected(data, 'false') %} selected="selected" {% endif %}>{{ 'crudit.boolean.no'|trans({}, 'LleCruditBundle') }}</option>
-        </select>
-        <label for="input_{{ id }}">
-            {{ filter.label|trans(domain=view.config.translation_domain) }}
-        </label>
+    <div class="crudit-ui-filter-field__segmented">
+        {% for option, text in {'all': 'crudit.boolean.all', 'true': 'crudit.boolean.yes', 'false': 'crudit.boolean.no'} %}
+            <label class="crudit-ui-filter-field__segment">
+                <input class="crudit-ui-filter-field__radio" type="radio" name="{{ id }}_value" value="{{ option }}"{{ (value ?: 'all') == option ? ' checked' : '' }}>
+                <span>{{ text|trans({}, 'LleCruditBundle') }}</span>
+            </label>
+        {% endfor %}
     </div>
 {% endblock %}

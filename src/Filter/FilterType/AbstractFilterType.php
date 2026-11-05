@@ -12,6 +12,7 @@ abstract class AbstractFilterType implements FilterTypeInterface
 {
     protected string $columnName;
     protected bool $hidden = false;
+    protected bool $primary = false;
     protected array $additionnalKeys = [];
     protected string $alias = 'root.';
     protected string $id;
@@ -85,6 +86,22 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->alias;
     }
 
+    /**
+     * A main filter: in the bar of the list (a button, applied at once), the others being in the panel of the filters.
+     * None is main by default.
+     */
+    public function isPrimary(): bool
+    {
+        return $this->primary;
+    }
+
+    public function setPrimary(bool $primary = true): static
+    {
+        $this->primary = $primary;
+
+        return $this;
+    }
+
     public function isHidden(): bool
     {
         return $this->hidden;
@@ -117,6 +134,9 @@ abstract class AbstractFilterType implements FilterTypeInterface
         return $this->default;
     }
 
+    /**
+     * @deprecated since 2.0: no longer rendered (the chips are drawn by the Filter:Bar of CruditUiBundle).
+     */
     public function getStateTemplate(): string
     {
         $fqcn = get_class($this);
