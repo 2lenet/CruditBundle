@@ -41,6 +41,10 @@ class ChoiceFilterType extends AbstractFilterType
         }
     }
 
+    /**
+     * Kept for the 1.x: the list of the bar is always boxes (the condition "is one of" takes one value or several), so
+     * `multiple` changes nothing there.
+     */
     public function setMultiple(bool $isMultiple): void
     {
         $this->multiple = $isMultiple;

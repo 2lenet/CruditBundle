@@ -7,6 +7,7 @@ namespace phpunit\Unit\Filter;
 use Lle\CruditBundle\Datasource\AbstractFilterSet;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Filter\FilterType\ChoiceFilterType;
+use Lle\CruditBundle\Filter\FilterType\DateTimeFilterType;
 use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
 use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use PHPUnit\Framework\TestCase;
@@ -40,6 +41,7 @@ class FilterStateTest extends TestCase
                     StringFilterType::new('name'),
                     ChoiceFilterType::new('status', ['a' => 'a', 'b' => 'b', 'c' => 'c'], true)->setAdditionnalKeys(['items']),
                     NumberFilterType::new('amount'),
+                    DateTimeFilterType::new('seen'),
                 ];
             }
         };
@@ -69,6 +71,21 @@ class FilterStateTest extends TestCase
         $this->send(['filter_client_name_op' => 'contains', 'filter_client_name_value' => 'bob']);
 
         self::assertSame(['op' => 'contains', 'value' => 'bob'], $this->data('name'));
+    }
+
+    public function testADateTimeOfTheBarKeepsItsTimeInTheValue(): void
+    {
+        $this->send(['filter_client_seen_op' => 'eq', 'filter_client_seen_value' => '2026-11-05T10:30']);
+
+        // `time` is an additional key: not sent, so emptied; the filter reads the time in the value.
+        self::assertSame(['op' => 'eq', 'value' => '2026-11-05T10:30', 'time' => ''], $this->data('seen'));
+    }
+
+    public function testADateTimeOfALinkOfThe1xKeepsItsTime(): void
+    {
+        $this->send(['filter_client_seen_op' => 'eq', 'filter_client_seen_value' => '2026-11-05', 'filter_client_seen_time' => '10:30:00']);
+
+        self::assertSame(['op' => 'eq', 'value' => '2026-11-05', 'time' => '10:30:00'], $this->data('seen'));
     }
 
     public function testAListIsJoinedWithCommas(): void

@@ -43,6 +43,9 @@ class FilterViewBuilder
     /** The most choices of an entity filter: the list is native until the autocomplete of the form (lot 3.2.c). */
     public const MAX_CHOICES = 200;
 
+    /** @var array<string, bool> whether the project replaces the default template, by template */
+    private array $customized = [];
+
     /** The types of CruditBundle, the most specific first: the type of the field, the family of the default template. */
     private const TYPES = [
         [WorkflowFilterType::class, 'choice', 'workflow'],
@@ -104,15 +107,43 @@ class FilterViewBuilder
             $items[] = $this->item($setId, $filter, $view, $domain);
         }
 
-        $path = $this->requestStack->getCurrentRequest()?->getPathInfo() ?? '';
-
         return [
             'id' => 'crudit-filters-' . $setId,
             'label' => $this->translator->trans('crudit.filter.region', ['%title%' => (string) ($config['title'] ?? '')], 'LleCruditBundle'),
             'filters' => $items,
-            'resetUrl' => $path . '?' . $setId . '_reset=1',
+            'resetUrl' => $this->resetUrl($setId),
             'applyName' => $setId . '_filter',
         ];
+    }
+
+    /**
+     * The address that brings the filters of this set back to their defaults: the current page (with the base URL of
+     * the application) and its other parameters (another list, a tab), without the ones of this set's filters.
+     */
+    private function resetUrl(string $setId): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $query = [];
+        foreach ($request?->query->all() ?? [] as $name => $value) {
+            if (!str_starts_with((string) $name, 'filter_' . $setId . '_') && !in_array($name, [$setId . '_filter', $setId . '_reset'], true)) {
+                $query[$name] = $value;
+            }
+        }
+        $query[$setId . '_reset'] = '1';
+
+        return ($request?->getBaseUrl() ?? '') . ($request?->getPathInfo() ?? '') . '?' . http_build_query($query);
+    }
+
+    /**
+     * The label of a state of a workflow: in the translation domain of the list, else in the default one (where the
+     * `wf.state.<place>` of a project usually are).
+     */
+    private function workflowLabel(string $place, ?string $domain): string
+    {
+        $key = 'wf.state.' . $place;
+        $label = $this->translator->trans($key, [], $domain);
+
+        return ($label === $key && $domain !== null) ? $this->translator->trans($key) : $label;
     }
 
     /**
@@ -128,6 +159,11 @@ class FilterViewBuilder
         $operator = (string) ($data['op'] ?? $first);
         $value = $data['value'] ?? null;
         $value = is_scalar($value) ? (string) $value : null;
+        // The 1.x kept the date in `value` and the time in `time`: the field of the bar is one datetime-local.
+        if ($filter instanceof DateTimeFilterType && $value !== null && $value !== '' && !str_contains($value, 'T') && !str_contains($value, ' ')) {
+            $time = isset($data['time']) && is_scalar($data['time']) ? trim((string) $data['time']) : '';
+            $value = $value . 'T' . ($time !== '' ? $time : '00:00');
+        }
         $to = isset($data['to']) && is_scalar($data['to']) ? (string) $data['to'] : null;
 
         [$type] = $this->type($filter) ?? ['legacy'];
@@ -169,9 +205,6 @@ class FilterViewBuilder
                 'to' => $to,
                 'choices' => $choices,
             ];
-            if ($item['summary'] === '' && $item['active']) {
-                $item['summary'] = (string) $value;
-            }
         }
 
         return $item;
@@ -198,6 +231,18 @@ class FilterViewBuilder
      */
     private function isCustomized(FilterTypeInterface $filter): bool
     {
+        $template = $filter->getTemplate();
+        $key = ($this->type($filter)[1] ?? '') . '|' . $template;
+
+        return $this->customized[$key] ??= $this->templateIsCustomized($filter, $template);
+    }
+
+    /**
+     * Only a file in `templates/bundles/LleCruditBundle/` is seen as a replacement: a Twig path of the project that
+     * shadows the bundle in another way is not, give the filter `setTemplate()` then.
+     */
+    private function templateIsCustomized(FilterTypeInterface $filter, string $template): bool
+    {
         $family = ($this->type($filter) ?? [null, null])[1];
         if ($family === null) {
             return true;
@@ -206,7 +251,6 @@ class FilterViewBuilder
         if ($family === 'tree') {
             $defaults[] = '@LleCrudit/filter/type/entity_filter.html.twig';
         }
-        $template = $filter->getTemplate();
         if (!in_array($template, $defaults, true)) {
             return true;
         }
@@ -247,13 +291,13 @@ class FilterViewBuilder
         $choices = [];
         if ($filter instanceof WorkflowFilterType) {
             foreach ($filter->getChoices() as $place) {
-                $choices[] = ['value' => (string) $place, 'label' => $this->translator->trans('wf.state.' . $place)];
+                $choices[] = ['value' => (string) $place, 'label' => $this->workflowLabel((string) $place, $domain)];
             }
         } elseif ($filter instanceof EntityFilterType) {
             $choices = $this->entityChoices($filter, $value);
         } elseif ($filter instanceof ChoiceFilterType) {
             foreach ($filter->getChoices() as $label => $choice) {
-                $choices[] = ['value' => (string) $choice, 'label' => $this->translator->trans((string) $label, [], $domain)];
+                $choices[] = ['value' => (string) ($choice instanceof \BackedEnum ? $choice->value : $choice), 'label' => $this->translator->trans((string) $label, [], $domain)];
             }
         }
 
@@ -261,7 +305,8 @@ class FilterViewBuilder
     }
 
     /**
-     * The first MAX_CHOICES entities by label, and the ones chosen even when they are beyond.
+     * The first MAX_CHOICES entities (by identifier, then sorted by label), and the ones chosen even when they are
+     * beyond, in one query. `EntityFilterType::setChoicesQuery()` restricts both.
      *
      * @return list<array{value: string, label: string}>
      */
@@ -269,13 +314,17 @@ class FilterViewBuilder
     {
         /** @var class-string $class */
         $class = $filter->getEntityClass();
+        $idField = $this->entityManager->getClassMetadata($class)->getSingleIdentifierFieldName();
+        $chosen = array_values(array_filter(explode(',', (string) $value), static fn (string $id): bool => $id !== ''));
+
         $choices = [];
-        foreach ($this->entityManager->getRepository($class)->findBy([], null, self::MAX_CHOICES) as $entity) {
+        foreach ($this->entities($filter, $class, $idField, null) as $entity) {
             $choices[$this->entityId($entity)] = $this->entityLabel($entity);
         }
-        foreach (array_filter(explode(',', (string) $value), static fn (string $id): bool => $id !== '') as $id) {
-            if (!isset($choices[$id]) && ($entity = $this->entityManager->find($class, $id)) !== null) {
-                $choices[$id] = $this->entityLabel($entity);
+        $missing = array_values(array_filter($chosen, static fn (string $id): bool => !isset($choices[$id])));
+        if ($missing !== []) {
+            foreach ($this->entities($filter, $class, $idField, $missing) as $entity) {
+                $choices[$this->entityId($entity)] = $this->entityLabel($entity);
             }
         }
         asort($choices, SORT_NATURAL | SORT_FLAG_CASE);
@@ -286,6 +335,27 @@ class FilterViewBuilder
         }
 
         return $list;
+    }
+
+    /**
+     * @param class-string $class
+     * @param list<string>|null $ids the entities to load, or the first MAX_CHOICES when null
+     *
+     * @return iterable<object>
+     */
+    private function entities(EntityFilterType $filter, string $class, string $idField, ?array $ids): iterable
+    {
+        $queryBuilder = $this->entityManager->getRepository($class)->createQueryBuilder('e');
+        if ($ids === null) {
+            $queryBuilder->orderBy('e.' . $idField)->setMaxResults(self::MAX_CHOICES);
+        } else {
+            $queryBuilder->andWhere('e.' . $idField . ' IN (:ids)')->setParameter('ids', $ids);
+        }
+        if (($restrict = $filter->getChoicesQuery()) !== null) {
+            $restrict($queryBuilder, 'e');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     private function entityId(object $entity): string

@@ -14,6 +14,7 @@ use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
 use Lle\CruditBundle\Filter\FilterType\ChoiceFilterType;
 use Lle\CruditBundle\Filter\FilterType\DateFilterType;
+use Lle\CruditBundle\Filter\FilterType\DateTimeFilterType;
 use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
 use Lle\CruditBundle\Filter\FilterType\NumberRangeFilterType;
 use Lle\CruditBundle\Filter\FilterType\PeriodeFilterType;
@@ -32,7 +33,7 @@ use Twig\Loader\ArrayLoader;
  */
 class FilterViewBuilderTest extends TestCase
 {
-    private function builder(?Formatter $formatter = null): FilterViewBuilder
+    private function builder(?Formatter $formatter = null, string $url = '/clients/?x=1', array $server = []): FilterViewBuilder
     {
         $translator = $this->createMock(TranslatorInterface::class);
         $translator->method('trans')->willReturnCallback(static fn (string $id, array $parameters = [], ?string $domain = null): string => $id . ($parameters ? ' ' . json_encode($parameters) : ''));
@@ -44,7 +45,7 @@ class FilterViewBuilderTest extends TestCase
         }
 
         $stack = new RequestStack();
-        $stack->push(Request::create('/clients/?x=1'));
+        $stack->push(Request::create($url, 'GET', [], [], [], $server));
 
         $twig = new Environment(new ArrayLoader([
             '@LleCrudit/filter/type/string_filter.html.twig' => '',
@@ -76,7 +77,7 @@ class FilterViewBuilderTest extends TestCase
      * @param array<string, mixed>|null $data
      * @return array<string, mixed> the item of the filter
      */
-    private function item(StringFilterType|BooleanFilterType|ChoiceFilterType|NumberFilterType|NumberRangeFilterType|DateFilterType|PeriodeFilterType $filter, ?array $data = null): array
+    private function item(StringFilterType|BooleanFilterType|ChoiceFilterType|NumberFilterType|NumberRangeFilterType|DateFilterType|DateTimeFilterType|PeriodeFilterType $filter, ?array $data = null): array
     {
         $filter->setData($data);
         $set = new class () extends AbstractFilterSet {
@@ -104,9 +105,33 @@ class FilterViewBuilderTest extends TestCase
         $bar = $this->builder()->build($set, [], $view);
 
         self::assertSame('crudit-filters-client', $bar['id']);
-        self::assertSame('/clients/?client_reset=1', $bar['resetUrl']);
+        self::assertSame('/clients/?x=1&client_reset=1', $bar['resetUrl'], 'the other parameters stay');
         self::assertSame('client_filter', $bar['applyName']);
         self::assertSame([], $bar['filters']);
+    }
+
+    public function testTheResetAddressKeepsTheBaseUrlAndTheOtherLists(): void
+    {
+        $set = new class () extends AbstractFilterSet {
+            public function getId(): string
+            {
+                return 'client';
+            }
+        };
+        $view = $this->view();
+        $view->setConfig(['translation_domain' => 'messages', 'title' => 'Clients']);
+        $server = ['SCRIPT_NAME' => '/monappli/index.php', 'SCRIPT_FILENAME' => '/var/www/monappli/index.php', 'REQUEST_URI' => '/monappli/index.php/clients/'];
+        $url = '/monappli/index.php/clients/?filter_client_name_op=eq&filter_client_name_value=x&client_filter=filter&filter_order_name_value=y&tab=2';
+        $bar = $this->builder(null, $url, $server)->build($set, [], $view);
+
+        self::assertSame('/monappli/index.php/clients/?filter_order_name_value=y&tab=2&client_reset=1', $bar['resetUrl']);
+    }
+
+    public function testADateTimeIsOneDatetimeLocalValue(): void
+    {
+        self::assertSame('2026-11-05T10:30', $this->item(DateTimeFilterType::new('at'), ['op' => 'eq', 'value' => '2026-11-05T10:30', 'time' => ''])['value']);
+        self::assertSame('2026-11-05T10:30:00', $this->item(DateTimeFilterType::new('at'), ['op' => 'eq', 'value' => '2026-11-05', 'time' => '10:30:00'])['value'], 'a 1.x session: the date and the time apart');
+        self::assertSame('2026-11-05T00:00', $this->item(DateTimeFilterType::new('at'), ['op' => 'eq', 'value' => '2026-11-05'])['value']);
     }
 
     public function testATextFilter(): void

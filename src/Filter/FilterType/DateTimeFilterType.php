@@ -15,6 +15,29 @@ class DateTimeFilterType extends AbstractFilterType
         return $f;
     }
 
+    /**
+     * The date and time to compare with, as `Y-m-d H:i:s`.
+     *
+     * The field of the bar is a `datetime-local`: the value is `2026-11-05T10:30` (seconds optional) and `time` is empty.
+     * The 1.x sent a date in `value` and the time in `time` (`10:30:00`), and a link or a session may still carry that:
+     * `time` is read only when the value has no time of its own. No time at all is midnight.
+     */
+    public static function dateTime(string $value, string $time = ''): string
+    {
+        $value = trim(str_replace('T', ' ', $value));
+        if (str_contains($value, ' ')) {
+            [$value, $time] = explode(' ', $value, 2);
+        }
+        $time = trim($time);
+        if ($time === '') {
+            $time = '00:00:00';
+        } elseif (substr_count($time, ':') === 1) {
+            $time .= ':00';
+        }
+
+        return $value . ' ' . $time;
+    }
+
     public function getOperators(): array
     {
         return [
@@ -38,15 +61,8 @@ class DateTimeFilterType extends AbstractFilterType
         $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
 
         if (isset($this->data['value']) && $this->data['value']) {
-            $value = $this->data['value'] . ' ';
-            if (isset($this->data['time'])) {
-                $value .= $this->data['time'];
-            } else {
-                $value .= '00:00:00';
-            }
-
             $queryBuilder->andWhere($query);
-            $queryBuilder->setParameter($paramname, $value);
+            $queryBuilder->setParameter($paramname, self::dateTime((string) $this->data['value'], (string) ($this->data['time'] ?? '')));
         }
 
         $this->applyAdditionnalConditions($queryBuilder);

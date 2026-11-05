@@ -903,14 +903,28 @@ panel (in the page from 768 px, a side panel on a phone), the active ones as chi
 - **A filter with no value is emptied**: a filter sends its condition (`<name>_op`) even when empty, and `FilterState` treats an
   `_op` with no `_value` as an empty filter (a list with no box checked sends nothing).
 - **`FilterState` is stricter**: a condition that is not in `getOperators()` of the filter (your own types included) is
-  refused with its value; a value that is not a string or a list of strings is ignored; a value is cut to 1000 characters and a
-  list to 500 values. A list of values (`<name>_value[]`) is stored joined with commas, as before.
+  refused with its value; a value that is not a string or a list of strings is ignored; a value is cut to 1000 characters; **a list of
+  more than 500 values is ignored altogether** (the filter keeps its previous value). A list of values (`<name>_value[]`) is stored joined with commas, as before.
 - **Hidden filters** (`setHidden(true)`) show nowhere (neither in the bar, the panel nor as a chip) and keep filtering.
-- **Choice, workflow and entity filters are lists of boxes.** An entity filter lists the first **200** entities by label,
-  plus the ones already chosen (`__toString()`, else `#id`); the autocomplete comes back with the form types (lot 3.2.c).
-  If your entity has more, give the filter a `ChoiceFilterType` with your own choices until then.
-- **Your own filter template** (`setTemplate()` on a type, `getTemplate()` of a filter type of your project, or a file that
-  replaces `filter/type/<type>_filter.html.twig`): it is still used, included in the panel (or the bar) with the variables of 1.x
+- **Choice, workflow and entity filters are lists of boxes.** A `ChoiceFilterType` is always boxes, `multiple` or not (the
+  condition "is one of" takes one value or several; `setMultiple()` is kept and changes nothing). The labels of a workflow's
+  states are translated in the translation domain of the list, else in the default one.
+- **Entity filter**: the list holds the first **200** entities **by identifier**, sorted by label in PHP (`__toString()`, else
+  `#id`), plus the ones already chosen (loaded in one query); the autocomplete comes back with the form types (lot 3.2.c).
+  If your entity has more, give the filter a `ChoiceFilterType` with your own choices until then. **It no longer goes through
+  `dataRoute`** (the autocomplete route): a restriction made in the controller of that route (rights, tenant, archived
+  entities) no longer applies to the filter. Give it to the type instead with
+  `->setChoicesQuery(fn (QueryBuilder $qb, string $alias) => $qb->andWhere($alias . '.archived = false'))`, which restricts
+  the 200 and the chosen ones (a Doctrine SQL filter applies as always).
+- **DateTime filter**: the bar sends one `datetime-local` in `<name>_value` (`2026-11-05T10:30`) and no `_time`. The filter
+  reads the time in the value; `_time` (links and sessions of the 1.x: a date in `value`, the time in `time`) is read only when
+  the value has none. A `DateTimeFilterType` of your own that reads `data['time']` must do the same
+  (`DateTimeFilterType::dateTime($value, $time)` does it).
+- **"Reset" keeps the other parameters** of the page (another list, a tab) and the base URL of the application: it removes
+  the filters of its own list only.
+- **Your own filter template** (`setTemplate()` on a type, `getTemplate()` of a filter type of your project, or a file in
+  `templates/bundles/LleCruditBundle/filter/type/` that replaces `filter/type/<type>_filter.html.twig`; a Twig path of yours that
+  shadows the bundle in another way is not seen: use `setTemplate()` then): it is still used, included in the panel (or the bar) with the variables of 1.x
   (`id`, `data`, `filter`, `filtertype`, `view`) and `operators`, `operator`, `value`, `to`, `choices`. **Extend
   `@LleCrudit/filter/type/_base_filter.html.twig` and override its blocks `operator` and `input`**, as before; the markup of the
   block `input` is yours, with no Bootstrap (`form-floating`, `input-group` are no longer styled: use the classes

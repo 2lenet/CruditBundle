@@ -81,7 +81,7 @@ class FilterState
      * - The operator must be one of those of the type (`getOperators()`, so the ones a project adds to its own filter
      *   type are accepted): with another one, nothing of that filter is kept and it keeps what it had.
      * - A list is joined with commas, the format stored since the 1.x; a value of another shape (an array of arrays) is
-     *   ignored, and the size of a value and of a list is limited.
+     *   ignored, a value is cut to MAX_LENGTH characters, and a list of more than MAX_ITEMS values is ignored (the filter keeps its previous value).
      *
      * @param array<string, mixed> $set the data of the filter set
      * @return array<string, mixed>
@@ -117,9 +117,7 @@ class FilterState
         }
         // The labels of the chosen items (`items`, written by the autocomplete of the 1.x) no longer match a value that
         // changed without them: they are rebuilt from the value.
-        if (array_key_exists($key . '_value', $query) && !array_key_exists($key . '_items', $query)) {
-            unset($set[$id]['items']);
-        } elseif ($hasOp && !array_key_exists($key . '_value', $query)) {
+        if (array_key_exists($key . '_value', $query) ? !array_key_exists($key . '_items', $query) : $hasOp) {
             unset($set[$id]['items']);
         }
 
