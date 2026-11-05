@@ -110,6 +110,7 @@ class FilterViewBuilderTest extends TestCase
         self::assertSame([], $bar['filters']);
     }
 
+    // `filter_client_order_name_value` is a filter of another set (`client_order`): it stays, though it starts like the ones of `client`.
     public function testTheResetAddressKeepsTheBaseUrlAndTheOtherLists(): void
     {
         $set = new class () extends AbstractFilterSet {
@@ -121,10 +122,10 @@ class FilterViewBuilderTest extends TestCase
         $view = $this->view();
         $view->setConfig(['translation_domain' => 'messages', 'title' => 'Clients']);
         $server = ['SCRIPT_NAME' => '/monappli/index.php', 'SCRIPT_FILENAME' => '/var/www/monappli/index.php', 'REQUEST_URI' => '/monappli/index.php/clients/'];
-        $url = '/monappli/index.php/clients/?filter_client_name_op=eq&filter_client_name_value=x&client_filter=filter&filter_order_name_value=y&tab=2';
-        $bar = $this->builder(null, $url, $server)->build($set, [], $view);
+        $url = '/monappli/index.php/clients/?filter_client_name_op=eq&filter_client_name_value=x&client_filter=filter&filter_client_order_name_value=y&tab=2';
+        $bar = $this->builder(null, $url, $server)->build($set, ['client_name' => StringFilterType::new('name')], $view);
 
-        self::assertSame('/monappli/index.php/clients/?filter_order_name_value=y&tab=2&client_reset=1', $bar['resetUrl']);
+        self::assertSame('/monappli/index.php/clients/?filter_client_order_name_value=y&tab=2&client_reset=1', $bar['resetUrl']);
     }
 
     public function testADateTimeIsOneDatetimeLocalValue(): void

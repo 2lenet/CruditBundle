@@ -45,8 +45,11 @@ class DateTimeFilterTypeTest extends TestCase
         $filter->setData($data);
         $filter->apply($queryBuilder);
 
-        self::assertCount(1, $queryBuilder->getParameters());
-        self::assertSame($expected, $queryBuilder->getParameters()->first()->getValue());
+        $parameters = $queryBuilder->getParameters();
+        self::assertCount(1, $parameters);
+        $parameter = $parameters->first();
+        self::assertNotFalse($parameter);
+        self::assertSame($expected, $parameter->getValue());
         self::assertStringContainsString('e.at = :', (string) $queryBuilder->getDQL());
     }
 

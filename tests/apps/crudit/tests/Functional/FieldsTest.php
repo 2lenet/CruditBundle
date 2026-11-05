@@ -68,7 +68,7 @@ class FieldsTest extends AppTestCase
         $show = $this->show('Alice');
 
         $progress = $this->value($show, 'progress')->filter('progress');
-        self::assertSame(['45', '100', '45%', 'field.progress'], [$progress->attr('value'), $progress->attr('max'), $progress->attr('aria-valuetext'), $progress->attr('aria-label')]);
+        self::assertSame(['45', '100', '45%', 'Progress'], [$progress->attr('value'), $progress->attr('max'), $progress->attr('aria-valuetext'), $progress->attr('aria-label')]);
         self::assertStringContainsString('crudit-ui-progress--primary', (string) $this->value($show, 'progress')->filter('.crudit-value__progress')->attr('class'));
 
         // Above max: an alert by default (overMax danger, as in 1.x), the bar stays full, the real value is written

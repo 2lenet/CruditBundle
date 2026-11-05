@@ -78,7 +78,7 @@ client:
         low: "Low"
         high: "High"
     channel:
-        email: "Email"
+        email: "E-mail"
         phone: "Phone"
     status:
         prospect: "Prospect"

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Builder;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\MappingException;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 use Lle\CruditBundle\Dto\BrickView;
+use Lle\CruditBundle\Filter\EntityIdentifiers;
 use Lle\CruditBundle\Filter\FilterType\AbstractFilterType;
 use Lle\CruditBundle\Filter\FilterType\BooleanFilterType;
 use Lle\CruditBundle\Filter\FilterType\ChoiceFilterType;
@@ -111,7 +113,7 @@ class FilterViewBuilder
             'id' => 'crudit-filters-' . $setId,
             'label' => $this->translator->trans('crudit.filter.region', ['%title%' => (string) ($config['title'] ?? '')], 'LleCruditBundle'),
             'filters' => $items,
-            'resetUrl' => $this->resetUrl($setId),
+            'resetUrl' => $this->resetUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters))),
             'applyName' => $setId . '_filter',
         ];
     }
@@ -119,13 +121,20 @@ class FilterViewBuilder
     /**
      * The address that brings the filters of this set back to their defaults: the current page (with the base URL of
      * the application) and its other parameters (another list, a tab), without the ones of this set's filters.
+     *
+     * @param list<string> $filterIds the filters of the set
      */
-    private function resetUrl(string $setId): string
+    private function resetUrl(string $setId, array $filterIds): string
     {
         $request = $this->requestStack->getCurrentRequest();
         $query = [];
+        $own = array_map(static fn (string $id): string => 'filter_' . $setId . '_' . $id . '_', $filterIds);
         foreach ($request?->query->all() ?? [] as $name => $value) {
-            if (!str_starts_with((string) $name, 'filter_' . $setId . '_') && !in_array($name, [$setId . '_filter', $setId . '_reset'], true)) {
+            $name = (string) $name;
+            // The parameters of this set's filters (`filter_<set>_<filter>_op`…), not of a set whose id starts the same.
+            $isOwn = in_array($name, [$setId . '_filter', $setId . '_reset'], true)
+                || array_filter($own, static fn (string $prefix): bool => str_starts_with($name, $prefix)) !== [];
+            if (!$isOwn) {
                 $query[$name] = $value;
             }
         }
@@ -314,7 +323,12 @@ class FilterViewBuilder
     {
         /** @var class-string $class */
         $class = $filter->getEntityClass();
-        $idField = $this->entityManager->getClassMetadata($class)->getSingleIdentifierFieldName();
+        try {
+            $idField = $this->entityManager->getClassMetadata($class)->getSingleIdentifierFieldName();
+        } catch (MappingException) {
+            // A composite identifier: a filter keeps one id per value, so there is nothing to choose from.
+            return [];
+        }
         $chosen = array_values(array_filter(explode(',', (string) $value), static fn (string $id): bool => $id !== ''));
 
         $choices = [];
@@ -349,7 +363,12 @@ class FilterViewBuilder
         if ($ids === null) {
             $queryBuilder->orderBy('e.' . $idField)->setMaxResults(self::MAX_CHOICES);
         } else {
-            $queryBuilder->andWhere('e.' . $idField . ' IN (:ids)')->setParameter('ids', $ids);
+            // Converted by the type of the field (a binary UUID, an integer), as find() does.
+            [$values, $type] = EntityIdentifiers::forQuery($this->entityManager, $class, $ids);
+            if ($values === []) {
+                return [];
+            }
+            $queryBuilder->andWhere('e.' . $idField . ' IN (:ids)')->setParameter('ids', $values, $type);
         }
         if (($restrict = $filter->getChoicesQuery()) !== null) {
             $restrict($queryBuilder, 'e');

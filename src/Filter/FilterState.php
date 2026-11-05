@@ -116,7 +116,9 @@ class FilterState
             }
         }
         // The labels of the chosen items (`items`, written by the autocomplete of the 1.x) no longer match a value that
-        // changed without them: they are rebuilt from the value.
+        // changed without them: they are rebuilt from the value. That is, they are dropped when
+        // - a new value comes without its items, or
+        // - the filter is in the form (it sent its `_op`) but sent no value at all (it was emptied).
         if (array_key_exists($key . '_value', $query) ? !array_key_exists($key . '_items', $query) : $hasOp) {
             unset($set[$id]['items']);
         }
