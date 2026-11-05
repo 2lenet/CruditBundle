@@ -46,6 +46,10 @@ interface FilterTypeInterface
 
     public function getTemplate(): string;
 
+    /**
+     * @deprecated since 2.0: the chips of the active filters are drawn by the Filter:Bar of CruditUiBundle, this template
+     *             is no longer rendered.
+     */
     public function getStateTemplate(): string;
 
     public function getId(): string;

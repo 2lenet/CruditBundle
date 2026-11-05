@@ -108,6 +108,8 @@ services:
 
     Lle\CruditBundle\Builder\TableViewBuilder: ~
 
+    Lle\CruditBundle\Builder\FilterViewBuilder: ~
+
     # Function declared by #[AsTwigFunction] (autoconfiguration)
     Lle\CruditBundle\Twig\TableExtension: ~
 

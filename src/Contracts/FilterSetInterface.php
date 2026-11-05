@@ -10,7 +10,7 @@ interface FilterSetInterface
     public function getFilters(): array;
 
     /**
-     * Get the total number of filters to display, the others will be collapsed
+     * @deprecated since 2.0: no effect, the filters are the bar and the panel of the Filter:Bar (4 per row at the most).
      */
     public function getNumberDisplayed(): int;
 

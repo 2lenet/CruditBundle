@@ -127,10 +127,6 @@ class PeriodeFilterType extends AbstractFilterType
         $this->applyAdditionnalConditions($queryBuilder);
     }
 
-    public function getStateTemplate(): string
-    {
-        return '@LleCrudit/filter/state/periode_filter.html.twig';
-    }
 
     public function getTemplate(): string
     {

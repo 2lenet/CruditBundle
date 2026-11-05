@@ -78,7 +78,7 @@ client:
         low: "Low"
         high: "High"
     channel:
-        email: "E-mail"
+        email: "Email"
         phone: "Phone"
     status:
         prospect: "Prospect"
@@ -108,3 +108,14 @@ wf:
         done: "Done"
         cancelled: "Cancelled"
         archived: "Archived"
+
+field:
+    name: "Name"
+    status: "Status"
+    active: "Active"
+    amount: "Amount"
+    progress: "Progress"
+    createdat: "Created on"
+    referrer: "Referrer"
+    email: "Email"
+    notes: "Notes"

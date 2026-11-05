@@ -28,6 +28,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
    - [Declare a tone per state of your workflows, replace your links to the transitions](#workflows-lot-34c) *(lot 3.4.c)*
    - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
+   - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` without effect](#7-template-overrides) *(lot 3.4.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
@@ -775,7 +776,8 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   - the pager is shown below the table only, no more above (it comes back with lot 3.1.d).
 - Icons of the actions: a Font Awesome name of 1.x that has an equivalent in the design system is converted
   (`trash-alt`, `pencil`…), an Iconify name (`mdi:pencil`) is used as it is.
-- **Not in this lot** (the old markup stays for now): the pager (3.1.d), the filters (3.1.e). The batch actions are
+- **Not in this lot** (the old markup stays for now): the pager (3.1.d). The filters are the bar and the panel of
+  lot 3.1.e (see [Filters](#filters-lot-31e)). The batch actions are
   back with lot 3.1.c (see [Batch actions](#batch-actions-lot-31c)). The sublist (3.3.c) still uses
   the old templates (`list_items/_actions.html.twig` and `list_items/actions/*`).
 
@@ -817,8 +819,8 @@ lot 3.4.b. They had no block in 1.x: an override of a whole template still works
 
 These paths and their main blocks are **kept**, because many projects extend them:
 `brick/form/index.html.twig`, `modal/_base_modal.html.twig`, `field/*.html.twig`
-(`value`), `filter/type/*`, `filter/state/*`,
-`crud/index.html.twig`.
+(`value`), `filter/type/*` (and `filter/type/_base_filter.html.twig`, blocks `operator` and `input`),
+`crud/index.html.twig`. `filter/state/*` is removed (lot 3.1.e).
 Their *inner markup* changes (Bootstrap classes removed): check your overrides visually.
 
 The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *(lot 3.2)*.
@@ -886,6 +888,43 @@ results, and has a "Deselect all" button.
 - **Id of the table**: the `<table>` of a list has now the id `<view id>_table` (it had the one of the view, which the
   wrapper of the brick already has: an id must be unique). Update a CSS or JS of yours that targeted it.
 
+### Filters *(lot 3.1.e)*
+
+The filters of a list are the `Filter:Bar` of CruditUiBundle: the main filters in a bar above the list, the others in a
+panel (in the page from 768 px, a side panel on a phone), the active ones as chips you can remove one by one. **The
+`FilterType`, `FilterSet` and `FilterState` classes and the names of the request parameters are unchanged**
+(`filter_<set>_<filter>_op`, `_value`, `_to`, `<set>_filter`, `<set>_reset`): the links to a filtered list
+(`crudit_route_filtered_link()`, `FilteredLink`) keep working.
+
+- **Main filters**: `$filter->setPrimary(true)` puts a filter in the bar, applied at once. **None is main by default**: a
+  list that sets none shows only the button "Filters" and the chips. Below 1024 px the main filters move into the panel.
+- **The state stays in the session** (`crudit_filters`, as in 1.x): a user who opens a record and comes back finds the list
+  filtered and sorted as it was. The form is a GET, the filters are in the address too.
+- **A filter with no value is emptied**: a filter sends its condition (`<name>_op`) even when empty, and `FilterState` treats an
+  `_op` with no `_value` as an empty filter (a list with no box checked sends nothing).
+- **`FilterState` is stricter**: a condition that is not in `getOperators()` of the filter (your own types included) is
+  refused with its value; a value that is not a string or a list of strings is ignored; a value is cut to 1000 characters and a
+  list to 500 values. A list of values (`<name>_value[]`) is stored joined with commas, as before.
+- **Hidden filters** (`setHidden(true)`) show nowhere (neither in the bar, the panel nor as a chip) and keep filtering.
+- **Choice, workflow and entity filters are lists of boxes.** An entity filter lists the first **200** entities by label,
+  plus the ones already chosen (`__toString()`, else `#id`); the autocomplete comes back with the form types (lot 3.2.c).
+  If your entity has more, give the filter a `ChoiceFilterType` with your own choices until then.
+- **Your own filter template** (`setTemplate()` on a type, `getTemplate()` of a filter type of your project, or a file that
+  replaces `filter/type/<type>_filter.html.twig`): it is still used, included in the panel (or the bar) with the variables of 1.x
+  (`id`, `data`, `filter`, `filtertype`, `view`) and `operators`, `operator`, `value`, `to`, `choices`. **Extend
+  `@LleCrudit/filter/type/_base_filter.html.twig` and override its blocks `operator` and `input`**, as before; the markup of the
+  block `input` is yours, with no Bootstrap (`form-floating`, `input-group` are no longer styled: use the classes
+  `crudit-ui-filter-field__text`, `__segmented`, `__choices`). Keep the names of the inputs (`<id>_value`, `<id>_op`, `<id>_to`):
+  the form of the bar sends them.
+- **The templates `filter/state/*` are removed** and `getStateTemplate()` is deprecated: the chips are drawn by the bar. A
+  file of yours that extends one of them is never rendered.
+- `filters.js` stays for the forms (`initTomSelect`, until lot 3.2.c); its filter code (the menu of conditions, Enter, the
+  counter of chosen items) and the filter styles of `sb-admin` are gone.
+- **Enable the controllers** `filters`, `filter-field` and `filter-period` in `@2lenet/crudit-ui-bundle` of your
+  `assets/controllers.json`.
+- Not in this lot: the saved filters (3.1.f), the pager (3.1.d: the filters send the list back to the first page through
+  `<set>_filter`, as before).
+
 ### Workflows *(lot 3.4.c)*
 
 The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Status` of CruditUiBundle, its label
@@ -948,6 +987,7 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
 - New controller `print` (`PrintAction`, lot 3.1.a): enable it in your `assets/controllers.json`, as the other
   controllers of `@2lenet/crudit-bundle`.
 - New controller `selection-bar` (batch actions, lot 3.1.c): enable it in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`.
+- New controllers `filters`, `filter-field` and `filter-period` (the filters, lot 3.1.e): same file, same package.
 - New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
   `initChoiceTomSelect`…) no longer works. *Replacement to be filled (lot 3.2.c).*

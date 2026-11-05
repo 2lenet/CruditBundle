@@ -1,11 +1,5 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
 {% block input %}
-    <div class="form-floating">
-        <input id="input_{{ id }}_value" class="form-control" type="date" name="{{ id }}_value"
-               {% if data.value is defined %}value="{{ data.value }}"{% endif %} autocomplete="new-password"/>
-        <label for="input_{{ id }}_value">
-            {{ filter.label|trans(domain=view.config.translation_domain) }}
-        </label>
-    </div>
+    <input type="date" class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" aria-label="{{ filter.label|trans(domain=view.config.translation_domain) }}">
 {% endblock %}
