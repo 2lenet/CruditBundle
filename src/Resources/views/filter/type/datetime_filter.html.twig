@@ -1,5 +1,5 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
 {% block input %}
-    <input type="datetime-local" class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" aria-label="{{ filter.label|trans(domain=view.config.translation_domain) }}">
+    <input type="datetime-local"{{ value|length > 16 ? ' step="1"' : '' }} class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" aria-label="{{ filter.label|trans(domain=view.config.translation_domain) }}">
 {% endblock %}

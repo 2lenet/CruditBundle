@@ -35,9 +35,16 @@ final class EntityIdentifiers
         $values = [];
         foreach ($ids as $id) {
             try {
+                // The PHP value first (an integer, a Uuid object): what the type of Symfony and a real integer need.
                 $values[] = $type->convertToDatabaseValue($type->convertToPHPValue($id, $platform), $platform);
             } catch (\Throwable) {
-                // Not an identifier of this type (a stale value of a filter): nothing to find.
+                try {
+                    // A type whose convertToPHPValue() wants the database form (uuid_binary of ramsey/uuid-doctrine
+                    // reads bytes, not the text) still takes the text in convertToDatabaseValue().
+                    $values[] = $type->convertToDatabaseValue($id, $platform);
+                } catch (\Throwable) {
+                    // Not an identifier of this type (a stale value of a filter): nothing to find.
+                }
             }
         }
 
