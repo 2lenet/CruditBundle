@@ -6,15 +6,12 @@ namespace phpunit\Unit\Filter;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
-use Doctrine\DBAL\Types\BinaryType;
-use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Lle\CruditBundle\Filter\EntityIdentifiers;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 class EntityIdentifiersTest extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        // The test has no autoload of its own: the types it registers are loaded here.
+        require_once __DIR__ . '/BinaryUuidTestType.php';
+        require_once __DIR__ . '/BinaryUuidBytesTestType.php';
+    }
+
     private function manager(string $type): EntityManagerInterface
     {
         $metadata = $this->createMock(ClassMetadata::class);
@@ -75,41 +79,5 @@ class EntityIdentifiersTest extends TestCase
 
         self::assertSame([hex2bin(str_replace('-', '', $uuid))], $values, 'the text becomes the 16 bytes of the column, what is not a UUID is left out');
         self::assertSame(ArrayParameterType::BINARY, $type);
-    }
-}
-
-/**
- * A UUID stored as 16 bytes, like the Uuid type of Symfony on MySQL: the text of the UUID in PHP, binary in the database.
- */
-class BinaryUuidTestType extends BinaryType
-{
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?string
-    {
-        return $value;
-    }
-
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): mixed
-    {
-        if (!is_string($value) || !preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $value)) {
-            throw new ConversionException('Not a UUID');
-        }
-
-        return hex2bin(str_replace('-', '', $value));
-    }
-}
-
-/**
- * Like the type of ramsey/uuid-doctrine: the PHP value is made from the bytes (a text of 36 characters is refused), the
- * database value is made from the text.
- */
-class BinaryUuidBytesTestType extends BinaryUuidTestType
-{
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?string
-    {
-        if (!is_string($value) || strlen($value) !== 16) {
-            throw new ConversionException('Not 16 bytes');
-        }
-
-        return $value;
     }
 }
