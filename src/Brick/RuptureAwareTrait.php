@@ -106,9 +106,10 @@ trait RuptureAwareTrait
             }
         }
 
-        $ruptSorts = [[$this->buildRuptSortExpr($rupt1), 'ASC']];
+        $currentSorts = $dsParams->getSorts();
+        $ruptSorts = [[$this->buildRuptSortExpr($rupt1), $this->resolveRuptSortDirection($rupt1, $currentSorts)]];
         if ($rupt2 !== null) {
-            $ruptSorts[] = [$this->buildRuptSortExpr($rupt2), 'ASC'];
+            $ruptSorts[] = [$this->buildRuptSortExpr($rupt2), $this->resolveRuptSortDirection($rupt2, $currentSorts)];
         }
 
         $remainingSorts = array_values(array_filter(
@@ -120,6 +121,22 @@ trait RuptureAwareTrait
         $dsParams->setSorts($rupt1->isRuptSortPriority()
             ? array_merge($ruptSorts, $remainingSorts)
             : array_merge($remainingSorts, $ruptSorts));
+    }
+
+    protected function resolveRuptSortDirection(Field $ruptField, array $sorts): string
+    {
+        foreach ($sorts as $sort) {
+            if (!is_array($sort) || (string) ($sort[0] ?? '') !== $ruptField->getName()) {
+                continue;
+            }
+
+            $direction = strtoupper((string) ($sort[1] ?? ''));
+            if (in_array($direction, ['ASC', 'DESC'], true)) {
+                return $direction;
+            }
+        }
+
+        return 'ASC';
     }
 
     protected function buildRuptSortExpr(Field $field): string
