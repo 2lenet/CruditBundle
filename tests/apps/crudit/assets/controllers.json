@@ -99,6 +99,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "toggletip": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "tooltip": {
                 "enabled": true,
                 "fetch": "eager"

@@ -1,3 +1,19 @@
+{#
+ # Form theme of Crudit (lot 3.2.a): the inputs of CruditUiBundle (@LleCruditUi/form/theme.html.twig, no Bootstrap),
+ # and the blocks of the Crudit form types. Registered in twig.form.resources (the Crudit types work in the forms of
+ # the project), and imposed by the bricks whatever the global theme of the project:
+ # {% form_theme form with ['@LleCrudit/form/theme.html.twig'] only %}.
+ # The layout of a form (sections, grid, widths) is in brick/form/index.html.twig.
+ #}
+{% use '@LleCruditUi/form/theme.html.twig' %}
+
+{# The help of the options tooltip, tooltip_html and tooltip_template: a button next to the label #}
+{%- block crudit_ui_label_after -%}
+    {%- if tooltip|default(null) or tooltip_html|default(null) or tooltip_template|default(null) -%}
+        {{- include('@LleCrudit/brick/form/_tooltip.html.twig', {field: form}) -}}
+    {%- endif -%}
+{%- endblock -%}
+
 {% block autocomplete_widget %}
     {% include '@LleCrudit/form/_autocomplete_widget.html.twig' %}
 {% endblock %}
@@ -25,13 +41,16 @@
 {% endblock %}
 
 {% block crudit_telephone_row %}
-    {# A <label> pointing to the number, instead of the <fieldset>/<legend> Bootstrap renders for a compound field #}
-    {%- set row_attr = row_attr|merge({class: (row_attr.class|default('') ~ ' mb-3')|trim}) -%}
-    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
-        {{ form_label(form, null, {compound: false, id: form.number.vars.id}) }}
-        {{ form_widget(form) }}
-        {{ form_errors(form) }}
-        {{ form_help(form) }}
+    {#- A <label> pointing to the number, instead of the <fieldset>/<legend> of a compound field -#}
+    {%- set row_class = ('crudit-ui-field' ~ (errors|length > 0 ? ' crudit-ui-field--invalid' : '') ~ ' ' ~ row_attr.class|default(''))|trim -%}
+    <div{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="crudit-ui-field__label-row">
+            {{- form_label(form, null, {compound: false, id: form.number.vars.id}) -}}
+            {{- block('crudit_ui_label_after') -}}
+        </div>
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
     </div>
 {% endblock %}
 

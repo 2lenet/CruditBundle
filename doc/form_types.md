@@ -91,15 +91,8 @@ numbers, Italian ones (`+39`) for instance, are displayed unformatted.
 
 Crudit works with CollectionType, but you need to do configure some things on your side.
 
-First, you need to include @LleCrudit/form/custom_types.html.twig in Twig templates:
-```yaml
-twig:
-    form_themes:
-        - 'bootstrap_5_layout.html.twig'
-        - '@LleCrudit/form/custom_types.html.twig'
-```
-
-Then you can use the CollectionType. Here's a working example:
+In the forms of Crudit, nothing to configure: the bricks impose the theme of Crudit (`@LleCrudit/form/theme.html.twig`).
+Here's a working example:
 ```php
 // in parent form OrderType.php
 $builder->add('lines', CollectionType::class, [
@@ -124,3 +117,31 @@ What matters :
 * by_reference is **NECESSARY** because otherwise Doctrine won't be able to track changes in collection, resulting in deletions that don't happen.
 * prototype_name is necessary when you nest CollectionTypes (a CollectionType inside another CollectionType)
 * use row_attr with Bootstrap columns to size the fields, to get a satisfying result
+
+## Layout of a form
+
+The forms of the bricks impose the theme of Crudit, whatever `twig.form_themes`: labels above the inputs, the help and
+the error attached to them, the required fields explained above the form. The fields are on a grid of at most
+`lle_crudit.form_columns` per line (4 by default), fewer when the room is short, one on a phone.
+
+```php
+$builder
+    // A section: the fields after it, up to the next one, in a fieldset with a title
+    ->add('identity', GroupType::class, ['label' => 'Identity', 'mapped' => false])
+    ->add('name', null, ['help' => 'As on the invoice', 'tooltip' => 'The name of the company'])
+    ->add('email', null, ['span' => 2])                       // 2 columns
+    // A section of 2 columns, with a text under its title
+    ->add('contact', GroupType::class, ['label' => 'Contact', 'description' => 'How to reach the client', 'columns' => 2, 'mapped' => false])
+    ->add('active', CheckboxType::class, ['required' => false, 'attr' => ['role' => 'switch']]) // a switch
+    ->add('notes', TextareaType::class, ['required' => false, 'span' => 'full']);           // the whole line
+```
+
+| Option | On | |
+|---|---|---|
+| `span` | any field | `1` (default), `2`, `3` or `'full'`: its width on the grid; the whole line on a phone, and when it is wider than its section (or `3` on a narrow screen). `attr.class` does not set the width |
+| `columns` | `GroupType` | the most fields on a line of this section (1 to 4), else those of the form |
+| `description` | `GroupType` | a text under the title of the section |
+| `tooltip`, `tooltip_html`, `tooltip_template` | any field | a help opened by a button next to the label |
+
+The number of columns of a form: `FormConfig::setColumns()`, else `getFormColumns()` of its CRUD, else
+`lle_crudit.form_columns`.
