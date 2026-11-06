@@ -102,24 +102,52 @@ trait RuptureAwareTrait
         $ruptFieldNamesToFilter = [];
         foreach ([$rupt1, $rupt2] as $rupt) {
             if ($rupt !== null && $rupt->getRuptDateFormat() === null) {
-                $ruptFieldNamesToFilter[] = $rupt->getName();
+                $ruptFieldNamesToFilter[] = $this->getRuptSortKey($rupt);
             }
         }
 
-        $ruptSorts = [[$this->buildRuptSortExpr($rupt1), 'ASC']];
+        $currentSorts = $dsParams->getSorts();
+        $ruptSorts = [[$this->buildRuptSortExpr($rupt1), $this->resolveRuptSortDirection($rupt1, $currentSorts)]];
         if ($rupt2 !== null) {
-            $ruptSorts[] = [$this->buildRuptSortExpr($rupt2), 'ASC'];
+            $ruptSorts[] = [$this->buildRuptSortExpr($rupt2), $this->resolveRuptSortDirection($rupt2, $currentSorts)];
         }
 
         $remainingSorts = array_values(array_filter(
             $dsParams->getSorts(),
-            static fn(mixed $sort): bool => !is_array($sort)
-                || !in_array((string) ($sort[0] ?? ''), $ruptFieldNamesToFilter, true)
+            static fn(mixed $sort): bool => !in_array(self::sortKeyOf($sort), $ruptFieldNamesToFilter, true)
         ));
 
         $dsParams->setSorts($rupt1->isRuptSortPriority()
             ? array_merge($ruptSorts, $remainingSorts)
             : array_merge($remainingSorts, $ruptSorts));
+    }
+
+    protected function resolveRuptSortDirection(Field $ruptField, array $sorts): string
+    {
+        foreach ($sorts as $sort) {
+            if (!is_array($sort) || self::sortKeyOf($sort) !== $this->getRuptSortKey($ruptField)) {
+                continue;
+            }
+
+            $direction = strtoupper((string) ($sort[1] ?? ''));
+            if (in_array($direction, ['ASC', 'DESC'], true)) {
+                return $direction;
+            }
+        }
+
+        return 'ASC';
+    }
+
+    protected function getRuptSortKey(Field $field): string
+    {
+        $sortProperty = $field->getOptions()['sortProperty'] ?? null;
+
+        return is_string($sortProperty) && $sortProperty !== '' ? $sortProperty : $field->getName();
+    }
+
+    private static function sortKeyOf(mixed $sort): ?string
+    {
+        return is_array($sort) ? (string) ($sort[0] ?? '') : null;
     }
 
     protected function buildRuptSortExpr(Field $field): string
