@@ -102,7 +102,7 @@ trait RuptureAwareTrait
         $ruptFieldNamesToFilter = [];
         foreach ([$rupt1, $rupt2] as $rupt) {
             if ($rupt !== null && $rupt->getRuptDateFormat() === null) {
-                $ruptFieldNamesToFilter[] = $rupt->getName();
+                $ruptFieldNamesToFilter[] = $this->getRuptSortKey($rupt);
             }
         }
 
@@ -114,8 +114,7 @@ trait RuptureAwareTrait
 
         $remainingSorts = array_values(array_filter(
             $dsParams->getSorts(),
-            static fn(mixed $sort): bool => !is_array($sort)
-                || !in_array((string) ($sort[0] ?? ''), $ruptFieldNamesToFilter, true)
+            static fn(mixed $sort): bool => !in_array(self::sortKeyOf($sort), $ruptFieldNamesToFilter, true)
         ));
 
         $dsParams->setSorts($rupt1->isRuptSortPriority()
@@ -126,7 +125,7 @@ trait RuptureAwareTrait
     protected function resolveRuptSortDirection(Field $ruptField, array $sorts): string
     {
         foreach ($sorts as $sort) {
-            if (!is_array($sort) || (string) ($sort[0] ?? '') !== $ruptField->getName()) {
+            if (!is_array($sort) || self::sortKeyOf($sort) !== $this->getRuptSortKey($ruptField)) {
                 continue;
             }
 
@@ -137,6 +136,18 @@ trait RuptureAwareTrait
         }
 
         return 'ASC';
+    }
+
+    protected function getRuptSortKey(Field $field): string
+    {
+        $sortProperty = $field->getOptions()['sortProperty'] ?? null;
+
+        return is_string($sortProperty) && $sortProperty !== '' ? $sortProperty : $field->getName();
+    }
+
+    private static function sortKeyOf(mixed $sort): ?string
+    {
+        return is_array($sort) ? (string) ($sort[0] ?? '') : null;
     }
 
     protected function buildRuptSortExpr(Field $field): string
