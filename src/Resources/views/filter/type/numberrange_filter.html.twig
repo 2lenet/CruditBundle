@@ -1,13 +1,8 @@
 {% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
 
 {% block input %}
-    <div class="form-floating">
-        <input id="input_{{ id }}_value" class="form-control" type="text" name="{{ id }}_value"
-               {% if data.value is defined %}value="{{ data.value }}"{% endif %} autocomplete="new-password"/>
-        <label for="input_{{ id }}_value">
-            {{ filter.label|trans(domain=view.config.translation_domain) }}
-        </label>
-        <input id="input_{{ id }}_to" class="form-control" type="text" name="{{ id }}_to"
-               {% if data.to is defined %}value="{{ data.to }}"{% endif %} autocomplete="new-password"/>
-    </div>
+    {% set label = filter.label|trans(domain=view.config.translation_domain) %}
+    <input type="number" step="any" inputmode="decimal" class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" placeholder="{{ 'crudit_ui.filter.min'|trans({}, 'LleCruditUiBundle') }}" aria-label="{{ 'crudit_ui.filter.minimum'|trans({'%label%': label}, 'LleCruditUiBundle') }}">
+    <span class="crudit-ui-filter-field__affix" aria-hidden="true">–</span>
+    <input type="number" step="any" inputmode="decimal" class="crudit-ui-filter-field__text" name="{{ id }}_to" value="{{ to }}" placeholder="{{ 'crudit_ui.filter.max'|trans({}, 'LleCruditUiBundle') }}" aria-label="{{ 'crudit_ui.filter.maximum'|trans({'%label%': label}, 'LleCruditUiBundle') }}">
 {% endblock %}

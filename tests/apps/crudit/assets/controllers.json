@@ -63,6 +63,18 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "filter-field": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "filter-period": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "filters": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "selection-bar": {
                 "enabled": true,
                 "fetch": "eager"

@@ -1,0 +1,5 @@
+{% extends "@LleCrudit/filter/type/_base_filter.html.twig" %}
+
+{% block input %}
+    <input type="email" class="crudit-ui-filter-field__text email-filter" name="{{ id }}_value" value="{{ value }}" placeholder="name@example.com" aria-label="{{ filter.label|trans(domain=view.config.translation_domain) }}">
+{% endblock %}

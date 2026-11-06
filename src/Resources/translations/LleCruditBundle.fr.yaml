@@ -133,6 +133,7 @@ crudit:
         count: "{1} %count% élément|]1,Inf[ %count% éléments"
 
     filter:
+        region: "Filtres : %title%"
         action: "Filtrer"
         reset: "Réinitialiser"
         operator:

@@ -1,42 +1,24 @@
-<div class="input-group">
+{#
+ # The frame of a filter that has a template of its own (`setTemplate()`, or a filter type of a project): the label, then
+ # one frame [condition | input], as a Filter:Field of CruditUiBundle draws it. The filters of the types of the bundle
+ # that keep their default template are drawn by that component, not by this template (FilterViewBuilder).
+ #
+ # The variables are those of the 1.x (`id`: the name of the filter, `data`, `filter`, `filtertype`, `view`) and `operators`,
+ # `operator`, `value`, `to`, `choices` (ready to use). Blocks: `operator` (the condition), `input` (the input, which a type
+ # replaces). The inputs are sent by the form of the bar under `<id>_value`, `<id>_op` and `<id>_to`: keep these names.
+ #}
+<div class="crudit-ui-filter-field__label">{{ filter.label|trans(domain=view.config.translation_domain) }}</div>
+<div class="crudit-ui-filter-field__control">
     {% block operator %}
-        <div class="input-group-prepend">
-            <input id="{{ id }}_op" type="hidden" name="{{ id }}_op"
-                   value="{{ data['op']|default(filter.operators|keys|first) }}">
-            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                {% set found = 0 %}
-                {% for k, options in filter.operators %}
-                    {% if data and data.op is defined and k == data.op %}
-                        {% set found = 1 %}
-                        <i id="{{ id }}_op_icon" class="{{ options['icon'] }}"
-                           title="{{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}"></i>
-                    {% endif %}
-                {% endfor %}
-                {% if found == 0 %}
-                    {% set k = filter.operators|keys|first %}
-                    {% set options = filter.operators|first %}
-                    <i id="{{ id }}_op_icon" class="{{ options['icon'] }}"
-                       title="{{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}"></i>
-                {% endif %}
-            </button>
-            <div class="dropdown-menu">
-                {% for k, options in filter.operators %}
-                    <a class="dropdown-item valuesetter" href="#" data-value="{{ k }}" data-valueid="{{ id }}_op">
-                        <i class="{{ options['icon'] }}"></i>&nbsp;
-                        {{ ('crudit.filter.operator.'~k)|trans({}, 'LleCruditBundle') }}
-                    </a>
-                {% endfor %}
-            </div>
-        </div>
+        {%- if operators|length > 1 -%}
+            <twig:LleCruditUi:Filter:Operator :name="id" :label="filter.label|trans(domain=view.config.translation_domain)" :operators="operators" :current="operator" />
+        {%- elseif operators|length == 1 -%}
+            <input type="hidden" name="{{ id }}_op" value="{{ (operators|first).value }}">
+        {%- endif -%}
     {% endblock %}
-
-    {% block input %}
-        <div class="form-floating">
-            <input id="input_{{ id }}" class="form-control" type="text" name="{{ id }}_value"
-                   value="{{ data['value']|default('') }}" placeholder="" autocomplete="new-password"/>
-            <label for="input_{{ id }}">
-                {{ filter.label|trans(domain=view.config.translation_domain) }}
-            </label>
-        </div>
-    {% endblock %}
+    <div class="crudit-ui-filter-field__input">
+        {% block input %}
+            <input type="text" class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" autocomplete="off" aria-label="{{ filter.label|trans(domain=view.config.translation_domain) }}">
+        {% endblock %}
+    </div>
 </div>

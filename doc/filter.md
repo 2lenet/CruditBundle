@@ -88,16 +88,27 @@ class YourCrudFilterset extends AbstractFilterSet
 }
 ```
 
-**3. (Optional) Changing the amount displayed**
+**3. (Optional) Choose the main filters**
 
-By default, 4 filters are displayed. If you want to show more or less, override `getNumberDisplayed` in your FilterSet :
+The filters are shown as a bar above the list (the search is not part of it) and a panel opened by the button "Filters".
+**No filter is in the bar by default**: mark the ones people use all the time with `setPrimary()`. They apply at once, the
+others apply with the button "Apply" of the panel (below 1024 px the main filters move into the panel):
 
 ```php
-public function getNumberDisplayed(): int
+public function getFilters(): array
 {
-    return 8;
+    return [
+        StringFilterType::new('name')->setPrimary(),
+        ChoiceFilterType::new('status', [...])->setPrimary(),
+        BooleanFilterType::new('active'),
+        StringFilterType::new('internalCode')->setHidden(true), // filters, shows nowhere
+    ];
 }
 ```
+
+The panel puts 4 filters per row at the most. `getNumberDisplayed()` of the `FilterSet` has no effect any more (it is
+kept so that your classes still compile). The active filters are chips above the list, removable one by one; their
+state is kept in the session, so the list found again after a record is still filtered.
 
 **4. (Optional) Add default values**
 
