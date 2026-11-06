@@ -120,6 +120,9 @@ crudit:
         expired: "La page a expiré : rechargez-la, puis recommencez."
         error: "Le statut n'a pas pu être changé."
 
+    form:
+        required_legend: "Les champs marqués d'un astérisque (*) sont obligatoires."
+        help_on: "Aide sur le champ %label%"
     field:
         createdAt: "Créé le"
         createdBy: "Créé par"

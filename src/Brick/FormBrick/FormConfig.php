@@ -37,6 +37,9 @@ class FormConfig extends AbstractBrickConfig
 
     protected ?string $title = null;
 
+    /** Most fields on a line of this form (1 to 4), null: those of the CRUD (`getFormColumns()`) */
+    protected ?int $columns = null;
+
     public static function new(array $options = []): self
     {
         return new self($options);
@@ -176,6 +179,25 @@ class FormConfig extends AbstractBrickConfig
     public function getTitle(): ?string
     {
         return $this->title;
+    }
+
+    /**
+     * Most fields on a line of this form (1 to 4): fewer when the screen is narrow, 1 on a phone. Null: the number of
+     * the CRUD (`CrudConfigInterface::getFormColumns()`, `lle_crudit.form_columns` by default).
+     */
+    public function setColumns(?int $columns): self
+    {
+        if ($columns !== null && ($columns < 1 || $columns > 4)) {
+            throw new \InvalidArgumentException(sprintf('A form has 1 to 4 columns, %d given.', $columns));
+        }
+        $this->columns = $columns;
+
+        return $this;
+    }
+
+    public function getColumns(): ?int
+    {
+        return $this->columns;
     }
 
     public function setTitle(?string $title): self

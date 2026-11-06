@@ -61,10 +61,28 @@ class FormFactory extends AbstractBasicBrickFactory
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'default_path' => $brickConfigurator->getCrudConfig()->getPath(),
                 'back_url' => $this->navigationStack->peek(),
-                'css_class_columns_form' => $brickConfigurator->getCrudConfig()->getCssClassColumnsForm(),
+                'columns' => $this->getColumns($brickConfigurator),
             ]);
 
         return $view;
+    }
+
+    /**
+     * Most fields on a line: those of the FormConfig, else those of the CRUD. A CRUD of the 1.x that still overrides
+     * getCssClassColumnsForm() (Bootstrap classes) is told, rather than silently laid out with the default.
+     */
+    private function getColumns(FormConfig $brickConfigurator): int
+    {
+        $crudConfig = $brickConfigurator->getCrudConfig();
+        if (method_exists($crudConfig, 'getCssClassColumnsForm')) {
+            throw new CruditException(sprintf(
+                '%s::getCssClassColumnsForm() is removed in Crudit 2.0 (Bootstrap classes): return the number of columns'
+                . ' of its forms (1 to 4) from getFormColumns() instead, see UPGRADE-2.0.md.',
+                $crudConfig::class,
+            ));
+        }
+
+        return $brickConfigurator->getColumns() ?? $crudConfig->getFormColumns();
     }
 
     private function bindRequest(FormInterface $form, FormConfig $brickConfig, object $resource): void

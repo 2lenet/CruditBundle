@@ -29,6 +29,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Declare a tone per state of your workflows, replace your links to the transitions](#workflows-lot-34c) *(lot 3.4.c)*
    - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` without effect](#7-template-overrides) *(lot 3.4.a)*
+   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`](#forms-lot-32a) *(lot 3.2.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -667,7 +668,8 @@ to add them.
 
 | Key | Change |
 |---|---|
-| `css_class_columns_form`, `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.2.a).* |
+| `css_class_columns_form` | **Removed** (Bootstrap grid classes), Symfony refuses the key: **`form_columns`** (1 to 4, **4 by default**, was 3 on a large screen): the most fields on a line of a form, fewer when the room is short, one on a phone. `col-12` is `form_columns: 1`, `col-md-6` is `2`, `col-sm-12 col-md-6 col-lg-4` (the former default) is `3`. For one CRUD, see [Forms](#forms-lot-32a) |
+| `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.3.a).* |
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled` | **`true` by default** (was `false`), and only for the actions refused by a right: see [Actions](#5-actions) |
@@ -798,7 +800,7 @@ lot 3.4.b. They had no block in 1.x: an override of a whole template still works
 | `json` | a list gives `<ul>`, an object `<dl>`, recursively (was the values side by side); on a line in a cell of a list |
 | `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**: what the sanitizer does not allow, an `<iframe>`, a `style`, is removed; give your own `SanitizerInterface` to allow more: it cleans Markdown too); the headings of Markdown start at `h4` |
 | `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage (**it changes** when `min` is not 0 or `max` not 100: 1.x wrote the value followed by %); above `max`, the danger tone as in 1.x, new option `overMax` (`danger` by default, `success`: full, as at `max`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
-| `workflow` | unchanged until lot 3.4.c |
+| `workflow` | the `Status` of CruditUiBundle, see [Workflows](#workflows-lot-34c) *(lot 3.4.c)* |
 
 - **Alignment of a column**: by its field, `AbstractField::getAlignment()` (`start`, `end`), from the configuration
   `default_*_alignment` (`right`: end, `left` and **`center`: start**, a column is no longer centred). `tableCssClass`
@@ -821,7 +823,7 @@ These paths and their main blocks are **kept**, because many projects extend the
 `crud/index.html.twig`.
 Their *inner markup* changes (Bootstrap classes removed): check your overrides visually.
 
-The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *(lot 3.2)*.
+The form theme `form/custom_types.html.twig` is renamed `form/theme.html.twig` *(lot 3.2.a)*, see [Forms](#forms-lot-32a).
 
 Renamed or removed blocks: *to be filled lot by lot.*
 
@@ -831,6 +833,63 @@ of a field is `crudit-value crudit-value--<type>` *(lot 3.4.a)*. `crudit-flash` 
 configuration (a tone, a hue of the extended palette, or a colour of the project: `--c-<name>-bg` / `--c-<name>-text`
 and the rule `.crudit-ui-tone--<name>`), see [Workflows](#workflows-lot-34c). Edit in place `crudit-eip-*`:
 renamed *(lot 3.4.b)*.
+
+### Forms *(lot 3.2.a)*
+
+The forms of the bricks (`brick/form/index.html.twig`, the forms of the batch actions) **impose the theme of Crudit**,
+`@LleCrudit/form/theme.html.twig`, built on the one of CruditUiBundle (`@LleCruditUi/form/theme.html.twig`, on
+`form_div_layout`, see its `docs/forms.md`), **whatever `twig.form_themes`** (`bootstrap_5_layout`…): `{% form_theme form
+with ['@LleCrudit/form/theme.html.twig'] only %}`. Your own forms, outside the bricks, keep your global theme; the
+Crudit types work there as before (the theme is still added to `twig.form.resources`).
+
+- **Labels above** the inputs, pointing to them; no floating label (`form-floating`) any more. The help and the error
+  are attached to the input (`aria-describedby`: `<id>_help`, then `<id>_error`), an error sets `aria-invalid` and has
+  an icon. A required field has a star, explained above the form ("The fields marked with an asterisk (*) are
+  required", key `crudit.form.required_legend`), shown when the form has a required field.
+- **Widths**: a grid of at most 4 fields per line, fewer when the room is short (13rem per column at least), one on a
+  phone. The class of a field (`attr.class`, `col-md-6`…) **no longer sets its width**: it goes on the input; give the
+  option **`span`** to the field instead, `1` (default), `2`, `3` or `'full'` (the whole line). A Bootstrap column
+  class on a field triggers a deprecation (`SpanExtension`).
+
+  ```php
+  $builder->add('designation', null, ['span' => 2]);
+  $builder->add('notes', TextareaType::class, ['span' => 'full']);
+  ```
+- **Columns**: `lle_crudit.form_columns` for the project (see [Configuration](#6-configuration)),
+  `CrudConfigInterface::getFormColumns(): int` for one CRUD (it replaces `getCssClassColumnsForm()`: a CRUD that still
+  overrides `getCssClassColumnsForm()` throws a `CruditException` when its form is shown, it would be laid out with the
+  default otherwise), `FormConfig::setColumns(1..4)` for one form, the option `columns` of a `GroupType` for one
+  section. The most precise wins: section, form, CRUD, project.
+
+  ```php
+  public function getFormColumns(): int
+  {
+      return 2;
+  }
+  ```
+- **Sections** (`GroupType`): a `fieldset` named by its title (`<legend>` with a `<h2>`), in a card, the fields after it
+  up to the next section on a grid. New options `description` (a text under the title) and `columns`. A section is
+  always on the whole width: its `attr.class` is kept on the fieldset, but `fieldset_class` (a column class) is gone.
+- **A sub-form** (a compound field of the form type: an address in a form…) is still laid out field by field on the
+  grid; the other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset` named by
+  its `legend`.
+- A **switch**: `attr: {role: 'switch'}` on a `CheckboxType` (a native checkbox, its state written Yes / No).
+- **Help of a field** (`tooltip`, `tooltip_html`, `tooltip_template`): a button ⓘ next to the label that opens it
+  (`Toggletip` of CruditUiBundle, a popover), reachable on a touch screen, named "Help on the field …" (key
+  `crudit.form.help_on`). It opens on the hover and the keyboard focus, and a click keeps it open, with the controller
+  `toggletip` of CruditUiBundle: **enable it** in `assets/controllers.json` (`"toggletip": {"enabled": true, "fetch":
+  "eager"}` under `@2lenet/crudit-ui-bundle`), without it the click alone opens it. `tooltip_position` is deprecated,
+  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`.
+- `brick/form/index.html.twig` keeps its blocks `form_title` and `form_buttons`, and the option `horizontalForm` (the
+  fields side by side, the buttons at the end of the line). Its markup changes: no `card`, `row`, `col-*`,
+  `form-floating`, `px-2`; the title is no longer followed by a `<hr>`; the buttons are those of CruditUiBundle,
+  "Cancel" is secondary (it was red). `autocomplete="off"` on the form and `autocomplete="new-password"` on each input
+  are gone (the purpose of each input comes with lot 3.2.b).
+- CSS hooks: `crudit-form`, `crudit-form__legend`, `crudit-form__actions`, `crudit-form-section`, `crudit-form-grid`,
+  `crudit-form-field--span-2`, `crudit-form-field--span-3`, `crudit-form-field--span-full`; the classes of the inputs
+  are those of CruditUiBundle (`crudit-ui-field`, `crudit-ui-label`, `crudit-ui-input`…).
+- Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`), the file, the translated
+  field, the cron expression and the telephone (its style) *(lots 3.2.b and 3.2.c)*.
 
 ### Batch actions *(lot 3.1.c)*
 
