@@ -26,4 +26,5 @@
     @include meta.load-css('components/row-actions');
     @include meta.load-css('components/workflow');
     @include meta.load-css('components/fields');
+    @include meta.load-css('components/form');
 }

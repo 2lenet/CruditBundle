@@ -1073,6 +1073,34 @@ for (const dark of [false, true]) {
 }
 ok('fields: alignment, two lines in a cell, values of a record');
 
+// ---------- Form (lot 3.2.a): the theme of Crudit imposed (the application declares bootstrap_5_layout), the grid of
+// 4 columns then the section of 2, one column on a phone, the help of a field, the switch, axe on the form in light,
+// in dark and right to left.
+for (const [width, dark, rtl] of [[1440, false, false], [1440, true, false], [1280, false, true], [360, false, false]]) {
+    page = await open(width, '/client/new', {dark, rtl});
+    const columns = await page.$$eval('.crudit-form-grid', (grids) => grids.map((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length));
+    assert.deepEqual(columns, width === 360 ? [1, 1] : [4, 2], `columns of the grids at ${width}`);
+    assert.ok(await page.$$eval('.crudit-form-grid', (grids) => grids.every((grid) => grid.scrollWidth <= grid.clientWidth)), `no field out of its grid at ${width}`);
+    if (width === 1440 && !dark) {
+        // The width of a field: 2 columns for the e-mail, the whole line for the notes
+        const [name, email, progress, channels, notes, grid] = await page.$$eval('#client_name, #client_email, #client_progress, #client_channels, #client_notes, .crudit-form-section:last-of-type .crudit-form-grid',
+            (elements) => elements.map((e) => (e.closest('.crudit-ui-field') ?? e).getBoundingClientRect().width));
+        assert.ok(email > name * 1.9, 'the e-mail on 2 columns');
+        assert.ok(progress > name * 2.9 && progress < name * 3.5, 'the progress on 3 columns');
+        assert.ok(Math.abs(channels - grid) < 1, 'a field of 3 columns in a section of 2: the whole line');
+        assert.ok(Math.abs(notes - grid) < 1, 'the notes on the whole line');
+        await page.click('.crudit-ui-toggletip');
+        assert.ok(await page.$eval('#client_name_tooltip', (panel) => panel.matches(':popover-open')), 'the help of the field opens');
+        await page.keyboard.press('Escape');
+        await page.click('label[for="client_active"]');
+        assert.equal(await page.$eval('#client_active', (input) => input.checked), false, 'the label toggles the switch');
+        await shot(page, 'form');
+    }
+    await axeOn(page, 'main form', `form at ${width}${dark ? ', dark' : ''}${rtl ? ', RTL' : ''}`);
+    await page.close();
+}
+ok('form: theme of Crudit, grid, widths, help, switch');
+
 // ---------- Filters (lot 3.1.e): the bar, the panel, the chips; the state is kept by the server (session)
 const rowsOf = (page) => page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows.length);
 const filterNav = async (page, action) => {

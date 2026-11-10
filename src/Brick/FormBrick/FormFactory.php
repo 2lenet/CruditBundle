@@ -61,10 +61,19 @@ class FormFactory extends AbstractBasicBrickFactory
                 'cancel_path' => $brickConfigurator->getCancelPath(),
                 'default_path' => $brickConfigurator->getCrudConfig()->getPath(),
                 'back_url' => $this->navigationStack->peek(),
-                'css_class_columns_form' => $brickConfigurator->getCrudConfig()->getCssClassColumnsForm(),
+                'columns' => $this->getColumns($brickConfigurator),
             ]);
 
         return $view;
+    }
+
+    /**
+     * Most fields on a line: those of the FormConfig, else those of the CRUD. A CRUD of the 1.x that still overrides
+     * getCssClassColumnsForm() is refused when the container is built (CssClassColumnsFormPass).
+     */
+    private function getColumns(FormConfig $brickConfigurator): int
+    {
+        return $brickConfigurator->getColumns() ?? $brickConfigurator->getCrudConfig()->getFormColumns();
     }
 
     private function bindRequest(FormInterface $form, FormConfig $brickConfig, object $resource): void

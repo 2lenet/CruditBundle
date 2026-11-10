@@ -16,6 +16,7 @@ use Symfony\Component\Config\Definition\Processor;
  * lle_crudit.search: on by default, with the screens and no entity; an entity is a CrudConfig class, alone or with its
  * options.
  * hide_if_disabled: true by default, delete_hide_if_disabled: as hide_if_disabled unless set.
+ * form_columns: 4 by default, 1 to 4; css_class_columns_form is removed (Bootstrap classes).
  */
 class ConfigurationTest extends TestCase
 {
@@ -149,6 +150,32 @@ class ConfigurationTest extends TestCase
         self::assertTrue($config['hide_if_disabled']);
         self::assertNull($config['delete_hide_if_disabled']);
         self::assertFalse($this->process(['delete_hide_if_disabled' => false])['delete_hide_if_disabled']);
+    }
+
+    public function testFormColumns(): void
+    {
+        self::assertSame(4, $this->process([])['form_columns']);
+        self::assertSame(2, $this->process(['form_columns' => 2])['form_columns']);
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>}>
+     */
+    public static function invalidFormColumns(): iterable
+    {
+        yield 'zero' => [['form_columns' => 0]];
+        yield 'five' => [['form_columns' => 5]];
+        yield 'the former key' => [['css_class_columns_form' => 'col-md-6']];
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    #[DataProvider('invalidFormColumns')]
+    public function testInvalidFormColumns(array $config): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->process($config);
     }
 
     private function process(array $config): array

@@ -9,15 +9,23 @@ We have three configurations for managing the alignment of numbers with three po
 - `default_integer_alignment`
 - `default_number_alignment`
 
-We have four configurations for columns/card display :
-- `css_class_columns_form` — CSS class applied to each field column in form view
+The forms are on a grid: `form_columns` is the most fields on a line (1 to 4, 4 by default), fewer when the room
+is short, one on a phone. A CRUD changes it with `getFormColumns()`, a form with `FormConfig::setColumns()`, a section
+with the option `columns` of its `GroupType`; a field takes 2 or 3 columns or the whole line with its option `span` (see
+[Form types](form_types.md#layout-of-a-form)).
+
+```yaml
+lle_crudit:
+    form_columns: 3
+```
+
+*To be rewritten with lot 3.3.a:* the record and its cards still use
 - `css_class_columns_show` — CSS class applied to each field column in show view
 - `css_class_columns_card` — CSS class applied to each field column in card view
 - `number_cards_per_row` — number of cards displayed per row
 
 ```yaml
 lle_crudit:
-    css_class_columns_form: 'col-sm-12 col-md-6'
     css_class_columns_show: 'col-sm-12 col-md-6'
     css_class_columns_card: 'col-sm-12 col-md-4'
     number_cards_per_row: 3
