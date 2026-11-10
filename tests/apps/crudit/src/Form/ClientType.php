@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * The form of a client (lot 3.2.a): a section on the 4 columns of the form, then one of 2 columns with a description;
  * a required field with a help and a tooltip, widths (span 2, 3, full; 3 in the section of 2), a switch, choices shown
- * as boxes, a unit.
+ * as boxes, a unit; a field with its own autocomplete and a tooltip_html to clean.
  */
 class ClientType extends AbstractType
 {
@@ -30,7 +30,12 @@ class ClientType extends AbstractType
                 'tooltip' => 'The name of the company, or of the person',
                 'constraints' => [new NotBlank(message: 'Enter the name of the client.')],
             ])
-            ->add('email', null, ['span' => 2, 'required' => false])
+            ->add('email', null, [
+                'span' => 2,
+                'required' => false,
+                'attr' => ['autocomplete' => 'email'], // its own autocomplete, not the new-password of the form
+                'tooltip_html' => '<strong>Work</strong> address<script>alert(1)</script><em onclick="alert(1)">only</em>',
+            ])
             ->add('progress', PercentType::class, ['type' => 'integer', 'required' => false, 'span' => 3])
             ->add('contact', GroupType::class, ['label' => 'Contact', 'description' => 'How to reach the client', 'columns' => 2, 'mapped' => false])
             ->add('active', CheckboxType::class, ['required' => false, 'attr' => ['role' => 'switch']])

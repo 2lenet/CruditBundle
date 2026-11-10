@@ -126,6 +126,9 @@ services:
     # Test declared by #[AsTwigTest] (autoconfiguration)
     Lle\CruditBundle\Twig\FieldExtension: ~
 
+    # crudit_form_flattened(), crudit_form_has_required(), crudit_form_field_deprecations() by #[AsTwigFunction]
+    Lle\CruditBundle\Twig\FormExtension: ~
+
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:
             $propertyAccessor: '@property_accessor'

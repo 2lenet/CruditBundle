@@ -30,7 +30,10 @@ class FormTest extends AppTestCase
         self::assertSame('client_name_help', $input->attr('aria-describedby'));
         self::assertSame('As on the invoice', $form->filter('#client_name_help')->text());
         self::assertSame('crudit-ui-input', $input->attr('class'));
-        self::assertNull($input->attr('autocomplete'), 'no autocomplete="new-password" on every field any more');
+        // As in the 1.x: no autofill of the browser, unless the field sets its own autocomplete
+        self::assertSame('off', $form->attr('autocomplete'));
+        self::assertSame('new-password', $input->attr('autocomplete'));
+        self::assertSame('email', $form->filter('#client_email')->attr('autocomplete'));
 
         // The tooltip: a button next to the label that opens the help
         $tip = $row->filter('.crudit-ui-field__label-row button.crudit-ui-toggletip');
@@ -38,6 +41,17 @@ class FormTest extends AppTestCase
         // Named after the label of the field (field.name: the label of the CRUD, not translated in this application)
         self::assertSame('Help on the field ' . trim(str_replace("\u{a0}*", '', $label->text())), $tip->text());
         self::assertSame('The name of the company, or of the person', trim($form->filter('#client_name_tooltip')->text()));
+    }
+
+    public function testTheHtmlOfATooltipIsCleaned(): void
+    {
+        $tip = $this->form()->filter('#client_email_tooltip');
+
+        self::assertSame('Work', $tip->filter('strong')->text());
+        self::assertSame('only', $tip->filter('em')->text());
+        self::assertNull($tip->filter('em')->attr('onclick'));
+        self::assertCount(0, $tip->filter('script'));
+        self::assertStringNotContainsString('alert', $tip->html());
     }
 
     public function testSectionsColumnsAndWidths(): void

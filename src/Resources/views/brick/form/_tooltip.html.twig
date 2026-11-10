@@ -1,6 +1,7 @@
 {#
  # Help of a field (options tooltip, tooltip_html, tooltip_template), next to its label: a button that opens it
  # (Toggletip of CruditUiBundle), reachable on a touch screen. Variable: field (the FormView of the field).
+ # tooltip_html is cleaned by the filter sanitize (HTMLPurifier): no script nor event attribute, the formatting stays.
  #}
 {%- set vars = field.vars -%}
 {%- if vars.tooltip|default(null) or vars.tooltip_html|default(null) or vars.tooltip_template|default(null) -%}
@@ -9,7 +10,7 @@
         {%- if vars.tooltip|default(null) -%}
             {{ vars.tooltip|trans }}
         {%- elseif vars.tooltip_html|default(null) -%}
-            {{ vars.tooltip_html|raw }}
+            {{ vars.tooltip_html|sanitize|raw }}
         {%- else -%}
             {% include vars.tooltip_template %}
         {%- endif -%}

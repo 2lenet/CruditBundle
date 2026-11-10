@@ -45,6 +45,7 @@
                                 {% if field.vars.name in ['ids', 'all_page'] %}
                                     {{ form_widget(field, {attr: {'data-selection-field': field.vars.name}}) }}
                                 {% elseif field.vars.name != '_token' %}
+                                    {% do crudit_form_field_deprecations(field) %}
                                     {{ form_row(field) }}
                                 {% endif %}
                             {% endfor %}

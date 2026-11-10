@@ -49,22 +49,11 @@ class SpanExtensionTest extends TypeTestCase
         $this->factory->create(TextType::class, null, ['span' => 4]);
     }
 
-    public function testABootstrapColumnClassIsToldByADeprecation(): void
+    public function testABootstrapColumnClassIsNotADeprecationOutsideTheFormsOfCrudit(): void
     {
         $messages = $this->deprecations(fn () => $this->factory->createNamed('name', TextType::class, null, ['attr' => ['class' => 'form-control col-md-6']])->createView());
 
-        self::assertSame(['Since 2lenet/crudit-bundle 2.0: The class "form-control col-md-6" of the field "name" no longer sets its width in a Crudit form: use the option "span" (1, 2, 3 or "full").'], $messages);
-        self::assertCount(1, $this->deprecations(fn () => $this->factory->createNamed('name', TextType::class, null, ['attr' => ['class' => 'col']])->createView()));
-    }
-
-    public function testAnotherClassIsNotADeprecation(): void
-    {
-        $messages = $this->deprecations(function (): void {
-            $view = $this->factory->createNamed('name', TextType::class, null, ['attr' => ['class' => 'collapse crudit-upper-format column-x']])->createView();
-            self::assertSame('collapse crudit-upper-format column-x', $view->vars['attr']['class']);
-        });
-
-        self::assertSame([], $messages);
+        self::assertSame([], $messages, 'told by crudit_form_field_deprecations() when Crudit shows the form, not for a form of the project');
     }
 
     public function testASectionHasADescriptionAndItsColumns(): void

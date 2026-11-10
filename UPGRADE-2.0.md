@@ -847,11 +847,13 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
 - **Labels above** the inputs, pointing to them; no floating label (`form-floating`) any more. The help and the error
   are attached to the input (`aria-describedby`: `<id>_help`, then `<id>_error`), an error sets `aria-invalid` and has
   an icon. A required field has a star, explained above the form ("The fields marked with an asterisk (*) are
-  required", key `crudit.form.required_legend`), shown when the form has a required field.
+  required", key `crudit.form.required_legend`), shown when a field shown has a star (the fields of a sub-form laid out
+  field by field are looked at, not the sub-form itself).
 - **Widths**: a grid of at most 4 fields per line, fewer when the room is short (13rem per column at least), one on a
   phone. The class of a field (`attr.class`, `col-md-6`…) **no longer sets its width**: it goes on the input; give the
   option **`span`** to the field instead, `1` (default), `2`, `3` or `'full'` (the whole line). A Bootstrap column
-  class on a field triggers a deprecation (`SpanExtension`).
+  class (`col`, `col-6`, `col-auto`, `col-md`, `col-md-6`…) on a field of a form shown by Crudit triggers a deprecation
+  (a form of the project with its own theme is not concerned).
 
   ```php
   $builder->add('designation', null, ['span' => 2]);
@@ -859,8 +861,8 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
   ```
 - **Columns**: `lle_crudit.form_columns` for the project (see [Configuration](#6-configuration)),
   `CrudConfigInterface::getFormColumns(): int` for one CRUD (it replaces `getCssClassColumnsForm()`: a CRUD that still
-  overrides `getCssClassColumnsForm()` throws a `CruditException` when its form is shown, it would be laid out with the
-  default otherwise), `FormConfig::setColumns(1..4)` for one form, the option `columns` of a `GroupType` for one
+  overrides `getCssClassColumnsForm()` throws a `CruditException` when the container is built, at the first page in
+  dev or at the `cache:clear` of a deployment, naming every such CRUD; it would be laid out with the default otherwise), `FormConfig::setColumns(1..4)` for one form, the option `columns` of a `GroupType` for one
   section. The most precise wins: section, form, CRUD, project.
 
   ```php
@@ -881,12 +883,15 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
   `crudit.form.help_on`). It opens on the hover and the keyboard focus, and a click keeps it open, with the controller
   `toggletip` of CruditUiBundle: **enable it** in `assets/controllers.json` (`"toggletip": {"enabled": true, "fetch":
   "eager"}` under `@2lenet/crudit-ui-bundle`), without it the click alone opens it. `tooltip_position` is deprecated,
-  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`.
+  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`. **`tooltip_html` is now cleaned** by the
+  filter `sanitize` (HTMLPurifier: no script nor event attribute, the formatting stays), as Bootstrap did for its
+  tooltip.
 - `brick/form/index.html.twig` keeps its blocks `form_title` and `form_buttons`, and the option `horizontalForm` (the
   fields side by side, the buttons at the end of the line). Its markup changes: no `card`, `row`, `col-*`,
   `form-floating`, `px-2`; the title is no longer followed by a `<hr>`; the buttons are those of CruditUiBundle,
-  "Cancel" is secondary (it was red). `autocomplete="off"` on the form and `autocomplete="new-password"` on each input
-  are gone (the purpose of each input comes with lot 3.2.b).
+  "Cancel" is secondary (it was red). As in the 1.x, `autocomplete="off"` on the form and `autocomplete="new-password"`
+  on each field keep the autofill of the browser away (the data of another person); a field that wants it sets its own
+  (`attr: {autocomplete: 'email'}`).
 - CSS hooks: `crudit-form`, `crudit-form__legend`, `crudit-form__actions`, `crudit-form-section`, `crudit-form-grid`,
   `crudit-form-field--span-2`, `crudit-form-field--span-3`, `crudit-form-field--span-full`; the classes of the inputs
   are those of CruditUiBundle (`crudit-ui-field`, `crudit-ui-label`, `crudit-ui-input`…).

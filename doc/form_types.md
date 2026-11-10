@@ -141,7 +141,7 @@ $builder
 | `span` | any field | `1` (default), `2`, `3` or `'full'`: its width on the grid; the whole line on a phone, and when it is wider than its section (or `3` on a narrow screen). `attr.class` does not set the width |
 | `columns` | `GroupType` | the most fields on a line of this section (1 to 4), else those of the form |
 | `description` | `GroupType` | a text under the title of the section |
-| `tooltip`, `tooltip_html`, `tooltip_template` | any field | a help opened by a button next to the label |
+| `tooltip`, `tooltip_html`, `tooltip_template` | any field | a help opened by a button next to the label (`tooltip_html` is cleaned by `sanitize`) |
 
 The number of columns of a form: `FormConfig::setColumns()`, else `getFormColumns()` of its CRUD, else
 `lle_crudit.form_columns`.

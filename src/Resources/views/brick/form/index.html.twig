@@ -7,14 +7,16 @@
  # columns (option columns). A sub-form (a compound field of the form type) is laid out field by field on the grid.
  # Option horizontalForm (FormConfig::new(['horizontalForm' => true]), the form to add a line under a sublist): the
  # fields side by side on one line, the buttons at its end.
+ # As in the 1.x, autocomplete="off" on the form and autocomplete="new-password" on each field, unless the field sets
+ # its own (attr.autocomplete).
  # Blocks kept for the projects: form_title, form_buttons.
  #}
 {% if view.role is not defined or not view.role or is_granted(view.role, view.data.resource) %}
     {% set form = view.data.form %}
     {% form_theme form with ['@LleCrudit/form/theme.html.twig'] only %}
     {% set columns = view.data.columns|default(4) %}
-    {# Compound fields shown as one input (their own widget), not laid out field by field #}
-    {% set widget_prefixes = ['choice', 'collection', 'date', 'time', 'datetime', 'dateinterval', 'birthday', 'week', 'repeated', 'vich_file', 'vich_image'] %}
+    {# As in the 1.x, no autofill of the browser (the data of another person): the project sets attr.autocomplete on a field to have it #}
+    {% set field_attr = {autocomplete: 'new-password'} %}
 
     <div class="crudit-form{% if view.data.options.horizontalForm ?? false %} crudit-form--horizontal{% endif %}">
         {% if view.data.title is defined and view.data.title %}
@@ -25,15 +27,13 @@
             {% endblock %}
         {% endif %}
 
-        {% set form_attributes = {class: 'crudit-form__form', novalidate: 'novalidate'} %}
+        {% set form_attributes = {class: 'crudit-form__form', novalidate: 'novalidate', autocomplete: 'off'} %}
         {% if view.id is defined and view.id %}
             {% set form_attributes = form_attributes|merge({id: view.id ~ '-' ~ form.vars.name}) %}
         {% endif %}
 
-        {% set has_required = form.children|filter(child => child.vars.required and 'hidden' not in child.vars.block_prefixes and not (child.vars.isGroup ?? false) and child.vars.name != '_token')|length > 0 %}
-
         {{ form_start(form, {attr: form_attributes}) }}
-        {% if has_required %}
+        {% if crudit_form_has_required(form) %}
             <p class="crudit-form__legend">{{ 'crudit.form.required_legend'|trans({}, 'LleCruditBundle') }}</p>
         {% endif %}
         {{ form_errors(form) }}
@@ -58,15 +58,15 @@
                     <div class="crudit-form-grid crudit-form-grid--{{ columns }}">
                     {% set open = 'grid' %}
                 {% endif %}
-                {% set prefixes = field.vars.block_prefixes %}
-                {% if field.vars.compound and field.children|length > 0
-                    and prefixes|filter(p => p in widget_prefixes or p starts with 'crudit_')|length == 0 %}
+                {% if crudit_form_flattened(field) %}
                     {% for subfield in field %}
-                        {{ form_row(subfield) }}
+                        {% do crudit_form_field_deprecations(subfield) %}
+                        {{ form_row(subfield, {attr: field_attr|merge(subfield.vars.attr)}) }}
                     {% endfor %}
                     {% do field.setRendered %}
                 {% else %}
-                    {{ form_row(field) }}
+                    {% do crudit_form_field_deprecations(field) %}
+                    {{ form_row(field, {attr: field_attr|merge(field.vars.attr)}) }}
                 {% endif %}
             {% endif %}
         {% endfor %}
