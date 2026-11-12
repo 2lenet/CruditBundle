@@ -879,7 +879,9 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
   its `legend`.
 - A **switch**: the option **`switch`** of a `CheckboxType` (a native checkbox with `role="switch"`, its state written
   Yes / No, in the primary colour); `attr: {role: 'switch'}` works too. **A boolean of an entity guessed by Crudit is
-  now a switch** (it was a checkbox): give `switch: false` to the field to keep the checkbox *(lot 3.2.b)*.
+  now a switch** (it was a checkbox): give `switch: false` to the field to keep the checkbox *(lot 3.2.b)*. The
+  `role="switch"` is set by the theme of Crudit only: a form of the project drawn with another theme (Bootstrap) keeps
+  a checkbox, told as a checkbox.
 
   ```php
   $builder->add('active');                          // a switch
@@ -911,9 +913,10 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
     keyboard `decimal` of iOS has no minus key: `attr: {inputmode: 'text'}` for a value that may be negative. The
     number filters keep the keyboard of `type="number"` (a negative bound can be typed);
   - **Latin digits** in a number, an amount, a percentage (and an integer with `grouping`), whatever the language: in
-    `ar_SA` or `fa`, Symfony wrote `١٬٢٣٤٫٥` and refused `1234.5` (`LatinDigitsExtension`, the locale of
-    `Formatter::locale()` of CruditUiBundle, as the values shown since lot 1.4). A number typed in Arabic or Persian
-    digits is refused;
+    `ar_SA` or `fa`, Symfony wrote `١٬٢٣٤٫٥` and refused `1234.5` (`LatinDigitsExtension`: the locale of the request
+    with `@numbers=latn`, as the values shown since lot 1.4). A number typed in Arabic or Persian digits is refused. In
+    such a language, the view transformers of these types are replaced: a project type built on them adds its own in
+    its `buildForm()`;
   - a **counter of characters** under a long text with `attr.maxlength` ("27 / 80 characters", attached to the input,
     the characters left told to screen readers near the limit): controller `char-count` of CruditUiBundle. A text on
     one line has it with the option `counter: true` (not by default: Symfony puts the length of the column of a string
@@ -930,8 +933,10 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
     `crudit-email-format`, `crudit-ip-format`), now the controller `input-format` of Crudit (`sb-admin/js/input_format.js`
     removed): **the value is changed once the field is left**, not while typing (an e-mail address was put in small
     letters at each key; capitals and small letters are still shown while typing); a wrong e-mail or IP address gets
-    `aria-invalid` and the border of an error, instead of `is-invalid` / `is-valid` of Bootstrap. The point after the
-    3rd digit of an IP byte is still added while typing at the end;
+    `aria-invalid` and the border of an error, instead of `is-invalid` / `is-valid` of Bootstrap; an error of the
+    server on the field (a value already used) keeps its `aria-invalid` until the form is sent again. The point of an
+    IP address is still added while typing at the end, once a byte is 26 or more or has 3 digits as in the 1.x; a point
+    typed just after it is ignored;
   - the **telephone** (`TelephoneType`): the calling code and the number on one line, in a `crudit-ui-input-group`,
     one focus ring around both, both attached to the help and the error of the field; no `input-group`, `form-select`,
     `is-invalid` any more. `sb-admin/js/telephone.js` and `sb-admin/css/components/forms/_telephone.scss` are removed

@@ -59,8 +59,6 @@ services:
         tags:
             - { name: form.type_extension }
     Lle\CruditBundle\Form\Extension\LatinDigitsExtension:
-        arguments:
-            $formatter: '@Lle\CruditUiBundle\Format\Formatter'
         tags:
             - { name: form.type_extension }
     Lle\CruditBundle\Form\Extension\TomSelectExtension:

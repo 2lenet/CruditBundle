@@ -146,7 +146,7 @@ $builder
 | `columns` | `GroupType` | the most fields on a line of this section (1 to 4), else those of the form |
 | `description` | `GroupType` | a text under the title of the section |
 | `tooltip`, `tooltip_html`, `tooltip_template` | any field | a help opened by a button next to the label (`tooltip_html` is cleaned by `sanitize`) |
-| `switch` | `CheckboxType` | a switch, its state written Yes / No (`true` on a boolean guessed from the entity; `false` keeps the checkbox) |
+| `switch` | `CheckboxType` | a switch, its state written Yes / No (`true` on a boolean guessed from the entity; `false` keeps the checkbox). `role="switch"` is set by the theme of Crudit only: another theme keeps a checkbox |
 | `segmented` | `ChoiceType` | with `expanded` and without `multiple`: short choices as a segmented control |
 | `attr.maxlength` | long text | a counter of characters under the field ("27 / 80 characters") |
 | `counter` | text, long text | `true`: the counter on a text on one line too (Symfony puts the length of the column in `maxlength`, so it is not automatic); `false`: no counter |

@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace phpunit\Unit\Form\Extension;
 
 use Lle\CruditBundle\Form\Extension\LatinDigitsExtension;
-use Lle\CruditUiBundle\Format\Formatter;
-use Lle\CruditUiBundle\Locale\RequestLocale;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Test\TypeTestCase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Twig\Environment;
-use Twig\Loader\ArrayLoader;
 
 /**
  * Numbers typed as text in Latin digits whatever the language (lot 3.2.b): ar_SA and fa write their own digits.
@@ -38,7 +32,7 @@ class LatinDigitsExtensionTest extends TypeTestCase
 
     protected function getTypeExtensions(): array
     {
-        return [new LatinDigitsExtension($this->formatter('ar_SA'))];
+        return [new LatinDigitsExtension()];
     }
 
     public function testALanguageWithItsOwnDigitsShowsAndReadsLatinDigits(): void
@@ -78,13 +72,9 @@ class LatinDigitsExtensionTest extends TypeTestCase
         self::assertFalse(LatinDigitsExtension::latinDigits('fa'));
     }
 
-    private function formatter(string $locale): Formatter
+    public function testTheLocaleWithLatinDigitsKeepsItsOtherKeywords(): void
     {
-        $request = new Request();
-        $request->setLocale($locale);
-        $stack = new RequestStack();
-        $stack->push($request);
-
-        return new Formatter(new RequestLocale($stack, $locale), new Environment(new ArrayLoader()));
+        self::assertSame('ar_SA@numbers=latn', LatinDigitsExtension::latinLocale('ar_SA'));
+        self::assertSame('fa@calendar=persian;numbers=latn', LatinDigitsExtension::latinLocale('fa@numbers=arabext;calendar=persian'));
     }
 }

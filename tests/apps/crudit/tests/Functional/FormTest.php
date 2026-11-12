@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormView;
+use Twig\Environment;
 
 /**
  * The form of a CRUD (lot 3.2.a), with bootstrap_5_layout as the global theme of the application (as 24 projects):
@@ -188,6 +194,34 @@ class FormTest extends AppTestCase
         self::assertCount(1, $crawler->filter('#client_phone_error'));
     }
 
+    public function testATelephoneKeepsTheDescriptionsOfTheProject(): void
+    {
+        $view = $this->formFactory()->createNamedBuilder('client', FormType::class, null, ['csrf_protection' => false])
+            ->add('phone', TelephoneType::class, ['help' => 'A mobile'])
+            ->getForm()->createView();
+        $view['phone']['number']->vars['attr']['aria-describedby'] = 'client_phone_note';
+        $html = new Crawler($this->renderWidget($view, "{{ form_row(form.phone) }}", '@LleCrudit/form/theme.html.twig'));
+
+        self::assertSame('client_phone_note client_phone_help', $html->filter('#client_phone_number')->attr('aria-describedby'), 'the description of the project is kept, the help added');
+        self::assertSame('client_phone_help', $html->filter('#client_phone_country')->attr('aria-describedby'));
+    }
+
+    public function testABooleanGuessedIsASwitchInTheThemeOfCruditOnly(): void
+    {
+        // A name for each theme: the renderer of Symfony keeps the blocks found for a field by its name
+        $view = fn (string $name): FormView => $this->formFactory()->createNamedBuilder($name, FormType::class, null, ['csrf_protection' => false])
+            ->add('active', CheckboxType::class, ['switch' => true])
+            ->getForm()->createView();
+
+        $crudit = new Crawler($this->renderWidget($view('crudit'), '{{ form_row(form.active) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertSame('switch', $crudit->filter('#crudit_active')->attr('role'));
+        self::assertCount(1, $crudit->filter('label.crudit-ui-switch:has(#crudit_active)'));
+
+        $bootstrap = new Crawler($this->renderWidget($view('bootstrap'), '{{ form_row(form.active) }}', 'bootstrap_5_layout.html.twig'));
+        self::assertSame('checkbox', $bootstrap->filter('#bootstrap_active')->attr('type'));
+        self::assertNull($bootstrap->filter('#bootstrap_active')->attr('role'), 'another theme draws a checkbox: it is told as a checkbox');
+    }
+
     public function testAnErrorIsAttachedToItsField(): void
     {
         $crawler = $this->client->request('GET', '/client/new');
@@ -210,5 +244,21 @@ class FormTest extends AppTestCase
         self::assertResponseIsSuccessful();
 
         return $crawler->filter('main form.crudit-form__form');
+    }
+
+    private function formFactory(): FormFactoryInterface
+    {
+        /** @var FormFactoryInterface $factory */
+        $factory = static::getContainer()->get('form.factory');
+
+        return $factory;
+    }
+
+    private function renderWidget(FormView $view, string $template, string $theme): string
+    {
+        /** @var Environment $twig */
+        $twig = static::getContainer()->get('twig');
+
+        return $twig->createTemplate("{% form_theme form with ['" . $theme . "'] only %}" . $template)->render(['form' => $view]);
     }
 }

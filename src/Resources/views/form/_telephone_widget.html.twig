@@ -2,19 +2,25 @@
  # TelephoneType (lot 3.2.b): the calling code and the number on one line, in a crudit-ui-input-group of
  # CruditUiBundle; the focus surrounds both. The "+33" box shows the calling code of the country chosen; the native
  # select lies transparent over it, keeping the full list of the countries and the keyboard. The help and the error
- # sit on the compound field: both inputs are attached to them, and invalid with it.
+ # sit on the compound field: both inputs are attached to them (after the ids the project gives in their attr), and
+ # invalid with it.
  #}
 {%- set described = [] -%}
 {%- if help is not empty %}{% set described = described|merge([id ~ '_help']) %}{% endif -%}
 {%- if errors|length > 0 %}{% set described = described|merge([id ~ '_error']) %}{% endif -%}
-{%- set state = described is empty ? {} : {'aria-describedby': described|join(' ')} -%}
-{%- if errors|length > 0 %}{% set state = state|merge({'aria-invalid': 'true'}) %}{% endif -%}
+{%- set state = errors|length > 0 ? {'aria-invalid': 'true'} : {} -%}
+{%- set country_own = (form.country.vars.attr['aria-describedby'] ?? '')|split(' ')|filter(v => v != '') -%}
+{%- set country_described = country_own|merge(described|filter(v => v not in country_own)) -%}
+{%- set country_state = country_described is empty ? state : state|merge({'aria-describedby': country_described|join(' ')}) -%}
+{%- set number_own = (form.number.vars.attr['aria-describedby'] ?? '')|split(' ')|filter(v => v != '') -%}
+{%- set number_described = number_own|merge(described|filter(v => v not in number_own)) -%}
+{%- set number_state = number_described is empty ? state : state|merge({'aria-describedby': number_described|join(' ')}) -%}
 <div id="{{ id }}" class="crudit-ui-input-group crudit-telephone" data-controller="2lenet--crudit-bundle--telephone">
     <div class="crudit-ui-input-group__unit crudit-telephone-calling-code">
         <span class="crudit-telephone-code" aria-hidden="true" data-2lenet--crudit-bundle--telephone-target="code">{{ calling_code }}</span>
         {{ form_widget(form.country, {
-            attr: form.country.vars.attr|merge(state)|merge({'data-2lenet--crudit-bundle--telephone-target': 'country', 'data-action': 'change->2lenet--crudit-bundle--telephone#sync', 'aria-label': 'crudit.telephone.calling_code'|trans({}, 'LleCruditBundle')}),
+            attr: form.country.vars.attr|merge(country_state)|merge({'data-2lenet--crudit-bundle--telephone-target': 'country', 'data-action': 'change->2lenet--crudit-bundle--telephone#sync', 'aria-label': 'crudit.telephone.calling_code'|trans({}, 'LleCruditBundle')}),
         }) }}
     </div>
-    {{ form_widget(form.number, {attr: form.number.vars.attr|merge(state)}) }}
+    {{ form_widget(form.number, {attr: form.number.vars.attr|merge(number_state)}) }}
 </div>

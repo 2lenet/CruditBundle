@@ -23,6 +23,20 @@
     {{- parent() -}}
 {%- endblock textarea_widget -%}
 
+{#
+ # A checkbox with the option switch (SwitchExtension, a boolean guessed by Crudit): role="switch" here only, the switch
+ # of CruditUiBundle; another theme keeps the checkbox. The attr of the project keeps its role.
+ #}
+{%- block checkbox_row -%}
+    {%- if switch|default(false) %}{% set attr = {role: 'switch'}|merge(attr) %}{% endif -%}
+    {{- parent() -}}
+{%- endblock checkbox_row -%}
+
+{%- block checkbox_widget -%}
+    {%- if switch|default(false) %}{% set attr = {role: 'switch'}|merge(attr) %}{% endif -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}
+
 {# The help of the options tooltip, tooltip_html and tooltip_template: a button next to the label #}
 {%- block crudit_ui_label_after -%}
     {%- if tooltip|default(null) or tooltip_html|default(null) or tooltip_template|default(null) -%}

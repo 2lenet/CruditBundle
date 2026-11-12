@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Form\Extension;
 
 use Lle\CruditBundle\Form\DataTransformer\LatinPercentTransformer;
-use Lle\CruditUiBundle\Format\Formatter;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\MoneyToLocalizedStringTransformer;
@@ -18,18 +17,21 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Numbers typed as text in Latin digits, whatever the language (lot 3.2.b, as the values shown since lot 1.4): in
- * ar_SA or fa, Symfony writes ١٬٢٣٤٫٥ and refuses 1234.5. The transformer of the type is given the locale of the
- * request with the Latin digits (Formatter::locale() of CruditUiBundle, `ar_SA@numbers=latn;…`), only for a language
- * whose digits are not Latin; a number typed in Arabic or Persian digits is refused. The default locale of PHP is
- * left alone: Symfony Intl does not read `ar@numbers=latn` or `fa@numbers=latn` (country names). A number with html5 (or an
- * integer without grouping) is already written in "en" by Symfony.
+ * ar_SA or fa, Symfony writes ١٬٢٣٤٫٥ and refuses 1234.5. The transformer of the type is given the default locale of
+ * PHP with the Latin digits (`ar_SA@numbers=latn`), only for a language whose digits are not Latin; a number typed in
+ * Arabic or Persian digits is refused. The decision and the transformer follow the same locale, the one Symfony's
+ * transformer reads (\Locale::getDefault(), set from the request by the LocaleSwitcher of Symfony). The default
+ * locale of PHP is left alone: Symfony Intl does not read `ar@numbers=latn` or `fa@numbers=latn` (country names). A
+ * number with html5 (or an integer without grouping) is already written in "en" by Symfony.
+ *
+ * The view transformers of the type are replaced (resetViewTransformers()): one that a project adds to a type of its
+ * own built on these types is dropped in such a language. Such a type adds it in its own buildForm() (called after
+ * this extension), or uses html5.
  */
 class LatinDigitsExtension extends AbstractTypeExtension
 {
-    public function __construct(
-        private readonly Formatter $formatter,
-    ) {
-    }
+    /** @var array<string, bool> Latin digits or not, by locale: one NumberFormatter for each locale */
+    private static array $latin = [];
 
     public static function getExtendedTypes(): iterable
     {
@@ -38,11 +40,12 @@ class LatinDigitsExtension extends AbstractTypeExtension
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if (($options['html5'] ?? false) || self::latinDigits(\Locale::getDefault())) {
+        $default = \Locale::getDefault();
+        if (($options['html5'] ?? false) || self::latinDigits($default)) {
             return;
         }
         $type = $builder->getType()->getInnerType();
-        $locale = $this->formatter->locale();
+        $locale = self::latinLocale($default);
 
         $transformer = match (true) {
             $type instanceof MoneyType => new MoneyToLocalizedStringTransformer($options['scale'], $options['grouping'], $options['rounding_mode'], $options['divisor'], $locale, $options['input']),
@@ -61,8 +64,24 @@ class LatinDigitsExtension extends AbstractTypeExtension
     /** Whether the numbers of the locale are written in Latin digits (fr, en, ar_MA…), not ar_SA, fa… */
     public static function latinDigits(string $locale): bool
     {
-        $written = (string) (new \NumberFormatter($locale, \NumberFormatter::DECIMAL))->format(1234567890);
+        if (!isset(self::$latin[$locale])) {
+            $written = (string) (new \NumberFormatter($locale, \NumberFormatter::DECIMAL))->format(1234567890);
+            self::$latin[$locale] = preg_match('/\p{Nd}/u', (string) preg_replace('/[0-9]/', '', $written)) === 0;
+        }
 
-        return preg_match('/\p{Nd}/u', (string) preg_replace('/[0-9]/', '', $written)) === 0;
+        return self::$latin[$locale];
+    }
+
+    /** The locale with the Latin digits: `ar_SA@numbers=latn`, a `numbers` keyword already there replaced */
+    public static function latinLocale(string $locale): string
+    {
+        [$base, $keywords] = explode('@', $locale, 2) + [1 => ''];
+        $keywords = array_filter(
+            explode(';', $keywords),
+            static fn (string $keyword): bool => $keyword !== '' && strtolower(trim(explode('=', $keyword, 2)[0])) !== 'numbers',
+        );
+        $keywords[] = 'numbers=latn';
+
+        return $base . '@' . implode(';', $keywords);
     }
 }

@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -58,6 +59,7 @@ class ClientType extends AbstractType
             ->add('details', GroupType::class, ['label' => 'Details', 'mapped' => false])
             ->add('phone', TelephoneType::class, ['required' => false, 'span' => 2])
             ->add('website', UrlType::class, ['required' => false, 'default_protocol' => null, 'attr' => ['class' => 'crudit-lower-format', 'maxlength' => 255], 'span' => 2, 'counter' => true])
+            ->add('ip', TextType::class, ['label' => 'IP address', 'mapped' => false, 'required' => false, 'attr' => ['class' => 'crudit-ip-format']]) // format helper of the 1.x
             ->add('amount', MoneyType::class, ['required' => false, 'input' => 'string'])
             ->add('color', ColorType::class, ['required' => false])
             ->add('priority', EnumType::class, ['class' => Priority::class, 'required' => false, 'expanded' => true, 'segmented' => true])

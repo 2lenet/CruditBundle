@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Test\TypeTestCase;
 
 /**
- * A checkbox shown as a switch (option switch, lot 3.2.b): role="switch" for the theme of CruditUiBundle.
+ * A checkbox shown as a switch (option switch, lot 3.2.b): the variable switch, made role="switch" by the theme of Crudit.
  */
 class SwitchExtensionTest extends TypeTestCase
 {
@@ -19,21 +19,22 @@ class SwitchExtensionTest extends TypeTestCase
         return [new SwitchExtension()];
     }
 
-    public function testASwitchHasTheRoleSwitchAndKeepsTheAttributesOfTheField(): void
+    public function testASwitchIsToldToTheThemeAndKeepsTheAttributesOfTheField(): void
     {
         $view = $this->factory->create(CheckboxType::class, null, ['switch' => true, 'attr' => ['class' => 'mine']])->createView();
 
-        self::assertSame(['role' => 'switch', 'class' => 'mine'], $view->vars['attr']);
+        self::assertTrue($view->vars['switch']);
+        self::assertSame(['class' => 'mine'], $view->vars['attr'], 'the role is set by the theme of Crudit only: another theme keeps a checkbox');
     }
 
     public function testACheckboxByDefault(): void
     {
-        self::assertArrayNotHasKey('role', $this->factory->create(CheckboxType::class)->createView()->vars['attr']);
-        self::assertArrayNotHasKey('role', $this->factory->create(CheckboxType::class, null, ['switch' => false])->createView()->vars['attr']);
+        self::assertFalse($this->factory->create(CheckboxType::class)->createView()->vars['switch']);
+        self::assertFalse($this->factory->create(CheckboxType::class, null, ['switch' => false])->createView()->vars['switch']);
     }
 
     public function testARadioIsNeverASwitch(): void
     {
-        self::assertArrayNotHasKey('role', $this->factory->create(RadioType::class, null, ['switch' => true])->createView()->vars['attr']);
+        self::assertFalse($this->factory->create(RadioType::class, null, ['switch' => true])->createView()->vars['switch']);
     }
 }

@@ -1137,6 +1137,37 @@ for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
         await page.keyboard.type('HTTPS://WWW.EXAMPLE.COM');
         await page.keyboard.press('Tab');
         assert.equal(await page.$eval('#client_website', (input) => input.value), 'https://www.example.com', 'crudit-lower-format once the field is left');
+        // crudit-ip-format: the point once a byte is 26 or more or has 3 digits (as in the 1.x), a point typed by habit just after it ignored
+        const ip = () => page.$eval('#client_ip', (input) => input.value);
+        await page.click('#client_ip');
+        await page.keyboard.type('192');
+        assert.equal(await ip(), '192.', 'a point after the 3rd digit of a byte');
+        await page.keyboard.type('.');
+        assert.equal(await ip(), '192.', 'a point typed just after the one added is ignored');
+        await page.keyboard.type('30');
+        assert.equal(await ip(), '192.30.', 'a point once the byte is 26 or more');
+        await page.keyboard.type('25');
+        assert.equal(await ip(), '192.30.25', 'no point under 26: a 3rd digit can follow');
+        await page.keyboard.type('5.1');
+        await page.keyboard.press('Tab');
+        assert.equal(await ip(), '192.30.255.1');
+        assert.equal(await page.$eval('#client_ip', (input) => input.getAttribute('aria-invalid')), null, 'a right IP address is not invalid');
+        // An error of the server (aria-invalid from the theme, a value already used) is kept with a right value
+        await page.$eval('#client_ip', (input) => {
+            const copy = input.cloneNode();
+            copy.id = 'client_ip_server';
+            copy.value = '';
+            copy.setAttribute('aria-invalid', 'true');
+            input.after(copy);
+        });
+        await page.waitForFunction(() => document.getElementById('client_ip_server') !== null);
+        await new Promise((resolve) => setTimeout(resolve, 100)); // Stimulus connects the copy (MutationObserver)
+        await page.click('#client_ip_server');
+        await page.keyboard.type('2552551.1');
+        await page.keyboard.press('Tab');
+        assert.equal(await page.$eval('#client_ip_server', (input) => input.value), '255.255.1.1', 'the controller is not connected to the copy');
+        assert.equal(await page.$eval('#client_ip_server', (input) => input.getAttribute('aria-invalid')), 'true', 'the error of the server is kept, its message still shown');
+        await page.$eval('#client_ip_server', (input) => input.remove());
 
         await page.click('#client_priority .crudit-ui-segmented__option:nth-child(2)');
         assert.equal(await page.$eval('#client_priority input:checked', (radio) => radio.value), 'low');
