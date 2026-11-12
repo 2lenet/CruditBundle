@@ -9,7 +9,9 @@ use Symfony\Component\DomCrawler\Crawler;
 /**
  * The form of a CRUD (lot 3.2.a), with bootstrap_5_layout as the global theme of the application (as 24 projects):
  * the theme of Crudit is imposed. Labels above and attached, required fields explained, help and errors attached,
- * sections with their own columns, widths of the fields, a switch, choices shown as boxes, a unit.
+ * sections with their own columns, widths of the fields, a switch, choices shown as boxes, a unit. The base types (lot
+ * 3.2.b): keyboards of a phone, autofill kept away from the inputs typed in only, counter of characters, format helpers,
+ * telephone, colour, segmented control, date in lists, a boolean guessed as a switch.
  */
 class FormTest extends AppTestCase
 {
@@ -59,7 +61,7 @@ class FormTest extends AppTestCase
         $form = $this->form();
 
         $sections = $form->filter('fieldset.crudit-form-section');
-        self::assertSame(['Identity', 'Contact'], $sections->each(fn (Crawler $section) => $section->filter('legend h2')->text()));
+        self::assertSame(['Identity', 'Contact', 'Details'], $sections->each(fn (Crawler $section) => $section->filter('legend h2')->text()));
         self::assertSame('How to reach the client', $sections->eq(1)->filter('.crudit-form-section__description')->text());
         // The columns of the form (lle_crudit.form_columns: 4), then those of the section
         self::assertSame('crudit-form-grid crudit-form-grid--4', $sections->eq(0)->filter('.crudit-form-grid')->attr('class'));
@@ -95,6 +97,95 @@ class FormTest extends AppTestCase
 
         // The buttons of the design system
         self::assertSame(['Cancel', 'Save'], $form->filter('.crudit-form__actions .crudit-ui-btn')->each(fn (Crawler $button) => trim($button->text())));
+    }
+
+    public function testTheKeyboardOfAPhoneAndTheFormatHelpers(): void
+    {
+        $form = $this->form();
+
+        $modes = ['client_email' => 'email', 'client_amount' => 'decimal', 'client_progress' => 'decimal', 'client_phone_number' => 'tel'];
+        foreach ($modes as $id => $mode) {
+            self::assertSame($mode, $form->filter('#' . $id)->attr('inputmode'), $id);
+        }
+        // The type gives the keyboard of a URL (CruditUiBundle sets no inputmode on it)
+        self::assertSame(['url', null], [$form->filter('#client_website')->attr('type'), $form->filter('#client_website')->attr('inputmode')]);
+        $email = $form->filter('#client_email');
+        self::assertSame('false', $email->attr('spellcheck'));
+        self::assertSame('2lenet--crudit-bundle--input-format', $email->attr('data-controller'), 'crudit-email-format');
+        self::assertStringContainsString('2lenet--crudit-bundle--input-format', (string) $form->filter('#client_website')->attr('data-controller'), 'crudit-lower-format');
+        self::assertNull($form->filter('#client_name')->attr('data-controller'));
+    }
+
+    public function testTheAutofillIsKeptAwayFromTheInputsTypedInOnly(): void
+    {
+        $form = $this->form();
+
+        foreach (['client_name', 'client_notes', 'client_amount', 'client_progress', 'client_website'] as $id) {
+            self::assertSame('new-password', $form->filter('#' . $id)->attr('autocomplete'), $id);
+        }
+        self::assertSame('tel-national', $form->filter('#client_phone_number')->attr('autocomplete'), 'the purpose of the number');
+        foreach (['#client_active', '#client_blocked', '#client_color', '#client_channels input', '#client_priority input', '#client_createdAt select', '#client_phone_country'] as $selector) {
+            self::assertSame([null], array_unique($form->filter($selector)->each(fn (Crawler $input) => $input->attr('autocomplete'))), $selector);
+        }
+    }
+
+    public function testACounterOfCharacters(): void
+    {
+        $form = $this->form();
+
+        $notes = $form->filter('#client_notes');
+        self::assertSame('client_notes_count', $notes->attr('aria-describedby'));
+        self::assertSame('2lenet--crudit-ui-bundle--char-count', $notes->attr('data-controller'));
+        self::assertSame('0 / 80 characters', $form->filter('#client_notes_count [data-crudit-ui-count]')->text());
+        self::assertSame('120', $form->filter('#client_name')->attr('maxlength'), 'the length of the column, from Symfony');
+        self::assertCount(0, $form->filter('#client_name_count'), 'a text on one line has no counter by default');
+        self::assertSame('0 / 255 characters', $form->filter('#client_website_count [data-crudit-ui-count]')->text(), 'asked with counter: true');
+    }
+
+    public function testTheBaseTypes(): void
+    {
+        $form = $this->form();
+
+        // A boolean guessed is a switch, unless the field says switch: false
+        self::assertSame('switch', $form->filter('#client_active')->attr('role'));
+        self::assertNull($form->filter('#client_blocked')->attr('role'));
+        self::assertCount(1, $form->filter('label.crudit-ui-check:has(#client_blocked)'));
+
+        // The telephone: the calling code and the number on one line, no Bootstrap
+        $phone = $form->filter('#client_phone');
+        self::assertSame('crudit-ui-input-group crudit-telephone', $phone->attr('class'));
+        self::assertCount(0, $phone->filter('.input-group, .form-select, .form-control, .is-invalid'));
+        self::assertSame('client_phone_number', $form->filter('label[for="client_phone_number"]')->attr('for'));
+        self::assertSame('+33', $phone->filter('.crudit-telephone-code')->text());
+
+        // A colour and its code
+        $color = $form->filter('.crudit-ui-input-group--color:has(#client_color)');
+        self::assertSame('2lenet--crudit-ui-bundle--color-code', $color->filter('#client_color')->attr('data-controller'));
+        self::assertCount(1, $color->filter('[data-color-code]'));
+
+        // Short choices with one answer: a segmented control in a fieldset
+        $priority = $form->filter('#client_priority');
+        self::assertSame('crudit-ui-segmented', $priority->attr('class'));
+        self::assertSame(['None', 'Low', 'High'], $priority->filter('.crudit-ui-segmented__label')->each(fn (Crawler $label) => $label->text()));
+        self::assertCount(3, $priority->filter('input.crudit-ui-segmented__input[type="radio"]'));
+
+        // A date in lists: on one line
+        self::assertStringContainsString('crudit-ui-date-lists', (string) $form->filter('#client_createdAt')->attr('class'));
+    }
+
+    public function testATelephoneInErrorIsAttachedToItsError(): void
+    {
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Bob', 'client[phone][number]' => 'abc']);
+        $crawler = $this->client->submit($form);
+
+        self::assertResponseStatusCodeSame(200);
+        foreach (['#client_phone_number', '#client_phone_country'] as $selector) {
+            self::assertSame('client_phone_error', $crawler->filter($selector)->attr('aria-describedby'), $selector);
+            self::assertSame('true', $crawler->filter($selector)->attr('aria-invalid'), $selector);
+        }
+        self::assertCount(1, $crawler->filter('#client_phone_error'));
     }
 
     public function testAnErrorIsAttachedToItsField(): void

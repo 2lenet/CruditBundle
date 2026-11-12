@@ -7,16 +7,14 @@
  # columns (option columns). A sub-form (a compound field of the form type) is laid out field by field on the grid.
  # Option horizontalForm (FormConfig::new(['horizontalForm' => true]), the form to add a line under a sublist): the
  # fields side by side on one line, the buttons at its end.
- # As in the 1.x, autocomplete="off" on the form and autocomplete="new-password" on each field, unless the field sets
- # its own (attr.autocomplete).
+ # As in the 1.x, autocomplete="off" on the form and autocomplete="new-password" on each input typed in (not on a
+ # checkbox, a list or a compound field: crudit_form_field_attr()), unless the field sets its own (attr.autocomplete).
  # Blocks kept for the projects: form_title, form_buttons.
  #}
 {% if view.role is not defined or not view.role or is_granted(view.role, view.data.resource) %}
     {% set form = view.data.form %}
     {% form_theme form with ['@LleCrudit/form/theme.html.twig'] only %}
     {% set columns = view.data.columns|default(4) %}
-    {# As in the 1.x, no autofill of the browser (the data of another person): the project sets attr.autocomplete on a field to have it #}
-    {% set field_attr = {autocomplete: 'new-password'} %}
 
     <div class="crudit-form{% if view.data.options.horizontalForm ?? false %} crudit-form--horizontal{% endif %}">
         {% if view.data.title is defined and view.data.title %}
@@ -61,12 +59,12 @@
                 {% if crudit_form_flattened(field) %}
                     {% for subfield in field %}
                         {% do crudit_form_field_deprecations(subfield) %}
-                        {{ form_row(subfield, {attr: field_attr|merge(subfield.vars.attr)}) }}
+                        {{ form_row(subfield, {attr: crudit_form_field_attr(subfield)}) }}
                     {% endfor %}
                     {% do field.setRendered %}
                 {% else %}
                     {% do crudit_form_field_deprecations(field) %}
-                    {{ form_row(field, {attr: field_attr|merge(field.vars.attr)}) }}
+                    {{ form_row(field, {attr: crudit_form_field_attr(field)}) }}
                 {% endif %}
             {% endif %}
         {% endfor %}

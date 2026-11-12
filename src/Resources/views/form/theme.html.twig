@@ -7,6 +7,22 @@
  #}
 {% use '@LleCruditUi/form/theme.html.twig' %}
 
+{#
+ # Format helpers of the 1.x (classes crudit-upper-format, crudit-lower-format, crudit-email-format, crudit-ip-format
+ # on a field): the controller input-format, which acts once the field is left (lot 3.2.b). No spell check on an
+ # e-mail or an IP address, the keyboard of an e-mail address (an IP address keeps the keyboard of a text, which has
+ # the point).
+ #}
+{%- block form_widget_simple -%}
+    {%- set attr = crudit_form_format_attr(attr) -%}
+    {{- parent() -}}
+{%- endblock form_widget_simple -%}
+
+{%- block textarea_widget -%}
+    {%- set attr = crudit_form_format_attr(attr) -%}
+    {{- parent() -}}
+{%- endblock textarea_widget -%}
+
 {# The help of the options tooltip, tooltip_html and tooltip_template: a button next to the label #}
 {%- block crudit_ui_label_after -%}
     {%- if tooltip|default(null) or tooltip_html|default(null) or tooltip_template|default(null) -%}

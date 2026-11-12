@@ -18,6 +18,6 @@ just add a class to your input form.
 
 - crudit-upper-format : Upper all string typed by the user
 - crudit-lower-format : Lower all string typed by the user
-- crudit-ip-format : Check an ip address format ( and help to input dot)
+- crudit-ip-format : Check an ip address format (the keyboard of a text, which has the point)
 - crudit-email-format : Check an email address format
 

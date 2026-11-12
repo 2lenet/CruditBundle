@@ -153,3 +153,53 @@
         }
     }
 }
+
+// TelephoneType (form/_telephone_widget.html.twig, lot 3.2.b): the "+33" box and the number on one line, in a
+// crudit-ui-input-group. The native select of the countries is transparent over the box, which shows its focus: the
+// focus surrounds the box and the number, as for a unit.
+.crudit-telephone {
+    > .crudit-telephone-calling-code {
+        position: relative;
+        min-width: 5.75rem;
+        justify-content: center;
+        color: var(--c-text);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .crudit-telephone-country {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    &:has(.crudit-telephone-country:focus-visible) {
+        outline: var(--focus-ring-width) solid var(--c-focus);
+        outline-offset: 0;
+
+        .crudit-ui-input,
+        .crudit-ui-input-group__unit {
+            border-color: var(--c-focus);
+        }
+    }
+}
+
+// A format helper of the 1.x (controller input-format) found the value wrong: the border of an error, as a field in
+// error (the message comes from the server once the form is sent)
+.crudit-ui-input[aria-invalid='true'] {
+    border-color: var(--c-danger-solid);
+}
+
+// Format helpers of the 1.x: shown in capitals or small letters while typing (sb-admin _texts.scss), the value itself
+// changes once the field is left (controller input-format)
+.crudit-upper-format {
+    text-transform: uppercase;
+}
+
+.crudit-lower-format {
+    text-transform: lowercase;
+}

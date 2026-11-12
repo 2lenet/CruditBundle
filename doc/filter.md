@@ -215,5 +215,5 @@ class YourCustomFilterType extends EntityFilterType
 - DateTimeFilterType : simple datetimes
 - PeriodeFilterType : date ranges
 - NumberFilterType : simple number search
-- NumberRangeFilterType : number ranges
+- NumberRangeFilterType : number ranges (the number filters are `type="number"`: the keyboard of a phone has the minus key, a negative value can be typed)
 - WorkflowFilterType : for Symfony workflows (see Workflow doc)

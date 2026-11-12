@@ -1079,11 +1079,11 @@ ok('fields: alignment, two lines in a cell, values of a record');
 for (const [width, dark, rtl] of [[1440, false, false], [1440, true, false], [1280, false, true], [360, false, false]]) {
     page = await open(width, '/client/new', {dark, rtl});
     const columns = await page.$$eval('.crudit-form-grid', (grids) => grids.map((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length));
-    assert.deepEqual(columns, width === 360 ? [1, 1] : [4, 2], `columns of the grids at ${width}`);
+    assert.deepEqual(columns, width === 360 ? [1, 1, 1] : [4, 2, 4], `columns of the grids at ${width}`);
     assert.ok(await page.$$eval('.crudit-form-grid', (grids) => grids.every((grid) => grid.scrollWidth <= grid.clientWidth)), `no field out of its grid at ${width}`);
     if (width === 1440 && !dark) {
         // The width of a field: 2 columns for the e-mail, the whole line for the notes
-        const [name, email, progress, channels, notes, grid] = await page.$$eval('#client_name, #client_email, #client_progress, #client_channels, #client_notes, .crudit-form-section:last-of-type .crudit-form-grid',
+        const [name, email, progress, channels, notes, grid] = await page.$$eval('#client_name, #client_email, #client_progress, #client_channels, #client_notes, .crudit-form-section:nth-of-type(2) .crudit-form-grid',
             (elements) => elements.map((e) => (e.closest('.crudit-ui-field') ?? e).getBoundingClientRect().width));
         assert.ok(email > name * 1.9, 'the e-mail on 2 columns');
         assert.ok(progress > name * 2.9 && progress < name * 3.5, 'the progress on 3 columns');
@@ -1100,6 +1100,60 @@ for (const [width, dark, rtl] of [[1440, false, false], [1440, true, false], [12
     await page.close();
 }
 ok('form: theme of Crudit, grid, widths, help, switch');
+
+// ---------- Base types (lot 3.2.b): the telephone on one line (on the other side right to left), its focus around both,
+// the counter of characters, the format helpers once the field is left, the segmented control with the arrows, the
+// code of a colour, a date in lists on one line.
+for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
+    page = await open(width, '/client/new', {rtl});
+    const [code, number] = await page.$$eval('#client_phone .crudit-telephone-calling-code, #client_phone_number', (elements) => elements.map((e) => {
+        const {top, left, height} = e.getBoundingClientRect();
+
+        return {top, left, height};
+    }));
+    assert.ok(Math.abs(code.top - number.top) < 1 && Math.abs(code.height - number.height) < 1, `the calling code and the number on one line at ${width}`);
+    assert.ok(rtl ? code.left > number.left : code.left < number.left, `the calling code before the number${rtl ? ', right to left' : ''}`);
+    const lists = await page.$$eval('#client_createdAt select', (selects) => selects.map((select) => Math.round(select.getBoundingClientRect().top)));
+    assert.equal(new Set(lists).size, 1, `the lists of a date on one line at ${width}`);
+    if (width === 1440) {
+        await page.focus('#client_phone_country');
+        await page.keyboard.press('Shift');
+        assert.notEqual(await page.$eval('#client_phone', (group) => getComputedStyle(group).outlineStyle), 'none', 'the focus of the calling code surrounds the field');
+
+        await page.type('#client_notes', 'Back door');
+        assert.equal(await page.$eval('#client_notes_count [data-crudit-ui-count]', (span) => span.textContent), '9 / 80 characters', 'the counter follows the typing');
+
+        await page.click('#client_email', {clickCount: 3});
+        await page.keyboard.type('Bob@Example.COM');
+        assert.equal(await page.$eval('#client_email', (input) => input.value), 'Bob@Example.COM', 'the value does not change while typing');
+        await page.keyboard.press('Tab');
+        assert.equal(await page.$eval('#client_email', (input) => input.value), 'bob@example.com', 'crudit-email-format: small letters once the field is left');
+        assert.equal(await page.$eval('#client_email', (input) => input.getAttribute('aria-invalid')), null);
+        await page.click('#client_email', {clickCount: 3});
+        await page.keyboard.type('bob');
+        await page.keyboard.press('Tab');
+        assert.equal(await page.$eval('#client_email', (input) => input.getAttribute('aria-invalid')), 'true', 'crudit-email-format: a wrong address is invalid');
+        await page.click('#client_website', {clickCount: 3});
+        await page.keyboard.type('HTTPS://WWW.EXAMPLE.COM');
+        await page.keyboard.press('Tab');
+        assert.equal(await page.$eval('#client_website', (input) => input.value), 'https://www.example.com', 'crudit-lower-format once the field is left');
+
+        await page.click('#client_priority .crudit-ui-segmented__option:nth-child(2)');
+        assert.equal(await page.$eval('#client_priority input:checked', (radio) => radio.value), 'low');
+        await page.keyboard.press('ArrowRight');
+        assert.equal(await page.$eval('#client_priority input:checked', (radio) => radio.value), 'high', 'the arrows move the segmented control');
+
+        await page.$eval('#client_color', (input) => {
+            input.value = '#ff0000';
+            input.dispatchEvent(new Event('input', {bubbles: true}));
+        });
+        assert.equal(await page.$eval('#client_color + [data-color-code]', (span) => span.textContent), '#ff0000', 'the code follows the colour');
+        await shot(page, 'form-base-types');
+    }
+    await axeOn(page, 'main form', `base types at ${width}${rtl ? ', RTL' : ''}`);
+    await page.close();
+}
+ok('form: base types (telephone, counter, format helpers, segmented control, colour, date in lists)');
 
 // ---------- Filters (lot 3.1.e): the bar, the panel, the chips; the state is kept by the server (session)
 const rowsOf = (page) => page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows.length);

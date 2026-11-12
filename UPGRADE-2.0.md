@@ -698,7 +698,7 @@ to add them.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
   header: remove your `btn-close`.
 - The block `header` is the title of the dialog, inside a `<h2>` that names it (`aria-labelledby`): put text only in it, no `<h5 class="modal-title">` (a heading in a heading).
-- `TelephoneType`: the behaviour is ported (controller `telephone`), not its style yet (`sb-admin/css/components/forms/_telephone.scss`, built on Bootstrap): until the forms are migrated, the calling code and the country select are side by side. *(to be done with the forms)*
+- `TelephoneType`: the behaviour is ported (controller `telephone`), its style since lot 3.2.b (see [Forms](#forms-lot-32a)).
 - `.modal-header`, `.modal-body`, `.modal-footer` are gone (`crudit-ui-dialog__…`).
 
 **Confirmation of the actions** (`modal/_confirm.html.twig`, block `modal_confirmation`): a `Dialog` with the
@@ -877,7 +877,14 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
 - **A sub-form** (a compound field of the form type: an address in a form…) is still laid out field by field on the
   grid; the other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset` named by
   its `legend`.
-- A **switch**: `attr: {role: 'switch'}` on a `CheckboxType` (a native checkbox, its state written Yes / No).
+- A **switch**: the option **`switch`** of a `CheckboxType` (a native checkbox with `role="switch"`, its state written
+  Yes / No, in the primary colour); `attr: {role: 'switch'}` works too. **A boolean of an entity guessed by Crudit is
+  now a switch** (it was a checkbox): give `switch: false` to the field to keep the checkbox *(lot 3.2.b)*.
+
+  ```php
+  $builder->add('active');                          // a switch
+  $builder->add('newsletter', null, ['switch' => false]); // a checkbox, as in the 1.x
+  ```
 - **Help of a field** (`tooltip`, `tooltip_html`, `tooltip_template`): a button ⓘ next to the label that opens it
   (`Toggletip` of CruditUiBundle, a popover), reachable on a touch screen, named "Help on the field …" (key
   `crudit.form.help_on`). It opens on the hover and the keyboard focus, and a click keeps it open, with the controller
@@ -890,13 +897,51 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
   fields side by side, the buttons at the end of the line). Its markup changes: no `card`, `row`, `col-*`,
   `form-floating`, `px-2`; the title is no longer followed by a `<hr>`; the buttons are those of CruditUiBundle,
   "Cancel" is secondary (it was red). As in the 1.x, `autocomplete="off"` on the form and `autocomplete="new-password"`
-  on each field keep the autofill of the browser away (the data of another person); a field that wants it sets its own
-  (`attr: {autocomplete: 'email'}`).
+  on each input typed in keep the autofill of the browser away (the data of another person); a field that wants it
+  sets its own (`attr: {autocomplete: 'email'}`). Since lot 3.2.b, `new-password` is no longer put on a checkbox, a
+  list, a colour or a compound field, where it meant nothing.
 - CSS hooks: `crudit-form`, `crudit-form__legend`, `crudit-form__actions`, `crudit-form-section`, `crudit-form-grid`,
   `crudit-form-field--span-2`, `crudit-form-field--span-3`, `crudit-form-field--span-full`; the classes of the inputs
   are those of CruditUiBundle (`crudit-ui-field`, `crudit-ui-label`, `crudit-ui-input`…).
+- **Base types** *(lot 3.2.b)*, from the theme of CruditUiBundle (its `docs/forms.md`):
+  - the **keyboard of a phone** (`inputmode`) follows the kind of the value: `numeric` for an integer with `attr.min`
+    at 0 or more (without it, the keyboard of `type="number"`, which has the minus key on iOS), `decimal` for a
+    number, an amount or a percentage; an e-mail, a phone, a URL have their keyboard from their type; no spell check
+    on an e-mail address. A number, an amount stay typed as text (Symfony reads the point and the comma). The
+    keyboard `decimal` of iOS has no minus key: `attr: {inputmode: 'text'}` for a value that may be negative. The
+    number filters keep the keyboard of `type="number"` (a negative bound can be typed);
+  - **Latin digits** in a number, an amount, a percentage (and an integer with `grouping`), whatever the language: in
+    `ar_SA` or `fa`, Symfony wrote `١٬٢٣٤٫٥` and refused `1234.5` (`LatinDigitsExtension`, the locale of
+    `Formatter::locale()` of CruditUiBundle, as the values shown since lot 1.4). A number typed in Arabic or Persian
+    digits is refused;
+  - a **counter of characters** under a long text with `attr.maxlength` ("27 / 80 characters", attached to the input,
+    the characters left told to screen readers near the limit): controller `char-count` of CruditUiBundle. A text on
+    one line has it with the option `counter: true` (not by default: Symfony puts the length of the column of a string
+    in `maxlength`); `counter: false` takes it away;
+  - **short choices with one answer** as a segmented control: the option **`segmented`** of a `ChoiceType` with
+    `expanded` and without `multiple` (else an `InvalidOptionsException`);
+  - a **colour**: the native picker and its code next to it (controller `color-code` of CruditUiBundle); the style
+    `form-control-color` of `sb-admin` is gone;
+  - a **date or a time in lists** (`widget: 'choice'`): the lists on one line;
+  - the **calendar of a date no longer opens on the focus** (`sb-admin/js/input_date.js`, `showPicker()`, removed: it
+    got in the way of the keyboard and sometimes threw an error): it opens with its button, or the keyboard of the
+    browser;
+  - the **format helpers** of the 1.x keep their classes (`crudit-upper-format`, `crudit-lower-format`,
+    `crudit-email-format`, `crudit-ip-format`), now the controller `input-format` of Crudit (`sb-admin/js/input_format.js`
+    removed): **the value is changed once the field is left**, not while typing (an e-mail address was put in small
+    letters at each key; capitals and small letters are still shown while typing); a wrong e-mail or IP address gets
+    `aria-invalid` and the border of an error, instead of `is-invalid` / `is-valid` of Bootstrap. The point after the
+    3rd digit of an IP byte is still added while typing at the end;
+  - the **telephone** (`TelephoneType`): the calling code and the number on one line, in a `crudit-ui-input-group`,
+    one focus ring around both, both attached to the help and the error of the field; no `input-group`, `form-select`,
+    `is-invalid` any more. `sb-admin/js/telephone.js` and `sb-admin/css/components/forms/_telephone.scss` are removed
+    (the controller `telephone` does the work since lot 2.1.0). Its PHP is unchanged.
+  - **Enable the controllers** in `assets/controllers.json`: `char-count` and `color-code` under
+    `@2lenet/crudit-ui-bundle`, `input-format` under `@2lenet/crudit-bundle` (`{"enabled": true, "fetch": "eager"}`).
+    Without them the counter shows the length when the page is loaded, the code of a colour its first value, and the
+    format helpers do nothing.
 - Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`), the file, the translated
-  field, the cron expression and the telephone (its style) *(lots 3.2.b and 3.2.c)*.
+  field and the cron expression *(lot 3.2.c)*.
 
 ### Batch actions *(lot 3.1.c)*
 
@@ -946,6 +991,10 @@ results, and has a "Deselect all" button.
   for such an action (an export of thousands of rows…), prefer an action with a form (`setForm()`) or a modal with a
   `<form method="post">`.
 - **Removed**: the translations `crudit.action.batch`, `crudit.text.current_page` and `crudit.text.all_page`.
+- New controller `input-format` (the format helpers of the 1.x, lot 3.2.b) in `@2lenet/crudit-bundle`, and
+  `char-count`, `color-code` (counter of characters, code of a colour) in `@2lenet/crudit-ui-bundle`. **Removed**
+  (and their imports in `app.js` and `app.scss`): `assets/sb-admin/js/input_date.js`, `input_format.js`,
+  `telephone.js`, `css/components/forms/_telephone.scss`, `_input-color.scss`, see [Forms](#forms-lot-32a).
 - **Removed**: `assets/sb-admin/js/batch_actions.js` (and its import in `app.js`), `list_items/actions/_batch_action.html.twig`
   and `_batch_actions.html.twig`. The block of the batch actions is `list_items/_batch.html.twig`: override it to change
   the buttons.
