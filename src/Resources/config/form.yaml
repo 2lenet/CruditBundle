@@ -46,6 +46,21 @@ services:
     Lle\CruditBundle\Form\Extension\TooltipExtension:
         tags:
             - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\SpanExtension:
+        tags:
+            - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\SegmentedExtension:
+        tags:
+            - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\SwitchExtension:
+        tags:
+            - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\CounterExtension:
+        tags:
+            - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\LatinDigitsExtension:
+        tags:
+            - { name: form.type_extension }
     Lle\CruditBundle\Form\Extension\TomSelectExtension:
         tags:
             - { name: form.type_extension }

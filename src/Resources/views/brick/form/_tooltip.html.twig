@@ -1,30 +1,18 @@
-{% if field.vars.tooltip is defined and field.vars.tooltip %}
-    <i
-        class="form-tooltip fas fa-info-circle"
-        data-bs-toggle="tooltip"
-        data-bs-placement="{% if field.vars.tooltip_position is defined and field.vars.tooltip_position %}{{ field.vars.tooltip_position }}{% else %}bottom{% endif %}"
-        data-bs-custom-class="custom-tooltip"
-        data-bs-title="{{ field.vars.tooltip|trans }}"
-    >
-    </i>
-{% elseif field.vars.tooltip_html is defined and field.vars.tooltip_html %}
-    <i
-        class="form-tooltip fas fa-info-circle"
-        data-bs-toggle="tooltip"
-        data-bs-placement="{% if field.vars.tooltip_position is defined and field.vars.tooltip_position %}{{ field.vars.tooltip_position }}{% else %}bottom{% endif %}"
-        data-bs-custom-class="custom-tooltip"
-        data-bs-html="true"
-        data-bs-title="{{ field.vars.tooltip_html }}"
-    >
-    </i>
-{% elseif field.vars.tooltip_template is defined and field.vars.tooltip_template %}
-    <i
-        class="form-tooltip fas fa-info-circle"
-        data-bs-toggle="tooltip"
-        data-bs-placement="{% if field.vars.tooltip_position is defined and field.vars.tooltip_position %}{{ field.vars.tooltip_position }}{% else %}bottom{% endif %}"
-        data-bs-custom-class="custom-tooltip"
-        data-bs-html="true"
-        data-bs-title="{% include field.vars.tooltip_template %}"
-    >
-    </i>
-{% endif %}
+{#
+ # Help of a field (options tooltip, tooltip_html, tooltip_template), next to its label: a button that opens it
+ # (Toggletip of CruditUiBundle), reachable on a touch screen. Variable: field (the FormView of the field).
+ # tooltip_html is cleaned by the filter sanitize (HTMLPurifier): no script nor event attribute, the formatting stays.
+ #}
+{%- set vars = field.vars -%}
+{%- if vars.tooltip|default(null) or vars.tooltip_html|default(null) or vars.tooltip_template|default(null) -%}
+    {%- set field_label = vars.label is empty ? vars.name|humanize : (vars.translation_domain is same as(false) ? vars.label : vars.label|trans(vars.label_translation_parameters|default({}), vars.translation_domain)) -%}
+    <twig:LleCruditUi:Toggletip id="{{ vars.id }}_tooltip" label="{{ 'crudit.form.help_on'|trans({'%label%': field_label}, 'LleCruditBundle') }}">
+        {%- if vars.tooltip|default(null) -%}
+            {{ vars.tooltip|trans }}
+        {%- elseif vars.tooltip_html|default(null) -%}
+            {{ vars.tooltip_html|sanitize|raw }}
+        {%- else -%}
+            {% include vars.tooltip_template %}
+        {%- endif -%}
+    </twig:LleCruditUi:Toggletip>
+{%- endif -%}

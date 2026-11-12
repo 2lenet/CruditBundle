@@ -1,0 +1,205 @@
+@use 'tools/responsive' as *;
+
+// Layout of a form of a CRUD (brick/form/index.html.twig, lot 3.2.a; _form.scss of the crudit-v2 mockup): the
+// mention of the required fields, the sections (fieldset with a <h2> title) and the grid. The inputs are those of
+// CruditUiBundle (form theme @LleCruditUi/form/theme.html.twig).
+.crudit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+
+    &__title {
+        margin: 0;
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    // Above the form: the meaning of the star of the required fields
+    &__legend {
+        margin: 0;
+        color: var(--c-text-muted);
+        font-size: var(--font-size-xs);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: var(--space-2);
+    }
+
+    // horizontalForm (the form to add a line under a sublist): the fields side by side, then the buttons, on one line
+    // as long as they fit
+    &--horizontal &__form {
+        flex-flow: row wrap;
+        align-items: flex-end;
+    }
+
+    &--horizontal .crudit-form-grid {
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        align-items: flex-end;
+
+        > .crudit-ui-field {
+            flex: 1 1 10rem;
+        }
+    }
+
+    &--horizontal &__actions {
+        flex-wrap: nowrap;
+    }
+}
+
+// Section: fieldset + legend (a title of level 2), in a card
+.crudit-form-section {
+    min-width: 0;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    margin: 0;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--c-surface);
+
+    // The legend stays in the card, not on its border
+    &__legend {
+        float: inline-start;
+        width: 100%;
+        padding: 0;
+        margin-bottom: var(--space-3);
+
+        + * {
+            clear: both;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    &__description {
+        margin: 0 0 var(--space-3);
+        color: var(--c-text-muted);
+        font-size: var(--font-size-sm);
+    }
+}
+
+// Grid: at most --crudit-form-columns fields per line (4 by default), fewer when the room is short (13rem at least
+// per column), one on a phone. A field takes 1 column, 2, 3 or the whole line (option span). The grid is a container:
+// a field of 3 columns takes the whole line when the grid has room for fewer than 3 (3 × 13rem and 2 gaps).
+.crudit-form-grid {
+    --crudit-form-columns: 4;
+    --crudit-form-gap: var(--space-4);
+
+    display: grid;
+    container-type: inline-size;
+    align-items: start;
+    gap: var(--space-3) var(--crudit-form-gap);
+    clear: both;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(max(min(100%, 13rem), calc((100% - (var(--crudit-form-columns) - 1) * var(--crudit-form-gap)) / var(--crudit-form-columns))), 1fr)
+    );
+
+    &--1 {
+        --crudit-form-columns: 1;
+    }
+
+    &--2 {
+        --crudit-form-columns: 2;
+    }
+
+    &--3 {
+        --crudit-form-columns: 3;
+    }
+
+    > .crudit-form-field--span-full {
+        grid-column: 1 / -1;
+    }
+
+    > .crudit-form-field--span-2 {
+        grid-column: span 2;
+    }
+
+    > .crudit-form-field--span-3 {
+        grid-column: span 3;
+    }
+
+    // Fewer columns than the span: the whole line, no implicit column
+    &--1 > .crudit-form-field--span-2,
+    &--1 > .crudit-form-field--span-3,
+    &--2 > .crudit-form-field--span-3 {
+        grid-column: 1 / -1;
+    }
+
+    @container (width < 41rem) {
+        > .crudit-form-field--span-3 {
+            grid-column: 1 / -1;
+        }
+    }
+
+    // Small screen: one column, every field on the whole line
+    @include media('<md') {
+        > .crudit-form-field--span-2,
+        > .crudit-form-field--span-3 {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+// TelephoneType (form/_telephone_widget.html.twig, lot 3.2.b): the "+33" box and the number on one line, in a
+// crudit-ui-input-group. The native select of the countries is transparent over the box, which shows its focus: the
+// focus surrounds the box and the number, as for a unit.
+.crudit-telephone {
+    > .crudit-telephone-calling-code {
+        position: relative;
+        min-width: 5.75rem;
+        justify-content: center;
+        color: var(--c-text);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .crudit-telephone-country {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    &:has(.crudit-telephone-country:focus-visible) {
+        outline: var(--focus-ring-width) solid var(--c-focus);
+        outline-offset: 0;
+
+        .crudit-ui-input,
+        .crudit-ui-input-group__unit {
+            border-color: var(--c-focus);
+        }
+    }
+}
+
+// A format helper of the 1.x (controller input-format) found the value wrong: the border of an error, as a field in
+// error (the message comes from the server once the form is sent)
+.crudit-ui-input[aria-invalid='true'] {
+    border-color: var(--c-danger-solid);
+}
+
+// Format helpers of the 1.x: shown in capitals or small letters while typing (sb-admin _texts.scss), the value itself
+// changes once the field is left (controller input-format)
+.crudit-upper-format {
+    text-transform: uppercase;
+}
+
+.crudit-lower-format {
+    text-transform: lowercase;
+}

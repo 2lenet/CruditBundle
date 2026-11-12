@@ -1,115 +1,76 @@
+{#
+ # Form of a CRUD (FormBrick), lot 3.2.a. The theme of Crudit is imposed (`only`: not the global theme of the project,
+ # often bootstrap_5_layout): labels above, help and errors attached, required fields explained above the form.
+ # The fields are on a grid of at most `view.data.columns` per line (FormConfig::setColumns(), else
+ # CrudConfigInterface::getFormColumns(), lle_crudit.form_columns: 4); a field takes 1 column, 2 or the whole line
+ # (option span). A GroupType opens a section (fieldset with a <h2> title) up to the next one, with its own number of
+ # columns (option columns). A sub-form (a compound field of the form type) is laid out field by field on the grid.
+ # Option horizontalForm (FormConfig::new(['horizontalForm' => true]), the form to add a line under a sublist): the
+ # fields side by side on one line, the buttons at its end.
+ # As in the 1.x, autocomplete="off" on the form and autocomplete="new-password" on each input typed in (not on a
+ # checkbox, a list or a compound field: crudit_form_field_attr()), unless the field sets its own (attr.autocomplete).
+ # Blocks kept for the projects: form_title, form_buttons.
+ #}
 {% if view.role is not defined or not view.role or is_granted(view.role, view.data.resource) %}
     {% set form = view.data.form %}
-    {% set currentGroup = 'FIRST' %}
-    {% set displayClass = "" %}
-    {%  set formClass="" %}
-    {% if view.data.options.horizontalForm is defined %}
-        {% set displayClass ="d-inline-block" %}
-        {%  set formClass="crudit-horizontal" %}
-    {% endif %}
-    <div class="card mb-4 {{ formClass }}">
-    <div class="card-body">
-    {% if view.data.title is defined and view.data.title %}
-        {% block form_title %}
-            <h2 class="{% if view.data.titleCss is defined and view.data.titleCss %}{{ view.data.titleCss }}{% endif %}">
-                {{ view.data.title|trans }}
-            </h2>
-            <hr/>
-        {% endblock %}
-    {% endif %}
-    {% set id = form.vars.name %}
+    {% form_theme form with ['@LleCrudit/form/theme.html.twig'] only %}
+    {% set columns = view.data.columns|default(4) %}
 
-    {% set form_attributes =  {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate', 'autocomplete': 'off'} %}
-    {% if view.id is defined and view.id %}
-        {% set id = view.id ~ '-' ~ form.vars.name %}
-        {% set form_attributes = form_attributes|merge({'id': id}) %}
-    {% endif %}
+    <div class="crudit-form{% if view.data.options.horizontalForm ?? false %} crudit-form--horizontal{% endif %}">
+        {% if view.data.title is defined and view.data.title %}
+            {% block form_title %}
+                <h2 class="crudit-form__title{% if view.data.titleCss is defined and view.data.titleCss %} {{ view.data.titleCss }}{% endif %}">
+                    {{ view.data.title|trans }}
+                </h2>
+            {% endblock %}
+        {% endif %}
 
-    {{ form_start(form, {'attr': form_attributes}) }}
-    {{ form_errors(form) }}
-    <div class="row">
-    {% for field in form.getIterator() %}
-        {% if field.vars.isGroup is defined and field.vars.isGroup %}
-            {% do field.setRendered %} {# To avoid rendering at the end of the form, fields that have already been rendered in groups #}
-            {% if currentGroup != 'FIRST' %}
-                </div>
-                </fieldset>
-                </div>
+        {% set form_attributes = {class: 'crudit-form__form', novalidate: 'novalidate', autocomplete: 'off'} %}
+        {% if view.id is defined and view.id %}
+            {% set form_attributes = form_attributes|merge({id: view.id ~ '-' ~ form.vars.name}) %}
+        {% endif %}
+
+        {{ form_start(form, {attr: form_attributes}) }}
+        {% if crudit_form_has_required(form) %}
+            <p class="crudit-form__legend">{{ 'crudit.form.required_legend'|trans({}, 'LleCruditBundle') }}</p>
+        {% endif %}
+        {{ form_errors(form) }}
+
+        {# open: none, grid (fields before the first section) or section #}
+        {% set open = 'none' %}
+        {% for field in form %}
+            {% if field.vars.isGroup ?? false %}
+                {% do field.setRendered %}
+                {% if open == 'grid' %}</div>{% elseif open == 'section' %}</div></fieldset>{% endif %}
+                <fieldset id="{{ field.vars.id }}" class="crudit-form-section{% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }}{% endif %}">
+                    <legend class="crudit-form-section__legend">
+                        <h2 class="crudit-form-section__title">{{ field.vars.label|trans }}</h2>
+                    </legend>
+                    {% if field.vars.description %}
+                        <p class="crudit-form-section__description">{{ field.vars.description|trans }}</p>
+                    {% endif %}
+                    <div class="crudit-form-grid crudit-form-grid--{{ field.vars.columns ?? columns }}">
+                {% set open = 'section' %}
             {% else %}
-                <div class="row">
-            {% endif %}
-            {% set currentGroup = field.vars.id %}
-            <div class="p-1 {{ field.vars.fieldset_class }}">
-            <fieldset id="{{ field.vars.id }}" class="border p-2 crudit-group">
-            <legend class="w-auto crudit-group">{{ field.vars.label|trans }}</legend>
-            <div class="row">
-        {% else %}
-            {% if field.vars.name != '_token' %}
-                {% if field.vars.compound is defined and field.vars.compound and 'collection' not in field.vars.block_prefixes and 'crudit_telephone' not in field.vars.block_prefixes and (field.vars.attr.class is not defined or not field.vars.attr.class) %}
+                {% if open == 'none' %}
+                    <div class="crudit-form-grid crudit-form-grid--{{ columns }}">
+                    {% set open = 'grid' %}
+                {% endif %}
+                {% if crudit_form_flattened(field) %}
                     {% for subfield in field %}
-                        {% if subfield.vars.name != '_token' %}
-                            <div class="{{ displayClass }} position-relative {% if subfield.vars.attr.class is defined and subfield.vars.attr.class %} {{ subfield.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
-                                <div class="form-floating mb-4">
-                                    {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(subfield.vars.attr) %}
-                                    {{ form_widget(subfield, {attr}) }}
-                                    {{ form_label(subfield) }}
-                                    <div class="px-2">
-                                        {% if subfield.vars.help is defined %}
-                                            {{ form_help(subfield) }}
-                                        {% endif %}
-                                        {% if subfield.vars.errors is defined %}
-                                            {{ form_errors(subfield) }}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
+                        {% do crudit_form_field_deprecations(subfield) %}
+                        {{ form_row(subfield, {attr: crudit_form_field_attr(subfield)}) }}
                     {% endfor %}
                     {% do field.setRendered %}
                 {% else %}
-                    <div class="{{ displayClass }} position-relative {% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }} {% elseif view.data.css_class_columns_form is defined and view.data.css_class_columns_form %} {{ view.data.css_class_columns_form }} {% endif %}">
-                        <div
-                            class="form-floating mb-4 {% if (field.vars.block_prefixes[1] == 'crudit_file') %}row{% endif %}"
-                            {% if
-                                (field.vars.tooltip is defined and field.vars.tooltip)
-                                or (field.vars.tooltip_html is defined and field.vars.tooltip_html)
-                                or (field.vars.tooltip_template is defined and field.vars.tooltip_template) %}
-                                style="max-width: calc(100% - 40px)"
-                            {% endif %}
-                        >
-                            {% set attr = {'placeholder': '', 'autocomplete': 'new-password'}|merge(field.vars.attr) %}
-                            {{ form_widget(field, {attr}) }}
-                            {% if 'crudit_telephone' in field.vars.block_prefixes %}
-                                {# A floating <label> pointing to the number, instead of the <legend> of a compound field #}
-                                {{ form_label(field, null, {compound: false, id: field.number.vars.id}) }}
-                            {% elseif field.vars.block_prefixes[1] != 'crudit_gedmo_translatable' %}
-                                {{ form_label(field) }}
-                            {% endif %}
-                            <div class="px-2">
-                                {% if field.vars.help is defined %}
-                                    {{ form_help(field) }}
-                                {% endif %}
-                                {% if field.vars.errors is defined %}
-                                    {{ form_errors(field) }}
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% include '@LleCrudit/brick/form/_tooltip.html.twig' %}
-                    </div>
+                    {% do crudit_form_field_deprecations(field) %}
+                    {{ form_row(field, {attr: crudit_form_field_attr(field)}) }}
                 {% endif %}
             {% endif %}
-        {% endif %}
-    {% endfor %}
-            </div>
-    {% if currentGroup != 'FIRST' %}
-        </div>
-        </fieldset>
-        </div>
-        </div>
-    {% endif %}
+        {% endfor %}
+        {% if open == 'grid' %}</div>{% elseif open == 'section' %}</div></fieldset>{% endif %}
 
-    {% block form_buttons %}
-        <div class="d-flex">
+        {% block form_buttons %}
             {% if view.data.cancel_path %}
                 {% set cancelHref = path(view.data.cancel_path.route, view.data.cancel_path.params) %}
             {% elseif view.data.back_url is defined and view.data.back_url %}
@@ -117,15 +78,11 @@
             {% else %}
                 {% set cancelHref = path(view.data.default_path.route) %}
             {% endif %}
-            <a class="btn btn-danger" href="{{ cancelHref }}">
-                {{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}
-            </a>
-            <button class="ms-auto btn btn-primary" type="submit">
-                {{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}
-            </button>
-        </div>
-    {% endblock %}
-    {{ form_end(form) }}
-    </div>
+            <div class="crudit-form__actions">
+                <twig:LleCruditUi:Button href="{{ cancelHref }}">{{ 'crudit.action.cancel'|trans({}, 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+                <twig:LleCruditUi:Button type="submit" variant="primary">{{ 'crudit.action.save'|trans({}, 'LleCruditBundle') }}</twig:LleCruditUi:Button>
+            </div>
+        {% endblock %}
+        {{ form_end(form) }}
     </div>
 {% endif %}

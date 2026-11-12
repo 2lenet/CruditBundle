@@ -37,6 +37,7 @@
                 {% set dialog = item.id %}
                 {% if item.kind == 'form' %}
                     {% set form = item.form %}
+                    {% form_theme form with ['@LleCrudit/form/theme.html.twig'] only %}
                     <twig:LleCruditUi:Dialog id="{{ dialog }}" :title="item.label">
                         <twig:block name="content">
                             {{ form_start(form, {action: item.url, attr: {id: dialog ~ '-form', novalidate: 'novalidate', autocomplete: 'off', 'data-action': 'submit->' ~ fill}}) }}
@@ -44,6 +45,7 @@
                                 {% if field.vars.name in ['ids', 'all_page'] %}
                                     {{ form_widget(field, {attr: {'data-selection-field': field.vars.name}}) }}
                                 {% elseif field.vars.name != '_token' %}
+                                    {% do crudit_form_field_deprecations(field) %}
                                     {{ form_row(field) }}
                                 {% endif %}
                             {% endfor %}

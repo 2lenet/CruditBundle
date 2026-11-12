@@ -85,9 +85,10 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                     Guess::MEDIUM_CONFIDENCE
                 );
             case Types::BOOLEAN:
+                // A switch (lot 3.2.b, SwitchExtension): `switch: false` in the form keeps the checkbox
                 return new TypeGuess(
                     'Symfony\Component\Form\Extension\Core\Type\CheckboxType',
-                    ["label" => $label],
+                    ["label" => $label, 'switch' => true],
                     Guess::HIGH_CONFIDENCE
                 );
             case Types::DATETIME_MUTABLE:

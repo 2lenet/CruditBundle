@@ -1,7 +1,5 @@
 import './action';
 import './editinplace';
-import './input_date';
-import './input_format';
 import './markdown_textarea';
 import './filters';
 import './flash';
@@ -12,7 +10,6 @@ import './tag';
 import './form_collection';
 import './ckeditor';
 import './sortable';
-import './telephone';
 import * as bootstrap from 'bootstrap';
 
 window.addEventListener('load', function () {
