@@ -584,7 +584,7 @@ public function getSortableUrl(): Path
 
 > :warning: **The sort action checks the `ROLE_{NAME}_EDIT` permission. Make sure this role is granted to users who should be allowed to reorder items.**
 
-> :warning: **Drag-to-sort is not compatible with active filters or multi-page pagination: the saved position reflects the visual order of the current page only. It is recommended to disable filters and set a high enough page size when using this feature.**
+> :information_source: **Drag-to-sort works on a filtered or paginated list: the displayed rows only swap the positions they already held, so hidden rows keep theirs and no duplicate is introduced. Empty positions are placed after the others and duplicated ones are shifted to become distinct. Positions that were already duplicated with hidden rows are not repaired: reorder once on the unfiltered list (on a single page) to renumber them.**
 
 ### Using drag-to-sort on a sublist
 

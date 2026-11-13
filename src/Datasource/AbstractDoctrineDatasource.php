@@ -644,17 +644,62 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         return ['tags' => [], 'currentTags' => []];
     }
 
+    /**
+     * The list may be filtered or paginated: only the displayed rows are received. They swap the positions
+     * they already held among themselves, so the hidden rows keep theirs and no duplicate is introduced.
+     */
     public function applySort(array $ids, string $sortField): void
     {
         $accessor = PropertyAccess::createPropertyAccessor();
 
-        foreach ($ids as $position => $id) {
+        $entities = [];
+        foreach ($ids as $id) {
             $entity = $this->get($id);
             if ($entity !== null) {
-                $accessor->setValue($entity, $sortField, $position);
+                $entities[] = $entity;
             }
         }
 
+        $currentPositions = array_map(
+            static fn (object $entity): ?int => $accessor->getValue($entity, $sortField),
+            $entities
+        );
+
+        foreach ($this->distributePositions($currentPositions) as $index => $position) {
+            $accessor->setValue($entities[$index], $sortField, $position);
+        }
+
         $this->entityManager->flush();
+    }
+
+    /**
+     * Sorted, strictly increasing positions taken from the current ones. Empty positions come last and
+     * duplicates are shifted, so that every row ends up with a distinct value.
+     *
+     * @param array<int, int|null> $currentPositions
+     *
+     * @return int[]
+     */
+    private function distributePositions(array $currentPositions): array
+    {
+        $knownPositions = array_values(array_filter(
+            $currentPositions,
+            static fn (?int $position): bool => $position !== null
+        ));
+        sort($knownPositions);
+
+        $positions = [];
+        $previousPosition = null;
+        foreach (array_keys($currentPositions) as $index) {
+            $position = $knownPositions[$index] ?? null;
+            if ($previousPosition !== null && ($position === null || $position <= $previousPosition)) {
+                $position = $previousPosition + 1;
+            }
+            $position ??= 0;
+            $positions[] = $position;
+            $previousPosition = $position;
+        }
+
+        return $positions;
     }
 }
