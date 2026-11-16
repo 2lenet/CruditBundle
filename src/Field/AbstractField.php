@@ -34,11 +34,6 @@ abstract class AbstractField implements FieldInterface
     {
         $optionResolver = new OptionsResolver();
         $this->configureOptions($optionResolver);
-        $crudConfig = $fieldView->getConfig();
-        if ($crudConfig !== null) {
-            $optionResolver->setDefault('cssClass', $crudConfig->getCssClassColumnsShow());
-            $optionResolver->setDefault('cardCssClass', $crudConfig->getCssClassColumnsCard());
-        }
 
         $options = $optionResolver->resolve($fieldView->getField()->getOptions());
         $fieldView->setOptions($options);
@@ -65,9 +60,9 @@ abstract class AbstractField implements FieldInterface
     public function configureOptions(OptionsResolver $optionsResolver): void
     {
         $optionsResolver->setDefaults([
-            "cssClass" => $this->parameterBag->get('lle_crudit.css_class_columns_show'),
-            "cardCssClass" => $this->parameterBag->get('lle_crudit.css_class_columns_card'),
-            "tableCssClass" => "text-nowrap",
+            // Columns of the grid of a section of the record taken by the field (1 to 3, or the whole line), null:
+            // one, or the whole line for a long text (isWide())
+            'span' => null,
             "edit_route" => null,
             "sortProperty" => null,
             'editRole' => null,
@@ -75,12 +70,16 @@ abstract class AbstractField implements FieldInterface
             'alignment' => null,
         ]);
         $optionsResolver->setAllowedValues('alignment', [null, 'start', 'end']);
-        $optionsResolver->setDeprecated(
-            'tableCssClass',
-            '2lenet/crudit-bundle',
-            '2.0',
-            'The option "%name%" has no effect any more: a column is aligned by its field (getAlignment(), configuration lle_crudit.default_*_alignment).',
-        );
+        $optionsResolver->setAllowedValues('span', [null, 1, 2, 3, 'full']);
+    }
+
+    /**
+     * A long text (several lines, rich text, JSON): the whole line of a section of the record, unless the option span
+     * of the field says otherwise.
+     */
+    public function isWide(): bool
+    {
+        return false;
     }
 
     /**
@@ -99,29 +98,6 @@ abstract class AbstractField implements FieldInterface
     protected function logicalAlignment(string $alignment): string
     {
         return $alignment === self::ALIGN_RIGHT ? 'end' : 'start';
-    }
-
-    /**
-     * @deprecated since 2.0, without effect: a column is aligned by getAlignment() or the option alignment
-     */
-    public function getTableCssClass(string $defaultAlignment): string
-    {
-        $alignment = 'text-end';
-
-        switch ($defaultAlignment) {
-            case self::ALIGN_LEFT:
-                $alignment = 'text-start';
-                break;
-            case self::ALIGN_CENTER:
-                $alignment = 'text-center';
-                break;
-            case self::ALIGN_RIGHT:
-            default:
-                $alignment = 'text-end';
-                break;
-        }
-
-        return $alignment;
     }
 
     abstract protected function getDefaultTemplate(): ?string;

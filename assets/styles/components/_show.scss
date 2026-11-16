@@ -1,0 +1,162 @@
+@use 'tools/responsive' as *;
+
+// Record of a CRUD (brick/show_item, lot 3.3.a): from _show.scss of the crudit-v2 mockup (.show-highlights,
+// .show-sections, .show-section, .show-fields). The alert is the Alert of CruditUiBundle, a section its Disclosure.
+.crudit-show {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+// Under the title of the record (brick/links/_meta): when it was created and modified, by whom
+.crudit-record-meta {
+    margin: 0;
+    color: var(--c-text-muted);
+    font-size: var(--font-size-xs);
+}
+
+// Key information: a dense band, as many items per line as the width allows, 6 at most; the next lines keep the same
+// columns (auto-fill); 2 per line on a phone.
+.crudit-show-highlights {
+    display: grid;
+    gap: var(--space-3) var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    margin: 0;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--c-surface);
+    grid-template-columns: repeat(auto-fill, minmax(max(min(100%, 9rem), calc((100% - 5 * var(--space-5)) / 6)), 1fr));
+
+    @include media('<sm') {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__item {
+        min-width: 0;
+    }
+
+    &__label {
+        color: var(--c-text-muted);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    &__value {
+        margin: 0.125rem 0 0;
+        font-weight: var(--font-weight-semibold);
+        overflow-wrap: anywhere;
+    }
+}
+
+// Sections: one column, two on a wide screen as soon as there are 2 (ShowFactory); a wide one (getShowWideSections())
+// alone on its line. The sections of a line start at the same height; a short or folded one leaves room under it.
+.crudit-show-sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+
+    &--2 {
+        @include media('>xl') {
+            display: grid;
+            align-items: start;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            > .crudit-show-section--wide {
+                grid-column: 1 / -1;
+            }
+        }
+    }
+}
+
+// A section: a card; its title is the button of the Disclosure, in a <h2>
+.crudit-show-section {
+    min-width: 0;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--c-surface);
+
+    .crudit-ui-disclosure__toggle {
+        padding-inline: var(--space-4);
+        border-radius: var(--radius-lg);
+        font-size: var(--font-size-md);
+    }
+
+    .crudit-ui-disclosure__panel {
+        padding: 0;
+        border-top: 1px solid var(--c-border);
+    }
+}
+
+// Fields of a section: the label above the value, at most --crudit-show-columns per line (11rem at least each), 2 on a
+// phone. A field takes 2 or 3 columns (option span) when the grid has them, else the whole line; a long text the
+// whole line. The grid is a container: its fields ask for its width.
+.crudit-show-grid {
+    --crudit-show-columns: 4;
+    --crudit-show-gap: var(--space-4);
+
+    display: grid;
+    container-type: inline-size;
+    gap: var(--space-3) var(--crudit-show-gap);
+    padding: var(--space-1) var(--space-4) var(--space-4);
+    margin: 0;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(max(min(100%, 11rem), calc((100% - (var(--crudit-show-columns) - 1) * var(--crudit-show-gap)) / var(--crudit-show-columns))), 1fr)
+    );
+
+    @include media('<sm') {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &--1 {
+        --crudit-show-columns: 1;
+    }
+
+    &--2 {
+        --crudit-show-columns: 2;
+    }
+
+    &--3 {
+        --crudit-show-columns: 3;
+    }
+}
+
+.crudit-show-field {
+    min-width: 0;
+    padding-top: var(--space-2);
+
+    &--span-2,
+    &--span-3,
+    &--span-full {
+        grid-column: 1 / -1;
+    }
+
+    &__label {
+        margin-bottom: 0.125rem;
+        color: var(--c-text-muted);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+    }
+
+    &__value {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        overflow-wrap: anywhere;
+    }
+}
+
+// Room for 2 columns: 2 × 11rem and a gap; for 3: 3 × 11rem and 2 gaps (--space-4: 1rem)
+@container (min-width: 23rem) {
+    .crudit-show-grid--3 > .crudit-show-field--span-2,
+    .crudit-show-grid--4 > .crudit-show-field--span-2 {
+        grid-column: span 2;
+    }
+}
+
+@container (min-width: 35rem) {
+    .crudit-show-grid--4 > .crudit-show-field--span-3 {
+        grid-column: span 3;
+    }
+}

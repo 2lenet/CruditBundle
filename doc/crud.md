@@ -45,14 +45,6 @@ public function getDefaultAutocompleteSort(): ?array
   
 ```
 
-## How to configure cssClass for a field in a card:
-
-Use `setCardCssClass` on a field to apply a CSS class to it in the card view.
-
-```php
-Field::new('myField')->setCardCssClass('col-md-6');
-```
-
 ## How to add actions:
 
 It is possible to add actions to lists (the header of the list page), list items (the lines) and shows (the header
@@ -400,7 +392,6 @@ public function fieldsToUpdate(int|string $id): array
             'resource' => $result,
             'value' => $result->getYourField(),
             'options' => [
-                "tableCssClass" => "text-end",
                 'decimals' => '2',
                 'decimal_separator' => ',',
                 'thousands_separator' => ' ',
@@ -444,9 +435,13 @@ public function getShowAutoRefresh(): ?int
 }
 ```
 
-## How to configure field groups in the show brick
+## The record (show brick)
 
-If you have a lot of information to put in your show brick, you can divide it into several groups, which will create several expandable elements (open by default).
+Under the header of the page (title, status, subtitle, when it was created and modified), the record shows an alert,
+the key information, then the fields: the label above the value.
+
+**Sections.** Divide the fields into groups: each one is a section that folds (its title is a button in a `<h2>`).
+The fields of no group make a card without title.
 
 ```php
 public function getFields(string $key): array
@@ -469,7 +464,8 @@ public function getFields(string $key): array
 }
 ```
 
-You can configure the number of field groups opened by default using the `getShowNumberFieldGroupsOpened` method.
+The first sections are open, the next ones folded, with `getShowNumberFieldGroupsOpened()` (all open by default). A
+section whose fields are all refused to the user (their role) is not shown, but still counts here.
 
 ```php
 public function getShowNumberFieldGroupsOpened(): ?int
@@ -477,6 +473,64 @@ public function getShowNumberFieldGroupsOpened(): ?int
     return 2;
 }
 ```
+
+**Columns.** A section has 4 fields per line by default, fewer when the room is short, 2 on a phone: change it for
+the project (`lle_crudit.show_columns`, see [config.md](config.md)), for a CRUD (`getShowColumns()`) or for a
+section (`getShowSectionColumns()`, by the key of the group). A field takes more columns with its option `span`
+(`1`, `2`, `3` or `full`); a long text (textarea, Markdown, rich text, JSON) takes the whole line by itself. The
+sections are in two columns on a wide screen (from 1280 px) as soon as there are 2, in one column otherwise; a
+section takes the whole line, alone, with `getShowWideSections()` (by the key of the group).
+
+```php
+Field::new('address', null, ['span' => 2]);
+
+public function getShowSectionColumns(): array
+{
+    return ['title.group2' => 2];
+}
+
+public function getShowWideSections(): array
+{
+    return ['title.history'];
+}
+```
+
+**Status.** The first workflow field of the record (`WorkflowField`) is shown beside the title, with its transitions,
+instead of in its section. To keep it in its section:
+
+```php
+public function isShowStatusInHeader(): bool
+{
+    return false;
+}
+```
+
+**Subtitle, alert, key information.** None by default.
+
+```php
+public function getShowSubtitle(object $resource): ?string
+{
+    return $resource->getCustomer()?->getName();
+}
+
+// A text above the record, in a tone (info, warning, danger): getCssClass() of the element gives a colour only.
+public function getShowAlert(object $resource): ?ShowAlert
+{
+    return $resource->isLate() ? ShowAlert::warning('alert.late', ['%count%' => $resource->getDelay()]) : null;
+}
+
+// A band of values under the header (a field can be both there and in a section)
+public function getShowHighlights(): array
+{
+    return [Field::new('plannedOn'), Field::new('technician'), Field::new('amount', CurrencyField::class)];
+}
+```
+
+The alert is a `Lle\CruditBundle\Dto\ShowAlert`; its message is a key of the translation domain of the CRUD, given
+its parameters.
+
+**Dates.** When the element has `getCreatedAt()`, `getCreatedBy()`, `getUpdatedAt()` or `getUpdatedBy()`, the header
+says when it was created and modified, and by whom.
 
 ## How to group rows in your list (rupture)
 

@@ -24,12 +24,13 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
 3. [Replace the SCSS theme by CSS variables](#3-theme-scss-variables-to-css-variables) *(lot 1.2)*
 4. [Decide what to do about Bootstrap](#4-bootstrap) *(lot 1.2)*
 5. [Fix `setCssClass()` on actions: `setVariant()`, `setPrimary()`, the reasons](#5-actions) *(lot 3.1.a)*
-6. [Review your `lle_crudit` configuration](#6-configuration) *(lots 2.1, 3.2)*
+6. [Review your `lle_crudit` configuration](#6-configuration) *(lots 2.1, 3.2, 3.3.a)*
 7. [Review your template overrides](#7-template-overrides) *(each lot)*
    - [Declare a tone per state of your workflows, replace your links to the transitions](#workflows-lot-34c) *(lot 3.4.c)*
    - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
    - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
-   - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` without effect](#7-template-overrides) *(lot 3.4.a)*
+   - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
+   - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap, the status and the dates in the header, `getShowAlert()`](#the-record-lot-33a) *(lot 3.3.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -668,8 +669,10 @@ to add them.
 
 | Key | Change |
 |---|---|
-| `css_class_columns_form`, `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.2.a).* |
-| `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
+| `css_class_columns_form` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.2.a).* |
+| `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes): the start stops on them. `show_columns` (fields per line of a record, 1 to 4) and the option `span` of a field instead, see [The record](#the-record-lot-33a) |
+| `number_cards_per_row` | Removed: the sections of a record are in 2 columns on a wide screen as soon as there are 2, a section alone on its line with `getShowWideSections()`. See [The record](#the-record-lot-33a) |
+| `show_columns` | New: fields per line in a section of a record, 1 to 4 (`4`) |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
 | `hide_if_disabled` | **`true` by default** (was `false`), and only for the actions refused by a right: see [Actions](#5-actions) |
 | `delete_hide_if_disabled` | `null` by default: as `hide_if_disabled`. Only for the deletions refused by a right |
@@ -766,8 +769,8 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   - the default way back (list, record and `addBack()`) is labelled `action.back` (not `action.list`): add it to
     the `messages` of your project, like the other default actions; a way back of yours at the label `action.list`
     needs `->setBack()` (see section 5);
-  - the field options `view.options.noHeader` and `field.options.tableCssClass` are ignored (`tableCssClass` is
-    deprecated, the column is aligned by its field: section 7, values of the fields);
+  - the field option `view.options.noHeader` is ignored, `field.options.tableCssClass` no longer exists (the
+    option `tableCssClass` is removed, the column is aligned by its field: section 7, values of the fields);
   - of `getCssClass()` on the resource, only a tone is kept: `danger`, `warning`, `success` or `info` when the class
     contains the word (`table-danger`, `text-info`…); any other class is lost;
   - the `path` of a total is not a link any more (it never worked: it used the variable of the last row);
@@ -799,12 +802,13 @@ lot 3.4.b. They had no block in 1.x: an override of a whole template still works
 | `doctrine_entity` | a collection: its number of elements in a `Badge` (was a pill); a link to the record as in 1.x |
 | `json` | a list gives `<ul>`, an object `<dl>`, recursively (was the values side by side); on a line in a cell of a list |
 | `markdown`, `ckeditor` | cleaned by `sanitize` (**`ckeditor` was shown as typed**: what the sanitizer does not allow, an `<iframe>`, a `style`, is removed; give your own `SanitizerInterface` to allow more: it cleans Markdown too); the headings of Markdown start at `h4` |
-| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage (**it changes** when `min` is not 0 or `max` not 100: 1.x wrote the value followed by %); above `max`, the danger tone as in 1.x, new option `overMax` (`danger` by default, `success`: full, as at `max`); `barCssClass` and `progressLabelCssClass` are deprecated, without effect |
+| `progressbar` | a native `<progress>` and its value (was the Bootstrap progress); `min` and `max` are used in the percentage (**it changes** when `min` is not 0 or `max` not 100: 1.x wrote the value followed by %); above `max`, the danger tone as in 1.x, new option `overMax` (`danger` by default, `success`: full, as at `max`); the options `barCssClass` and `progressLabelCssClass` are **removed** (an option that does not exist: delete them) |
 | `workflow` | unchanged until lot 3.4.c |
 
 - **Alignment of a column**: by its field, `AbstractField::getAlignment()` (`start`, `end`), from the configuration
-  `default_*_alignment` (`right`: end, `left` and **`center`: start**, a column is no longer centred). `tableCssClass`
-  is deprecated, without effect (and `AbstractField::getTableCssClass()`; the numbers no longer give it a default): to align **one column**, give the option
+  `default_*_alignment` (`right`: end, `left` and **`center`: start**, a column is no longer centred). The option
+  `tableCssClass` is **removed** (an option that does not exist: delete it), and so is
+  `AbstractField::getTableCssClass()`: to align **one column**, give the option
   `alignment` (`start`, `end`) to its field, `Field::new('code', null, ['alignment' => 'end'])`. A field of yours that
   extends `AbstractField` is at the start, override `getAlignment()` to change it for all its columns.
 - `TableViewBuilder` takes a `FieldRegistry` as last argument of its constructor: a decoration or an instantiation
@@ -938,6 +942,57 @@ panel (in the page from 768 px, a side panel on a phone), the active ones as chi
   `assets/controllers.json`.
 - Not in this lot: the saved filters (3.1.f), the pager (3.1.d: the filters send the list back to the first page through
   `<set>_filter`, as before).
+
+### The record *(lot 3.3.a)*
+
+The record (`brick/show_item/index.html.twig`) is rebuilt on the components of CruditUiBundle: no more Bootstrap
+card, `dl.row` nor collapse; the label is above the value. See [doc/crud.md](doc/crud.md#the-record-show-brick).
+
+- **The status** (the first workflow field of `getFields(SHOW)`) is beside the title, with its transitions, no longer
+  in its section. To keep it there, `isShowStatusInHeader()` returns `false`. The header is the one of `brick/links`:
+  a page of the record without a `LinksConfig` (your `getBrickConfigs()`) keeps the status in its section.
+- **When the element was created and modified**, by whom (`getCreatedAt()`, `getCreatedBy()`, `getUpdatedAt()`,
+  `getUpdatedBy()`), is under the title, no longer at the foot of the record: "Created on 3 Nov 2026, 14:05 by Paul ·
+  modified on …" (new keys `crudit.show.created`, `created_by`, `updated`, `updated_by`). It is given to
+  `brick/links` (`view.data.meta`), no longer to `brick/show_item` (`view.data.createdAt`… are gone).
+- **The colour of the element** (`getCssClass()`) still puts its class on the header and on the record, but a colour
+  alone says nothing to whom cannot see it, and the classes of Bootstrap (`bg-danger`, `border-warning`) no longer
+  exist. Say it in words with `getShowAlert()`, an `Alert` above the record:
+
+  ```php
+  public function getShowAlert(object $resource): ?ShowAlert
+  {
+      return $resource->isLate() ? ShowAlert::warning('alert.late', ['%count%' => $resource->getDelay()]) : null;
+  }
+  ```
+- **New**, none by default: a subtitle (`getShowSubtitle($resource)`) and the key information, a band of values
+  under the header (`getShowHighlights()`, fields).
+- **Sections**: a group of `getFields(SHOW)` is a section that folds, its title a button in a `<h2>` (`Disclosure` of
+  CruditUiBundle, controller `disclosure`). `getShowNumberFieldGroupsOpened()` is kept, but it counts the groups only
+  (it counted the fields of no group too). The fields of no group make a card without title. A group whose fields
+  are all refused to the user (their role) is not shown (it was an empty card).
+- **Columns**: 4 fields per line in a section (`lle_crudit.show_columns`, `getShowColumns()`, and
+  `getShowSectionColumns()` for a section), fewer when the room is short, 2 on a phone. A field takes more with its
+  option `span` (`1`, `2`, `3`, `full`); a long text (textarea, Markdown, rich text, JSON) takes the whole line.
+  The sections are in **2 columns from 1280 px as soon as there are 2** (one column otherwise), side by side in their
+  order, those of a line starting at the same height; a section listed by `getShowWideSections()` (its key in
+  `getFields(SHOW)`) is alone on its line. `number_cards_per_row` (a Bootstrap `col-md-{12 / n}`) is removed.
+- **Removed**: the keys `css_class_columns_show`, `css_class_columns_card` and `number_cards_per_row` (the start
+  stops on them: delete them), the methods `getCssClassColumnsShow()`, `getCssClassColumnsCard()` and
+  `getNumberCardsPerRow()` of `CrudConfigInterface` (a `CrudConfig` that still overrides one stops the build of the
+  container, with the list of them and what to do instead). The options `cssClass` and `cardCssClass`
+  of a field and its methods `setCssClass()` and `setCardCssClass()` are **removed** (an option that does not exist,
+  a method undefined): delete them, widen a field with its option `span`.
+- **Kept**: the path of the template and the block `autorefresh`; the id of the record (the id of the element) and
+  of each value (`show-<crud>-<id>-<field>`, on its `<dd>`); the class `crudit-field` of a field (with
+  `crudit-show-field`); `linkTo()`; the role of a field.
+- **An override** of `brick/show_item/index.html.twig` reads `view.data.sections` (each one: `title`, `id`,
+  `columns`, `open`, `wide`, `fields`: `view` (a `FieldView`) and `span`), `view.data.highlights`, `view.data.alert`,
+  `view.data.section_columns` (1 or 2); `view.data.resource` is still the `ResourceView`, without the status shown in the header.
+- **`CrudConfigInterface`** has new methods (`getShowColumns()`, `getShowSectionColumns()`, `getShowWideSections()`,
+  `getShowHighlights()`,
+  `getShowSubtitle()`, `getShowAlert()`, `isShowStatusInHeader()`): a class that implements it without extending
+  `AbstractCrudConfig` has to add them.
 
 ### Workflows *(lot 3.4.c)*
 

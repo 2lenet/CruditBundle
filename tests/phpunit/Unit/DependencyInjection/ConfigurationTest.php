@@ -151,6 +151,42 @@ class ConfigurationTest extends TestCase
         self::assertFalse($this->process(['delete_hide_if_disabled' => false])['delete_hide_if_disabled']);
     }
 
+    /**
+     * The record (lot 3.3.a): 4 fields per line by default (1 to 4); the classes of Bootstrap and the number of
+     * sections per line are refused.
+     */
+    public function testTheRecord(): void
+    {
+        self::assertSame(4, $this->process([])['show_columns']);
+        self::assertSame(2, $this->process(['show_columns' => 2])['show_columns']);
+    }
+
+    public function testTheFieldsOfARecordAreAtMostFourPerLine(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->process(['show_columns' => 5]);
+    }
+
+    /**
+     * @return iterable<string, array{string, string|int}>
+     */
+    public static function removedKeysOfTheRecord(): iterable
+    {
+        yield 'css_class_columns_show' => ['css_class_columns_show', 'col-md-6'];
+        yield 'css_class_columns_card' => ['css_class_columns_card', 'col-md-6'];
+        yield 'number_cards_per_row' => ['number_cards_per_row', 2];
+    }
+
+    #[DataProvider('removedKeysOfTheRecord')]
+    public function testTheRemovedKeysOfTheRecordAreRefused(string $key, string|int $value): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Unrecognized option "' . $key . '"');
+
+        $this->process([$key => $value]);
+    }
+
     private function process(array $config): array
     {
         return (new Processor())->processConfiguration(new Configuration(), [$config]);

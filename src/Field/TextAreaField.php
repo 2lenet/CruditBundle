@@ -11,6 +11,11 @@ class TextAreaField extends AbstractField
         return (in_array($type, ["text", "longtext", self::class]));
     }
 
+    public function isWide(): bool
+    {
+        return true;
+    }
+
     public function getDefaultTemplate(): ?string
     {
         return "@LleCrudit/field/textarea.html.twig";

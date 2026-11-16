@@ -1,0 +1,19 @@
+{#
+ # Fields of a section of a record (lot 3.3.a): a <dl>, the label above the value (.crudit-field kept from the 1.x).
+ # The grid has section.columns columns (1 to 4), fewer when the room is short, two on a phone; a field takes more
+ # with its option span (2, 3, full; a long text the whole line). The value keeps its id of the 1.x
+ # (show-<crud>-<id>-<field>) and its link (linkTo()).
+ #
+ # Variables: section (ShowFactory), domain, resource (ResourceView), config (of the brick).
+ #}
+<dl class="crudit-show-grid crudit-show-grid--{{ section.columns }}">
+    {%- for item in section.fields -%}
+        {%- set field = item.view -%}
+        <div class="crudit-field crudit-show-field{% if item.span %} crudit-show-field--span-{{ item.span }}{% endif %}">
+            <dt class="crudit-show-field__label">{{ field.field.label|trans(domain: domain) }}</dt>
+            <dd id="{{ 'show-' ~ config.name|lower ~ '-' ~ resource.id ~ '-' ~ field.field.id|lower }}" class="crudit-show-field__value">
+                {{- include('@LleCrudit/brick/show_item/_value.html.twig', {field: field, resource: resource}, with_context: false) -}}
+            </dd>
+        </div>
+    {%- endfor -%}
+</dl>

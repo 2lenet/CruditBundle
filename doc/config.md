@@ -9,18 +9,15 @@ We have three configurations for managing the alignment of numbers with three po
 - `default_integer_alignment`
 - `default_number_alignment`
 
-We have four configurations for columns/card display :
+We have configurations for the columns:
 - `css_class_columns_form` — CSS class applied to each field column in form view
-- `css_class_columns_show` — CSS class applied to each field column in show view
-- `css_class_columns_card` — CSS class applied to each field column in card view
-- `number_cards_per_row` — number of cards displayed per row
+- `show_columns` — fields per line in a section of a record, 1 to 4 (`4` by default); a field takes more with its
+  option `span` (see [crud.md](crud.md#the-record-show-brick))
 
 ```yaml
 lle_crudit:
     css_class_columns_form: 'col-sm-12 col-md-6'
-    css_class_columns_show: 'col-sm-12 col-md-6'
-    css_class_columns_card: 'col-sm-12 col-md-4'
-    number_cards_per_row: 3
+    show_columns: 3
 ```
 
 If you want to have roles on all your bricks (sublist, form, template, etc.), you can add the following configuration:

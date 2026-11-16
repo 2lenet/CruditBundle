@@ -1,0 +1,6 @@
+{#- A value of a record (field/<type>.html.twig, already rendered), in a link when the field has linkTo() -#}
+{%- if field.field.path -%}
+    <a href="{{ path(field.field.path.route, field.field.path.params({'id': resource.id})) }}">{{ field.value|raw }}</a>
+{%- else -%}
+    {{- field.value|raw -}}
+{%- endif -%}

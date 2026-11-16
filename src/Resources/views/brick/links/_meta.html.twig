@@ -1,0 +1,21 @@
+{#
+ # When a record was created and modified, by whom (lot 3.3.a), under its title: "Created on 3 Nov 2026, 14:05 by
+ # Paul · modified on 10 Nov 2026, 09:12 by Léa". The dates in <time datetime>. The sentences are whole in the
+ # catalogue (crudit.show.created, created_by, updated, updated_by), escaped, then given their date and author.
+ #
+ # Variable: meta (createdAt, createdBy, updatedAt, updatedBy, each one when the element has its getter).
+ #}
+{%- set parts = [] -%}
+{%- for kind in ['created', 'updated'] -%}
+    {%- set date = meta[kind ~ 'At'] ?? null -%}
+    {%- if date is not null -%}
+        {%- set author = (meta[kind ~ 'By'] ?? null) is not null ? (meta[kind ~ 'By'] ~ '')|trim : '' -%}
+        {%- set time -%}<time datetime="{{ date|date('c') }}">{{ date|ui_datetime('medium', 'short') }}</time>{%- endset -%}
+        {%- set key = 'crudit.show.' ~ kind ~ (author != '' ? '_by' : '') -%}
+        {%- set text = key|trans(domain: 'LleCruditBundle') -%}
+        {#- The sentence of the modification starts with a small letter (after " · "), unless it is alone -#}
+        {%- if parts is empty %}{% set text = text|slice(0, 1)|upper ~ text|slice(1) %}{% endif -%}
+        {%- set parts = parts|merge([text|e|replace({'%date%': time, '%author%': author|e})]) -%}
+    {%- endif -%}
+{%- endfor -%}
+<p class="crudit-record-meta">{{ parts|join(' · ')|raw }}</p>

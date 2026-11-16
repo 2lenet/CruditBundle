@@ -6,7 +6,9 @@ namespace Lle\CruditBundle\Contracts;
 
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Dto\ShowAlert;
 use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\FormInterface;
@@ -125,9 +127,38 @@ interface CrudConfigInterface
 
     public function getCssClassColumnsForm(): string;
 
-    public function getNumberCardsPerRow(): int;
+    /** Fields per line in a section of a record, 1 to 4 (lle_crudit.show_columns: 4) */
+    public function getShowColumns(): int;
 
-    public function getCssClassColumnsCard(): string;
+    /**
+     * Fields per line of some sections of the record, by the key of the section in getFields(SHOW); the others take
+     * getShowColumns().
+     *
+     * @return array<string, int>
+     */
+    public function getShowSectionColumns(): array;
 
-    public function getCssClassColumnsShow(): string;
+    /**
+     * Sections of the record that take the whole line, by their key in getFields(SHOW): the sections are in 2
+     * columns on a wide screen as soon as there are 2, these ones are alone on their line (none by default).
+     *
+     * @return list<string>
+     */
+    public function getShowWideSections(): array;
+
+    /**
+     * Key information of the record: a band of values under its header (none by default).
+     *
+     * @return Field[]
+     */
+    public function getShowHighlights(): array;
+
+    /** Under the title of the record (none by default) */
+    public function getShowSubtitle(object $resource): ?string;
+
+    /** A message above the record, a text and a tone (none by default): never the colour alone, as getCssClass() */
+    public function getShowAlert(object $resource): ?ShowAlert;
+
+    /** The first workflow field of the record is its status, beside its title, rather than in its section */
+    public function isShowStatusInHeader(): bool;
 }

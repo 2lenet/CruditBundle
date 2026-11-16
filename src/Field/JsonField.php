@@ -32,6 +32,11 @@ class JsonField extends AbstractField
         return (in_array($type, ['json', 'array', self::class]));
     }
 
+    public function isWide(): bool
+    {
+        return true;
+    }
+
     public function getDefaultTemplate(): ?string
     {
         return '@LleCrudit/field/json.html.twig';

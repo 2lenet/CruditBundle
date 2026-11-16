@@ -9,6 +9,11 @@ class CKEditorField extends AbstractField
         return in_array($type, ['string', 'text', 'longtext', self::class]);
     }
 
+    public function isWide(): bool
+    {
+        return true;
+    }
+
     protected function getDefaultTemplate(): ?string
     {
         return '@LleCrudit/field/ckeditor.html.twig';
