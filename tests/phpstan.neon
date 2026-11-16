@@ -29,3 +29,15 @@ parameters:
             identifier: classConstant.deprecated
             path: ../src/Form/DoctrineOrmTypeGuesser.php
             reportUnmatched: false
+        # doctrine/dbal 4.6 deprecates the global registry of types (Type::getType/hasType/addType) for the type provider
+        # of the connection, and the mutable date types: the bundle supports dbal ^3.3 || ^4.0, they are still valid
+        -
+            identifier: staticMethod.deprecated
+            paths:
+                - ../src/Filter/EntityIdentifiers.php
+                - ../tests/phpunit/Unit/Filter/EntityIdentifiersTest.php
+            reportUnmatched: false
+        -
+            identifier: classConstant.deprecated
+            path: ../src/Maker/MakeCrudit.php
+            reportUnmatched: false

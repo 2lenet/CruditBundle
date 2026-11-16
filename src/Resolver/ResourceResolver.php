@@ -24,7 +24,7 @@ class ResourceResolver
     }
 
     /**
-     * @param Field[] $fields
+     * @param array<Field|Field[]> $fields the fields, or groups of fields (the sections of a record)
      */
     public function resolve(
         object $resource,
