@@ -135,6 +135,7 @@ class ShowFactory extends AbstractBasicBrickFactory
         $sections = [];
         $loose = [];
         $groups = 0;
+        $ids = self::sectionIds(array_map('strval', array_keys(array_filter($fields, \is_array(...)))));
         foreach ($fields as $key => $field) {
             if (!\is_array($field)) {
                 $loose[] = $field;
@@ -142,7 +143,7 @@ class ShowFactory extends AbstractBasicBrickFactory
             }
 
             if ($loose !== []) {
-                $sections[] = $this->section(null, $columns, true, false, $loose);
+                $sections[] = $this->section(null, null, $columns, true, false, $loose);
                 $loose = [];
             }
             ++$groups;
@@ -151,6 +152,7 @@ class ShowFactory extends AbstractBasicBrickFactory
             }
             $sections[] = $this->section(
                 (string) $key,
+                $ids[(string) $key] ?? null,
                 isset($sectionColumns[$key])
                     ? $this->checkColumns($sectionColumns[$key], 'getShowSectionColumns()[' . $key . ']')
                     : $columns,
@@ -160,7 +162,7 @@ class ShowFactory extends AbstractBasicBrickFactory
             );
         }
         if ($loose !== []) {
-            $sections[] = $this->section(null, $columns, true, false, $loose);
+            $sections[] = $this->section(null, null, $columns, true, false, $loose);
         }
 
         return $sections;
@@ -170,11 +172,11 @@ class ShowFactory extends AbstractBasicBrickFactory
      * @param FieldView[] $fields
      * @return array{title: ?string, id: ?string, columns: int, open: bool, wide: bool, fields: list<array{view: FieldView, span: int|string|null}>}
      */
-    private function section(?string $title, int $columns, bool $open, bool $wide, array $fields): array
+    private function section(?string $title, ?string $id, int $columns, bool $open, bool $wide, array $fields): array
     {
         return [
             'title' => $title,
-            'id' => $title === null ? null : 'crudit-show-' . trim((string) preg_replace('/[^A-Za-z0-9_-]+/', '-', $title), '-'),
+            'id' => $id,
             'columns' => $columns,
             'open' => $open,
             'wide' => $wide,
@@ -183,6 +185,36 @@ class ShowFactory extends AbstractBasicBrickFactory
                 'span' => $this->getSpan($view),
             ], array_values($fields)),
         ];
+    }
+
+    /**
+     * The ids of the sections, by their key: `crudit-show-` and the key in ASCII letters, digits, `_` and `-` (« Général »
+     * gives `crudit-show-General`); `crudit-show-section-<n>` when nothing is left (the n-th group); `-2`, `-3`… after
+     * an id already taken (two keys written the same once cleaned, `a b` and `a-b`).
+     *
+     * @param list<string> $keys
+     * @return array<string, string>
+     */
+    private static function sectionIds(array $keys): array
+    {
+        static $ascii = null;
+        $ascii ??= \Transliterator::create('Any-Latin; Latin-ASCII') ?? false;
+
+        $ids = [];
+        $taken = [];
+        foreach ($keys as $n => $key) {
+            $text = $ascii instanceof \Transliterator ? (string) $ascii->transliterate($key) : $key;
+            $slug = trim((string) preg_replace('/[^A-Za-z0-9_-]+/', '-', $text), '-');
+            $id = 'crudit-show-' . ($slug !== '' ? $slug : 'section-' . ($n + 1));
+            $unique = $id;
+            for ($i = 2; isset($taken[$unique]); ++$i) {
+                $unique = $id . '-' . $i;
+            }
+            $taken[$unique] = true;
+            $ids[$key] = $unique;
+        }
+
+        return $ids;
     }
 
     /** The option span of the field, else the whole line for a long text (AbstractField::isWide()) */

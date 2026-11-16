@@ -43,8 +43,11 @@
                 {%- if show_section.title is null -%}
                     <div class="crudit-show-section crudit-show-section--plain">{{ show_fields }}</div>
                 {%- else -%}
+                    {#- The title in the domain of the CRUD, else in messages as in the 1.x -#}
+                    {%- set show_title = show_section.title|trans(domain: show_domain) -%}
+                    {%- if show_title == show_section.title -%}{%- set show_title = show_section.title|trans -%}{%- endif -%}
                     <twig:LleCruditUi:Disclosure
-                        title="{{ show_section.title|trans(domain: show_domain) }}"
+                        title="{{ show_title }}"
                         :open="show_section.open"
                         :level="2"
                         id="{{ show_section.id }}"

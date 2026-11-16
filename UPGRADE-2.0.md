@@ -30,7 +30,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
    - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
-   - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap, the status and the dates in the header, `getShowAlert()`](#the-record-lot-33a) *(lot 3.3.a)*
+   - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -969,8 +969,11 @@ card, `dl.row` nor collapse; the label is above the value. See [doc/crud.md](doc
   under the header (`getShowHighlights()`, fields).
 - **Sections**: a group of `getFields(SHOW)` is a section that folds, its title a button in a `<h2>` (`Disclosure` of
   CruditUiBundle, controller `disclosure`). `getShowNumberFieldGroupsOpened()` is kept, but it counts the groups only
-  (it counted the fields of no group too). The fields of no group make a card without title. A group whose fields
-  are all refused to the user (their role) is not shown (it was an empty card).
+  (it counted the fields of no group too), and a group hidden by the roles still counts (the same sections are open
+  whatever the rights of the user). The fields of no group make a card without title. A group whose fields
+  are all refused to the user (their role) is not shown (it was an empty card). The title of a section (its key) is
+  translated in the domain of the CRUD (`getTranslationDomain()`), else in `messages` as in 1.x. The id of a section
+  is `crudit-show-` and its key in ASCII (`Général` gives `crudit-show-General`), `-2` after an id already taken.
 - **Columns**: 4 fields per line in a section (`lle_crudit.show_columns`, `getShowColumns()`, and
   `getShowSectionColumns()` for a section), fewer when the room is short, 2 on a phone. A field takes more with its
   option `span` (`1`, `2`, `3`, `full`); a long text (textarea, Markdown, rich text, JSON) takes the whole line.
@@ -983,6 +986,17 @@ card, `dl.row` nor collapse; the label is above the value. See [doc/crud.md](doc
   container, with the list of them and what to do instead). The options `cssClass` and `cardCssClass`
   of a field and its methods `setCssClass()` and `setCardCssClass()` are **removed** (an option that does not exist,
   a method undefined): delete them, widen a field with its option `span`.
+- **Seen only when the page is shown.** The methods of the `CrudConfig` stop the build of the container, but a field
+  is built when its page is shown: a removed option of a field (`cssClass`, `cardCssClass`, and from the fields of
+  lot 3.4.a `tableCssClass`, `barCssClass`, `progressLabelCssClass`, which go from deprecated to removed in 2.0) or a
+  wrong `span` throws an `UndefinedOptionsException` (or `InvalidOptionsException`) on that page only, and
+  `setCssClass()` / `setCardCssClass()` on a field is an undefined method. Find them before you deploy:
+
+  ```bash
+  grep -rnE "cssClass|cardCssClass|tableCssClass|barCssClass|progressLabelCssClass" src/
+  ```
+
+  (the `setCssClass()` of the actions stays: see section 5); PHPStan finds the calls of the removed methods.
 - **Kept**: the path of the template and the block `autorefresh`; the id of the record (the id of the element) and
   of each value (`show-<crud>-<id>-<field>`, on its `<dd>`); the class `crudit-field` of a field (with
   `crudit-show-field`); `linkTo()`; the role of a field.

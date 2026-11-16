@@ -441,7 +441,9 @@ Under the header of the page (title, status, subtitle, when it was created and m
 the key information, then the fields: the label above the value.
 
 **Sections.** Divide the fields into groups: each one is a section that folds (its title is a button in a `<h2>`).
-The fields of no group make a card without title.
+The fields of no group make a card without title. The key of a group is the title of its section, translated in the
+domain of the CRUD (`getTranslationDomain()`), else in `messages`; its id is `crudit-show-` and the key in ASCII
+(`crudit-show-title-group1`).
 
 ```php
 public function getFields(string $key): array
