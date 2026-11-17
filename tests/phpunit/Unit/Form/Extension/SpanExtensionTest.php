@@ -72,6 +72,21 @@ class SpanExtensionTest extends TypeTestCase
         $this->factory->create(GroupType::class, null, ['columns' => 5]);
     }
 
+    public function testASectionHasNoSpan(): void
+    {
+        self::assertNull($this->factory->create(GroupType::class)->createView()->vars['span']);
+
+        $this->expectException(InvalidOptionsException::class);
+        $this->expectExceptionMessageMatches('/"span".*Info: A section takes the whole line: set the number of fields on its lines with the option "columns"\.$/');
+        $this->factory->create(GroupType::class, null, ['span' => 2]);
+    }
+
+    public function testTheSpanIsAVariableOfTheView(): void
+    {
+        self::assertSame(2, $this->factory->create(TextType::class, null, ['span' => 2])->createView()->vars['span']);
+        self::assertNull($this->factory->create(TextType::class)->createView()->vars['span']);
+    }
+
     /**
      * @return list<string> the deprecations triggered by $run
      */

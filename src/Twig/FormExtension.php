@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Twig;
 
+use Lle\CruditBundle\Exception\CruditException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\FormView;
 use Twig\Attribute\AsTwigFunction;
 
@@ -14,6 +16,29 @@ class FormExtension
 {
     /** Compound fields shown as one input (their own widget), not laid out field by field */
     public const WIDGET_PREFIXES = ['choice', 'collection', 'date', 'time', 'datetime', 'dateinterval', 'birthday', 'week', 'repeated', 'vich_file', 'vich_image'];
+
+    public const THEME = '@LleCrudit/form/theme.html.twig';
+
+    /**
+     * @param list<string> $formThemes themes of the widgets of other bundles and of the project (lle_crudit.form_themes)
+     */
+    public function __construct(
+        #[Autowire(param: 'lle_crudit.form_themes')]
+        private readonly array $formThemes = [],
+    ) {
+    }
+
+    /**
+     * Themes of a form shown by Crudit, imposed with `only` whatever the global theme of the project (Bootstrap): the
+     * theme of Crudit, then lle_crudit.form_themes (the widgets of FOSCKEditorBundle, VichUploaderBundle, the project).
+     *
+     * @return list<string>
+     */
+    #[AsTwigFunction('crudit_form_themes')]
+    public function themes(): array
+    {
+        return [self::THEME, ...$this->formThemes];
+    }
 
     /**
      * A sub-form (a compound field of the form type, with fields) laid out field by field on the grid of the form.
@@ -61,7 +86,7 @@ class FormExtension
             if (\in_array('hidden', $prefixes, true)) {
                 continue;
             }
-            if ($flatten && self::isFlattened($child) ? self::anyRequired($child, false) : (bool) ($child->vars['required'] ?? false)) {
+            if (($flatten && self::isFlattened($child)) ? self::anyRequired($child, false) : (bool) ($child->vars['required'] ?? false)) {
                 return true;
             }
         }
@@ -87,6 +112,21 @@ class FormExtension
                 $class,
                 $field->vars['full_name'] ?? $field->vars['name'] ?? '',
             );
+        }
+    }
+
+    /**
+     * A sub-form laid out field by field has no row of its own: its option span would have no effect, its fields have
+     * one each.
+     */
+    #[AsTwigFunction('crudit_form_check_flattened')]
+    public static function checkFlattened(FormView $field): void
+    {
+        if (($field->vars['span'] ?? null) !== null) {
+            throw new CruditException(sprintf(
+                'The field "%s" is shown field by field: its option span has no effect, set span on its fields.',
+                $field->vars['full_name'] ?? $field->vars['name'] ?? '',
+            ));
         }
     }
 }

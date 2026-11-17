@@ -670,6 +670,7 @@ to add them.
 | Key | Change |
 |---|---|
 | `css_class_columns_form` | **Removed** (Bootstrap grid classes), Symfony refuses the key: **`form_columns`** (1 to 4, **4 by default**, was 3 on a large screen): the most fields on a line of a form, fewer when the room is short, one on a phone. `col-12` is `form_columns: 1`, `col-md-6` is `2`, `col-sm-12 col-md-6 col-lg-4` (the former default) is `3`. For one CRUD, see [Forms](#forms-lot-32a) |
+| `form_themes` | **New**: the form themes added after the theme of Crudit in the forms of the bricks (the widgets of other bundles and of the project); by default those of FOSCKEditorBundle and VichUploaderBundle when they are loaded. See [Forms](#forms-lot-32a) |
 | `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.3.a).* |
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
@@ -841,8 +842,30 @@ renamed *(lot 3.4.b)*.
 The forms of the bricks (`brick/form/index.html.twig`, the forms of the batch actions) **impose the theme of Crudit**,
 `@LleCrudit/form/theme.html.twig`, built on the one of CruditUiBundle (`@LleCruditUi/form/theme.html.twig`, on
 `form_div_layout`, see its `docs/forms.md`), **whatever `twig.form_themes`** (`bootstrap_5_layout`…): `{% form_theme form
-with ['@LleCrudit/form/theme.html.twig'] only %}`. Your own forms, outside the bricks, keep your global theme; the
-Crudit types work there as before (the theme is still added to `twig.form.resources`).
+with crudit_form_themes() only %}`.
+
+- **The widgets of other bundles and of the project**: `only` leaves out every theme of `twig.form_themes`, so a widget
+  whose block lives in one of them would fall back on a bare input in the bricks. The bricks add after the theme of
+  Crudit the themes of the new key **`lle_crudit.form_themes`**; by default those of FOSCKEditorBundle
+  (`@FOSCKEditor/Form/ckeditor_widget.html.twig`, the editor of the CKEditor type of Crudit) and of VichUploaderBundle
+  (`@VichUploader/Form/fields.html.twig`, `VichFileType` / `VichImageType` used directly) when they are loaded. **A
+  project with its own widgets** (a block `*_widget` of its own type, or a `ckeditor_widget` of its own) lists its
+  theme there, with the default ones it still needs; given, the key replaces the default list. Put there only themes
+  of widgets: a theme that uses `bootstrap_5_layout` or redefines `form_row` would bring its markup back into the
+  bricks.
+
+  ```yaml
+  lle_crudit:
+      form_themes:
+          - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
+          - 'form/duree_heure_minute.html.twig'
+  ```
+- **Your own forms**, outside the bricks, keep your global theme for the Symfony types (the theme of Crudit is still
+  added to `twig.form.resources`, before yours). **The Crudit types are rendered with the markup of CruditUiBundle in
+  every form**, yours included: the row of the telephone (`crudit_telephone_row`: `crudit-ui-field`,
+  `crudit-ui-field__label-row` instead of `mb-3`) and the help of a label (`tooltip`: the `Toggletip` of
+  CruditUiBundle). To keep the 1.x rendering in a form of yours, redefine the block (`crudit_telephone_row`) in your
+  theme.
 
 - **Labels above** the inputs, pointing to them; no floating label (`form-floating`) any more. The help and the error
   are attached to the input (`aria-describedby`: `<id>_help`, then `<id>_error`), an error sets `aria-invalid` and has
@@ -863,7 +886,8 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
   `CrudConfigInterface::getFormColumns(): int` for one CRUD (it replaces `getCssClassColumnsForm()`: a CRUD that still
   overrides `getCssClassColumnsForm()` throws a `CruditException` when the container is built, at the first page in
   dev or at the `cache:clear` of a deployment, naming every such CRUD; it would be laid out with the default otherwise), `FormConfig::setColumns(1..4)` for one form, the option `columns` of a `GroupType` for one
-  section. The most precise wins: section, form, CRUD, project.
+  section. The most precise wins: section, form, CRUD, project. Each is 1 to 4: a `getFormColumns()` that returns
+  another number throws a `CruditException` when the form is shown.
 
   ```php
   public function getFormColumns(): int
@@ -871,19 +895,24 @@ Crudit types work there as before (the theme is still added to `twig.form.resour
       return 2;
   }
   ```
-- **Sections** (`GroupType`): a `fieldset` named by its title (`<legend>` with a `<h2>`), in a card, the fields after it
-  up to the next section on a grid. New options `description` (a text under the title) and `columns`. A section is
-  always on the whole width: its `attr.class` is kept on the fieldset, but `fieldset_class` (a column class) is gone.
+- **Sections** (`GroupType`): a `fieldset` named by its title (`<legend>` with a `<h2>`, a `<h3>` under the title of
+  the form), in a card, the fields after it up to the next section on a grid. New options `description` (a text under
+  the title) and `columns`. The title and the description are translated in the `translation_domain` of the section,
+  as a label (they were always in `messages`). A section is always on the whole width: its `attr.class` is kept on the
+  fieldset, but `fieldset_class` (a column class) is gone, and the option `span` is refused.
 - **A sub-form** (a compound field of the form type: an address in a form…) is still laid out field by field on the
-  grid; the other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset` named by
-  its `legend`.
+  grid; its own errors (a constraint on the object, `error_bubbling: false`) are now shown, on a line above its
+  fields. Its option `span` has no effect (its fields have one each): given, it throws a `CruditException` when the
+  form is shown. The other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset`
+  named by its `legend`.
 - A **switch**: `attr: {role: 'switch'}` on a `CheckboxType` (a native checkbox, its state written Yes / No).
 - **Help of a field** (`tooltip`, `tooltip_html`, `tooltip_template`): a button ⓘ next to the label that opens it
   (`Toggletip` of CruditUiBundle, a popover), reachable on a touch screen, named "Help on the field …" (key
   `crudit.form.help_on`). It opens on the hover and the keyboard focus, and a click keeps it open, with the controller
   `toggletip` of CruditUiBundle: **enable it** in `assets/controllers.json` (`"toggletip": {"enabled": true, "fetch":
   "eager"}` under `@2lenet/crudit-ui-bundle`), without it the click alone opens it. `tooltip_position` is deprecated,
-  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`. **`tooltip_html` is now cleaned** by the
+  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`. `tooltip` is translated in the
+  `translation_domain` of the field, as its label (it was always in `messages`). **`tooltip_html` is now cleaned** by the
   filter `sanitize` (HTMLPurifier: no script nor event attribute, the formatting stays), as Bootstrap did for its
   tooltip.
 - `brick/form/index.html.twig` keeps its blocks `form_title` and `form_buttons`, and the option `horizontalForm` (the

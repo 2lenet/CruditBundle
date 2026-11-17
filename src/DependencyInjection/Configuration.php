@@ -90,6 +90,13 @@ class Configuration implements ConfigurationInterface
                 ->min(1)
                 ->max(4)
             ->end()
+            ->arrayNode('form_themes')
+                ->info('Form themes added after the Crudit theme in the forms of the bricks (the widgets of other bundles '
+                    . 'and of the project). Null: those of FOSCKEditorBundle and VichUploaderBundle when they are loaded.')
+                ->defaultNull()
+                ->scalarPrototype()
+                ->end()
+            ->end()
             ->scalarNode('css_class_columns_show')
                 ->defaultValue('col-sm-12 col-md-6 col-lg-4')
             ->end()

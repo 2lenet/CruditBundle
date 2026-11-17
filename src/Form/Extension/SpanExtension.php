@@ -15,6 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * line). A field wider than its section (3 in a section of 2 columns) takes the whole line; so does a field of 3 columns
  * on a narrow screen, and every field on a phone. The class of the field (`attr.class`) no longer sets its width: a
  * Bootstrap column class (`col-md-6`) is told by a deprecation when Crudit shows the form (crudit_form_field_deprecations()).
+ * A section (GroupType) refuses the option, and so does a sub-form laid out field by field when it is shown
+ * (crudit_form_check_flattened()): they have no width, their fields have one.
  */
 class SpanExtension extends AbstractTypeExtension
 {
@@ -31,6 +33,7 @@ class SpanExtension extends AbstractTypeExtension
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
+        $view->vars['span'] = $options['span'];
         if (in_array($options['span'], [2, 3, 'full'], true)) {
             /** @var array<string, string> $rowAttr */
             $rowAttr = $view->vars['row_attr'] ?? [];

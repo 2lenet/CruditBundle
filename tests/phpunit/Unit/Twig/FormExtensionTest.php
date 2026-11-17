@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace phpunit\Unit\Twig;
 
 use Lle\CruditBundle\Contracts\SanitizerInterface;
+use Lle\CruditBundle\Exception\CruditException;
+use Lle\CruditBundle\Form\Extension\SpanExtension;
 use Lle\CruditBundle\Form\Type\GroupType;
 use Lle\CruditBundle\Twig\FormExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -19,10 +21,15 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 /**
  * The form of a CRUD: sub-forms laid out field by field, the legend of the required fields, the deprecation of the
- * Bootstrap column classes.
+ * Bootstrap column classes, the themes of a form, no span on a sub-form laid out field by field.
  */
 class FormExtensionTest extends TypeTestCase
 {
+    protected function getTypeExtensions(): array
+    {
+        return [new SpanExtension()];
+    }
+
     protected function getExtensions(): array
     {
         return [new PreloadedExtension([new GroupType($this->createStub(SanitizerInterface::class))], [])];
@@ -98,6 +105,29 @@ class FormExtensionTest extends TypeTestCase
     {
         self::assertSame([], $this->deprecations('collapse crudit-upper-format column-x col-form-label'));
         self::assertSame([], $this->deprecations(null));
+    }
+
+    public function testTheThemesOfAFormOfCrudit(): void
+    {
+        self::assertSame(['@LleCrudit/form/theme.html.twig'], (new FormExtension())->themes());
+        self::assertSame(
+            ['@LleCrudit/form/theme.html.twig', '@FOSCKEditor/Form/ckeditor_widget.html.twig', 'form/mine.html.twig'],
+            (new FormExtension(['@FOSCKEditor/Form/ckeditor_widget.html.twig', 'form/mine.html.twig']))->themes(),
+            'the widgets of other bundles and of the project after the theme of Crudit',
+        );
+    }
+
+    public function testASubFormLaidOutFieldByFieldHasNoSpan(): void
+    {
+        $view = $this->form(fn (FormBuilderInterface $form) => $form
+            ->add($form->create('address', FormType::class)->add('city', TextType::class))
+            ->add($form->create('geo', FormType::class, ['span' => 2])->add('lat', TextType::class)));
+
+        FormExtension::checkFlattened($view['address']);
+
+        $this->expectException(CruditException::class);
+        $this->expectExceptionMessage('The field "form[geo]" is shown field by field: its option span has no effect, set span on its fields.');
+        FormExtension::checkFlattened($view['geo']);
     }
 
     private function form(callable $build): FormView

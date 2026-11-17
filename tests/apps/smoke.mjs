@@ -1074,8 +1074,8 @@ for (const dark of [false, true]) {
 ok('fields: alignment, two lines in a cell, values of a record');
 
 // ---------- Form (lot 3.2.a): the theme of Crudit imposed (the application declares bootstrap_5_layout), the grid of
-// 4 columns then the section of 2, one column on a phone, the help of a field, the switch, axe on the form in light,
-// in dark and right to left.
+// 4 columns then the section of 2, one column on a phone, a field of 2 columns in a narrow grid, the help of a field,
+// the switch, axe on the form in light, in dark and right to left.
 for (const [width, dark, rtl] of [[1440, false, false], [1440, true, false], [1280, false, true], [360, false, false]]) {
     page = await open(width, '/client/new', {dark, rtl});
     const columns = await page.$$eval('.crudit-form-grid', (grids) => grids.map((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length));
@@ -1089,6 +1089,20 @@ for (const [width, dark, rtl] of [[1440, false, false], [1440, true, false], [12
         assert.ok(progress > name * 2.9 && progress < name * 3.5, 'the progress on 3 columns');
         assert.ok(Math.abs(channels - grid) < 1, 'a field of 3 columns in a section of 2: the whole line');
         assert.ok(Math.abs(notes - grid) < 1, 'the notes on the whole line');
+        // A field of 2 columns in a grid with room for one (a dialog, a narrow column of a wide screen): the whole
+        // line, no implicit column (it would overflow, or squeeze the single column of the next fields)
+        const [fits, field, next, room] = await page.evaluate(() => {
+            const box = document.createElement('div');
+            box.style.width = '20rem';
+            box.innerHTML = '<div class="crudit-form-grid crudit-form-grid--4"><div class="crudit-ui-field crudit-form-field--span-2">A</div><div class="crudit-ui-field">B</div></div>';
+            document.querySelector('main').append(box);
+            const narrow = box.firstElementChild;
+            const result = [narrow.scrollWidth <= narrow.clientWidth, narrow.children[0].getBoundingClientRect().width, narrow.children[1].getBoundingClientRect().width, narrow.clientWidth];
+            box.remove();
+            return result;
+        });
+        assert.ok(fits && Math.abs(field - room) < 1, 'a field of 2 columns in a narrow grid: the whole line, no overflow');
+        assert.ok(Math.abs(next - room) < 1, 'a narrow grid keeps one column: the next field on the whole line too');
         await page.click('.crudit-ui-toggletip');
         assert.ok(await page.$eval('#client_name_tooltip', (panel) => panel.matches(':popover-open')), 'the help of the field opens');
         await page.keyboard.press('Escape');
