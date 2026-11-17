@@ -841,7 +841,7 @@ renamed *(lot 3.4.b)*.
 The forms of the bricks (`brick/form/index.html.twig`, the forms of the batch actions) **impose the theme of Crudit**,
 `@LleCrudit/form/theme.html.twig`, built on the one of CruditUiBundle (`@LleCruditUi/form/theme.html.twig`, on
 `form_div_layout`, see its `docs/forms.md`), **whatever the layout of `twig.form_themes`** (`bootstrap_5_layout`…): `{% form_theme form with crudit_form_themes() only %}`.
-The layouts of your `twig.form_themes` (any `*_layout.html.twig`) are left out; your other global themes are kept, so the
+The layouts of Symfony in your `twig.form_themes` (`form_div_layout`, `form_table_layout`, `bootstrap_3|4|5[_horizontal]_layout`, `foundation_5|6_layout`, `tailwind_2_layout`, by name) are left out; your other global themes are kept, so the
 widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. The theme of Crudit comes last (its blocks win).
 Your own forms, outside the bricks, keep your global theme; the Crudit types work there as before (the theme is still
 added to `twig.form.resources`).

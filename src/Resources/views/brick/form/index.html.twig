@@ -48,7 +48,7 @@
                         <{{ section_tag }} class="crudit-form-section__title">{{ field.vars.label|trans({}, field.vars.translation_domain) }}</{{ section_tag }}>
                     </legend>
                     {% if field.vars.description %}
-                        <p class="crudit-form-section__description">{{ field.vars.description|trans }}</p>
+                        <p class="crudit-form-section__description">{{ field.vars.description|trans({}, field.vars.translation_domain) }}</p>
                     {% endif %}
                     <div class="crudit-form-grid crudit-form-grid--{{ field.vars.columns ?? columns }}">
                 {% set open = 'section' %}
