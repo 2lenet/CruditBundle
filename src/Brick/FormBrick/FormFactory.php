@@ -73,7 +73,12 @@ class FormFactory extends AbstractBasicBrickFactory
      */
     private function getColumns(FormConfig $brickConfigurator): int
     {
-        return $brickConfigurator->getColumns() ?? $brickConfigurator->getCrudConfig()->getFormColumns();
+        $columns = $brickConfigurator->getColumns() ?? $brickConfigurator->getCrudConfig()->getFormColumns();
+        if ($columns < 1 || $columns > 4) {
+            throw new \InvalidArgumentException(sprintf('A form has 1 to 4 columns, %d given by %s::getFormColumns().', $columns, $brickConfigurator->getCrudConfig()::class));
+        }
+
+        return $columns;
     }
 
     private function bindRequest(FormInterface $form, FormConfig $brickConfig, object $resource): void

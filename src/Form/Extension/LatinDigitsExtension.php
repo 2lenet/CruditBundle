@@ -48,7 +48,7 @@ class LatinDigitsExtension extends AbstractTypeExtension
         $locale = self::latinLocale($default);
 
         $transformer = match (true) {
-            $type instanceof MoneyType => new MoneyToLocalizedStringTransformer($options['scale'], $options['grouping'], $options['rounding_mode'], $options['divisor'], $locale, $options['input']),
+            $type instanceof MoneyType => new MoneyToLocalizedStringTransformer($options['scale'], $options['grouping'], $options['rounding_mode'], $options['divisor'], $locale, $options['input'] ?? 'float'),
             $type instanceof PercentType => new LatinPercentTransformer($locale, $options['scale'] ?? 0, $options['type'], $options['rounding_mode']),
             $type instanceof IntegerType => $options['grouping'] ? new IntegerToLocalizedStringTransformer(true, $options['rounding_mode'], $locale) : null,
             $type instanceof NumberType => new NumberToLocalizedStringTransformer($options['scale'], $options['grouping'], $options['rounding_mode'], $locale),

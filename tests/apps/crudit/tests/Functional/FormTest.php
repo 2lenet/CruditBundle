@@ -222,6 +222,15 @@ class FormTest extends AppTestCase
         self::assertNull($bootstrap->filter('#bootstrap_active')->attr('role'), 'another theme draws a checkbox: it is told as a checkbox');
     }
 
+    public function testTheWidgetsOfTheThirdPartyThemesOfTheProjectAreKept(): void
+    {
+        $crawler = $this->client->request('GET', '/client/new');
+
+        // ckeditor_widget comes from @FOSCKEditor/Form/ckeditor_widget.html.twig (twig.form_themes of the project)
+        self::assertCount(1, $crawler->filter('#client_summary'));
+        self::assertStringContainsString('CKEDITOR.replace("client_summary"', (string) $this->client->getResponse()->getContent(), 'the CKEditor widget is not a plain textarea');
+    }
+
     public function testAnErrorIsAttachedToItsField(): void
     {
         $crawler = $this->client->request('GET', '/client/new');
