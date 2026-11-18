@@ -83,7 +83,8 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.exit_impersonation_path', $processedConfig['exit_impersonation_path']);
         $container->setParameter('lle_crudit.generate_default_role', $processedConfig['generate_default_role']);
         $container->setParameter('lle_crudit.ignore_referer_routes', $processedConfig['ignore_referer_routes']);
-        $container->setParameter('lle_crudit.css_class_columns_form', $processedConfig['css_class_columns_form']);
+        $container->setParameter('lle_crudit.form_columns', $processedConfig['form_columns']);
+        $container->setParameter('lle_crudit.form_themes', $processedConfig['form_themes'] ?? $this->defaultFormThemes($container));
         $container->setParameter('lle_crudit.css_class_columns_show', $processedConfig['css_class_columns_show']);
         $container->setParameter('lle_crudit.css_class_columns_card', $processedConfig['css_class_columns_card']);
         $container->setParameter('lle_crudit.number_cards_per_row', $processedConfig['number_cards_per_row']);
@@ -107,10 +108,31 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
             $container->setParameter(
                 'twig.form.resources',
                 array_merge(
-                    ['@LleCrudit/form/custom_types.html.twig'],
+                    ['@LleCrudit/form/theme.html.twig'],
                     $parameter
                 )
             );
         }
+    }
+
+    /**
+     * The form themes of the bundles whose widgets the Crudit forms use, when they are loaded: the editor of
+     * FOSCKEditorBundle (the CKEditor type of Crudit) and the file and image fields of VichUploaderBundle.
+     *
+     * @return list<string>
+     */
+    private function defaultFormThemes(ContainerBuilder $container): array
+    {
+        /** @var array<string, class-string> $bundles */
+        $bundles = $container->hasParameter('kernel.bundles') ? $container->getParameter('kernel.bundles') : [];
+        $themes = [];
+        if (isset($bundles['FOSCKEditorBundle'])) {
+            $themes[] = '@FOSCKEditor/Form/ckeditor_widget.html.twig';
+        }
+        if (isset($bundles['VichUploaderBundle'])) {
+            $themes[] = '@VichUploader/Form/fields.html.twig';
+        }
+
+        return $themes;
     }
 }

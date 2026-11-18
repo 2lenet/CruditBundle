@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            -   uses: actions/checkout@v4
+            -   uses: actions/checkout@v7
 
             -   name: "Install dependencies with Composer (CruditUiBundle, read by the build)"
                 uses: php-actions/composer@v6
@@ -23,7 +23,7 @@ jobs:
                     version: 2
                     args: --profile --ignore-platform-reqs --no-scripts
 
-            -   uses: actions/setup-node@v4
+            -   uses: actions/setup-node@v7
                 with:
                     node-version: 22
 

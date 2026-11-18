@@ -9,15 +9,36 @@ We have three configurations for managing the alignment of numbers with three po
 - `default_integer_alignment`
 - `default_number_alignment`
 
-We have four configurations for columns/card display :
-- `css_class_columns_form` — CSS class applied to each field column in form view
+The forms are on a grid: `form_columns` is the most fields on a line (1 to 4, 4 by default), fewer when the room
+is short, one on a phone. A CRUD changes it with `getFormColumns()`, a form with `FormConfig::setColumns()`, a section
+with the option `columns` of its `GroupType`; a field takes 2 or 3 columns or the whole line with its option `span` (see
+[Form types](form_types.md#layout-of-a-form)).
+
+```yaml
+lle_crudit:
+    form_columns: 3
+```
+
+The forms of the bricks impose the theme of Crudit (`only`, whatever `twig.form_themes`). `form_themes` lists the
+themes added after it, for the widgets of other bundles and of the project; by default the themes of FOSCKEditorBundle
+(`@FOSCKEditor/Form/ckeditor_widget.html.twig`) and VichUploaderBundle (`@VichUploader/Form/fields.html.twig`) when
+they are loaded. Given, it replaces that list. Only themes of widgets: a theme that redefines `form_row` or uses
+`bootstrap_5_layout` would bring its markup back into the bricks.
+
+```yaml
+lle_crudit:
+    form_themes:
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
+        - 'form/my_widgets.html.twig'
+```
+
+*To be rewritten with lot 3.3.a:* the record and its cards still use
 - `css_class_columns_show` — CSS class applied to each field column in show view
 - `css_class_columns_card` — CSS class applied to each field column in card view
 - `number_cards_per_row` — number of cards displayed per row
 
 ```yaml
 lle_crudit:
-    css_class_columns_form: 'col-sm-12 col-md-6'
     css_class_columns_show: 'col-sm-12 col-md-6'
     css_class_columns_card: 'col-sm-12 col-md-4'
     number_cards_per_row: 3

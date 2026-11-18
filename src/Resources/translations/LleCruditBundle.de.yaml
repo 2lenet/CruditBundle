@@ -120,6 +120,9 @@ crudit:
         expired: "Die Seite ist abgelaufen: Laden Sie sie neu und versuchen Sie es erneut."
         error: "Der Status konnte nicht geändert werden."
 
+    form:
+        required_legend: "Mit einem Sternchen (*) gekennzeichnete Felder sind Pflichtfelder."
+        help_on: "Hilfe zum Feld %label%"
     field:
         createdAt: "Erstellt am"
         createdBy: "Erstellt von"

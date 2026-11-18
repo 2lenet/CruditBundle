@@ -120,6 +120,9 @@ crudit:
         expired: "The page has expired: reload it, then try again."
         error: "The status could not be changed."
 
+    form:
+        required_legend: "The fields marked with an asterisk (*) are required."
+        help_on: "Help on the field %label%"
     field:
         createdAt: "Created at"
         createdBy: "Created by"

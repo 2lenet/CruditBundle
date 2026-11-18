@@ -448,12 +448,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return (bool)$this->parameterBag->get('lle_crudit.generate_default_role');
     }
 
-    public function getCssClassColumnsForm(): string
+    /**
+     * Most fields on a line of the forms of this CRUD (1 to 4), `lle_crudit.form_columns` by default (4).
+     */
+    public function getFormColumns(): int
     {
-        /** @var string $cssClassColumnsForm */
-        $cssClassColumnsForm = $this->parameterBag->get('lle_crudit.css_class_columns_form');
-
-        return $cssClassColumnsForm;
+        return (int)$this->parameterBag->get('lle_crudit.form_columns');
     }
 
     public function getNumberCardsPerRow(): int

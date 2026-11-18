@@ -211,7 +211,8 @@ When we declare a new action in our page, we indicate the path of our method. Th
 ## Configure the form to be displayed in the new and edit screens
 
 In ```src/Form/EntityType.php```. The form is a basic Symfony form. Several formtypes are available.
-See : [Form types](form_types.md)
+See : [Form types](form_types.md), and [its layout](form_types.md#layout-of-a-form): sections (`GroupType`), the width of
+a field (`span`), the number of columns (`getFormColumns()` of the CRUD, `lle_crudit.form_columns`).
 
 ![](img/form.png)
 

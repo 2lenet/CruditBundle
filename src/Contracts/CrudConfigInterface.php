@@ -123,7 +123,10 @@ interface CrudConfigInterface
 
     public function getSublistTotalFields(): array;
 
-    public function getCssClassColumnsForm(): string;
+    /**
+     * Most fields on a line of the forms of this CRUD (1 to 4): fewer when the screen is narrow, 1 on a phone.
+     */
+    public function getFormColumns(): int;
 
     public function getNumberCardsPerRow(): int;
 

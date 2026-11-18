@@ -21,6 +21,13 @@ class TooltipExtension extends AbstractTypeExtension
         $resolver->setDefaults(
             ['tooltip' => null, 'tooltip_html' => null, 'tooltip_template' => null, 'tooltip_position' => null]
         );
+        // The help opens under its button (Toggletip of CruditUiBundle, lot 3.2.a)
+        $resolver->setDeprecated(
+            'tooltip_position',
+            '2lenet/crudit-bundle',
+            '2.0',
+            static fn ($resolver, $value) => $value === null ? '' : 'The option "tooltip_position" has no effect: the help opens under its button.',
+        );
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
