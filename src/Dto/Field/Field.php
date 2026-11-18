@@ -34,6 +34,8 @@ class Field
 
     private bool $ruptSortPriority = false;
 
+    private bool $descFirstSort = false;
+
     private bool $ruptHideFromList = true;
 
     private ?string $ruptNullLabel = null;
@@ -327,6 +329,18 @@ class Field
     public function withRuptSortPriority(): self
     {
         $this->ruptSortPriority = true;
+
+        return $this;
+    }
+
+    public function isDescFirstSort(): bool
+    {
+        return $this->descFirstSort;
+    }
+
+    public function withDescFirstSort(): self
+    {
+        $this->descFirstSort = true;
 
         return $this;
     }
