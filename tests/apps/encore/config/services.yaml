@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # The code of the application is the one of tests/apps/crudit (autoload "App\" of composer.json): only the
+    # Kernel, the configuration and the assets are those of this application.
+    App\:
+        resource: '../../crudit/src/'
+        exclude:
+            - '../../crudit/src/Entity/'
+            - '../../crudit/src/Kernel.php'

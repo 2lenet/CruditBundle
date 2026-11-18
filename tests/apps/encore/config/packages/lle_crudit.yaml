@@ -1,0 +1,22 @@
+lle_crudit:
+    default_currency_alignment: 'right'
+    default_integer_alignment: 'right'
+    default_number_alignment: 'right'
+    hide_if_disabled: false
+    add_connect_profile_link: true
+    exit_impersonation_path: 'home'
+    # Logo per theme, the initial of app_name in the rail (no logo_small), favicon, two links (a route, an address)
+    layout:
+        logo: 'images/logo.svg'
+        logo_dark: 'images/logo-dark.svg'
+        favicon: 'images/favicon.svg'
+        version: '%env(APP_VERSION)%'
+        release_date: '2026-10-21'
+        footer_links:
+            - { label: 'footer.accessibility', route: 'accessibility' }
+            - { label: 'footer.legal', url: 'https://example.org/legal' }
+    # Global search (Ctrl K): the clients, found by their name or e-mail, the e-mail as second line, and the screens of
+    # the menu
+    search:
+        entities:
+            - { config: 'App\Crudit\Config\ClientCrudConfig', title: 'menu.clients', subtitle: 'email' }

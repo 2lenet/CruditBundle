@@ -192,7 +192,7 @@ class FormTest extends AppTestCase
         $form->setValues(['client[name]' => 'Bob', 'client[phone][number]' => 'abc']);
         $crawler = $this->client->submit($form);
 
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(422);
         foreach (['#client_phone_number', '#client_phone_country'] as $selector) {
             self::assertSame('client_phone_error', $crawler->filter($selector)->attr('aria-describedby'), $selector);
             self::assertSame('true', $crawler->filter($selector)->attr('aria-invalid'), $selector);
@@ -235,7 +235,7 @@ class FormTest extends AppTestCase
         $form->setValues(['client[name]' => '']);
         $crawler = $this->client->submit($form);
 
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(422);
         $input = $crawler->filter('#client_name');
         self::assertSame('true', $input->attr('aria-invalid'));
         self::assertSame('client_name_help client_name_error', $input->attr('aria-describedby'));
@@ -286,7 +286,7 @@ class FormTest extends AppTestCase
         $form->setValues(['client[address][city]' => 'Lyon', 'client[address][postcode]' => '']);
         $crawler = $this->client->submit($form);
 
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(422);
         // On a line of its own, before the fields of the sub-form
         $line = $crawler->filter('.crudit-form-grid > .crudit-form-field--span-full')->reduce(fn (Crawler $line) => str_contains($line->text(), 'Enter the postcode of the city.'));
         self::assertCount(1, $line);

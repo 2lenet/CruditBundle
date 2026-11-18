@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Brick\FormBrick;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Brick\BrickResponse\FlashBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
+use Lle\CruditBundle\Brick\BrickResponse\StatusBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
@@ -18,6 +19,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -111,6 +113,7 @@ class FormFactory extends AbstractBasicBrickFactory
                 $this->brickResponseCollector->add(new RedirectBrickResponse($redirectPath));
             } else {
                 $this->addFlash(FlashBrickResponse::ERROR, $brickConfig->getMessageError());
+                $this->brickResponseCollector->add(new StatusBrickResponse(Response::HTTP_UNPROCESSABLE_ENTITY));
             }
         }
     }

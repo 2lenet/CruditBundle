@@ -1,0 +1,12 @@
+/var/
+/vendor/
+/public/assets/
+/public/bundles/
+/composer.lock
+/.env.local
+/composer.local.json
+/composer.local.lock
+/assets/vendor/
+/assets/icons/
+/config/reference.php
+/.phpunit.result.cache

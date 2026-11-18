@@ -31,7 +31,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
    - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
-   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`](#forms-lot-32a) *(lot 3.2.a)*
+   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -854,6 +854,11 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
   CruditUiBundle). To keep the 1.x rendering in a form of yours, redefine the block (`crudit_telephone_row`) in your
   theme.
 
+- **A form sent with errors is answered by a 422** (`Unprocessable Entity`), not a 200 any more, as Symfony does for
+  its own forms: Turbo only shows a form response that is a redirect or an error, so with a 200 the page did not
+  change and the errors were not visible. The page is the same, with its errors; nothing to do without Turbo. **A test of
+  yours that expects a 200 after an invalid form must expect a 422** (`assertResponseStatusCodeSame(422)`), and a
+  `fetch` of yours that sends one of these forms must read a 422 as "shown with errors".
 - **Labels above** the inputs, pointing to them; no floating label (`form-floating`) any more. The help and the error
   are attached to the input (`aria-describedby`: `<id>_help`, then `<id>_error`), an error sets `aria-invalid` and has
   an icon. A required field has a star, explained above the form ("The fields marked with an asterisk (*) are
