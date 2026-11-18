@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * the fields, those of no group in a card without title, each group in a section that folds (the first
  * getShowNumberFieldGroupsOpened() open, the others folded). A section has getShowColumns() fields per line, or its
  * own number (getShowSectionColumns()); a field takes more with its option span, a long text the whole line. The
- * sections are in 2 columns on a wide screen as soon as there are 2, a wide one (getShowWideSections()) alone on its
+ * sections are in 2 columns on a wide screen as soon as there are 2 with a title (the card without title does not count), a wide one (getShowWideSections()) alone on its
  * line. The status is beside the title
  * (ShowStatus): it is left out of its section. When the element was created and modified is in the header too.
  */
@@ -61,7 +61,7 @@ class ShowFactory extends AbstractBasicBrickFactory
                     $crudConfig
                 );
                 $sections = $this->getSections($resource->getFields(), $crudConfig);
-                $keyFields = $crudConfig->getShowHighlights();
+                $keyFields = $this->withoutStatus($brickConfigurator, $crudConfig->getShowHighlights());
                 if ($keyFields !== []) {
                     $highlights = $this->resourceResolver->resolve($item, $keyFields, $datasource, $crudConfig)
                         ->getFields();
@@ -79,7 +79,9 @@ class ShowFactory extends AbstractBasicBrickFactory
                     'sections' => $sections,
                     'highlights' => $highlights,
                     'alert' => $alert,
-                    'section_columns' => \count($sections) > 1 ? 2 : 1,
+                    'section_columns' => \count(array_filter($sections, static fn (array $section): bool => $section['title'] !== null)) > 1
+                        ? 2
+                        : 1,
                 ]);
         }
 
@@ -87,7 +89,10 @@ class ShowFactory extends AbstractBasicBrickFactory
     }
 
     /**
-     * The fields without the status, shown beside the title by the header of the page.
+     * The fields without the status, shown beside the title by the header of the page (also from the key
+     * information, where it would be shown twice). The status is the one of getFields(SHOW) (ShowStatus::find()),
+     * left out by its name: a field of that name is left out of every group, and of the fields of a ShowConfig that
+     * are not those of getFields(SHOW) too.
      *
      * @param array<Field|Field[]> $fields
      * @return array<Field|Field[]>
@@ -135,7 +140,10 @@ class ShowFactory extends AbstractBasicBrickFactory
         $sections = [];
         $loose = [];
         $groups = 0;
-        $ids = self::sectionIds(array_map('strval', array_keys(array_filter($fields, \is_array(...)))));
+        $ids = self::sectionIds(
+            array_map('strval', array_keys(array_filter($fields, \is_array(...)))),
+            (string) $crudConfig->getName(),
+        );
         foreach ($fields as $key => $field) {
             if (!\is_array($field)) {
                 $loose[] = $field;
@@ -192,20 +200,22 @@ class ShowFactory extends AbstractBasicBrickFactory
      * gives `crudit-show-General`); `crudit-show-section-<n>` when nothing is left (the n-th group); `-2`, `-3`… after
      * an id already taken (two keys written the same once cleaned, `a b` and `a-b`).
      *
+     * The name of the CRUD comes first (`crudit-show-client-General`): two records on a page (tabs) do not share ids.
+     *
      * @param list<string> $keys
      * @return array<string, string>
      */
-    private static function sectionIds(array $keys): array
+    private static function sectionIds(array $keys, string $crud = ''): array
     {
         static $ascii = null;
         $ascii ??= \Transliterator::create('Any-Latin; Latin-ASCII') ?? false;
 
+        $prefix = 'crudit-show-' . ($crud !== '' ? strtolower(self::slug($crud, $ascii)) . '-' : '');
         $ids = [];
         $taken = [];
         foreach ($keys as $n => $key) {
-            $text = $ascii instanceof \Transliterator ? (string) $ascii->transliterate($key) : $key;
-            $slug = trim((string) preg_replace('/[^A-Za-z0-9_-]+/', '-', $text), '-');
-            $id = 'crudit-show-' . ($slug !== '' ? $slug : 'section-' . ($n + 1));
+            $slug = self::slug($key, $ascii);
+            $id = $prefix . ($slug !== '' ? $slug : 'section-' . ($n + 1));
             $unique = $id;
             for ($i = 2; isset($taken[$unique]); ++$i) {
                 $unique = $id . '-' . $i;
@@ -215,6 +225,13 @@ class ShowFactory extends AbstractBasicBrickFactory
         }
 
         return $ids;
+    }
+
+    private static function slug(string $text, \Transliterator|false $ascii): string
+    {
+        $text = $ascii instanceof \Transliterator ? (string) $ascii->transliterate($text) : $text;
+
+        return trim((string) preg_replace('/[^A-Za-z0-9_-]+/', '-', $text), '-');
     }
 
     /** The option span of the field, else the whole line for a long text (AbstractField::isWide()) */

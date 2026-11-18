@@ -94,7 +94,12 @@ class LinksFactory extends AbstractBasicBrickFactory
         foreach (['createdAt', 'createdBy', 'updatedAt', 'updatedBy'] as $property) {
             $getter = 'get' . ucfirst($property);
             if (method_exists($resource, $getter)) {
-                $meta[$property] = $resource->$getter();
+                $value = $resource->$getter();
+                // An author is shown by its text: none when it has none (an entity without __toString())
+                if (str_ends_with($property, 'By') && !\is_string($value) && !$value instanceof \Stringable) {
+                    $value = null;
+                }
+                $meta[$property] = $value;
             }
         }
         if (($meta['createdAt'] ?? null) !== null || ($meta['updatedAt'] ?? null) !== null) {

@@ -90,11 +90,12 @@
 }
 
 // Fields of a section: the label above the value, at most --crudit-show-columns per line (11rem at least each), 2 on a
-// phone. A field takes 2 or 3 columns (option span) when the grid has them, else the whole line; a long text the
+// phone (except a grid asked in 1). A field takes 2 or 3 columns (option span) when the grid has them, else the whole line; a long text the
 // whole line. The grid is a container: its fields ask for its width.
 .crudit-show-grid {
     --crudit-show-columns: 4;
-    --crudit-show-gap: var(--space-4);
+    // 1rem, not a token: the container queries below (23rem, 35rem) are computed from it and cannot read a variable
+    --crudit-show-gap: 1rem;
 
     display: grid;
     container-type: inline-size;
@@ -107,7 +108,9 @@
     );
 
     @include media('<sm') {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        &:not(.crudit-show-grid--1) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
     }
 
     &--1 {
@@ -147,7 +150,7 @@
     }
 }
 
-// Room for 2 columns: 2 × 11rem and a gap; for 3: 3 × 11rem and 2 gaps (--space-4: 1rem)
+// Room for 2 columns: 2 × 11rem and a gap; for 3: 3 × 11rem and 2 gaps (--crudit-show-gap: 1rem, keep them together)
 @container (min-width: 23rem) {
     .crudit-show-grid--3 > .crudit-show-field--span-2,
     .crudit-show-grid--4 > .crudit-show-field--span-2 {

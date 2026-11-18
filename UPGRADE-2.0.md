@@ -973,7 +973,7 @@ card, `dl.row` nor collapse; the label is above the value. See [doc/crud.md](doc
   whatever the rights of the user). The fields of no group make a card without title. A group whose fields
   are all refused to the user (their role) is not shown (it was an empty card). The title of a section (its key) is
   translated in the domain of the CRUD (`getTranslationDomain()`), else in `messages` as in 1.x. The id of a section
-  is `crudit-show-` and its key in ASCII (`Général` gives `crudit-show-General`), `-2` after an id already taken.
+  is `crudit-show-`, the name of the CRUD and its key in ASCII (`Général` of `client` gives `crudit-show-client-General`), `-2` after an id already taken.
 - **Columns**: 4 fields per line in a section (`lle_crudit.show_columns`, `getShowColumns()`, and
   `getShowSectionColumns()` for a section), fewer when the room is short, 2 on a phone. A field takes more with its
   option `span` (`1`, `2`, `3`, `full`); a long text (textarea, Markdown, rich text, JSON) takes the whole line.

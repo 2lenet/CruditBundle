@@ -86,7 +86,7 @@ class ShowTest extends AppTestCase
         self::assertCount(0, $crawler->filter('[id$="-internalnote"]'));
         // Open, then folded after getShowNumberFieldGroupsOpened() (3): the refused section counts
         self::assertSame(['true', 'true', 'false'], $sections->filter('h2 > button')->each(static fn (Crawler $button): string => (string) $button->attr('aria-expanded')));
-        self::assertSame('crudit-show-section-billing-panel', $sections->eq(1)->filter('h2 > button')->attr('aria-controls'));
+        self::assertSame('crudit-show-intervention-billing-panel', $sections->eq(1)->filter('h2 > button')->attr('aria-controls'));
         self::assertCount(1, $sections->eq(2)->filter('.crudit-ui-disclosure__panel--closed'));
         // Two columns as soon as there are 2 sections; the history alone on its line (getShowWideSections())
         self::assertSame([false, false, true], $sections->each(static fn (Crawler $section): bool => str_contains((string) $section->attr('class'), 'crudit-show-section--wide')));
