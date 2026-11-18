@@ -75,6 +75,8 @@ modal:
             archive_inactive: "Archive all the inactive clients?"
             batch_archive: "Archive the selected clients?"
 client:
+    form:
+        title: "Details"
     priority:
         low: "Low"
         high: "High"

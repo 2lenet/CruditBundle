@@ -9,3 +9,4 @@ vendor
 /composer.lock
 /.phpunit.cache/
 .idea/
+/assets/package-lock.json

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lle\CruditBundle;
 
 use Lle\CruditBundle\DependencyInjection\Compiler\RemovedRecordMethodsPass;
+use Lle\CruditBundle\DependencyInjection\Compiler\CssClassColumnsFormPass;
 use Lle\CruditBundle\DependencyInjection\Compiler\SearchEntitiesPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -16,5 +17,6 @@ class LleCruditBundle extends Bundle
     {
         $container->addCompilerPass(new SearchEntitiesPass());
         $container->addCompilerPass(new RemovedRecordMethodsPass());
+        $container->addCompilerPass(new CssClassColumnsFormPass());
     }
 }

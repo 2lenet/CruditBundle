@@ -125,7 +125,10 @@ interface CrudConfigInterface
 
     public function getSublistTotalFields(): array;
 
-    public function getCssClassColumnsForm(): string;
+    /**
+     * Most fields on a line of the forms of this CRUD (1 to 4): fewer when the screen is narrow, 1 on a phone.
+     */
+    public function getFormColumns(): int;
 
     /** Fields per line in a section of a record, 1 to 4 (lle_crudit.show_columns: 4) */
     public function getShowColumns(): int;

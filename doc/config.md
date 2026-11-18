@@ -9,14 +9,21 @@ We have three configurations for managing the alignment of numbers with three po
 - `default_integer_alignment`
 - `default_number_alignment`
 
-We have configurations for the columns:
-- `css_class_columns_form` — CSS class applied to each field column in form view
-- `show_columns` — fields per line in a section of a record, 1 to 4 (`4` by default); a field takes more with its
-  option `span` (see [crud.md](crud.md#the-record-show-brick))
+The forms are on a grid: `form_columns` is the most fields on a line (1 to 4, 4 by default), fewer when the room
+is short, one on a phone. A CRUD changes it with `getFormColumns()`, a form with `FormConfig::setColumns()`, a section
+with the option `columns` of its `GroupType`; a field takes 2 or 3 columns or the whole line with its option `span` (see
+[Form types](form_types.md#layout-of-a-form)).
 
 ```yaml
 lle_crudit:
-    css_class_columns_form: 'col-sm-12 col-md-6'
+    form_columns: 3
+```
+
+The record: `show_columns` is the number of fields per line in a section of a record, 1 to 4 (`4` by default); a field takes
+more with its option `span` (see [crud.md](crud.md#the-record-show-brick)).
+
+```yaml
+lle_crudit:
     show_columns: 3
 ```
 

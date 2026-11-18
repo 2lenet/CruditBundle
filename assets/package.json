@@ -25,6 +25,12 @@
                 "fetch": "eager",
                 "enabled": true
             },
+            "input-format": {
+                "main": "dist/controllers/input_format_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            },
             "confirm": {
                 "main": "dist/controllers/confirm_controller.js",
                 "webpackMode": "eager",

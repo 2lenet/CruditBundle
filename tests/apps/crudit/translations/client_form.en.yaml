@@ -1,0 +1,7 @@
+# The section "more" of the form to edit a client (ClientEditType): translated in its own domain
+more:
+    title: "More about the client"
+    description: "What the client does"
+presentation:
+    label: "Presentation"
+    tooltip: "A few lines shown to the team"

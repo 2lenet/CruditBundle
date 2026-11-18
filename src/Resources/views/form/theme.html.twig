@@ -1,3 +1,49 @@
+{#
+ # Form theme of Crudit (lot 3.2.a): the inputs of CruditUiBundle (@LleCruditUi/form/theme.html.twig, no Bootstrap),
+ # and the blocks of the Crudit form types. Registered in twig.form.resources (the Crudit types work in the forms of
+ # the project), and imposed by the bricks whatever the global theme of the project:
+ # {% form_theme form with ['@LleCrudit/form/theme.html.twig'] only %}.
+ # The layout of a form (sections, grid, widths) is in brick/form/index.html.twig.
+ #}
+{% use '@LleCruditUi/form/theme.html.twig' %}
+
+{#
+ # Format helpers of the 1.x (classes crudit-upper-format, crudit-lower-format, crudit-email-format, crudit-ip-format
+ # on a field): the controller input-format, which acts once the field is left (lot 3.2.b). No spell check on an
+ # e-mail or an IP address, the keyboard of an e-mail address (an IP address keeps the keyboard of a text, which has
+ # the point).
+ #}
+{%- block form_widget_simple -%}
+    {%- set attr = crudit_form_format_attr(attr) -%}
+    {{- parent() -}}
+{%- endblock form_widget_simple -%}
+
+{%- block textarea_widget -%}
+    {%- set attr = crudit_form_format_attr(attr) -%}
+    {{- parent() -}}
+{%- endblock textarea_widget -%}
+
+{#
+ # A checkbox with the option switch (SwitchExtension, a boolean guessed by Crudit): role="switch" here only, the switch
+ # of CruditUiBundle; another theme keeps the checkbox. The attr of the project keeps its role.
+ #}
+{%- block checkbox_row -%}
+    {%- if switch|default(false) %}{% set attr = {role: 'switch'}|merge(attr) %}{% endif -%}
+    {{- parent() -}}
+{%- endblock checkbox_row -%}
+
+{%- block checkbox_widget -%}
+    {%- if switch|default(false) %}{% set attr = {role: 'switch'}|merge(attr) %}{% endif -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}
+
+{# The help of the options tooltip, tooltip_html and tooltip_template: a button next to the label #}
+{%- block crudit_ui_label_after -%}
+    {%- if tooltip|default(null) or tooltip_html|default(null) or tooltip_template|default(null) -%}
+        {{- include('@LleCrudit/brick/form/_tooltip.html.twig', {field: form}) -}}
+    {%- endif -%}
+{%- endblock -%}
+
 {% block autocomplete_widget %}
     {% include '@LleCrudit/form/_autocomplete_widget.html.twig' %}
 {% endblock %}
@@ -25,13 +71,16 @@
 {% endblock %}
 
 {% block crudit_telephone_row %}
-    {# A <label> pointing to the number, instead of the <fieldset>/<legend> Bootstrap renders for a compound field #}
-    {%- set row_attr = row_attr|merge({class: (row_attr.class|default('') ~ ' mb-3')|trim}) -%}
-    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
-        {{ form_label(form, null, {compound: false, id: form.number.vars.id}) }}
-        {{ form_widget(form) }}
-        {{ form_errors(form) }}
-        {{ form_help(form) }}
+    {#- A <label> pointing to the number, instead of the <fieldset>/<legend> of a compound field -#}
+    {%- set row_class = ('crudit-ui-field' ~ (errors|length > 0 ? ' crudit-ui-field--invalid' : '') ~ ' ' ~ row_attr.class|default(''))|trim -%}
+    <div{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="crudit-ui-field__label-row">
+            {{- form_label(form, null, {compound: false, id: form.number.vars.id}) -}}
+            {{- block('crudit_ui_label_after') -}}
+        </div>
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
     </div>
 {% endblock %}
 

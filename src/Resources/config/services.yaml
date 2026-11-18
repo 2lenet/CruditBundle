@@ -97,6 +97,9 @@ services:
 
     Lle\CruditBundle\Twig\BreadcrumbExtension: ~
 
+    Lle\CruditBundle\Twig\FormThemesExtension:
+        arguments: ['%twig.form.resources%']
+
     # crudit_action_state() by #[AsTwigFunction]
     Lle\CruditBundle\Action\ActionResolver:
         arguments:
@@ -128,6 +131,9 @@ services:
 
     # Test declared by #[AsTwigTest] (autoconfiguration)
     Lle\CruditBundle\Twig\FieldExtension: ~
+
+    # crudit_form_flattened(), crudit_form_has_required(), crudit_form_field_deprecations() by #[AsTwigFunction]
+    Lle\CruditBundle\Twig\FormExtension: ~
 
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:

@@ -83,7 +83,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.exit_impersonation_path', $processedConfig['exit_impersonation_path']);
         $container->setParameter('lle_crudit.generate_default_role', $processedConfig['generate_default_role']);
         $container->setParameter('lle_crudit.ignore_referer_routes', $processedConfig['ignore_referer_routes']);
-        $container->setParameter('lle_crudit.css_class_columns_form', $processedConfig['css_class_columns_form']);
+        $container->setParameter('lle_crudit.form_columns', $processedConfig['form_columns']);
         $container->setParameter('lle_crudit.show_columns', $processedConfig['show_columns']);
         $container->setParameter('lle_crudit.layout', $processedConfig['layout']);
         $search = $processedConfig['search'];
@@ -105,7 +105,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
             $container->setParameter(
                 'twig.form.resources',
                 array_merge(
-                    ['@LleCrudit/form/custom_types.html.twig'],
+                    ['@LleCrudit/form/theme.html.twig'],
                     $parameter
                 )
             );
