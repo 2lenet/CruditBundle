@@ -1092,14 +1092,14 @@ assert.ok(sections[0].top === sections[1].top && sections[1].left > sections[0].
 // The history (getShowWideSections()) alone on its line, over both columns
 assert.ok(sections[2].top > sections[0].top && sections[2].left === sections[0].left && sections[2].width > sections[0].width * 1.8, 'a wide section over the whole line');
 // Folded and opened with the keyboard
-await page.focus('#crudit-show-section-billing h2 button');
+await page.focus('#crudit-show-intervention-section-billing h2 button');
 await page.keyboard.press('Enter');
-await page.waitForFunction(() => document.querySelector('#crudit-show-section-billing h2 button').getAttribute('aria-expanded') === 'false', {timeout: 3000});
-assert.equal(await visible(page, '#crudit-show-section-billing dl'), false, 'Enter folds the section');
+await page.waitForFunction(() => document.querySelector('#crudit-show-intervention-section-billing h2 button').getAttribute('aria-expanded') === 'false', {timeout: 3000});
+assert.equal(await visible(page, '#crudit-show-intervention-section-billing dl'), false, 'Enter folds the section');
 await page.keyboard.press('Enter');
-await page.waitForFunction(() => document.querySelector('#crudit-show-section-billing h2 button').getAttribute('aria-expanded') === 'true', {timeout: 3000});
+await page.waitForFunction(() => document.querySelector('#crudit-show-intervention-section-billing h2 button').getAttribute('aria-expanded') === 'true', {timeout: 3000});
 // The section of billing: 2 values per line, the description over the whole line
-const billing = await boxes(page, '#crudit-show-section-billing .crudit-show-field');
+const billing = await boxes(page, '#crudit-show-intervention-section-billing .crudit-show-field');
 assert.ok(billing[1].top > billing[0].top && billing[1].width > billing[0].width * 1.5, 'a long text over the whole line');
 await shot(page, 'record');
 await axe(page, 'record at 1440');
