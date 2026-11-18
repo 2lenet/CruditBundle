@@ -79,9 +79,7 @@ class ShowFactory extends AbstractBasicBrickFactory
                     'sections' => $sections,
                     'highlights' => $highlights,
                     'alert' => $alert,
-                    'section_columns' => \count(array_filter($sections, static fn (array $section): bool => $section['title'] !== null)) > 1
-                        ? 2
-                        : 1,
+                    'section_columns' => $this->getSectionColumns($sections),
                 ]);
         }
 
@@ -177,6 +175,16 @@ class ShowFactory extends AbstractBasicBrickFactory
     }
 
     /**
+     * 2 columns on a wide screen as soon as there are 2 sections with a title: the card without title does not count.
+     *
+     * @param list<array{title: ?string}> $sections
+     */
+    private function getSectionColumns(array $sections): int
+    {
+        return \count(array_filter($sections, static fn (array $section): bool => $section['title'] !== null)) > 1 ? 2 : 1;
+    }
+
+    /**
      * @param FieldView[] $fields
      * @return array{title: ?string, id: ?string, columns: int, open: bool, wide: bool, fields: list<array{view: FieldView, span: int|string|null}>}
      */
@@ -196,11 +204,11 @@ class ShowFactory extends AbstractBasicBrickFactory
     }
 
     /**
-     * The ids of the sections, by their key: `crudit-show-` and the key in ASCII letters, digits, `_` and `-` (« Général »
-     * gives `crudit-show-General`); `crudit-show-section-<n>` when nothing is left (the n-th group); `-2`, `-3`… after
+     * The ids of the sections, by their key: `crudit-show-` and the key in lower case ASCII letters, digits, `_` and `-` (« Général »
+     * gives `crudit-show-general`); `crudit-show-section-<n>` when nothing is left (the n-th group); `-2`, `-3`… after
      * an id already taken (two keys written the same once cleaned, `a b` and `a-b`).
      *
-     * The name of the CRUD comes first (`crudit-show-client-General`): two records on a page (tabs) do not share ids.
+     * The name of the CRUD comes first (`crudit-show-client-general`): two records on a page (tabs) do not share ids.
      *
      * @param list<string> $keys
      * @return array<string, string>
@@ -210,7 +218,7 @@ class ShowFactory extends AbstractBasicBrickFactory
         static $ascii = null;
         $ascii ??= \Transliterator::create('Any-Latin; Latin-ASCII') ?? false;
 
-        $prefix = 'crudit-show-' . ($crud !== '' ? strtolower(self::slug($crud, $ascii)) . '-' : '');
+        $prefix = 'crudit-show-' . ($crud !== '' ? self::slug($crud, $ascii) . '-' : '');
         $ids = [];
         $taken = [];
         foreach ($keys as $n => $key) {
@@ -231,7 +239,7 @@ class ShowFactory extends AbstractBasicBrickFactory
     {
         $text = $ascii instanceof \Transliterator ? (string) $ascii->transliterate($text) : $text;
 
-        return trim((string) preg_replace('/[^A-Za-z0-9_-]+/', '-', $text), '-');
+        return strtolower(trim((string) preg_replace('/[^A-Za-z0-9_-]+/', '-', $text), '-'));
     }
 
     /** The option span of the field, else the whole line for a long text (AbstractField::isWide()) */
