@@ -105,6 +105,13 @@ crudit:
             action: "Exportieren"
             notConfigured: "Export ist nicht konfiguriert"
 
+    # Header of a record (lot 3.3.a): when it was created and modified, joined by " · "
+    show:
+        created: "Erstellt am %date%"
+        created_by: "Erstellt am %date% von %author%"
+        updated: "geändert am %date%"
+        updated_by: "geändert am %date% von %author%"
+
     workflow:
         change: ", Status ändern"
         change_entity: ", Status von %entity% ändern"

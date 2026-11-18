@@ -22,9 +22,7 @@ class ProgressBarField extends AbstractField
     {
         parent::configureOptions($optionsResolver);
         $optionsResolver->setDefaults([
-            "barCssClass" => null,
             "progressLabel" => null,
-            "progressLabelCssClass" => null,
             "min" => 0,
             "max" => 100,
             "isBottomLabelActivate" => false,
@@ -33,13 +31,5 @@ class ProgressBarField extends AbstractField
             "overMax" => 'danger',
         ]);
         $optionsResolver->setAllowedValues('overMax', ['success', 'danger']);
-        foreach (['barCssClass', 'progressLabelCssClass'] as $option) {
-            $optionsResolver->setDeprecated(
-                $option,
-                '2lenet/crudit-bundle',
-                '2.0',
-                'The option "%name%" has no effect any more: the bar and its value have the look of the design system (option overMax for the tone above max).',
-            );
-        }
     }
 }

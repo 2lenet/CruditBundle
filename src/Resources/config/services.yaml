@@ -111,6 +111,9 @@ services:
 
     Lle\CruditBundle\Builder\TableViewBuilder: ~
 
+    # The status of a record, beside its title (lot 3.3.a)
+    Lle\CruditBundle\Brick\ShowBrick\ShowStatus: ~
+
     Lle\CruditBundle\Builder\FilterViewBuilder: ~
 
     # Function declared by #[AsTwigFunction] (autoconfiguration)

@@ -1,89 +1,60 @@
+{#
+ # Record (ShowBrick, lot 3.3.a; maquette 03-fiche): under the header of the page (brick/links: title, status,
+ # subtitle, dates), an alert (view.data.alert, CrudConfigInterface::getShowAlert(): a text, never the colour alone),
+ # the key information (view.data.highlights), then the sections (view.data.sections, ShowFactory): the fields of no
+ # group in a card without title, each group in a Disclosure of CruditUiBundle (a button in a <h2>). The sections are
+ # in 2 columns on a wide screen as soon as there are 2 (view.data.section_columns), a wide one alone on its line
+ # (getShowWideSections()); the fields of a section on a grid of 1 to 4 columns (brick/show_item/_fields). The class of getCssClass() of the element stays on the record, as in the 1.x.
+ #}
 {% block autorefresh %}
     {% if view.data.auto_refresh is defined and view.data.auto_refresh %}
         <meta http-equiv="refresh" content="{{ view.data.auto_refresh }}">
     {% endif %}
 {% endblock %}
+{%- set show_domain = view.config.translation_domain -%}
+{%- set show_resource = view.data.resource -%}
+<div class="crudit-show {{ show_resource.resource.getCssClass ?? '' }}"{% if show_resource %} id="{{ show_resource.id }}"{% endif %}>
+    {%- if view.data.alert -%}
+        {%- set show_alert = view.data.alert.message|trans(view.data.alert.parameters, show_domain) -%}
+        <twig:LleCruditUi:Alert tone="{{ view.data.alert.tone }}" class="crudit-show__alert">{{ show_alert }}</twig:LleCruditUi:Alert>
+    {%- endif -%}
 
-<div
-    class="card shadow mb-4 {% if view.data.resource.resource and view.data.resource.resource.getCssClass is defined %}{{ view.data.resource.resource.getCssClass }}{% endif %}">
-    <div class="card-body">
-        <div class="row" id="{{ view.data.resource.id }}">
-            {% for key, field in view.data.resource.fields %}
-                {% if field is iterable %}
-                    {% if
-                        field.field.role is not defined or field.field.role is null or
-                        (field.field.role is defined and field.field.role is not null and is_granted(field.field.role))
-                    %}
-                        <div class="col-sm-12 col-md-{{ 12 / view.config['number_cards_per_row'] }}">
-                            <div class="card box box-default mb-3">
-                                <div
-                                    class="card-header{% if view.data.number_field_groups_opened is not null and loop.index > view.data.number_field_groups_opened %} collapsed{% endif %}"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse-{{ key }}"
-                                    aria-expanded="{% if view.data.number_field_groups_opened is not null and loop.index > view.data.number_field_groups_opened %}false{% else %}true{% endif %}"
-                                    aria-controls="collapse-{{ key }}"
-                                >
-                                    <div class="card-title">
-                                        <span class="float-start">
-                                            {{ key|trans }}
-                                        </span>
-                                        <span class="btn float-end card-toggle">
-                                            <i class="fa fa-chevron-up"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div id="collapse-{{ key }}" class="collapse{% if view.data.number_field_groups_opened is null or loop.index <= view.data.number_field_groups_opened %} show{% endif %}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            {% for cardField in field %}
-                                                <div class="crudit-field {{ cardField.options.cardCssClass }}">
-                                                    <dl class="row">
-                                                        <dt class="col-sm-3">{{ cardField.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                                                        <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ cardField.field.id|lower }}" class="col-sm-9">
-                                                            {% if cardField.field.path %}<a
-                                                                href="{{ path(cardField.field.path.route, cardField.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
-                                                                {{ cardField.value |raw }}
-                                                                {% if cardField.field.path %}</a>{% endif %}
-                                                        </dd>
-                                                    </dl>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% else %}
-                    {% if
-                        field.field.role is not defined or field.field.role is null or
-                        (field.field.role is defined and field.field.role is not null and is_granted(field.field.role))
-                    %}
-                        <div class="crudit-field {{ field.options.cssClass }}">
-                            <dl class="row">
-                                <dt class="col-sm-3">{{ field.field.label |trans(domain=view.config.translation_domain) }}</dt>
-                                <dd id="{{ 'show-' ~ view.config.name|lower ~ '-' ~ view.data.resource.id ~ '-' ~ field.field.id|lower }}" class="col-sm-9">
-                                    {% if field.field.path %}<a
-                                        href="{{ path(field.field.path.route, field.field.path.params({'id': view.data.resource.id})) }}">{% endif %}
-                                        {{ field.value |raw }}
-                                        {% if field.field.path %}</a>{% endif %}
-                                </dd>
-                            </dl>
-                        </div>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+    {%- if view.data.highlights is not empty -%}
+        <dl class="crudit-show-highlights">
+            {%- for show_field in view.data.highlights -%}
+                <div class="crudit-show-highlights__item">
+                    <dt class="crudit-show-highlights__label">{{ show_field.field.label|trans(domain: show_domain) }}</dt>
+                    <dd class="crudit-show-highlights__value">{{ include('@LleCrudit/brick/show_item/_value.html.twig', {field: show_field, resource: show_resource}, with_context: false) }}</dd>
+                </div>
+            {%- endfor -%}
+        </dl>
+    {%- endif -%}
+
+    {%- if view.data.sections is not empty -%}
+        <div class="crudit-show-sections crudit-show-sections--{{ view.data.section_columns }}">
+            {%- for show_section in view.data.sections -%}
+                {#- Rendered first: in the blocks of the component, its props (title, open, id) hide the variables -#}
+                {%- set show_fields = include('@LleCrudit/brick/show_item/_fields.html.twig', {
+                    section: show_section,
+                    domain: show_domain,
+                    resource: show_resource,
+                    config: view.config,
+                }, with_context: false) -%}
+                {%- if show_section.title is null -%}
+                    <div class="crudit-show-section crudit-show-section--plain">{{ show_fields }}</div>
+                {%- else -%}
+                    {#- The title in the domain of the CRUD, else in messages as in the 1.x -#}
+                    {%- set show_title = show_section.title|trans(domain: show_domain) -%}
+                    {%- if show_title == show_section.title -%}{%- set show_title = show_section.title|trans -%}{%- endif -%}
+                    <twig:LleCruditUi:Disclosure
+                        title="{{ show_title }}"
+                        :open="show_section.open"
+                        :level="2"
+                        id="{{ show_section.id }}"
+                        class="crudit-show-section{{ show_section.wide ? ' crudit-show-section--wide' }}"
+                    >{{ show_fields }}</twig:LleCruditUi:Disclosure>
+                {%- endif -%}
+            {%- endfor -%}
         </div>
-    </div>
-    {% if view.data.createdAt is defined %}
-        <div class="card-footer">
-            <small>{{ 'crudit.field.createdAt'|trans({}, 'LleCruditBundle') }} {{ view.data.createdAt|ui_datetime('short', 'medium') }}</small>
-            {% if view.data.createdBy is defined %}
-                <small>{{ 'crudit.field.createdBy'|trans({}, 'LleCruditBundle') }} {{ view.data.createdBy }}</small>{% endif %}
-            {% if view.data.updatedAt is defined %}-
-                <small>{{ 'crudit.field.updatedAt'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedAt|ui_datetime('short', 'medium') }}</small>{% endif %}
-            {% if view.data.updatedBy is defined %}
-                <small>{{ 'crudit.field.updatedBy'|trans({}, 'LleCruditBundle') }} {{ view.data.updatedBy }}</small>{% endif %}
-        </div>
-    {% endif %}
+    {%- endif -%}
 </div>

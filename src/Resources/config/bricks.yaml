@@ -9,7 +9,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\ShowBrick\ShowFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Brick\ShowBrick\ShowStatus', '@Lle\CruditBundle\Registry\FieldRegistry']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\SublistBrick\SublistFactory:
@@ -37,7 +37,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\LinksBrick\LinksFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Service\NavigationStack', '@Lle\CruditBundle\Action\PageActionsBuilder']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Service\NavigationStack', '@Lle\CruditBundle\Action\PageActionsBuilder', '@Lle\CruditBundle\Brick\ShowBrick\ShowStatus']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\HistoryBrick\HistoryFactory:

@@ -144,8 +144,6 @@ class FieldFormatsTest extends TestCase
     private function resolver(string $class, Environment $twig): OptionsResolver
     {
         $field = new $class($twig, new ParameterBag([
-            'lle_crudit.css_class_columns_show' => '',
-            'lle_crudit.css_class_columns_card' => '',
             'lle_crudit.default_number_alignment' => 'right',
             'lle_crudit.default_integer_alignment' => 'right',
             'lle_crudit.default_currency_alignment' => 'right',

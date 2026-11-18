@@ -4,13 +4,19 @@
  # - the breadcrumb comes from the menu (crudit_crud_breadcrumb(): the entry of the menu, then the record and its
  #   action); block breadcrumb to replace it, in a template that extends this one
  #   (`{% extends '@!LleCrudit/brick/links/index.html.twig' %}`);
- # - the actions (brick/links/_actions, lot 3.1.a): the primary one, the others, the menu "More"; block page_actions.
+ # - the actions (brick/links/_actions, lot 3.1.a): the primary one, the others, the menu "More"; block page_actions;
+ # - on a record (lot 3.3.a, LinksFactory): its status beside the title (view.data.status, a workflow field), a
+ #   subtitle (view.data.subtitle) and when it was created and modified, by whom (view.data.meta).
  #}
 {% set record = view.data.entity ?? '' %}
 {#- Names of their own: in the blocks of the component, `breadcrumb` is its prop -#}
 {% set links_breadcrumb %}{% block breadcrumb %}<twig:LleCruditUi:Breadcrumb :items="crudit_crud_breadcrumb(record)"/>{% endblock %}{% endset %}
 {% set links_actions %}{% block page_actions %}{% if not view.data.page_actions.empty %}{% include '@LleCrudit/brick/links/_actions.html.twig' %}{% endif %}{% endblock %}{% endset %}
-<twig:LleCruditUi:PageHeader :title="view.config.title|trans({'%entity%': record}, view.config.translation_domain)" class="crudit-page-header {{ view.data.resource.getCssClass ?? '' }}">
+{% set links_status = view.data.status is defined ? view.data.status.value : '' %}
+{% set links_meta %}{% if view.data.meta is defined %}{% include '@LleCrudit/brick/links/_meta.html.twig' with {meta: view.data.meta} only %}{% endif %}{% endset %}
+<twig:LleCruditUi:PageHeader :title="view.config.title|trans({'%entity%': record}, view.config.translation_domain)" :subtitle="view.data.subtitle ?? null" class="crudit-page-header {{ view.data.resource.getCssClass ?? '' }}">
     <twig:block name="breadcrumb">{{ links_breadcrumb }}</twig:block>
+    <twig:block name="badge">{{ links_status|raw }}</twig:block>
+    <twig:block name="meta">{{ links_meta }}</twig:block>
     <twig:block name="actions">{{ links_actions }}</twig:block>
 </twig:LleCruditUi:PageHeader>

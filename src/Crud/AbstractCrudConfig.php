@@ -23,6 +23,7 @@ use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Dto\ShowAlert;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Exporter\ExportParams;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -456,24 +457,38 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         return (int)$this->parameterBag->get('lle_crudit.form_columns');
     }
 
-    public function getNumberCardsPerRow(): int
+    public function getShowColumns(): int
     {
-        return (int)$this->parameterBag->get('lle_crudit.number_cards_per_row');
+        return (int)$this->parameterBag->get('lle_crudit.show_columns');
     }
 
-    public function getCssClassColumnsCard(): string
+    public function getShowSectionColumns(): array
     {
-        /** @var string $cssClassColumnsByCard */
-        $cssClassColumnsByCard = $this->parameterBag->get('lle_crudit.css_class_columns_card');
-
-        return $cssClassColumnsByCard;
+        return [];
     }
 
-    public function getCssClassColumnsShow(): string
+    public function getShowWideSections(): array
     {
-        /** @var string $cssClassColumnsShow */
-        $cssClassColumnsShow = $this->parameterBag->get('lle_crudit.css_class_columns_show');
+        return [];
+    }
 
-        return $cssClassColumnsShow;
+    public function getShowHighlights(): array
+    {
+        return [];
+    }
+
+    public function getShowSubtitle(object $resource): ?string
+    {
+        return null;
+    }
+
+    public function getShowAlert(object $resource): ?ShowAlert
+    {
+        return null;
+    }
+
+    public function isShowStatusInHeader(): bool
+    {
+        return true;
     }
 }

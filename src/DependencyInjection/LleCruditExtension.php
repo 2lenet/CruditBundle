@@ -84,9 +84,7 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.generate_default_role', $processedConfig['generate_default_role']);
         $container->setParameter('lle_crudit.ignore_referer_routes', $processedConfig['ignore_referer_routes']);
         $container->setParameter('lle_crudit.form_columns', $processedConfig['form_columns']);
-        $container->setParameter('lle_crudit.css_class_columns_show', $processedConfig['css_class_columns_show']);
-        $container->setParameter('lle_crudit.css_class_columns_card', $processedConfig['css_class_columns_card']);
-        $container->setParameter('lle_crudit.number_cards_per_row', $processedConfig['number_cards_per_row']);
+        $container->setParameter('lle_crudit.show_columns', $processedConfig['show_columns']);
         $container->setParameter('lle_crudit.layout', $processedConfig['layout']);
         $search = $processedConfig['search'];
         $search['entities'] = array_map(

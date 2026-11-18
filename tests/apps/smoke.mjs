@@ -1073,6 +1073,54 @@ for (const dark of [false, true]) {
 }
 ok('fields: alignment, two lines in a cell, values of a record');
 
+// ---------- Record (lot 3.3.a): the status beside the title, the key information, the sections in two columns on a
+// wide screen and one below, folded and opened with the keyboard, two values per line on a phone. app:seed: INT-02 is
+// late (an alert), its 4th section is refused to everybody, the last one folded.
+const recordOf = async (page, reference) => {
+    const id = await page.$$eval('.crudit-ui-table__row', (rows, reference) => rows.find((r) => r.querySelector('th[scope=row]')?.textContent.trim() === reference).id, reference);
+    return `/intervention/show/${id.replace(/^list-intervention-/, '')}`;
+};
+const boxes = (page, sel) => page.$$eval(sel, (nodes) => nodes.map((n) => { const b = n.getBoundingClientRect(); return {top: Math.round(b.top), left: Math.round(b.left), width: Math.round(b.width)}; }));
+page = await open(1440, '/intervention/');
+const recordPath = await recordOf(page, 'INT-02');
+await page.goto(base + recordPath, {waitUntil: 'networkidle0'});
+assert.ok(await page.$('.crudit-ui-page-header__title-row .crudit-workflow'), 'the status beside the title');
+assert.ok((await text(page, '.crudit-show .crudit-ui-alert')).includes('Late'), 'the alert of a late intervention');
+assert.deepEqual(await page.$$eval('.crudit-show-section h2 button', (b) => b.map((x) => [x.textContent.trim(), x.getAttribute('aria-expanded')])), [['Intervention', 'true'], ['Billing', 'true'], ['History', 'false']]);
+let sections = await boxes(page, '.crudit-show-sections > .crudit-show-section');
+assert.ok(sections[0].top === sections[1].top && sections[1].left > sections[0].left, 'two columns at 1440');
+// The history (getShowWideSections()) alone on its line, over both columns
+assert.ok(sections[2].top > sections[0].top && sections[2].left === sections[0].left && sections[2].width > sections[0].width * 1.8, 'a wide section over the whole line');
+// Folded and opened with the keyboard
+await page.focus('#crudit-show-intervention-section-billing h2 button');
+await page.keyboard.press('Enter');
+await page.waitForFunction(() => document.querySelector('#crudit-show-intervention-section-billing h2 button').getAttribute('aria-expanded') === 'false', {timeout: 3000});
+assert.equal(await visible(page, '#crudit-show-intervention-section-billing dl'), false, 'Enter folds the section');
+await page.keyboard.press('Enter');
+await page.waitForFunction(() => document.querySelector('#crudit-show-intervention-section-billing h2 button').getAttribute('aria-expanded') === 'true', {timeout: 3000});
+// The section of billing: 2 values per line, the description over the whole line
+const billing = await boxes(page, '#crudit-show-intervention-section-billing .crudit-show-field');
+assert.ok(billing[1].top > billing[0].top && billing[1].width > billing[0].width * 1.5, 'a long text over the whole line');
+await shot(page, 'record');
+await axe(page, 'record at 1440');
+await page.setViewport({width: 1024, height: 800});
+await new Promise((r) => setTimeout(r, 200));
+sections = await boxes(page, '.crudit-show-sections > .crudit-show-section');
+assert.ok(sections[1].top > sections[0].top && sections[1].left === sections[0].left, 'one column below 1280');
+await page.setViewport({width: 360, height: 800});
+await new Promise((r) => setTimeout(r, 200));
+const keys = await boxes(page, '.crudit-show-highlights__item');
+assert.ok(keys[0].top === keys[1].top && keys[2].top > keys[0].top, 'two key values per line on a phone');
+assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'no horizontal scroll on a phone');
+await shot(page, 'record-phone');
+await axe(page, 'record at 360');
+await page.close();
+for (const [dark, rtl] of [[true, false], [false, true]]) {
+    page = await open(1440, recordPath, {dark, rtl});
+    await axe(page, `record${dark ? ', dark' : ''}${rtl ? ', right to left' : ''}`);
+    await page.close();
+}
+ok('record: header, alert, sections, keyboard, columns, phone');
 // ---------- Form (lot 3.2.a): the theme of Crudit imposed (the application declares bootstrap_5_layout), the grid of
 // 4 columns then the section of 2, one column on a phone, a field of 2 columns in a narrow grid, the help of a field,
 // the switch, axe on the form in light, in dark and right to left.

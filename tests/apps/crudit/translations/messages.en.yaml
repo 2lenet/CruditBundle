@@ -39,6 +39,7 @@ crud:
             intervention: "Interventions"
         show:
             client: "%entity%"
+            intervention: "%entity%"
         edit:
             client: "Edit %entity%"
         new:
@@ -111,6 +112,14 @@ wf:
         cancelled: "Cancelled"
         archived: "Archived"
 
+# The record of an intervention (lot 3.3.a)
+section:
+    intervention: "Intervention"
+    billing: "Billing"
+    internal: "Internal"
+    history: "History"
+alert:
+    late: "{1} Late: the planned date is past by 1 day.|]1,Inf[ Late: the planned date is past by %count% days."
 field:
     name: "Name"
     status: "Status"
@@ -121,3 +130,9 @@ field:
     referrer: "Referrer"
     email: "Email"
     notes: "Notes"
+    reference: "Reference"
+    technician: "Technician"
+    plannedon: "Planned on"
+    description: "Description"
+    internalnote: "Internal note"
+    updatedby: "Modified by"

@@ -53,10 +53,16 @@ class SeedCommand extends Command
         }
         // Interventions in each state of their workflow (lot 3.4.c); INT-01 has no technician: it cannot be planned
         foreach (['to_plan', 'to_plan', 'planned', 'in_progress', 'done', 'cancelled'] as $i => $status) {
+            // The record (lot 3.3.a): INT-02 is late by 5 days (an alert), INT-03 is planned in 3 days
             $this->em->persist((new Intervention())
                 ->setReference(sprintf('INT-%02d', $i + 1))
                 ->setTechnician(0 === $i ? null : 'Camille Martin')
-                ->setStatus($status));
+                ->setStatus($status)
+                ->setPlannedOn(0 === $i ? null : new \DateTime(sprintf('%+d days', ($i - 1) * 8 - 5)))
+                ->setAmount(sprintf('%d.50', 120 * ($i + 1)))
+                ->setDescription(1 === $i ? "Replace the boiler of the hotel.\nThe access code is in the file." : null)
+                ->setUpdatedAt(1 === $i ? new \DateTime('-1 day') : null)
+                ->setUpdatedBy(1 === $i ? 'Léa Martin' : null));
         }
         $this->em->flush();
         $output->writeln('25 clients, 6 interventions.');

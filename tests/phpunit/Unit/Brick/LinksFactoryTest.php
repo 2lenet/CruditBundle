@@ -7,6 +7,7 @@ namespace phpunit\Unit\Brick;
 use Lle\CruditBundle\Action\PageActionsBuilder;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksFactory;
+use Lle\CruditBundle\Brick\ShowBrick\ShowStatus;
 use Lle\CruditBundle\Dto\Action\ItemAction;
 use Lle\CruditBundle\Dto\Path;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -40,6 +41,7 @@ class LinksFactoryTest extends TestCase
             new RequestStack(),
             $navigation,
             $this->createStub(PageActionsBuilder::class),
+            $this->createStub(ShowStatus::class),
         );
     }
 }

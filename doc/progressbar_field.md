@@ -23,8 +23,8 @@ one above `max` (as in 1.x; see `overMax`).
 - 'progressLabel' => the text written instead of the percentage,
 - 'isBottomLabelActivate' => adds a line under the bar (true/false),
 - 'bottomLabel' => the text of that line (the percentage by default),
-- 'barCssClass', 'progressLabelCssClass' => **deprecated in 2.0, without effect**: the bar and its value have the look
-  of the design system (use 'overMax' for the tone above `max`).
+- 'barCssClass', 'progressLabelCssClass' => **removed in 2.0**: the bar and its value have the look of the design
+  system (use 'overMax' for the tone above `max`).
 
 ### Example:
 
