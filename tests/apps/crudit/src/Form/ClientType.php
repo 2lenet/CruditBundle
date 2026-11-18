@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Enum\Priority;
-use Lle\CruditBundle\Form\Type\CKEditorType;
 use Lle\CruditBundle\Form\Type\GroupType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\Form\AbstractType;
@@ -57,7 +56,6 @@ class ClientType extends AbstractType
                 'span' => 3, // wider than its section of 2 columns: the whole line
             ])
             ->add('notes', TextareaType::class, ['required' => false, 'span' => 'full', 'attr' => ['maxlength' => 80]])
-            ->add('summary', CKEditorType::class, ['label' => 'Summary', 'mapped' => false, 'required' => false, 'span' => 'full']) // widget of FOSCKEditor, kept by the theme of Crudit
             ->add('details', GroupType::class, ['label' => 'Details', 'mapped' => false])
             ->add('phone', TelephoneType::class, ['required' => false, 'span' => 2])
             ->add('website', UrlType::class, ['required' => false, 'default_protocol' => null, 'attr' => ['class' => 'crudit-lower-format', 'maxlength' => 255], 'span' => 2, 'counter' => true])
