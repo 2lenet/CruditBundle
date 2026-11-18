@@ -72,6 +72,9 @@ async function axe(page, label) {
 }
 const shot = async (page, name) => shots && page.screenshot({path: `${shots}/${name}.png`});
 
+// The width of the menu is animated: wait for it (a fixed delay is too short on a slow runner).
+const sidebarWidth = (page, width) => page.waitForFunction((expected) => Math.abs(document.querySelector('#crudit-sidebar').getBoundingClientRect().width - expected) < 2, {timeout: 5000}, width).catch(() => {});
+
 // ---------- Desktop, full menu (auto, ≥ 1280)
 let page = await open(1440);
 assert.equal(await attr(page, '.crudit-shell', 'data-sidebar'), 'auto');
@@ -133,7 +136,7 @@ ok('filter cleared: everything back, sub-menus restored');
 // ---------- Rail by toggle, cookie, no jump
 await page.click('.crudit-sidebar__collapse');
 assert.equal(await attr(page, '.crudit-shell', 'data-sidebar'), 'collapsed');
-await new Promise((r) => setTimeout(r, 300));
+await sidebarWidth(page, 72);
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'rail is 72 px');
 assert.equal(await page.$eval('[data-2lenet--crudit-bundle--sidebar-target=toggleLabel]', (e) => e.textContent), 'Expand the menu');
 assert.ok(!(await visible(page, '#crudit-menu-filter')), 'filter hidden in rail');
@@ -191,7 +194,7 @@ ok('rail remembered (cookie read by the layout)');
 // back to full
 await page.waitForSelector('.crudit-sidebar__collapse');
 await page.click('.crudit-sidebar__collapse');
-await new Promise((r) => setTimeout(r, 300));
+await sidebarWidth(page, 240);
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2);
 assert.equal(await attr(page, '[data-menu-label=Billing] button', 'aria-expanded'), 'true', 'current sub-menu reopened');
 ok('back to full menu');
@@ -202,14 +205,14 @@ page = await open(1100);
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'auto: rail at 1100');
 assert.equal(await page.$eval('[data-2lenet--crudit-bundle--sidebar-target=toggleLabel]', (e) => e.textContent), 'Expand the menu');
 await page.click('.crudit-sidebar__collapse');
-await new Promise((r) => setTimeout(r, 300));
+await sidebarWidth(page, 240);
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2, 'expanded at 1100');
 assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar').value, 'expanded');
 ok('auto = rail at 1100, expand by choice');
 await page.setViewport({width: 1500, height: 800});
 await new Promise((r) => setTimeout(r, 200));
 await page.setViewport({width: 1100, height: 800});
-await new Promise((r) => setTimeout(r, 300));
+await sidebarWidth(page, 240);
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 240) < 2, 'explicit choice kept when resizing');
 await page.close();
 
@@ -483,7 +486,7 @@ await page.click('.crudit-sidebar__collapse');
 assert.equal((await page.cookies()).find((c) => c.name === 'crudit_sidebar'), undefined, 'the cookie is gone');
 assert.equal(await attr(page, '.crudit-shell', 'data-sidebar'), 'auto');
 await page.setViewport({width: 1100, height: 800});
-await new Promise((r) => setTimeout(r, 300));
+await sidebarWidth(page, 72);
 assert.ok(Math.abs((await box(page, '#crudit-sidebar')).w - 72) < 2, 'auto again: the rail at 1100');
 ok('the menu goes back to auto when the choice is what auto gives');
 await page.close();
