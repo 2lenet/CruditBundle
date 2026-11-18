@@ -271,10 +271,10 @@ class FormTest extends AppTestCase
         $form = $this->editForm()->closest('.crudit-form');
 
         self::assertSame('Details', $form?->filter('h2.crudit-form__title')->text());
-        self::assertSame(['Identity', 'Contact', 'More about the client'], $form?->filter('fieldset.crudit-form-section > legend h3')->each(fn (Crawler $title) => $title->text()));
+        self::assertSame(['Identity', 'Contact', 'Details', 'More about the client'], $form?->filter('fieldset.crudit-form-section > legend h3')->each(fn (Crawler $title) => $title->text()));
         self::assertCount(0, $form?->filter('fieldset.crudit-form-section > legend h2') ?? []);
         // Without a title of the form (the new client): titles of level 2
-        self::assertCount(2, $this->form()->filter('fieldset.crudit-form-section > legend h2'));
+        self::assertCount(3, $this->form()->filter('fieldset.crudit-form-section > legend h2'));
     }
 
     public function testTheSectionAndTheTooltipInTheTranslationDomainOfTheField(): void
