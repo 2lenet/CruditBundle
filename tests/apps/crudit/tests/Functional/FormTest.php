@@ -93,9 +93,11 @@ class FormTest extends AppTestCase
         self::assertSame('Channels', $channels->filter('legend')->text());
         self::assertCount(2, $channels->filter('ul.crudit-ui-check-list label.crudit-ui-check input[type="checkbox"]'));
 
-        // A unit: next to the input, hidden from assistive technologies
-        $unit = $form->filter('#client_progress')->closest('.crudit-ui-input-group')?->filter('.crudit-ui-input-group__unit');
-        self::assertSame(['%', 'true'], [$unit?->text(), $unit?->attr('aria-hidden')]);
+        // A unit: next to the input, read with it (aria-describedby)
+        $progress = $form->filter('#client_progress');
+        $unit = $progress->closest('.crudit-ui-input-group')?->filter('.crudit-ui-input-group__unit');
+        self::assertSame(['%', 'client_progress_unit', null], [$unit?->text(), $unit?->attr('id'), $unit?->attr('aria-hidden')]);
+        self::assertContains('client_progress_unit', explode(' ', (string) $progress->attr('aria-describedby')));
 
         // The buttons of the design system
         self::assertSame(['Cancel', 'Save'], $form->filter('.crudit-form__actions .crudit-ui-btn')->each(fn (Crawler $button) => trim($button->text())));
