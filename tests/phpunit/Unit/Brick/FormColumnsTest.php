@@ -8,6 +8,7 @@ use Lle\CruditBundle\Brick\AbstractBrickConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Brick\FormBrick\FormFactory;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
+use Lle\CruditBundle\Exception\CruditException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
@@ -59,6 +60,30 @@ class FormColumnsTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         FormConfig::new()->setColumns(5);
+    }
+
+    public function testACrudGivesOneToFourColumns(): void
+    {
+        $crud = $this->crud(new class extends AbstractCrudConfig {
+            public function getFields(string $key): array
+            {
+                return [];
+            }
+
+            public function getRootRoute(): string
+            {
+                return 'app_crud';
+            }
+
+            public function getFormColumns(): int
+            {
+                return 6;
+            }
+        });
+
+        $this->expectException(CruditException::class);
+        $this->expectExceptionMessageMatches('/^The fields per line of a form are 1 to 4, 6 given by .+::getFormColumns\(\)\.$/');
+        $this->columns(FormConfig::new(), $crud);
     }
 
     private function crud(AbstractCrudConfig $crud, int $projectColumns = 4): AbstractCrudConfig

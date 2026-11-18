@@ -123,8 +123,10 @@ What matters :
 
 ## Layout of a form
 
-The forms of the bricks impose the theme of Crudit, whatever `twig.form_themes`: labels above the inputs, the help and
-the error attached to them, the required fields explained above the form. The fields are on a grid of at most
+The forms of the bricks impose the theme of Crudit, whatever the layout of `twig.form_themes`: labels above the inputs,
+the help and the error attached to them, the required fields explained above the form. The other global themes of the
+project (the widgets of FOSCKEditor and Vich, the blocks of its own types) are kept, after the theme of Crudit only the
+layouts of Symfony are left out. The fields are on a grid of at most
 `lle_crudit.form_columns` per line (4 by default), fewer when the room is short, one on a phone.
 
 ```php
@@ -142,7 +144,7 @@ $builder
 
 | Option | On | |
 |---|---|---|
-| `span` | any field | `1` (default), `2`, `3` or `'full'`: its width on the grid; the whole line on a phone, and when it is wider than its section (or `3` on a narrow screen). `attr.class` does not set the width |
+| `span` | any field | `1` (default), `2`, `3` or `'full'`: its width on the grid; the whole line on a phone, when it is wider than its section, and when the grid has no room for that many columns (a section, a dialog, a narrow column). `attr.class` does not set the width. Refused on a `GroupType` and on a sub-form laid out field by field |
 | `columns` | `GroupType` | the most fields on a line of this section (1 to 4), else those of the form |
 | `description` | `GroupType` | a text under the title of the section |
 | `tooltip`, `tooltip_html`, `tooltip_template` | any field | a help opened by a button next to the label (`tooltip_html` is cleaned by `sanitize`) |
@@ -157,5 +159,11 @@ the language (in Arabic or Persian digits, it is refused).
 The controllers `char-count`, `color-code` (CruditUiBundle) and `input-format` (Crudit) are to be enabled
 in `assets/controllers.json`.
 
-The number of columns of a form: `FormConfig::setColumns()`, else `getFormColumns()` of its CRUD, else
-`lle_crudit.form_columns`.
+The title and the description of a section and the `tooltip` of a field are translated in the `translation_domain` of
+the field, as the labels. The title of a section is a `<h2>`, a `<h3>` under the title of the form.
+
+A sub-form (a compound field of the form type) is laid out field by field on the grid, its own errors (a constraint on
+the object) on a line above its fields.
+
+The number of columns of a form: `FormConfig::setColumns()`, else `getFormColumns()` of its CRUD (1 to 4, else a
+`CruditException`), else `lle_crudit.form_columns`.

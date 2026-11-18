@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Twig;
 
+use Lle\CruditBundle\Exception\CruditException;
 use Symfony\Component\Form\FormView;
 use Twig\Attribute\AsTwigFunction;
 
@@ -70,7 +71,7 @@ class FormExtension
             if (\in_array('hidden', $prefixes, true)) {
                 continue;
             }
-            if ($flatten && self::isFlattened($child) ? self::anyRequired($child, false) : (bool) ($child->vars['required'] ?? false)) {
+            if (($flatten && self::isFlattened($child)) ? self::anyRequired($child, false) : (bool) ($child->vars['required'] ?? false)) {
                 return true;
             }
         }
@@ -152,5 +153,20 @@ class FormExtension
             && array_intersect($prefixes, self::NOT_TYPED_PREFIXES) === [];
 
         return $typed ? $attr + ['autocomplete' => 'new-password'] : $attr;
+    }
+
+    /**
+     * A sub-form laid out field by field has no row of its own: its option span would have no effect, its fields have
+     * one each.
+     */
+    #[AsTwigFunction('crudit_form_check_flattened')]
+    public static function checkFlattened(FormView $field): void
+    {
+        if (($field->vars['span'] ?? null) !== null) {
+            throw new CruditException(sprintf(
+                'The field "%s" is shown field by field: its option span has no effect, set span on its fields.',
+                $field->vars['full_name'] ?? $field->vars['name'] ?? '',
+            ));
+        }
     }
 }

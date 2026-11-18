@@ -8,7 +8,9 @@ use App\Crudit\Datasource\ClientDatasource;
 use App\Entity\Client;
 use App\Enum\Priority;
 use App\Form\ClientBatchType;
+use App\Form\ClientEditType;
 use App\Form\ClientType;
+use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
@@ -154,7 +156,22 @@ class ClientCrudConfig extends AbstractCrudConfig
 
     protected function getFormType(string $pageKey): ?string
     {
-        return ClientType::class;
+        return $pageKey === CrudConfigInterface::EDIT ? ClientEditType::class : ClientType::class;
+    }
+
+    /**
+     * The form to edit a client has a title: its sections are titles of level 3 under it.
+     */
+    public function getBrickConfigs(): array
+    {
+        $bricks = parent::getBrickConfigs();
+        foreach ($bricks[CrudConfigInterface::EDIT] as $brick) {
+            if ($brick instanceof FormConfig) {
+                $brick->setTitle('client.form.title');
+            }
+        }
+
+        return $bricks;
     }
 
     public function getRootRoute(): string

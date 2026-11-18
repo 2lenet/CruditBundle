@@ -843,8 +843,13 @@ The forms of the bricks (`brick/form/index.html.twig`, the forms of the batch ac
 `form_div_layout`, see its `docs/forms.md`), **whatever the layout of `twig.form_themes`** (`bootstrap_5_layout`…): `{% form_theme form with crudit_form_themes() only %}`.
 The layouts of Symfony in your `twig.form_themes` (`form_div_layout`, `form_table_layout`, `bootstrap_3|4|5[_horizontal]_layout`, `foundation_5|6_layout`, `tailwind_2_layout`, by name) are left out; your other global themes are kept, so the
 widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. The theme of Crudit comes last (its blocks win).
-Your own forms, outside the bricks, keep your global theme; the Crudit types work there as before (the theme is still
-added to `twig.form.resources`).
+
+- **Your own forms**, outside the bricks, keep your global theme for the Symfony types (the theme of Crudit is still
+  added to `twig.form.resources`, before yours). **The Crudit types are rendered with the markup of CruditUiBundle in
+  every form**, yours included: the row of the telephone (`crudit_telephone_row`: `crudit-ui-field`,
+  `crudit-ui-field__label-row` instead of `mb-3`) and the help of a label (`tooltip`: the `Toggletip` of
+  CruditUiBundle). To keep the 1.x rendering in a form of yours, redefine the block (`crudit_telephone_row`) in your
+  theme.
 
 - **Labels above** the inputs, pointing to them; no floating label (`form-floating`) any more. The help and the error
   are attached to the input (`aria-describedby`: `<id>_help`, then `<id>_error`), an error sets `aria-invalid` and has
@@ -865,7 +870,8 @@ added to `twig.form.resources`).
   `CrudConfigInterface::getFormColumns(): int` for one CRUD (it replaces `getCssClassColumnsForm()`: a CRUD that still
   overrides `getCssClassColumnsForm()` throws a `CruditException` when the container is built, at the first page in
   dev or at the `cache:clear` of a deployment, naming every such CRUD; it would be laid out with the default otherwise), `FormConfig::setColumns(1..4)` for one form, the option `columns` of a `GroupType` for one
-  section. The most precise wins: section, form, CRUD, project.
+  section. The most precise wins: section, form, CRUD, project. Each is 1 to 4: a `getFormColumns()` that returns
+  another number throws a `CruditException` when the form is shown.
 
   ```php
   public function getFormColumns(): int
@@ -873,12 +879,16 @@ added to `twig.form.resources`).
       return 2;
   }
   ```
-- **Sections** (`GroupType`): a `fieldset` named by its title (`<legend>` with a `<h2>`), in a card, the fields after it
-  up to the next section on a grid. New options `description` (a text under the title) and `columns`. A section is
-  always on the whole width: its `attr.class` is kept on the fieldset, but `fieldset_class` (a column class) is gone.
+- **Sections** (`GroupType`): a `fieldset` named by its title (`<legend>` with a `<h2>`, a `<h3>` under the title of
+  the form), in a card, the fields after it up to the next section on a grid. New options `description` (a text under
+  the title) and `columns`. The title and the description are translated in the `translation_domain` of the section,
+  as a label (they were always in `messages`). A section is always on the whole width: its `attr.class` is kept on the
+  fieldset, but `fieldset_class` (a column class) is gone, and the option `span` is refused.
 - **A sub-form** (a compound field of the form type: an address in a form…) is still laid out field by field on the
-  grid; the other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset` named by
-  its `legend`.
+  grid; its own errors (a constraint on the object, `error_bubbling: false`) are now shown, on a line above its
+  fields. Its option `span` has no effect (its fields have one each): given, it throws a `CruditException` when the
+  form is shown. The other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset`
+  named by its `legend`.
 - A **switch**: the option **`switch`** of a `CheckboxType` (a native checkbox with `role="switch"`, its state written
   Yes / No, in the primary colour); `attr: {role: 'switch'}` works too. **A boolean of an entity guessed by Crudit is
   now a switch** (it was a checkbox): give `switch: false` to the field to keep the checkbox *(lot 3.2.b)*. The
@@ -894,7 +904,8 @@ added to `twig.form.resources`).
   `crudit.form.help_on`). It opens on the hover and the keyboard focus, and a click keeps it open, with the controller
   `toggletip` of CruditUiBundle: **enable it** in `assets/controllers.json` (`"toggletip": {"enabled": true, "fetch":
   "eager"}` under `@2lenet/crudit-ui-bundle`), without it the click alone opens it. `tooltip_position` is deprecated,
-  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`. **`tooltip_html` is now cleaned** by the
+  without effect. `brick/form/_tooltip.html.twig` keeps its variable `field`. `tooltip` is translated in the
+  `translation_domain` of the field, as its label (it was always in `messages`). **`tooltip_html` is now cleaned** by the
   filter `sanitize` (HTMLPurifier: no script nor event attribute, the formatting stays), as Bootstrap did for its
   tooltip.
 - `brick/form/index.html.twig` keeps its blocks `form_title` and `form_buttons`, and the option `horizontalForm` (the

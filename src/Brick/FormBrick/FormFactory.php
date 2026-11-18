@@ -68,14 +68,24 @@ class FormFactory extends AbstractBasicBrickFactory
     }
 
     /**
-     * Most fields on a line: those of the FormConfig, else those of the CRUD. A CRUD of the 1.x that still overrides
-     * getCssClassColumnsForm() is refused when the container is built (CssClassColumnsFormPass).
+     * Most fields on a line: those of the FormConfig (checked by setColumns()), else those of the CRUD, 1 to 4 (a
+     * grid of 6 columns does not exist). A CRUD of the 1.x that still overrides getCssClassColumnsForm() is refused
+     * when the container is built (CssClassColumnsFormPass).
      */
     private function getColumns(FormConfig $brickConfigurator): int
     {
-        $columns = $brickConfigurator->getColumns() ?? $brickConfigurator->getCrudConfig()->getFormColumns();
+        $columns = $brickConfigurator->getColumns();
+        if ($columns !== null) {
+            return $columns;
+        }
+        $crudConfig = $brickConfigurator->getCrudConfig();
+        $columns = $crudConfig->getFormColumns();
         if ($columns < 1 || $columns > 4) {
-            throw new \InvalidArgumentException(sprintf('A form has 1 to 4 columns, %d given by %s::getFormColumns().', $columns, $brickConfigurator->getCrudConfig()::class));
+            throw new CruditException(sprintf(
+                'The fields per line of a form are 1 to 4, %d given by %s::getFormColumns().',
+                $columns,
+                $crudConfig::class,
+            ));
         }
 
         return $columns;

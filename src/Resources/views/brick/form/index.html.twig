@@ -3,8 +3,12 @@
  # project except a layout like bootstrap_5_layout, so CKEditor, Vich and the blocks of the project keep working): labels above, help and errors attached, required fields explained above the form.
  # The fields are on a grid of at most `view.data.columns` per line (FormConfig::setColumns(), else
  # CrudConfigInterface::getFormColumns(), lle_crudit.form_columns: 4); a field takes 1 column, 2 or the whole line
- # (option span, no effect on a section or a sub-form laid out field by field). A GroupType opens a section (fieldset with a <h2> title, <h3> under the title of the form) up to the next one, with its own number of
- # columns (option columns). A sub-form (a compound field of the form type) is laid out field by field on the grid.
+ # (option span). A GroupType opens a section (fieldset with a title) up to the next one, with its own number of
+ # columns (option columns). The title of a section is a <h3> under the title of the form, else a <h2> (a project that
+ # empties the block form_title but gives a title keeps <h3>). A sub-form (a compound field of the form type) is laid
+ # out field by field on the grid, its own errors (a constraint on the object) on a line above its fields; its option
+ # span is refused (crudit_form_check_flattened()). The titles, descriptions and tooltips are translated in the
+ # translation_domain of the field, as the labels.
  # Option horizontalForm (FormConfig::new(['horizontalForm' => true]), the form to add a line under a sublist): the
  # fields side by side on one line, the buttons at its end.
  # As in the 1.x, autocomplete="off" on the form and autocomplete="new-password" on each input typed in (not on a
@@ -15,6 +19,7 @@
     {% set form = view.data.form %}
     {% form_theme form with crudit_form_themes() only %}
     {% set columns = view.data.columns|default(4) %}
+    {% set section_level = view.data.title is defined and view.data.title ? 3 : 2 %}
 
     <div class="crudit-form{% if view.data.options.horizontalForm ?? false %} crudit-form--horizontal{% endif %}">
         {% if view.data.title is defined and view.data.title %}
@@ -35,7 +40,6 @@
             <p class="crudit-form__legend">{{ 'crudit.form.required_legend'|trans({}, 'LleCruditBundle') }}</p>
         {% endif %}
         {{ form_errors(form) }}
-        {% set section_tag = view.data.title is defined and view.data.title ? 'h3' : 'h2' %}
 
         {# open: none, grid (fields before the first section) or section #}
         {% set open = 'none' %}
@@ -45,10 +49,10 @@
                 {% if open == 'grid' %}</div>{% elseif open == 'section' %}</div></fieldset>{% endif %}
                 <fieldset id="{{ field.vars.id }}" class="crudit-form-section{% if field.vars.attr.class is defined and field.vars.attr.class %} {{ field.vars.attr.class }}{% endif %}">
                     <legend class="crudit-form-section__legend">
-                        <{{ section_tag }} class="crudit-form-section__title">{{ field.vars.label|trans({}, field.vars.translation_domain) }}</{{ section_tag }}>
+                        <h{{ section_level }} class="crudit-form-section__title">{{ field.vars.translation_domain is same as(false) ? field.vars.label : field.vars.label|trans(field.vars.label_translation_parameters|default({}), field.vars.translation_domain) }}</h{{ section_level }}>
                     </legend>
                     {% if field.vars.description %}
-                        <p class="crudit-form-section__description">{{ field.vars.description|trans({}, field.vars.translation_domain) }}</p>
+                        <p class="crudit-form-section__description">{{ field.vars.translation_domain is same as(false) ? field.vars.description : field.vars.description|trans({}, field.vars.translation_domain) }}</p>
                     {% endif %}
                     <div class="crudit-form-grid crudit-form-grid--{{ field.vars.columns ?? columns }}">
                 {% set open = 'section' %}
@@ -58,7 +62,10 @@
                     {% set open = 'grid' %}
                 {% endif %}
                 {% if crudit_form_flattened(field) %}
-                    {{ form_errors(field) }}
+                    {% do crudit_form_check_flattened(field) %}
+                    {% if field.vars.errors|length > 0 %}
+                        <div class="crudit-form-field crudit-form-field--span-full">{{ form_errors(field) }}</div>
+                    {% endif %}
                     {% for subfield in field %}
                         {% do crudit_form_field_deprecations(subfield) %}
                         {{ form_row(subfield, {attr: crudit_form_field_attr(subfield)}) }}

@@ -1,7 +1,7 @@
 @use 'tools/responsive' as *;
 
 // Layout of a form of a CRUD (brick/form/index.html.twig, lot 3.2.a; _form.scss of the crudit-v2 mockup): the
-// mention of the required fields, the sections (fieldset with a <h2> title) and the grid. The inputs are those of
+// mention of the required fields, the sections (fieldset with a <h2> title, <h3> under the title of the form) and the grid. The inputs are those of
 // CruditUiBundle (form theme @LleCruditUi/form/theme.html.twig).
 .crudit-form {
     display: flex;
@@ -57,7 +57,7 @@
     }
 }
 
-// Section: fieldset + legend (a title of level 2), in a card
+// Section: fieldset + legend (a title of level 2, or 3 under the title of the form), in a card
 .crudit-form-section {
     min-width: 0;
     padding: var(--space-3) var(--space-4) var(--space-4);
@@ -93,7 +93,13 @@
 
 // Grid: at most --crudit-form-columns fields per line (4 by default), fewer when the room is short (13rem at least
 // per column), one on a phone. A field takes 1 column, 2, 3 or the whole line (option span). The grid is a container:
-// a field of 3 columns takes the whole line when the grid has room for fewer than 3 (3 × 13rem and 2 gaps).
+// a field of 2 or 3 columns takes the whole line when the grid has room for fewer columns (in a section, a dialog or a
+// narrow column of a wide screen), else span would add an implicit column and the line would overflow.
+// The thresholds of the container queries are computed here, as a condition of @container takes neither var() nor
+// calc(): $crudit-form-gap must stay the value of --space-4 (the gap between the columns).
+$crudit-form-column-min: 13rem;
+$crudit-form-gap: 1rem;
+
 .crudit-form-grid {
     --crudit-form-columns: 4;
     --crudit-form-gap: var(--space-4);
@@ -105,7 +111,7 @@
     clear: both;
     grid-template-columns: repeat(
         auto-fill,
-        minmax(max(min(100%, 13rem), calc((100% - (var(--crudit-form-columns) - 1) * var(--crudit-form-gap)) / var(--crudit-form-columns))), 1fr)
+        minmax(max(min(100%, #{$crudit-form-column-min}), calc((100% - (var(--crudit-form-columns) - 1) * var(--crudit-form-gap)) / var(--crudit-form-columns))), 1fr)
     );
 
     &--1 {
@@ -139,7 +145,15 @@
         grid-column: 1 / -1;
     }
 
-    @container (width < 41rem) {
+    // Room for 1 column only (27rem: 2 × 13rem and a gap)
+    @container (width < #{2 * $crudit-form-column-min + $crudit-form-gap}) {
+        > .crudit-form-field--span-2 {
+            grid-column: 1 / -1;
+        }
+    }
+
+    // Room for 2 columns at most (41rem: 3 × 13rem and 2 gaps)
+    @container (width < #{3 * $crudit-form-column-min + 2 * $crudit-form-gap}) {
         > .crudit-form-field--span-3 {
             grid-column: 1 / -1;
         }

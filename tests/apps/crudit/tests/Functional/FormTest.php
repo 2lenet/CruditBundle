@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Entity\Client;
+use Doctrine\ORM\EntityManagerInterface;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -15,9 +17,11 @@ use Twig\Environment;
 /**
  * The form of a CRUD (lot 3.2.a), with bootstrap_5_layout as the global theme of the application (as 24 projects):
  * the theme of Crudit is imposed. Labels above and attached, required fields explained, help and errors attached,
- * sections with their own columns, widths of the fields, a switch, choices shown as boxes, a unit. The base types (lot
- * 3.2.b): keyboards of a phone, autofill kept away from the inputs typed in only, counter of characters, format helpers,
- * telephone, colour, segmented control, date in lists, a boolean guessed as a switch.
+ * sections with their own columns, widths of the fields, a switch, choices shown as boxes, a unit. The form to edit a
+ * client (ClientEditType): the widgets of other bundles, titles of sections under the title of the form, a translation
+ * domain, the error of a sub-form laid out field by field. The base types (lot 3.2.b): keyboards of a phone, autofill
+ * kept away from the inputs typed in only, counter of characters, format helpers, telephone, colour, segmented
+ * control, date in lists, a boolean guessed as a switch.
  */
 class FormTest extends AppTestCase
 {
@@ -97,9 +101,11 @@ class FormTest extends AppTestCase
         self::assertSame('Channels', $channels->filter('legend')->text());
         self::assertCount(2, $channels->filter('ul.crudit-ui-check-list label.crudit-ui-check input[type="checkbox"]'));
 
-        // A unit: next to the input, hidden from assistive technologies
-        $unit = $form->filter('#client_progress')->closest('.crudit-ui-input-group')?->filter('.crudit-ui-input-group__unit');
-        self::assertSame(['%', 'true'], [$unit?->text(), $unit?->attr('aria-hidden')]);
+        // A unit: next to the input, read with it (aria-describedby)
+        $progress = $form->filter('#client_progress');
+        $unit = $progress->closest('.crudit-ui-input-group')?->filter('.crudit-ui-input-group__unit');
+        self::assertSame(['%', 'client_progress_unit', null], [$unit?->text(), $unit?->attr('id'), $unit?->attr('aria-hidden')]);
+        self::assertContains('client_progress_unit', explode(' ', (string) $progress->attr('aria-describedby')));
 
         // The buttons of the design system
         self::assertSame(['Cancel', 'Save'], $form->filter('.crudit-form__actions .crudit-ui-btn')->each(fn (Crawler $button) => trim($button->text())));
@@ -245,6 +251,73 @@ class FormTest extends AppTestCase
         self::assertSame('Enter the name of the client.', trim($crawler->filter('#client_name_error')->text()));
         self::assertCount(1, $crawler->filter('#client_name_error svg'));
         self::assertStringContainsString('crudit-ui-field--invalid', (string) $input->closest('.crudit-ui-field')?->attr('class'));
+    }
+
+    public function testTheWidgetsOfOtherBundles(): void
+    {
+        $form = $this->editForm();
+
+        // the global themes of the project (FOSCKEditorBundle, VichUploaderBundle) kept after the one of Crudit: the editor, not a bare textarea; the file input of Vich
+        $editor = $form->filter('textarea#client_presentation');
+        self::assertCount(1, $editor);
+        self::assertStringContainsString('CKEDITOR.replace("client_presentation"', implode("\n", $form->filter('script')->each(fn (Crawler $script) => $script->text())));
+        self::assertCount(1, $form->filter('.vich-file input[type="file"]#client_attachment_file'));
+        // Still no Bootstrap (the global theme of the application)
+        self::assertCount(0, $form->filter('.form-control, .form-select, .mb-3'));
+    }
+
+    public function testTheTitlesOfTheSectionsUnderTheTitleOfTheForm(): void
+    {
+        $form = $this->editForm()->closest('.crudit-form');
+
+        self::assertSame('Details', $form?->filter('h2.crudit-form__title')->text());
+        self::assertSame(['Identity', 'Contact', 'More about the client'], $form?->filter('fieldset.crudit-form-section > legend h3')->each(fn (Crawler $title) => $title->text()));
+        self::assertCount(0, $form?->filter('fieldset.crudit-form-section > legend h2') ?? []);
+        // Without a title of the form (the new client): titles of level 2
+        self::assertCount(2, $this->form()->filter('fieldset.crudit-form-section > legend h2'));
+    }
+
+    public function testTheSectionAndTheTooltipInTheTranslationDomainOfTheField(): void
+    {
+        $form = $this->editForm();
+
+        $section = $form->filter('fieldset.crudit-form-section')->last();
+        self::assertSame('More about the client', $section->filter('legend h3')->text());
+        self::assertSame('What the client does', $section->filter('.crudit-form-section__description')->text());
+        self::assertSame('Presentation', trim($form->filter('label[for="client_presentation"]')->text()));
+        self::assertSame('A few lines shown to the team', trim($form->filter('#client_presentation_tooltip')->text()));
+    }
+
+    public function testTheErrorOfASubFormLaidOutFieldByField(): void
+    {
+        $crawler = $this->client->request('GET', '/client/edit/' . $this->idOf('Alice'));
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[address][city]' => 'Lyon', 'client[address][postcode]' => '']);
+        $crawler = $this->client->submit($form);
+
+        self::assertResponseStatusCodeSame(200);
+        // On a line of its own, before the fields of the sub-form
+        $line = $crawler->filter('.crudit-form-grid > .crudit-form-field--span-full')->reduce(fn (Crawler $line) => str_contains($line->text(), 'Enter the postcode of the city.'));
+        self::assertCount(1, $line);
+        self::assertSame(1, $line->nextAll()->filter('.crudit-ui-field')->reduce(fn (Crawler $field) => $field->filter('#client_address_city')->count() > 0)->count());
+    }
+
+    private function idOf(string $name): int
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $client = $em->getRepository(Client::class)->findOneBy(['name' => $name]);
+        self::assertNotNull($client);
+
+        return (int) $client->getId();
+    }
+
+    private function editForm(): Crawler
+    {
+        $crawler = $this->client->request('GET', '/client/edit/' . $this->idOf('Alice'));
+        self::assertResponseIsSuccessful();
+
+        return $crawler->filter('main form.crudit-form__form');
     }
 
     private function form(): Crawler
