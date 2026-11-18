@@ -29,3 +29,16 @@ parameters:
             identifier: classConstant.deprecated
             path: ../src/Form/DoctrineOrmTypeGuesser.php
             reportUnmatched: false
+        # The mutable date types are still the mapping of existing entities: the Maker recognises them
+        -
+            identifier: classConstant.deprecated
+            path: ../src/Maker/MakeCrudit.php
+            reportUnmatched: false
+        # Type::getType(), hasType(), addType() are deprecated since doctrine/dbal 4.6 (type provider of the connection),
+        # which does not exist in the 3.x still supported
+        -
+            identifier: staticMethod.deprecated
+            paths:
+                - ../src/Filter/EntityIdentifiers.php
+                - ../tests/phpunit/Unit/Filter/EntityIdentifiersTest.php
+            reportUnmatched: false
