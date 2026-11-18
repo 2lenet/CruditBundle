@@ -41,6 +41,9 @@ The `Lle\CruditBundle\Form\Type\CronExpressionType` allows you to create a cron 
 
 The `Lle\CruditBundle\Form\Type\TelephoneType` renders a calling code select (`Switzerland (+41)`) next to a number input,
 and stores the number as an E.164 string (`+41791234567`) in a plain string property. No external library is needed.
+Both are on one line, the "+33" box first (on the right in a right-to-left language): the native select of the
+countries lies transparent over the box, which shows the calling code chosen (controller `telephone`). One focus ring
+surrounds the box and the number; both are attached to the help and the error of the field.
 
 ```php
 $builder->add('telephone', TelephoneType::class, [
@@ -120,10 +123,10 @@ What matters :
 
 ## Layout of a form
 
-The forms of the bricks impose the theme of Crudit, whatever `twig.form_themes`: labels above the inputs, the help and
-the error attached to them, the required fields explained above the form. The widgets of other bundles and of the
-project come from `lle_crudit.form_themes`, added after the theme of Crudit (by default the themes of FOSCKEditorBundle
-and VichUploaderBundle when they are loaded, see [Configuration](config.md)). The fields are on a grid of at most
+The forms of the bricks impose the theme of Crudit, whatever the layout of `twig.form_themes`: labels above the inputs,
+the help and the error attached to them, the required fields explained above the form. The other global themes of the
+project (the widgets of FOSCKEditor and Vich, the blocks of its own types) are kept, after the theme of Crudit only the
+layouts of Symfony are left out. The fields are on a grid of at most
 `lle_crudit.form_columns` per line (4 by default), fewer when the room is short, one on a phone.
 
 ```php
@@ -134,8 +137,9 @@ $builder
     ->add('email', null, ['span' => 2])                       // 2 columns
     // A section of 2 columns, with a text under its title
     ->add('contact', GroupType::class, ['label' => 'Contact', 'description' => 'How to reach the client', 'columns' => 2, 'mapped' => false])
-    ->add('active', CheckboxType::class, ['required' => false, 'attr' => ['role' => 'switch']]) // a switch
-    ->add('notes', TextareaType::class, ['required' => false, 'span' => 'full']);           // the whole line
+    ->add('active', CheckboxType::class, ['required' => false, 'switch' => true]) // a switch (a guessed boolean is one)
+    ->add('size', ChoiceType::class, ['choices' => ['S' => 's', 'M' => 'm', 'L' => 'l'], 'expanded' => true, 'segmented' => true])
+    ->add('notes', TextareaType::class, ['required' => false, 'span' => 'full', 'attr' => ['maxlength' => 500]]); // the whole line, a counter
 ```
 
 | Option | On | |
@@ -144,6 +148,16 @@ $builder
 | `columns` | `GroupType` | the most fields on a line of this section (1 to 4), else those of the form |
 | `description` | `GroupType` | a text under the title of the section |
 | `tooltip`, `tooltip_html`, `tooltip_template` | any field | a help opened by a button next to the label (`tooltip_html` is cleaned by `sanitize`) |
+| `switch` | `CheckboxType` | a switch, its state written Yes / No (`true` on a boolean guessed from the entity; `false` keeps the checkbox). `role="switch"` is set by the theme of Crudit only: another theme keeps a checkbox |
+| `segmented` | `ChoiceType` | with `expanded` and without `multiple`: short choices as a segmented control |
+| `attr.maxlength` | long text | a counter of characters under the field ("27 / 80 characters") |
+| `counter` | text, long text | `true`: the counter on a text on one line too (Symfony puts the length of the column in `maxlength`, so it is not automatic); `false`: no counter |
+| `attr.class` `crudit-upper-format`, `crudit-lower-format`, `crudit-email-format`, `crudit-ip-format` | text | the value in capitals, in small letters, an e-mail or an IPv4 address checked, once the field is left (controller `input-format`); capitals and small letters shown while typing |
+
+The keyboard of a phone follows the kind of the value (`inputmode`), and a number is typed in Latin digits whatever
+the language (in Arabic or Persian digits, it is refused).
+The controllers `char-count`, `color-code` (CruditUiBundle) and `input-format` (Crudit) are to be enabled
+in `assets/controllers.json`.
 
 The title and the description of a section and the `tooltip` of a field are translated in the `translation_domain` of
 the field, as the labels. The title of a section is a `<h2>`, a `<h3>` under the title of the form.

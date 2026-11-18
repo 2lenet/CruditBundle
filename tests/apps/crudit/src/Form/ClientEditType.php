@@ -15,8 +15,8 @@ use Vich\UploaderBundle\Form\Type\VichFileType;
 
 /**
  * The form to edit a client: the one of ClientType, under a title (ClientCrudConfig), plus a section in the
- * translation domain "client_form" with the widgets of other bundles in the bricks (lle_crudit.form_themes: the editor
- * of FOSCKEditorBundle, a file of VichUploaderBundle) and a sub-form laid out field by field whose own error (a
+ * translation domain "client_form" with the widgets of other bundles in the bricks (the global themes of the project: the
+ * editor of FOSCKEditorBundle, a file of VichUploaderBundle) and a sub-form laid out field by field whose own error (a
  * constraint on the object, error_bubbling: false) is shown. On the edit page only: the editor would load its script in the smoke test.
  */
 class ClientEditType extends ClientType

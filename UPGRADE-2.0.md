@@ -670,7 +670,6 @@ to add them.
 | Key | Change |
 |---|---|
 | `css_class_columns_form` | **Removed** (Bootstrap grid classes), Symfony refuses the key: **`form_columns`** (1 to 4, **4 by default**, was 3 on a large screen): the most fields on a line of a form, fewer when the room is short, one on a phone. `col-12` is `form_columns: 1`, `col-md-6` is `2`, `col-sm-12 col-md-6 col-lg-4` (the former default) is `3`. For one CRUD, see [Forms](#forms-lot-32a) |
-| `form_themes` | **New**: the form themes added after the theme of Crudit in the forms of the bricks (the widgets of other bundles and of the project); by default those of FOSCKEditorBundle and VichUploaderBundle when they are loaded. See [Forms](#forms-lot-32a) |
 | `css_class_columns_show`, `css_class_columns_card` | **Removed** (Bootstrap grid classes). *Replacement to be filled (lot 3.3.a).* |
 | `number_cards_per_row` | **Removed.** *Replacement to be filled.* |
 | `default_currency_alignment`, `default_integer_alignment`, `default_number_alignment` | Kept. `left` / `right` are rendered as logical `start` / `end` (right-to-left support) |
@@ -699,7 +698,7 @@ to add them.
 - Close it with `commandfor="<id>" command="close"` instead of `data-bs-dismiss="modal"`. The close button is in the
   header: remove your `btn-close`.
 - The block `header` is the title of the dialog, inside a `<h2>` that names it (`aria-labelledby`): put text only in it, no `<h5 class="modal-title">` (a heading in a heading).
-- `TelephoneType`: the behaviour is ported (controller `telephone`), not its style yet (`sb-admin/css/components/forms/_telephone.scss`, built on Bootstrap): until the forms are migrated, the calling code and the country select are side by side. *(to be done with the forms)*
+- `TelephoneType`: the behaviour is ported (controller `telephone`), its style since lot 3.2.b (see [Forms](#forms-lot-32a)).
 - `.modal-header`, `.modal-body`, `.modal-footer` are gone (`crudit-ui-dialog__…`).
 
 **Confirmation of the actions** (`modal/_confirm.html.twig`, block `modal_confirmation`): a `Dialog` with the
@@ -841,25 +840,10 @@ renamed *(lot 3.4.b)*.
 
 The forms of the bricks (`brick/form/index.html.twig`, the forms of the batch actions) **impose the theme of Crudit**,
 `@LleCrudit/form/theme.html.twig`, built on the one of CruditUiBundle (`@LleCruditUi/form/theme.html.twig`, on
-`form_div_layout`, see its `docs/forms.md`), **whatever `twig.form_themes`** (`bootstrap_5_layout`…): `{% form_theme form
-with crudit_form_themes() only %}`.
+`form_div_layout`, see its `docs/forms.md`), **whatever the layout of `twig.form_themes`** (`bootstrap_5_layout`…): `{% form_theme form with crudit_form_themes() only %}`.
+The layouts of Symfony in your `twig.form_themes` (`form_div_layout`, `form_table_layout`, `bootstrap_3|4|5[_horizontal]_layout`, `foundation_5|6_layout`, `tailwind_2_layout`, by name) are left out; your other global themes are kept, so the
+widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. The theme of Crudit comes last (its blocks win).
 
-- **The widgets of other bundles and of the project**: `only` leaves out every theme of `twig.form_themes`, so a widget
-  whose block lives in one of them would fall back on a bare input in the bricks. The bricks add after the theme of
-  Crudit the themes of the new key **`lle_crudit.form_themes`**; by default those of FOSCKEditorBundle
-  (`@FOSCKEditor/Form/ckeditor_widget.html.twig`, the editor of the CKEditor type of Crudit) and of VichUploaderBundle
-  (`@VichUploader/Form/fields.html.twig`, `VichFileType` / `VichImageType` used directly) when they are loaded. **A
-  project with its own widgets** (a block `*_widget` of its own type, or a `ckeditor_widget` of its own) lists its
-  theme there, with the default ones it still needs; given, the key replaces the default list. Put there only themes
-  of widgets: a theme that uses `bootstrap_5_layout` or redefines `form_row` would bring its markup back into the
-  bricks.
-
-  ```yaml
-  lle_crudit:
-      form_themes:
-          - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
-          - 'form/duree_heure_minute.html.twig'
-  ```
 - **Your own forms**, outside the bricks, keep your global theme for the Symfony types (the theme of Crudit is still
   added to `twig.form.resources`, before yours). **The Crudit types are rendered with the markup of CruditUiBundle in
   every form**, yours included: the row of the telephone (`crudit_telephone_row`: `crudit-ui-field`,
@@ -905,7 +889,16 @@ with crudit_form_themes() only %}`.
   fields. Its option `span` has no effect (its fields have one each): given, it throws a `CruditException` when the
   form is shown. The other compound fields (choices shown as boxes, repeated, dates in three lists) are a `fieldset`
   named by its `legend`.
-- A **switch**: `attr: {role: 'switch'}` on a `CheckboxType` (a native checkbox, its state written Yes / No).
+- A **switch**: the option **`switch`** of a `CheckboxType` (a native checkbox with `role="switch"`, its state written
+  Yes / No, in the primary colour); `attr: {role: 'switch'}` works too. **A boolean of an entity guessed by Crudit is
+  now a switch** (it was a checkbox): give `switch: false` to the field to keep the checkbox *(lot 3.2.b)*. The
+  `role="switch"` is set by the theme of Crudit only: a form of the project drawn with another theme (Bootstrap) keeps
+  a checkbox, told as a checkbox.
+
+  ```php
+  $builder->add('active');                          // a switch
+  $builder->add('newsletter', null, ['switch' => false]); // a checkbox, as in the 1.x
+  ```
 - **Help of a field** (`tooltip`, `tooltip_html`, `tooltip_template`): a button ⓘ next to the label that opens it
   (`Toggletip` of CruditUiBundle, a popover), reachable on a touch screen, named "Help on the field …" (key
   `crudit.form.help_on`). It opens on the hover and the keyboard focus, and a click keeps it open, with the controller
@@ -919,13 +912,54 @@ with crudit_form_themes() only %}`.
   fields side by side, the buttons at the end of the line). Its markup changes: no `card`, `row`, `col-*`,
   `form-floating`, `px-2`; the title is no longer followed by a `<hr>`; the buttons are those of CruditUiBundle,
   "Cancel" is secondary (it was red). As in the 1.x, `autocomplete="off"` on the form and `autocomplete="new-password"`
-  on each field keep the autofill of the browser away (the data of another person); a field that wants it sets its own
-  (`attr: {autocomplete: 'email'}`).
+  on each input typed in keep the autofill of the browser away (the data of another person); a field that wants it
+  sets its own (`attr: {autocomplete: 'email'}`). Since lot 3.2.b, `new-password` is no longer put on a checkbox, a
+  list, a colour or a compound field, where it meant nothing.
 - CSS hooks: `crudit-form`, `crudit-form__legend`, `crudit-form__actions`, `crudit-form-section`, `crudit-form-grid`,
   `crudit-form-field--span-2`, `crudit-form-field--span-3`, `crudit-form-field--span-full`; the classes of the inputs
   are those of CruditUiBundle (`crudit-ui-field`, `crudit-ui-label`, `crudit-ui-input`…).
+- **Base types** *(lot 3.2.b)*, from the theme of CruditUiBundle (its `docs/forms.md`):
+  - the **keyboard of a phone** (`inputmode`) follows the kind of the value: `numeric` for an integer with `attr.min`
+    at 0 or more (without it, the keyboard of `type="number"`, which has the minus key on iOS), `decimal` for a
+    number, an amount or a percentage; an e-mail, a phone, a URL have their keyboard from their type; no spell check
+    on an e-mail address. A number, an amount stay typed as text (Symfony reads the point and the comma). The
+    keyboard `decimal` of iOS has no minus key: `attr: {inputmode: 'text'}` for a value that may be negative. The
+    number filters keep the keyboard of `type="number"` (a negative bound can be typed);
+  - **Latin digits** in a number, an amount, a percentage (and an integer with `grouping`), whatever the language: in
+    `ar_SA` or `fa`, Symfony wrote `١٬٢٣٤٫٥` and refused `1234.5` (`LatinDigitsExtension`: the locale of the request
+    with `@numbers=latn`, as the values shown since lot 1.4). A number typed in Arabic or Persian digits is refused. In
+    such a language, the view transformers of these types are replaced: a project type built on them adds its own in
+    its `buildForm()`;
+  - a **counter of characters** under a long text with `attr.maxlength` ("27 / 80 characters", attached to the input,
+    the characters left told to screen readers near the limit): controller `char-count` of CruditUiBundle. A text on
+    one line has it with the option `counter: true` (not by default: Symfony puts the length of the column of a string
+    in `maxlength`); `counter: false` takes it away;
+  - **short choices with one answer** as a segmented control: the option **`segmented`** of a `ChoiceType` with
+    `expanded` and without `multiple` (else an `InvalidOptionsException`);
+  - a **colour**: the native picker and its code next to it (controller `color-code` of CruditUiBundle); the style
+    `form-control-color` of `sb-admin` is gone;
+  - a **date or a time in lists** (`widget: 'choice'`): the lists on one line;
+  - the **calendar of a date no longer opens on the focus** (`sb-admin/js/input_date.js`, `showPicker()`, removed: it
+    got in the way of the keyboard and sometimes threw an error): it opens with its button, or the keyboard of the
+    browser;
+  - the **format helpers** of the 1.x keep their classes (`crudit-upper-format`, `crudit-lower-format`,
+    `crudit-email-format`, `crudit-ip-format`), now the controller `input-format` of Crudit (`sb-admin/js/input_format.js`
+    removed): **the value is changed once the field is left**, not while typing (an e-mail address was put in small
+    letters at each key; capitals and small letters are still shown while typing); a wrong e-mail or IP address gets
+    `aria-invalid` and the border of an error, instead of `is-invalid` / `is-valid` of Bootstrap; an error of the
+    server on the field (a value already used) keeps its `aria-invalid` until the form is sent again. The point of an
+    IP address is still added while typing at the end, once a byte is 26 or more or has 3 digits as in the 1.x; a point
+    typed just after it is ignored;
+  - the **telephone** (`TelephoneType`): the calling code and the number on one line, in a `crudit-ui-input-group`,
+    one focus ring around both, both attached to the help and the error of the field; no `input-group`, `form-select`,
+    `is-invalid` any more. `sb-admin/js/telephone.js` and `sb-admin/css/components/forms/_telephone.scss` are removed
+    (the controller `telephone` does the work since lot 2.1.0). Its PHP is unchanged.
+  - **Enable the controllers** in `assets/controllers.json`: `char-count` and `color-code` under
+    `@2lenet/crudit-ui-bundle`, `input-format` under `@2lenet/crudit-bundle` (`{"enabled": true, "fetch": "eager"}`).
+    Without them the counter shows the length when the page is loaded, the code of a colour its first value, and the
+    format helpers do nothing.
 - Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`), the file, the translated
-  field, the cron expression and the telephone (its style) *(lots 3.2.b and 3.2.c)*.
+  field and the cron expression *(lot 3.2.c)*.
 
 ### Batch actions *(lot 3.1.c)*
 
@@ -975,6 +1009,10 @@ results, and has a "Deselect all" button.
   for such an action (an export of thousands of rows…), prefer an action with a form (`setForm()`) or a modal with a
   `<form method="post">`.
 - **Removed**: the translations `crudit.action.batch`, `crudit.text.current_page` and `crudit.text.all_page`.
+- New controller `input-format` (the format helpers of the 1.x, lot 3.2.b) in `@2lenet/crudit-bundle`, and
+  `char-count`, `color-code` (counter of characters, code of a colour) in `@2lenet/crudit-ui-bundle`. **Removed**
+  (and their imports in `app.js` and `app.scss`): `assets/sb-admin/js/input_date.js`, `input_format.js`,
+  `telephone.js`, `css/components/forms/_telephone.scss`, `_input-color.scss`, see [Forms](#forms-lot-32a).
 - **Removed**: `assets/sb-admin/js/batch_actions.js` (and its import in `app.js`), `list_items/actions/_batch_action.html.twig`
   and `_batch_actions.html.twig`. The block of the batch actions is `list_items/_batch.html.twig`: override it to change
   the buttons.

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Twig;
 
 use Lle\CruditBundle\Exception\CruditException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\FormView;
 use Twig\Attribute\AsTwigFunction;
 
@@ -14,31 +13,17 @@ use Twig\Attribute\AsTwigFunction;
  */
 class FormExtension
 {
+    /** Inputs where the browser could fill in the data of another person: the 1.x keeps its autofill away */
+    public const TEXT_PREFIXES = ['text', 'number', 'integer', 'money', 'percent'];
+
+    /** Children of TextType that are not typed in */
+    public const NOT_TYPED_PREFIXES = ['color', 'range', 'hidden'];
+
+    /** Format helpers of the 1.x, classes of a field (controller input-format) */
+    public const FORMAT_CLASSES = ['crudit-upper-format', 'crudit-lower-format', 'crudit-email-format', 'crudit-ip-format'];
+
     /** Compound fields shown as one input (their own widget), not laid out field by field */
     public const WIDGET_PREFIXES = ['choice', 'collection', 'date', 'time', 'datetime', 'dateinterval', 'birthday', 'week', 'repeated', 'vich_file', 'vich_image'];
-
-    public const THEME = '@LleCrudit/form/theme.html.twig';
-
-    /**
-     * @param list<string> $formThemes themes of the widgets of other bundles and of the project (lle_crudit.form_themes)
-     */
-    public function __construct(
-        #[Autowire(param: 'lle_crudit.form_themes')]
-        private readonly array $formThemes = [],
-    ) {
-    }
-
-    /**
-     * Themes of a form shown by Crudit, imposed with `only` whatever the global theme of the project (Bootstrap): the
-     * theme of Crudit, then lle_crudit.form_themes (the widgets of FOSCKEditorBundle, VichUploaderBundle, the project).
-     *
-     * @return list<string>
-     */
-    #[AsTwigFunction('crudit_form_themes')]
-    public function themes(): array
-    {
-        return [self::THEME, ...$this->formThemes];
-    }
 
     /**
      * A sub-form (a compound field of the form type, with fields) laid out field by field on the grid of the form.
@@ -113,6 +98,61 @@ class FormExtension
                 $field->vars['full_name'] ?? $field->vars['name'] ?? '',
             );
         }
+    }
+
+    /**
+     * Attributes of an input with a format helper of the 1.x (a class of FORMAT_CLASSES, lot 3.2.b): the controller
+     * input-format, no spell check on an e-mail or an IP address, the keyboard of an e-mail address (an input of type
+     * text). An IP address keeps the keyboard of a text: the keyboard decimal of iOS has the comma of the language, not
+     * the point. What the field gives itself (attr) is kept.
+     *
+     * @param array<string, mixed> $attr
+     *
+     * @return array<string, mixed>
+     */
+    #[AsTwigFunction('crudit_form_format_attr')]
+    public static function formatAttr(array $attr): array
+    {
+        $class = $attr['class'] ?? '';
+        $formats = array_intersect(preg_split('/\s+/', \is_string($class) ? $class : '', -1, \PREG_SPLIT_NO_EMPTY) ?: [], self::FORMAT_CLASSES);
+        if ($formats === []) {
+            return $attr;
+        }
+
+        $controller = $attr['data-controller'] ?? '';
+        $attr['data-controller'] = trim((\is_string($controller) ? $controller : '') . ' 2lenet--crudit-bundle--input-format');
+        $email = \in_array('crudit-email-format', $formats, true);
+        $ip = \in_array('crudit-ip-format', $formats, true);
+        if ($email || $ip) {
+            $attr += ['spellcheck' => 'false'];
+        }
+        if ($email) {
+            $attr += ['inputmode' => 'email'];
+        }
+
+        return $attr;
+    }
+
+    /**
+     * Attributes of a field of a CRUD form (brick/form/index.html.twig): as in the 1.x, autocomplete="new-password" keeps
+     * the autofill of the browser away (the data of another person), but only on an input that is typed in (text,
+     * e-mail, phone, number, long text…), not on a checkbox, a list or a compound field (lot 3.2.b). What the field
+     * gives itself (attr.autocomplete) is kept.
+     *
+     * @return array<string, mixed>
+     */
+    #[AsTwigFunction('crudit_form_field_attr')]
+    public static function fieldAttr(FormView $field): array
+    {
+        /** @var array<string, mixed> $attr */
+        $attr = $field->vars['attr'] ?? [];
+        /** @var list<string> $prefixes */
+        $prefixes = $field->vars['block_prefixes'] ?? [];
+        $typed = !($field->vars['compound'] ?? false)
+            && array_intersect($prefixes, self::TEXT_PREFIXES) !== []
+            && array_intersect($prefixes, self::NOT_TYPED_PREFIXES) === [];
+
+        return $typed ? $attr + ['autocomplete' => 'new-password'] : $attr;
     }
 
     /**

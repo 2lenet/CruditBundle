@@ -2,7 +2,7 @@
 
 {% block input %}
     {% set label = filter.label|trans(domain=view.config.translation_domain) %}
-    <input type="number" step="any" inputmode="decimal" class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" placeholder="{{ 'crudit_ui.filter.min'|trans({}, 'LleCruditUiBundle') }}" aria-label="{{ 'crudit_ui.filter.minimum'|trans({'%label%': label}, 'LleCruditUiBundle') }}">
+    <input type="number" step="any" class="crudit-ui-filter-field__text" name="{{ id }}_value" value="{{ value }}" placeholder="{{ 'crudit_ui.filter.min'|trans({}, 'LleCruditUiBundle') }}" aria-label="{{ 'crudit_ui.filter.minimum'|trans({'%label%': label}, 'LleCruditUiBundle') }}">
     <span class="crudit-ui-filter-field__affix" aria-hidden="true">–</span>
-    <input type="number" step="any" inputmode="decimal" class="crudit-ui-filter-field__text" name="{{ id }}_to" value="{{ to }}" placeholder="{{ 'crudit_ui.filter.max'|trans({}, 'LleCruditUiBundle') }}" aria-label="{{ 'crudit_ui.filter.maximum'|trans({'%label%': label}, 'LleCruditUiBundle') }}">
+    <input type="number" step="any" class="crudit-ui-filter-field__text" name="{{ id }}_to" value="{{ to }}" placeholder="{{ 'crudit_ui.filter.max'|trans({}, 'LleCruditUiBundle') }}" aria-label="{{ 'crudit_ui.filter.maximum'|trans({'%label%': label}, 'LleCruditUiBundle') }}">
 {% endblock %}

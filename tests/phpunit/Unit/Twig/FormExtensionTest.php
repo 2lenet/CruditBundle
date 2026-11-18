@@ -9,10 +9,16 @@ use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Form\Extension\SpanExtension;
 use Lle\CruditBundle\Form\Type\GroupType;
 use Lle\CruditBundle\Twig\FormExtension;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
@@ -21,7 +27,7 @@ use Symfony\Component\Form\Test\TypeTestCase;
 
 /**
  * The form of a CRUD: sub-forms laid out field by field, the legend of the required fields, the deprecation of the
- * Bootstrap column classes, the themes of a form, no span on a sub-form laid out field by field.
+ * Bootstrap column classes, the autofill kept away from the inputs typed in, the format helpers of the 1.x, no span on a sub-form laid out field by field.
  */
 class FormExtensionTest extends TypeTestCase
 {
@@ -107,14 +113,47 @@ class FormExtensionTest extends TypeTestCase
         self::assertSame([], $this->deprecations(null));
     }
 
-    public function testTheThemesOfAFormOfCrudit(): void
+    public function testTheAutofillIsKeptAwayFromTheInputsTypedInOnly(): void
     {
-        self::assertSame(['@LleCrudit/form/theme.html.twig'], (new FormExtension())->themes());
+        $view = $this->form(fn (FormBuilderInterface $form) => $form
+            ->add('name', TextType::class, ['attr' => ['class' => 'mine']])
+            ->add('email', EmailType::class, ['attr' => ['autocomplete' => 'email']])
+            ->add('notes', TextareaType::class)
+            ->add('quantity', IntegerType::class)
+            ->add('price', MoneyType::class)
+            ->add('active', CheckboxType::class)
+            ->add('kind', ChoiceType::class, ['choices' => ['a' => 'a']])
+            ->add('since', DateType::class, ['widget' => 'choice'])
+            ->add('tint', ColorType::class)
+            ->add('secret', HiddenType::class));
+
+        foreach (['notes', 'quantity', 'price'] as $name) {
+            self::assertSame('new-password', FormExtension::fieldAttr($view[$name])['autocomplete'] ?? null, $name);
+        }
+        self::assertSame(['class' => 'mine', 'autocomplete' => 'new-password'], FormExtension::fieldAttr($view['name']));
+        self::assertSame('email', FormExtension::fieldAttr($view['email'])['autocomplete'], 'the purpose given by the field');
+        foreach (['active', 'kind', 'since', 'tint', 'secret'] as $name) {
+            self::assertArrayNotHasKey('autocomplete', FormExtension::fieldAttr($view[$name]), $name);
+        }
+    }
+
+    public function testTheFormatHelpersOfThe1xHaveTheirController(): void
+    {
+        self::assertSame(['class' => 'mine'], FormExtension::formatAttr(['class' => 'mine']));
         self::assertSame(
-            ['@LleCrudit/form/theme.html.twig', '@FOSCKEditor/Form/ckeditor_widget.html.twig', 'form/mine.html.twig'],
-            (new FormExtension(['@FOSCKEditor/Form/ckeditor_widget.html.twig', 'form/mine.html.twig']))->themes(),
-            'the widgets of other bundles and of the project after the theme of Crudit',
+            ['class' => 'crudit-upper-format', 'data-controller' => '2lenet--crudit-bundle--input-format'],
+            FormExtension::formatAttr(['class' => 'crudit-upper-format']),
         );
+        self::assertSame(
+            ['class' => 'x crudit-email-format', 'data-controller' => 'mine 2lenet--crudit-bundle--input-format', 'spellcheck' => 'false', 'inputmode' => 'email'],
+            FormExtension::formatAttr(['class' => 'x crudit-email-format', 'data-controller' => 'mine']),
+        );
+        self::assertSame(
+            ['class' => 'crudit-ip-format', 'inputmode' => 'numeric', 'data-controller' => '2lenet--crudit-bundle--input-format', 'spellcheck' => 'false'],
+            FormExtension::formatAttr(['class' => 'crudit-ip-format', 'inputmode' => 'numeric']),
+            'the keyboard given by the field is kept',
+        );
+        self::assertArrayNotHasKey('inputmode', FormExtension::formatAttr(['class' => 'crudit-ip-format']), 'the keyboard decimal of iOS has the comma of the language, not the point');
     }
 
     public function testASubFormLaidOutFieldByFieldHasNoSpan(): void

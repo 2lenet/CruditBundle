@@ -6,14 +6,22 @@ namespace App\Tests\Functional;
 
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormView;
+use Twig\Environment;
 
 /**
  * The form of a CRUD (lot 3.2.a), with bootstrap_5_layout as the global theme of the application (as 24 projects):
  * the theme of Crudit is imposed. Labels above and attached, required fields explained, help and errors attached,
  * sections with their own columns, widths of the fields, a switch, choices shown as boxes, a unit. The form to edit a
  * client (ClientEditType): the widgets of other bundles, titles of sections under the title of the form, a translation
- * domain, the error of a sub-form laid out field by field.
+ * domain, the error of a sub-form laid out field by field. The base types (lot 3.2.b): keyboards of a phone, autofill
+ * kept away from the inputs typed in only, counter of characters, format helpers, telephone, colour, segmented
+ * control, date in lists, a boolean guessed as a switch.
  */
 class FormTest extends AppTestCase
 {
@@ -63,7 +71,7 @@ class FormTest extends AppTestCase
         $form = $this->form();
 
         $sections = $form->filter('fieldset.crudit-form-section');
-        self::assertSame(['Identity', 'Contact'], $sections->each(fn (Crawler $section) => $section->filter('legend h2')->text()));
+        self::assertSame(['Identity', 'Contact', 'Details'], $sections->each(fn (Crawler $section) => $section->filter('legend h2')->text()));
         self::assertSame('How to reach the client', $sections->eq(1)->filter('.crudit-form-section__description')->text());
         // The columns of the form (lle_crudit.form_columns: 4), then those of the section
         self::assertSame('crudit-form-grid crudit-form-grid--4', $sections->eq(0)->filter('.crudit-form-grid')->attr('class'));
@@ -103,6 +111,123 @@ class FormTest extends AppTestCase
         self::assertSame(['Cancel', 'Save'], $form->filter('.crudit-form__actions .crudit-ui-btn')->each(fn (Crawler $button) => trim($button->text())));
     }
 
+    public function testTheKeyboardOfAPhoneAndTheFormatHelpers(): void
+    {
+        $form = $this->form();
+
+        $modes = ['client_email' => 'email', 'client_amount' => 'decimal', 'client_progress' => 'decimal', 'client_phone_number' => 'tel'];
+        foreach ($modes as $id => $mode) {
+            self::assertSame($mode, $form->filter('#' . $id)->attr('inputmode'), $id);
+        }
+        // The type gives the keyboard of a URL (CruditUiBundle sets no inputmode on it)
+        self::assertSame(['url', null], [$form->filter('#client_website')->attr('type'), $form->filter('#client_website')->attr('inputmode')]);
+        $email = $form->filter('#client_email');
+        self::assertSame('false', $email->attr('spellcheck'));
+        self::assertSame('2lenet--crudit-bundle--input-format', $email->attr('data-controller'), 'crudit-email-format');
+        self::assertStringContainsString('2lenet--crudit-bundle--input-format', (string) $form->filter('#client_website')->attr('data-controller'), 'crudit-lower-format');
+        self::assertNull($form->filter('#client_name')->attr('data-controller'));
+    }
+
+    public function testTheAutofillIsKeptAwayFromTheInputsTypedInOnly(): void
+    {
+        $form = $this->form();
+
+        foreach (['client_name', 'client_notes', 'client_amount', 'client_progress', 'client_website'] as $id) {
+            self::assertSame('new-password', $form->filter('#' . $id)->attr('autocomplete'), $id);
+        }
+        self::assertSame('tel-national', $form->filter('#client_phone_number')->attr('autocomplete'), 'the purpose of the number');
+        foreach (['#client_active', '#client_blocked', '#client_color', '#client_channels input', '#client_priority input', '#client_createdAt select', '#client_phone_country'] as $selector) {
+            self::assertSame([null], array_unique($form->filter($selector)->each(fn (Crawler $input) => $input->attr('autocomplete'))), $selector);
+        }
+    }
+
+    public function testACounterOfCharacters(): void
+    {
+        $form = $this->form();
+
+        $notes = $form->filter('#client_notes');
+        self::assertSame('client_notes_count', $notes->attr('aria-describedby'));
+        self::assertSame('2lenet--crudit-ui-bundle--char-count', $notes->attr('data-controller'));
+        self::assertSame('0 / 80 characters', $form->filter('#client_notes_count [data-crudit-ui-count]')->text());
+        self::assertSame('120', $form->filter('#client_name')->attr('maxlength'), 'the length of the column, from Symfony');
+        self::assertCount(0, $form->filter('#client_name_count'), 'a text on one line has no counter by default');
+        self::assertSame('0 / 255 characters', $form->filter('#client_website_count [data-crudit-ui-count]')->text(), 'asked with counter: true');
+    }
+
+    public function testTheBaseTypes(): void
+    {
+        $form = $this->form();
+
+        // A boolean guessed is a switch, unless the field says switch: false
+        self::assertSame('switch', $form->filter('#client_active')->attr('role'));
+        self::assertNull($form->filter('#client_blocked')->attr('role'));
+        self::assertCount(1, $form->filter('label.crudit-ui-check:has(#client_blocked)'));
+
+        // The telephone: the calling code and the number on one line, no Bootstrap
+        $phone = $form->filter('#client_phone');
+        self::assertSame('crudit-ui-input-group crudit-telephone', $phone->attr('class'));
+        self::assertCount(0, $phone->filter('.input-group, .form-select, .form-control, .is-invalid'));
+        self::assertSame('client_phone_number', $form->filter('label[for="client_phone_number"]')->attr('for'));
+        self::assertSame('+33', $phone->filter('.crudit-telephone-code')->text());
+
+        // A colour and its code
+        $color = $form->filter('.crudit-ui-input-group--color:has(#client_color)');
+        self::assertSame('2lenet--crudit-ui-bundle--color-code', $color->filter('#client_color')->attr('data-controller'));
+        self::assertCount(1, $color->filter('[data-color-code]'));
+
+        // Short choices with one answer: a segmented control in a fieldset
+        $priority = $form->filter('#client_priority');
+        self::assertSame('crudit-ui-segmented', $priority->attr('class'));
+        self::assertSame(['None', 'Low', 'High'], $priority->filter('.crudit-ui-segmented__label')->each(fn (Crawler $label) => $label->text()));
+        self::assertCount(3, $priority->filter('input.crudit-ui-segmented__input[type="radio"]'));
+
+        // A date in lists: on one line
+        self::assertStringContainsString('crudit-ui-date-lists', (string) $form->filter('#client_createdAt')->attr('class'));
+    }
+
+    public function testATelephoneInErrorIsAttachedToItsError(): void
+    {
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Bob', 'client[phone][number]' => 'abc']);
+        $crawler = $this->client->submit($form);
+
+        self::assertResponseStatusCodeSame(200);
+        foreach (['#client_phone_number', '#client_phone_country'] as $selector) {
+            self::assertSame('client_phone_error', $crawler->filter($selector)->attr('aria-describedby'), $selector);
+            self::assertSame('true', $crawler->filter($selector)->attr('aria-invalid'), $selector);
+        }
+        self::assertCount(1, $crawler->filter('#client_phone_error'));
+    }
+
+    public function testATelephoneKeepsTheDescriptionsOfTheProject(): void
+    {
+        $view = $this->formFactory()->createNamedBuilder('client', FormType::class, null, ['csrf_protection' => false])
+            ->add('phone', TelephoneType::class, ['help' => 'A mobile'])
+            ->getForm()->createView();
+        $view['phone']['number']->vars['attr']['aria-describedby'] = 'client_phone_note';
+        $html = new Crawler($this->renderWidget($view, "{{ form_row(form.phone) }}", '@LleCrudit/form/theme.html.twig'));
+
+        self::assertSame('client_phone_note client_phone_help', $html->filter('#client_phone_number')->attr('aria-describedby'), 'the description of the project is kept, the help added');
+        self::assertSame('client_phone_help', $html->filter('#client_phone_country')->attr('aria-describedby'));
+    }
+
+    public function testABooleanGuessedIsASwitchInTheThemeOfCruditOnly(): void
+    {
+        // A name for each theme: the renderer of Symfony keeps the blocks found for a field by its name
+        $view = fn (string $name): FormView => $this->formFactory()->createNamedBuilder($name, FormType::class, null, ['csrf_protection' => false])
+            ->add('active', CheckboxType::class, ['switch' => true])
+            ->getForm()->createView();
+
+        $crudit = new Crawler($this->renderWidget($view('crudit'), '{{ form_row(form.active) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertSame('switch', $crudit->filter('#crudit_active')->attr('role'));
+        self::assertCount(1, $crudit->filter('label.crudit-ui-switch:has(#crudit_active)'));
+
+        $bootstrap = new Crawler($this->renderWidget($view('bootstrap'), '{{ form_row(form.active) }}', 'bootstrap_5_layout.html.twig'));
+        self::assertSame('checkbox', $bootstrap->filter('#bootstrap_active')->attr('type'));
+        self::assertNull($bootstrap->filter('#bootstrap_active')->attr('role'), 'another theme draws a checkbox: it is told as a checkbox');
+    }
+
     public function testAnErrorIsAttachedToItsField(): void
     {
         $crawler = $this->client->request('GET', '/client/new');
@@ -123,8 +248,7 @@ class FormTest extends AppTestCase
     {
         $form = $this->editForm();
 
-        // lle_crudit.form_themes (by default the themes of FOSCKEditorBundle and VichUploaderBundle) after the one of
-        // Crudit: the editor, not a bare textarea; the file input of Vich
+        // the global themes of the project (FOSCKEditorBundle, VichUploaderBundle) kept after the one of Crudit: the editor, not a bare textarea; the file input of Vich
         $editor = $form->filter('textarea#client_presentation');
         self::assertCount(1, $editor);
         self::assertStringContainsString('CKEDITOR.replace("client_presentation"', implode("\n", $form->filter('script')->each(fn (Crawler $script) => $script->text())));
@@ -138,10 +262,10 @@ class FormTest extends AppTestCase
         $form = $this->editForm()->closest('.crudit-form');
 
         self::assertSame('Details', $form?->filter('h2.crudit-form__title')->text());
-        self::assertSame(['Identity', 'Contact', 'More about the client'], $form?->filter('fieldset.crudit-form-section > legend h3')->each(fn (Crawler $title) => $title->text()));
+        self::assertSame(['Identity', 'Contact', 'Details', 'More about the client'], $form?->filter('fieldset.crudit-form-section > legend h3')->each(fn (Crawler $title) => $title->text()));
         self::assertCount(0, $form?->filter('fieldset.crudit-form-section > legend h2') ?? []);
         // Without a title of the form (the new client): titles of level 2
-        self::assertCount(2, $this->form()->filter('fieldset.crudit-form-section > legend h2'));
+        self::assertCount(3, $this->form()->filter('fieldset.crudit-form-section > legend h2'));
     }
 
     public function testTheSectionAndTheTooltipInTheTranslationDomainOfTheField(): void
@@ -193,5 +317,21 @@ class FormTest extends AppTestCase
         self::assertResponseIsSuccessful();
 
         return $crawler->filter('main form.crudit-form__form');
+    }
+
+    private function formFactory(): FormFactoryInterface
+    {
+        /** @var FormFactoryInterface $factory */
+        $factory = static::getContainer()->get('form.factory');
+
+        return $factory;
+    }
+
+    private function renderWidget(FormView $view, string $template, string $theme): string
+    {
+        /** @var Environment $twig */
+        $twig = static::getContainer()->get('twig');
+
+        return $twig->createTemplate("{% form_theme form with ['" . $theme . "'] only %}" . $template)->render(['form' => $view]);
     }
 }

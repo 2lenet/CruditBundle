@@ -19,19 +19,6 @@ lle_crudit:
     form_columns: 3
 ```
 
-The forms of the bricks impose the theme of Crudit (`only`, whatever `twig.form_themes`). `form_themes` lists the
-themes added after it, for the widgets of other bundles and of the project; by default the themes of FOSCKEditorBundle
-(`@FOSCKEditor/Form/ckeditor_widget.html.twig`) and VichUploaderBundle (`@VichUploader/Form/fields.html.twig`) when
-they are loaded. Given, it replaces that list. Only themes of widgets: a theme that redefines `form_row` or uses
-`bootstrap_5_layout` would bring its markup back into the bricks.
-
-```yaml
-lle_crudit:
-    form_themes:
-        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
-        - 'form/my_widgets.html.twig'
-```
-
 *To be rewritten with lot 3.3.a:* the record and its cards still use
 - `css_class_columns_show` — CSS class applied to each field column in show view
 - `css_class_columns_card` — CSS class applied to each field column in card view

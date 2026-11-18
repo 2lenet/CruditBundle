@@ -13,6 +13,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "input-format": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "confirm": {
                 "enabled": true,
                 "fetch": "eager"
@@ -44,6 +48,14 @@
                 "fetch": "eager"
             },
             "button": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "char-count": {
+                "enabled": true,
+                "fetch": "eager"
+            },
+            "color-code": {
                 "enabled": true,
                 "fetch": "eager"
             },
