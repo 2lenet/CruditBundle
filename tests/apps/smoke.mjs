@@ -26,7 +26,7 @@ async function open(width, path = '/', {cookie = null, dark = false, rtl = false
     }
     const page = await browser.newPage();
     current = page;
-    page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+    page.on('pageerror', (e) => errors.push(`pageerror: ${e.message} (${page.url()})${e.stack ? `\n${String(e.stack).split('\n').slice(0, 4).join('\n')}` : ''}`));
     page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
     await page.setViewport({width, height: 800});
     if (platform) {
