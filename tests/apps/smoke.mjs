@@ -63,6 +63,14 @@ const inAside = (page) => page.evaluate(() => document.querySelector('#crudit-si
 // only for a zone still to be reworked.
 const EXCLUDED = [];
 
+// A pause for the transitions (drawer, dialog, menu) to be over: a fixed one is too short on a slow machine, and WebKit
+// starts a transition late. The time to start, then until no animation is running (an endless one, a spinner, or one driven
+// by the scroll, the shadow of the heading of a table, is not waited for), then a frame.
+async function settle(page) {
+    await new Promise((r) => setTimeout(r, 100));
+    await page.waitForFunction(() => document.getAnimations().every((animation) => animation.playState !== 'running' || !(animation.timeline instanceof DocumentTimeline) || animation.effect?.getComputedTiming().iterations === Infinity), {timeout: 3000}).catch(() => null);
+    await new Promise((r) => setTimeout(r, 50));
+}
 async function axe(page, label) {
     await new Promise((r) => setTimeout(r, 500));
     await page.evaluate(axeSource);
@@ -157,7 +165,7 @@ await axe(page, 'desktop rail');
 
 // tooltip on focus/hover of an item
 await page.hover('[data-menu-label=Clients] a');
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 const tip = await page.$eval('[data-menu-label=Clients] .crudit-ui-tooltip', (e) => { const s = getComputedStyle(e); const r = e.getBoundingClientRect(); return {vis: s.visibility, op: s.opacity, x: r.x, text: e.textContent}; });
 assert.equal(tip.vis, 'visible'); assert.equal(tip.text, 'Clients · 12'); assert.ok(tip.x >= 64, `tooltip beside the rail (${tip.x})`);
 ok('tooltip beside the rail on hover');
@@ -225,7 +233,7 @@ assert.equal(await attr(page, '.crudit-header__burger', 'aria-expanded'), 'false
 assert.ok((await box(page, '.crudit-shell__main')).x < 40, 'content takes the width');
 await shot(page, 'mobile-closed');
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(await visible(page, '#crudit-sidebar'));
 assert.equal(await attr(page, '#crudit-sidebar', 'role'), 'dialog');
 assert.equal(await attr(page, '#crudit-sidebar', 'aria-modal'), 'true');
@@ -251,7 +259,7 @@ for (let i = 0; i < 40; i++) {
 }
 ok('drawer opens as modal dialog, inert page, focus trapped');
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(!(await visible(page, '#crudit-sidebar')));
 assert.equal(await page.evaluate(() => document.activeElement.className.includes('crudit-header__burger')), true, 'focus back to burger');
 assert.equal(await page.$eval('.crudit-shell__body', (e) => e.inert), false);
@@ -260,14 +268,14 @@ assert.equal(await attr(page, '.crudit-header__burger', 'aria-expanded'), 'false
 ok('Escape closes, focus back to the burger');
 
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await page.mouse.click(380, 400);
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(!(await visible(page, '#crudit-sidebar')), 'backdrop closes');
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await page.click('.crudit-sidebar__close');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(!(await visible(page, '#crudit-sidebar')), 'close button closes');
 ok('backdrop and close button');
 
@@ -277,7 +285,7 @@ await page.keyboard.press('Tab');
 await page.keyboard.press('Tab');
 assert.equal(await page.evaluate(() => document.activeElement.getAttribute('href')), '#main-nav');
 await page.keyboard.press('Enter');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(await visible(page, '#crudit-sidebar'), 'skip link opens the drawer');
 assert.equal(await active(page), 'main-nav');
 ok('skip link to the menu opens the drawer, focus on the nav');
@@ -295,9 +303,9 @@ await page.close();
 // drawer open then widen to desktop
 page = await open(390);
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await page.setViewport({width: 1500, height: 800});
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.equal(await page.$eval('.crudit-shell__body', (e) => e.inert), false, 'drawer closed on resize');
 assert.equal(await page.evaluate(() => document.documentElement.classList.contains('crudit-has-drawer')), false);
 assert.ok(await visible(page, '#crudit-sidebar'));
@@ -339,20 +347,20 @@ assert.ok(Math.abs((await box(page, '.crudit-footer__nav')).y - (await box(page,
 ok('footer: column on a phone, one line on desktop');
 await page.close();
 page = await open(1440, '/page/invoices', {cookie: 'collapsed', rtl: true});
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 const rb = await box(page, '#crudit-sidebar');
 assert.ok(rb.x > 1000, `rail on the right in RTL (${rb.x})`);
 await page.click('[data-menu-label=Billing] button');
 const rf = await box(page, '[data-menu-label=Billing] .crudit-nav__submenu');
 assert.ok(rf.r < rb.x + 8 && rf.x < rb.x, `flyout on the left of the rail in RTL (${rf.x}-${rf.r} / ${rb.x})`);
 await shot(page, 'desktop-rtl-flyout');
-const tipx = await (async () => { await page.keyboard.press('Escape'); await page.hover('[data-menu-label=Clients] a'); await new Promise((r) => setTimeout(r, 300)); return box(page, '[data-menu-label=Clients] .crudit-ui-tooltip'); })();
+const tipx = await (async () => { await page.keyboard.press('Escape'); await page.hover('[data-menu-label=Clients] a'); await settle(page); return box(page, '[data-menu-label=Clients] .crudit-ui-tooltip'); })();
 assert.ok(tipx.r <= rb.x + 8, `tooltip on the left in RTL (${tipx.r})`);
 ok('RTL: rail, flyout and tooltip on the inline end side');
 await page.close();
 page = await open(390, '/', {rtl: true});
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 const db = await box(page, '#crudit-sidebar');
 assert.ok(db.r > 380, `drawer from the right in RTL (${db.r})`);
 await shot(page, 'mobile-rtl-open');
@@ -364,7 +372,7 @@ page = await open(1100, '/page/invoices');
 await page.click('[data-menu-label=Billing] button');
 await page.keyboard.press('Escape');
 await page.click('.crudit-sidebar__collapse');
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 assert.equal(await page.$eval('[data-menu-label=Billing] .crudit-nav__submenu', (e) => e.style.insetBlockStart), '', 'no inline position left');
 const sub = await box(page, '[data-menu-label=Billing] .crudit-nav__submenu');
 const parentButton = await box(page, '[data-menu-label=Billing] button');
@@ -392,7 +400,7 @@ await page.close();
 // Drawer: Escape and Tab work when the focus is on the page (click on a part that cannot take it)
 page = await open(390);
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 // The padding under the filter: nothing there can take the focus, which goes to <body>
 const padding = await box(page, '.crudit-sidebar__filter');
 await page.mouse.click(padding.x + padding.w / 2, padding.b - 2);
@@ -402,13 +410,13 @@ assert.ok(await inAside(page), 'Tab comes back into the drawer');
 await page.mouse.click(padding.x + padding.w / 2, padding.b - 2);
 assert.equal(await page.evaluate(() => document.activeElement === document.body), true);
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(!(await visible(page, '#crudit-sidebar')), 'Escape closes the drawer from <body>');
 ok('drawer: Escape and Tab with the focus on the page');
 
 // Drawer: a click that does not change the page leaves it open
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 const opened = new Promise((resolve) => browser.once('targetcreated', resolve));
 await page.keyboard.down('Control');
 await page.click('[data-menu-label=Documentation] a');
@@ -423,7 +431,7 @@ ok('drawer: a link that opens a new tab leaves it open');
 // Drawer: a resize that closes it leaves the focus in the menu
 await page.focus('.crudit-sidebar__close');
 await page.setViewport({width: 1500, height: 800});
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.equal(await active(page), 'main-nav', 'the focus goes to the menu, not to <body>');
 ok('a resize that closes the drawer keeps the focus');
 await page.close();
@@ -434,12 +442,12 @@ page = await open(1440, '/overrides', {cookie: 'collapsed'});
 await page.click('[data-menu-label=Billing] button');
 assert.ok(await visible(page, '[data-menu-label=Billing] .crudit-nav__submenu'));
 await page.setViewport({width: 390, height: 800});
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(await visible(page, '#crudit-sidebar'));
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(!(await visible(page, '#crudit-sidebar')));
 assert.equal(errors.length, errorsBefore, 'no error without the blocks menu_filter and menu_toggle');
 ok('the menu works without the filter and the button that reduces it');
@@ -451,7 +459,7 @@ page = await open(390);
 await page.evaluate(() => { window.scrollTo(0, 800); });
 await new Promise((r) => setTimeout(r, 200));
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 const outside = await page.evaluate(() => [...document.body.children]
     .filter((e) => !['SCRIPT', 'STYLE', 'LINK', 'TEMPLATE'].includes(e.tagName) && !e.contains(document.querySelector('.crudit-shell')) && e !== document.querySelector('.crudit-shell'))
     .map((e) => `${e.className || e.tagName}:${e.inert}`));
@@ -459,14 +467,14 @@ assert.ok(outside.length >= 2 && outside.every((x) => x.endsWith(':true')), `eve
 assert.equal(await page.$eval('.crudit-shell__backdrop', (e) => e.inert), false, 'the backdrop is not inert');
 assert.equal(await page.$eval('#crudit-sidebar', (e) => e.inert), false);
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 const left = await page.evaluate(() => [...document.querySelectorAll('[inert]')].length);
 assert.equal(left, 0, 'nothing stays inert once the drawer is closed');
 ok('drawer: everything around the menu is inert, and released on close');
 
 // Escape in the filter empties it and nothing else
 await page.click('.crudit-header__burger');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await page.type('#crudit-menu-filter', 'inter');
 await page.keyboard.press('Escape');
 await new Promise((r) => setTimeout(r, 200));
@@ -474,7 +482,7 @@ assert.equal(await page.$eval('#crudit-menu-filter', (e) => e.value), '', 'Escap
 assert.ok(await visible(page, '#crudit-sidebar'), 'and the drawer stays open');
 assert.ok((await labels()).includes('Clients'), 'the menu is whole again');
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(!(await visible(page, '#crudit-sidebar')), 'a second Escape closes the drawer');
 ok('Escape in the filter empties it, a second one closes the drawer');
 await page.close();
@@ -582,6 +590,9 @@ const shown = (page, sel) => page.$$eval(sel, (els) => els.filter((e) => e.getCl
 const openDialog = (page) => page.evaluate(() => [...document.querySelectorAll('dialog')].find((d) => d.open)?.id ?? null);
 const focusText = (page) => page.evaluate(() => (document.activeElement?.textContent ?? '').trim());
 async function axeOn(page, selector, label) {
+    // Once the animations are over (a dialog that opens): during them the colours are blended with the backdrop, and
+    // axe reads a contrast that is not the final one.
+    await settle(page);
     await page.evaluate(axeSource);
     const result = await page.evaluate((selector) => axe.run({include: [[selector]]}, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']}), selector);
     assert.deepEqual(result.violations.map((x) => `${x.id}: ${x.nodes.map((n) => n.target.join(' ')).join(' | ')}`), [], `axe ${label}`);
@@ -819,17 +830,17 @@ const row = '#' + await page.$$eval('.crudit-ui-table__row', (rows) => rows.find
 const rowLabel = await page.$eval(`${row} th[scope=row]`, (e) => e.textContent.trim());
 assert.ok((await page.$eval(`${row} .crudit-ui-table__action-list a`, (e) => e.textContent)).includes(rowLabel), 'icon named after the row');
 await page.click(`${row} .crudit-ui-dropdown > button`);
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 assert.ok(await visible(page, `${row} .crudit-ui-menu__item[data-confirm-link]`), 'the menu has the deletion');
 await axeTable(page, 'menu open');
 await shot(page, 'list-row-menu');
 
 // the deletion asks for a confirmation that names the action, Cancel closes it, focus back on the button of the row
 await page.click(`${row} .crudit-ui-menu__item[data-confirm-link]`);
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), true, 'the confirmation opens');
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), false, 'Escape closes it');
 ok('list: row actions, confirmation of the deletion');
 
@@ -929,7 +940,7 @@ let wf = await wfRow(page, 'INT-02');
 assert.equal(await text(page, `${wf} .crudit-workflow__trigger`), 'To plan, change the status of INT-02');
 await page.focus(`${wf} .crudit-workflow__trigger`);
 await page.keyboard.press('Enter');
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 assert.equal(await attr(page, `${wf} .crudit-workflow__trigger`, 'aria-expanded'), 'true', 'Enter opens the menu');
 assert.deepEqual(await page.$$eval(`${wf} .crudit-workflow .crudit-ui-menu__item`, (items) => items.map((i) => i.textContent.trim())), ['Planned', 'Cancelled']);
 await axeOn(page, '.crudit-ui-table', 'workflow menu open');
@@ -938,7 +949,7 @@ await shot(page, 'workflow-menu');
 // The item opens the confirmation, which names the element; Cancel has the focus
 await page.focus(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=plan]`);
 await page.keyboard.press('Enter');
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.equal(await page.$eval('#crudit-confirm', (e) => e.open), true, 'the confirmation opens');
 assert.equal(await text(page, '#crudit-confirm-title'), 'INT-02: move to “Planned”?');
 assert.equal(await page.evaluate(() => document.activeElement.closest('#crudit-confirm') !== null && document.activeElement.textContent.trim()), 'Cancel', 'focus on Cancel');
@@ -968,12 +979,12 @@ ok('workflow: a transition from the keyboard, without a reload');
 wf = await wfRow(page, 'INT-01');
 assert.deepEqual(await page.$$eval(`${wf} .crudit-workflow .crudit-ui-menu__item`, (items) => items.map((i) => i.textContent.trim())), ['Cancelled'], 'plan refused by its guard');
 await page.click(`${wf} .crudit-workflow__trigger`);
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=cancel]`);
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 assert.ok(await page.$eval('#crudit-confirm .crudit-action', (e) => e.classList.contains('crudit-ui-btn--danger')), 'destructive: danger');
 await page.keyboard.press('Escape');
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 ok('workflow: a destructive transition is confirmed in danger');
 
 // Refused by the server: the status stays, the message is said
@@ -982,9 +993,9 @@ await page.setRequestInterception(true);
 const refuse = (request) => request.url().includes('/workflow/') ? request.respond({status: 409, contentType: 'application/json', body: JSON.stringify({status: 'ko', message: 'Refused by the server.'})}) : request.continue();
 page.on('request', refuse);
 await page.click(`${wf} .crudit-workflow__trigger`);
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=start]`);
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await page.click('#crudit-confirm .crudit-action');
 await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Refused by the server.'), {timeout: 3000});
 assert.ok((await text(page, `${wf} .crudit-workflow__trigger`)).startsWith('Planned'), 'the status has not changed');
@@ -999,9 +1010,9 @@ ok('workflow: a refusal of the server is said, the status stays');
 await page.$eval(`${wf} .crudit-workflow`, (field) => field.setAttribute('data-2lenet--crudit-bundle--workflow-field-value', 'unknown'));
 await page.evaluate(() => { window.notReloaded = true; });
 await page.click(`${wf} .crudit-workflow__trigger`);
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=start]`);
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await page.click('#crudit-confirm .crudit-action');
 await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts')?.textContent.includes('INT-03: status changed from “Planned” to “In progress”.'), {timeout: 3000});
 assert.equal(await page.evaluate(() => window.notReloaded), true, 'not reloaded');
@@ -1015,9 +1026,9 @@ await page.setRequestInterception(true);
 const noHtml = (request) => request.url().includes('/workflow/') ? request.respond({status: 200, contentType: 'application/json', body: JSON.stringify({status: 'ok', message: 'Changed.'})}) : request.continue();
 page.on('request', noHtml);
 await page.click(`${wf} .crudit-workflow__trigger`);
-await new Promise((r) => setTimeout(r, 300));
+await settle(page);
 await page.click(`${wf} .crudit-workflow .crudit-ui-menu__item[data-transition=finish]`);
-await new Promise((r) => setTimeout(r, 400));
+await settle(page);
 await Promise.all([page.waitForNavigation({timeout: 5000}), page.click('#crudit-confirm .crudit-action')]);
 assert.equal(await page.evaluate(() => window.notReloaded), undefined, 'reloaded');
 assert.equal(await page.$('#crudit-ui-toasts .crudit-ui-toast--danger'), null, 'no toast of error');
