@@ -52,7 +52,7 @@ try {
             };
         }
     });
-    page.on('pageerror', (error) => errors.push(`page error: ${error.message}`));
+    page.on('pageerror', (error) => errors.push(`page error: ${error.message} (${page.url()})${error.stack ? `\n${String(error.stack).split('\n').slice(0, 4).join('\n')}` : ''}`));
     // 422: a form sent back with its errors, on purpose.
     page.on('console', (message) => message.type() === 'error' && !message.location().url?.endsWith('/favicon.ico') && !message.text().includes('status of 422') && !message.text().includes('Form responses must redirect') && errors.push(`console: ${message.text()}`));
     page.on('response', (response) => response.status() >= 400 && response.status() !== 422 && !response.url().endsWith('/favicon.ico') && errors.push(`${response.status()}: ${response.url()}`));
