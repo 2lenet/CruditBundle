@@ -1,0 +1,7 @@
+crudit:
+    telephone:
+        invalid: "Este número de teléfono no es válido."
+        invalid_characters: "El número solo puede contener dígitos (se permiten espacios, puntos, guiones, barras y paréntesis)."
+        calling_code_required: "Elige el prefijo del país o escribe el número en formato internacional (+…)."
+        invalid_length: "Número no válido ({{ country }}, {{ code }}): se esperaban {{ min }} dígitos después del prefijo."
+        invalid_length_range: "Número no válido ({{ country }}, {{ code }}): se esperaban entre {{ min }} y {{ max }} dígitos después del prefijo."
