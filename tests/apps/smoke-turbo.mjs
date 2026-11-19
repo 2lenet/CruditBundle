@@ -1,4 +1,4 @@
-// Smoke test of the screens of Crudit under Turbo Drive (test application tests/apps/turbo): node smoke-turbo.mjs <url> [chrome path]
+// Smoke test of the screens of Crudit under Turbo Drive (test application tests/apps/turbo): node smoke-turbo.mjs <url> [chromium|webkit|iphone|pixel]
 // Real Turbo visits, not simulated events (smoke.mjs only simulates turbo:load): the layout (menu, drawer, search),
 // the list (filters, selection, pager), the record (confirmation, modals), the forms answered by a redirect (303) or
 // by their errors (422), the workflow, the cache and Back, the controllers disconnected and connected again without
@@ -6,14 +6,14 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
-import puppeteer from 'puppeteer-core';
+import {launch} from './browser.mjs';
 
 const url = process.argv[2];
-const executablePath = process.argv[3] ?? process.env.CHROME_PATH ?? '/usr/bin/google-chrome';
-assert.ok(url, 'Usage: node smoke-turbo.mjs <url> [chrome path]');
+const project = process.argv[3] ?? process.env.PROJECT ?? 'chromium';
+assert.ok(url, 'Usage: node smoke-turbo.mjs <url> [chromium|webkit|iphone|pixel]');
 const base = url.replace(/\/$/, '');
 
-const browser = await puppeteer.launch({executablePath, headless: true, args: ['--no-sandbox']});
+const browser = await launch(project);
 const errors = [];
 // Defects found by this test and not fixed yet: shown as a warning, not a failure (remove the entry when it is fixed)
 const known = [];
@@ -25,6 +25,33 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 try {
     const page = await browser.newPage();
     await page.setViewport({width: 1440, height: 900});
+    // Listeners on the document and the window, by type: counted by the wrappers of add / removeEventListener, which
+    // must be there before the page loads (the DevTools protocol only exists in Chromium).
+    await page.addInitScript(() => {
+        const registry = new Map();
+        const ids = new WeakMap();
+        let last = 0;
+        const id = (listener) => ids.get(listener) ?? (ids.set(listener, ++last), last);
+        const key = (type, listener, options) => `${type}|${typeof options === 'object' ? options?.capture === true : options === true}|${id(listener)}`;
+        window.__listeners = registry;
+        for (const target of [Document.prototype, Window.prototype]) {
+            const {addEventListener, removeEventListener} = target;
+            target.addEventListener = function (type, listener, options) {
+                if (listener && (this === document || this === window)) {
+                    registry.set(this, (registry.get(this) ?? new Map()).set(key(type, listener, options), true));
+                    // A listener "once" is removed when it has run.
+                    options?.once && addEventListener.call(this, type, () => registry.get(this)?.delete(key(type, listener, options)), {once: true});
+                }
+
+                return addEventListener.call(this, type, listener, options);
+            };
+            target.removeEventListener = function (type, listener, options) {
+                listener && registry.get(this)?.delete(key(type, listener, options));
+
+                return removeEventListener.call(this, type, listener, options);
+            };
+        }
+    });
     page.on('pageerror', (error) => errors.push(`page error: ${error.message}`));
     // 422: a form sent back with its errors, on purpose.
     page.on('console', (message) => message.type() === 'error' && !message.location().url?.endsWith('/favicon.ico') && !message.text().includes('status of 422') && !message.text().includes('Form responses must redirect') && errors.push(`console: ${message.text()}`));
@@ -62,20 +89,25 @@ try {
     const sameWindow = async (message) => assert.equal(await page.evaluate(() => window.marker), true, `${message}: the page was fully loaded, not visited by Turbo`);
     const menu = (href) => `#crudit-sidebar a[href="${href}"]`;
 
-    // Listeners on the document and the window, counted by the DevTools protocol, by type.
-    const cdp = await page.createCDPSession();
+    // Listeners on the document and the window, by type (the wrappers are installed at the top).
+    // A tooltip or a floating menu shown (by the focus, the pointer) has a listener of its own while it is: nothing is
+    // shown when the listeners are counted.
     const listeners = async () => {
-        const counts = {};
-        for (const target of ['document', 'window']) {
-            const {result} = await cdp.send('Runtime.evaluate', {expression: target});
-            const {listeners: found} = await cdp.send('DOMDebugger.getEventListeners', {objectId: result.objectId});
-            await cdp.send('Runtime.releaseObject', {objectId: result.objectId});
-            found.forEach(({type}) => {
-                counts[`${target} ${type}`] = (counts[`${target} ${type}`] ?? 0) + 1;
-            });
-        }
+        await page.evaluate(() => document.activeElement?.blur());
+        await page.mouse.move(0, 0);
+        await sleep(300);
 
-        return counts;
+        return page.evaluate(() => {
+            const counts = {};
+            for (const [name, target] of [['document', document], ['window', window]]) {
+                for (const key of window.__listeners.get(target)?.keys() ?? []) {
+                    const type = key.split('|')[0];
+                    counts[`${name} ${type}`] = (counts[`${name} ${type}`] ?? 0) + 1;
+                }
+            }
+
+            return counts;
+        });
     };
 
     // ---------- Visits back and forth: the controllers of each page connect, those of the page left disconnect and
@@ -108,9 +140,24 @@ try {
     // ---------- The menu: the rail chosen by the user stays across the visits (the cookie, <html> stays) and comes
     // back with Back; the toggle works on each page.
     const sidebarWidth = () => page.$eval('#crudit-sidebar', (element) => Math.round(element.getBoundingClientRect().width));
+    // The width follows a transition, which WebKit starts late: waited for until it changes, then until it stops (a
+    // fixed pause is too short). Without a change expected, nothing to wait for.
+    const settled = async (from) => {
+        await page.waitForFunction((width) => Math.round(document.querySelector('#crudit-sidebar').getBoundingClientRect().width) !== width, {timeout: 3000}, from).catch(() => null);
+        for (let last = -1, same = 0; same < 3;) {
+            const width = await sidebarWidth();
+            same = width === last ? same + 1 : 0;
+            last = width;
+            await sleep(100);
+        }
+    };
+    const toggle = async () => {
+        const from = await sidebarWidth();
+        await page.click('.crudit-sidebar__collapse');
+        await settled(from);
+    };
     const full = await sidebarWidth();
-    await page.click('.crudit-sidebar__collapse');
-    await sleep(400);
+    await toggle();
     const rail = await sidebarWidth();
     assert.ok(rail < full / 2, 'the toggle does not reduce the menu');
     await visit(menu('/client/'));
@@ -118,15 +165,12 @@ try {
     await visit(menu('/page/interventions'));
     await back();
     assert.equal(await sidebarWidth(), rail, 'the rail is lost by Back');
-    await page.click('.crudit-sidebar__collapse');
-    await sleep(400);
+    await toggle();
     assert.equal(await sidebarWidth(), full, 'the toggle does not expand the menu after Back');
     await visit(menu('/client/'));
-    await page.click('.crudit-sidebar__collapse');
-    await sleep(400);
+    await toggle();
     assert.equal(await sidebarWidth(), rail, 'the toggle does not reduce the menu after a visit');
-    await page.click('.crudit-sidebar__collapse');
-    await sleep(400);
+    await toggle();
     await sameWindow('rail');
     ok('menu: the rail across visits and Back, the toggle after each');
 

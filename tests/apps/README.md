@@ -22,7 +22,9 @@ and the assets are their own: a change of an entity, of a `CrudConfig` or of the
   menu read from the cookie), the global search (button, palette, route: the clients by name and e-mail, the screens)
   and the CRUD pages (list, show, create). `AppTestCase` rebuilds the database for each
   test.
-- **Browser** (`tests/apps/smoke.mjs`, Puppeteer and axe-core): the menu (full, rail, drawer, filter, sub-menus,
+- **Browser** (`tests/apps/smoke.mjs`, Playwright and axe-core; `browser.mjs` launches the project and keeps the few
+  Puppeteer methods the test was written with): the same test runs on `chromium`, `webkit` (Safari), `iphone` (WebKit,
+  touch) and `pixel` (Chrome on Android): `node smoke.mjs <url> [project]`. The menu (full, rail, drawer, filter, sub-menus,
   tooltips, cookie), keyboard and focus, right to left, light and dark, 360 to 1500 px, the list, the record, the forms,
   the workflow. `EXCLUDED` lists what axe does not check yet because its lot is not done (header: 2.2.a, footer:
   2.1.c): remove an entry when its lot is done. It runs on the three applications. It changes the data (a workflow
@@ -31,7 +33,7 @@ and the assets are their own: a change of an entity, of a `CrudConfig` or of the
   replaces `<body>` (the controllers disconnect and connect again, the listeners on `document` and `window` stay if a
   controller does not remove them), keeps a snapshot of the page left and shows it on Back, sends the forms with
   `fetch`. The test visits the screens of Crudit and checks:
-    - visits back and forth: no listener left on `document` or `window` (counted by the DevTools protocol), the focus on
+    - visits back and forth: no listener left on `document` or `window` (counted by wrappers of `addEventListener`, the DevTools protocol being Chromium only), the focus on
       the title of the page (`page-title`), after a visit and after Back;
     - the menu: the rail across the visits and Back, the drawer of a phone (the page reached is free, Back does not show
       it open), the global search (Ctrl K, a result opened by Turbo);
@@ -48,8 +50,22 @@ and the assets are their own: a change of an entity, of a `CrudConfig` or of the
   the page does not change, the errors are not visible. It must be a 422 (`FormFactory::bindRequest()`); the PHPUnit tests
   of the forms expect a 200.
 
-The CI (`.github/workflows/app.yml`) runs `crudit` in dev and prod (with `asset-map:compile`), `encore` in prod and
-`turbo` in dev and prod.
+The CI (`.github/workflows/app.yml`) runs `crudit` in dev and prod (with `asset-map:compile`), `encore` in dev
+(`encore dev`, the build of every day) and prod, and `turbo` in dev and prod. Each job runs the smoke test on the four
+projects, building the database again before each run.
+
+### Running the tests locally, with nothing to install
+
+```bash
+# the application (the bundle at the same path: vendor/ holds absolute symlinks)
+docker run -d --rm --name app --network host -v /data/bundles:/data/bundles -w <this dir>/crudit -e APP_ENV=dev \
+    php-intl sh -c 'php bin/console app:seed && php -S 127.0.0.1:8080 -t public'
+# the browsers (the tag follows the version of playwright in package.json)
+docker run --rm --network host --ipc=host -v $PWD:/work -w /work mcr.microsoft.com/playwright:v1.65.1-noble \
+    node smoke.mjs http://127.0.0.1:8080/ iphone
+```
+
+Build the database again (`docker exec app php bin/console app:seed`) between two runs.
 
 ## A new lot
 

@@ -1,16 +1,17 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
-import puppeteer from 'puppeteer-core';
+import {launch} from './browser.mjs';
 
 const require = createRequire(import.meta.url);
 const axeSource = readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 const base = (process.argv[2] ?? '').replace(/\/$/, '');
-const executablePath = process.argv[3] ?? process.env.CHROME_PATH ?? '/usr/bin/google-chrome';
+const project = process.argv[3] ?? process.env.PROJECT ?? 'chromium';
 const shots = process.env.SHOTS;
-assert.ok(base, 'Usage: node smoke.mjs <url> [chrome path]');
+assert.ok(base, 'Usage: node smoke.mjs <url> [chromium|webkit|iphone|pixel]');
 
-const browser = await puppeteer.launch({executablePath, headless: true, args: ['--no-sandbox']});
+const browser = await launch(project);
+console.log(`Browser: ${browser.version()}`);
 const errors = [];
 let passed = 0;
 const ok = (name) => { passed++; console.log('ok  ', name); };

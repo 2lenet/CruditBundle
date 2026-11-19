@@ -2,8 +2,9 @@ name: Test application
 
 # The bundle is installed as a project does (path repository, symlink: false) in a Symfony application: SQLite, one
 # entity, a menu with every kind of element. There is one application per way a project delivers the assets:
-#   - crudit: AssetMapper. PHPUnit drives its pages (layout, menu, CRUD), then a headless Chrome drives the JavaScript
-#     and checks accessibility with axe-core (tests/apps/smoke.mjs);
+#   - crudit: AssetMapper. PHPUnit drives its pages (layout, menu, CRUD), then headless browsers drive the JavaScript
+#     and check accessibility with axe-core (tests/apps/smoke.mjs). The browsers are Playwright's (tests/apps/browser.mjs):
+#     Chromium and WebKit on a desktop, Safari on an iPhone, Chrome on an Android phone; the same test runs on each;
 #   - encore: the same code built with Webpack Encore, the same smoke test;
 #   - turbo: the same code with Symfony UX Turbo, the same smoke test, then the screens under real Turbo visits
 #     (tests/apps/smoke-turbo.mjs).
@@ -27,6 +28,7 @@ jobs:
                 include:
                     -   {app: crudit, env: dev}
                     -   {app: crudit, env: prod}
+                    -   {app: encore, env: dev}
                     -   {app: encore, env: prod}
                     -   {app: turbo, env: dev}
                     -   {app: turbo, env: prod}
@@ -68,11 +70,12 @@ jobs:
                 run: php bin/console assets:install public
 
             # The packages of the bundles are those copied into vendor/ (file:vendor/2lenet/...).
+            # `encore dev` (source maps, no versioning) is the build a developer runs every day; `encore production` the deployed one.
             -   name: 'Build the assets (Encore)'
                 if: matrix.app == 'encore'
                 run: |
                     npm install --no-audit --no-fund
-                    npm run build
+                    npm run ${{ matrix.env == 'prod' && 'build' || 'dev' }}
 
             -   name: 'Database'
                 run: php bin/console app:seed
@@ -91,23 +94,37 @@ jobs:
                     php -S 127.0.0.1:8080 -t public > /tmp/server.log 2>&1 &
                     npx --yes wait-on http://127.0.0.1:8080/ --timeout 30000
 
-            -   name: 'Smoke test'
+            # Playwright: Chromium and WebKit with their system libraries (tests/apps/browser.mjs).
+            -   name: 'Install the browsers'
                 working-directory: tests/apps
-                env:
-                    PUPPETEER_SKIP_DOWNLOAD: '1'
                 run: |
                     npm install --no-audit --no-fund
-                    node smoke.mjs http://127.0.0.1:8080/ "$(which google-chrome)"
+                    npx playwright install --with-deps chromium webkit
 
-            # The smoke test above changed the data (a workflow transition): the database is built again.
-            -   name: 'Database'
-                if: matrix.app == 'turbo'
-                run: php bin/console app:seed
+            # The same test on every project: Chrome and Safari on a desktop, Safari on an iPhone, Chrome on Android.
+            # The test changes the data (a workflow transition): the database is built again before each run.
+            -   name: 'Smoke test'
+                working-directory: tests/apps
+                run: |
+                    failed=0
+                    for project in chromium webkit iphone pixel; do
+                        echo "::group::smoke $project"
+                        (cd ${{ matrix.app }} && php bin/console app:seed) && node smoke.mjs http://127.0.0.1:8080/ $project || failed=1
+                        echo "::endgroup::"
+                    done
+                    exit $failed
 
             -   name: 'Smoke test under Turbo'
                 if: matrix.app == 'turbo'
                 working-directory: tests/apps
-                run: node smoke-turbo.mjs http://127.0.0.1:8080/ "$(which google-chrome)"
+                run: |
+                    failed=0
+                    for project in chromium webkit iphone pixel; do
+                        echo "::group::smoke-turbo $project"
+                        (cd ${{ matrix.app }} && php bin/console app:seed) && node smoke-turbo.mjs http://127.0.0.1:8080/ $project || failed=1
+                        echo "::endgroup::"
+                    done
+                    exit $failed
 
             -   name: 'Server log'
                 if: failure()
