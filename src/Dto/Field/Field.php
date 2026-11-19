@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Dto\Field;
 
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Field\DateField;
+use Lle\CruditBundle\Field\DateTimeField;
 
 class Field
 {
+    public const SORT_ASC = 'asc';
+
+    public const SORT_DESC = 'desc';
+
+    private const DATE_TYPES = ['date', 'datetime', DateField::class, DateTimeField::class];
+
     private string $label;
 
     private string $name;
@@ -34,7 +42,7 @@ class Field
 
     private bool $ruptSortPriority = false;
 
-    private bool $descFirstSort = false;
+    private ?string $firstSortOrder = null;
 
     private bool $ruptHideFromList = true;
 
@@ -333,14 +341,22 @@ class Field
         return $this;
     }
 
-    public function isDescFirstSort(): bool
+    /**
+     * Sort order applied on the first click on the column header:
+     * the most recent first for a date, ascending otherwise, unless forced with setFirstSortOrder().
+     */
+    public function getFirstSortOrder(): string
     {
-        return $this->descFirstSort;
+        if ($this->firstSortOrder !== null) {
+            return $this->firstSortOrder;
+        }
+
+        return in_array($this->type, self::DATE_TYPES, true) ? self::SORT_DESC : self::SORT_ASC;
     }
 
-    public function withDescFirstSort(): self
+    public function setFirstSortOrder(string $order): self
     {
-        $this->descFirstSort = true;
+        $this->firstSortOrder = strtolower($order);
 
         return $this;
     }

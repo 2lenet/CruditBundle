@@ -25,6 +25,15 @@ That's it! Several files have been created:
     }
 ```
 
+### Order of the first click on a column header
+
+The first click on a date column (`date`, `datetime`, `DateField`, `DateTimeField`) sorts the most recent first; any other column sorts ascending. Use `setFirstSortOrder()` to force the order of a column:
+
+```php
+Field::new('birthDate')->setFirstSortOrder(Field::SORT_ASC),  // oldest first
+Field::new('amount')->setFirstSortOrder(Field::SORT_DESC),    // highest first
+```
+
 ## How to change the default sorting of your autocomplete route
 
 ```php

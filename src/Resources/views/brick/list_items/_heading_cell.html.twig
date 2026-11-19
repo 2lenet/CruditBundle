@@ -7,7 +7,7 @@
 {% set order = sorts|first|last %}
 {% set sorted = (sorts|first|first == field.options.sortProperty ?? field.name) %}
 
-{% set next_order = field.descFirstSort ? 'desc' : 'asc' %}
+{% set next_order = field.firstSortOrder %}
 {% if sorted %}
     {% set next_order = order|lower == 'asc' ? 'desc' : 'asc' %}
 {% endif %}
