@@ -25,3 +25,13 @@ parameters:
             paths:
                 - ../src/Controller/TraitCrudController.php
                 - ../src/Test/
+        # Types::SIMPLE_ARRAY is deprecated in recent doctrine/dbal, but still handled for existing mappings
+        -
+            identifier: classConstant.deprecated
+            path: ../src/Form/DoctrineOrmTypeGuesser.php
+            reportUnmatched: false
+        # The mutable date types are still the mapping of existing entities: the Maker recognises them
+        -
+            identifier: classConstant.deprecated
+            path: ../src/Maker/MakeCrudit.php
+            reportUnmatched: false
