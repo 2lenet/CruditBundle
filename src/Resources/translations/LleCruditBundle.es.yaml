@@ -1,0 +1,139 @@
+crudit:
+    title:
+        filter: "Filtrar elementos"
+
+    multisearch:
+        placeholder: "Buscar..."
+
+    footer:
+        copyrights: "Todos los derechos reservados."
+        release: "Versión"
+
+    pagination:
+        first: "Primera"
+        previous: "Anterior"
+        next: "Siguiente"
+        last: "Última"
+        firstPage: "Primera página"
+        previousPage: "Página anterior"
+        nextPage: "Página siguiente"
+        lastPage: "Última página"
+        goToPage: "Ir a la página nb"
+        items: "Elementos"
+        to: "a"
+        of: "de"
+        noItem: "No se han encontrado elementos"
+        limit: "Número de elementos"
+
+    action:
+        save: "Guardar"
+        cancel: "Cancelar"
+        back: "Volver"
+        logout: "Cerrar sesión"
+        batch: "Elegir una acción por lotes"
+        validate: "Validar"
+        profile: "Perfil"
+        exit_impersonation: "Salir de la suplantación"
+
+    message:
+        success: "Operación realizada con éxito"
+        error: "Error"
+
+    modal:
+        cancel: "Cancelar"
+        validate: "Validar"
+        confirm:
+            message: "¿Seguro que quieres confirmar esta acción? Esta acción es irreversible."
+            action: "Confirmar"
+        export:
+            message: "Elige el formato de exportación"
+            action: "Exportar"
+            notConfigured: "La exportación no está configurada"
+        transition:
+            message: "¿Seguro que quieres cambiar el estado de este elemento?"
+            action: "Validar"
+
+    field:
+        createdAt: "Creado el"
+        createdBy: "Creado por"
+        updatedAt: "Modificado el"
+        updatedBy: "Modificado por"
+        modification: "{0}sin cambios|{1} 1 cambio|]1,Inf[ %count% cambios"
+
+    filter:
+        action: "Filtrar"
+        reset: "Restablecer"
+        operator:
+            contains: "Contiene"
+            startswith: "Empieza por"
+            endswith: "Termina en"
+            isnull: "Está vacío"
+            isnotnull: "No está vacío"
+            eq: "Igual a"
+            neq: "Distinto de"
+            lt: "Menor que"
+            lte: "Menor o igual que"
+            gt: "Mayor que"
+            gte: "Mayor o igual que"
+            after: "Después de"
+            before: "Antes de"
+            interval: "Entre"
+            in: "Igual a"
+            notin: "Distinto de"
+        showMore: "Mostrar más filtros"
+        showLess: "Mostrar menos filtros"
+
+    boolean:
+        yes: "Sí"
+        no: "No"
+        all: "Todos"
+
+    yes: "Sí"
+    no: "No"
+    by: "por"
+
+    history:
+        no_history: "No hay historial de cambios."
+        action:
+            create: "Creación"
+            update: "Actualización"
+            remove: "Eliminación"
+
+    flash:
+        error:
+            eip:
+                generic: "No se ha podido modificar el valor."
+                access_denied: "No tienes permiso para cambiar este valor."
+                bad_request: "Estás intentando modificar un valor que no existe."
+            delete: "No se puede eliminar este objeto."
+            resource_not_found: "No se ha encontrado el recurso."
+
+    error:
+        generic:
+            title: "Error"
+            text: "Se ha producido un error. Vuelve a intentarlo o ponte en contacto con tu administrador si el problema continúa."
+            link: "Volver al panel"
+        not_found:
+            title: "Error 404"
+            text: "No se encuentra la página solicitada. Puedes seguir navegando con el enlace de abajo."
+            link: "Volver al panel"
+        forbidden:
+            title: "Error 403"
+            text: "No tienes permiso para acceder a esta página. Puedes seguir navegando con el enlace de abajo."
+            link: "Volver al panel"
+
+    text:
+        current_page: "Solo en la página actual"
+        all_page: "En todas las páginas"
+
+    sortable:
+        handle: "Arrastra para reordenar"
+
+    rupture:
+        null_label: "%field%: sin valor"
+
+    gedmo_translatable:
+        default_locale_helper: "Este campo siempre es obligatorio en el siguiente idioma:"
+
+    telephone:
+        calling_code: "Prefijo telefónico"
