@@ -2,19 +2,41 @@
 
 ### Autocomplete
 
-The Lle\CruditBundle\Form\Type\AutocompleteType
-allows you to create a select for entities that is
-fed by an AJAX autocomplete.
-It is equivalent to Doctrine's EntityType.
+The `Lle\CruditBundle\Form\Type\AutocompleteType` lets the user choose an entity in a list with search, whose
+choices are asked to the server. It is equivalent to Doctrine's `EntityType`, and is guessed for an association.
 
 Options :
 
-| Name     | Default  | Description                                     |
-|----------|----------|-------------------------------------------------|
-| class    | required | a FQCN of your entity (e.g. App\Entity\Dummy)   |
-| multiple | false    | set this to true if the field is a collection   |
-| route    | null     | if you want to customize the autocomplete route |
-| url      | null     | if you want to customize the autocomplete url   |
+| Name     | Default  | Description                                                                          |
+|----------|----------|--------------------------------------------------------------------------------------|
+| class    | required | a FQCN of your entity (e.g. App\Entity\Dummy)                                         |
+| multiple | false    | set this to true if the field is a collection                                        |
+| route    | null     | the route of the choices (default `app_crudit_<entity>_autocomplete`, the CRUD's own) |
+| url      | null     | the address of the choices, instead of a route                                       |
+
+The list (lot 3.2.c) is the list with search of CruditUiBundle (`docs/forms.md` of CruditUiBundle): the choices made
+are tokens in the field, each with a button that removes it; the arrows move in the list, Enter chooses, Escape closes
+it. The choices are asked to `GET <url>?q=<text>&offset=<n>&limit=20`: the first ones when the list opens, those of the
+text typed after a pause, the next ones when the list is scrolled to its end. The route `autocomplete` of a CRUD answers
+so (`{"items": [{"id", "text"}], "next_offset", "total_count"}`, the `searchFields` of the datasource, sorted by
+`getDefaultAutocompleteSort()`). The value sent is the id, or the ids joined by a comma.
+
+Enable the controller `combobox` of `@2lenet/crudit-ui-bundle` in `assets/controllers.json`
+(`{"enabled": true, "fetch": "lazy"}`).
+
+### Choices: native list or list with search
+
+A `ChoiceType` (and an `EntityType`) shown as a list (not `expanded`) is:
+
+- with **several answers** (`multiple`): a list with search, its choices filtered in the page;
+- with **one answer**: the native `<select>`.
+
+The option `combobox` changes it: `true` for a long list with one answer, `false` for a native list with several
+answers. It needs a list (`expanded: false`).
+
+```php
+$builder->add('country', CountryType::class, ['combobox' => true]);
+```
 
 ### FileType
 

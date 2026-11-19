@@ -31,7 +31,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
    - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
-   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*
+   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*; lists with search instead of Tom Select, `disable_tom_select` removed, the controller `combobox` to enable *(lot 3.2.c)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -966,6 +966,22 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
     `@2lenet/crudit-ui-bundle`, `input-format` under `@2lenet/crudit-bundle` (`{"enabled": true, "fetch": "eager"}`).
     Without them the counter shows the length when the page is loaded, the code of a colour its first value, and the
     format helpers do nothing.
+- **Lists with search** *(lot 3.2.c)*: Tom Select is replaced by the list with search of CruditUiBundle (an ARIA
+  combobox, docs/forms.md of CruditUiBundle): the choices made as tokens in the field, each with a button that removes
+  it, the arrows, Enter and Escape, the choices filtered as you type, accents left aside.
+  - `AutocompleteType`: same options (`class`, `multiple`, `route`, `url`), same route `autocomplete` of the CRUD
+    (`?q=&offset=&limit=`, 20 at a time, the next ones at the end of the list, the first ones when the list opens),
+    same value (the ids joined by a comma). The hidden input `<id>_items` and the classes `entity-select`,
+    `form-control` are gone.
+  - A **choice with several answers** shown as a list (`multiple`, not `expanded`) is a list with search; **a choice
+    with one answer is a native `<select>`** (it was a Tom Select with a search). The option **`combobox`** of a
+    `ChoiceType` (an `EntityType` too) changes it: `true` for a long list with one answer, `false` for a native list.
+  - **`disable_tom_select` is removed** (an "option does not exist" error): use `combobox: false`. The class
+    `choice-tom-select` is no longer set.
+  - Enable the controller **`combobox`** in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`
+    (`{"enabled": true, "fetch": "lazy"}`: loaded on the pages that have one). JavaScript is needed to change a choice.
+  - Your styles of `.ts-control`, `.ts-dropdown`, `.entity-select` or `.choice-tom-select` no longer apply: the classes
+    are `crudit-ui-combobox__*`.
 - Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`), the file, the translated
   field and the cron expression *(lot 3.2.c)*.
 
@@ -1071,8 +1087,8 @@ panel (in the page from 768 px, a side panel on a phone), the active ones as chi
   the form of the bar sends them.
 - **The templates `filter/state/*` are removed** and `getStateTemplate()` is deprecated: the chips are drawn by the bar. A
   file of yours that extends one of them is never rendered.
-- `filters.js` stays for the forms (`initTomSelect`, until lot 3.2.c); its filter code (the menu of conditions, Enter, the
-  counter of chosen items) and the filter styles of `sb-admin` are gone.
+- `filters.js` is removed *(lot 3.2.c: its Tom Select of the forms is the list with search)*; its filter code (the menu
+  of conditions, Enter, the counter of chosen items) and the filter styles of `sb-admin` were gone since lot 3.1.e.
 - **Enable the controllers** `filters`, `filter-field` and `filter-period` in `@2lenet/crudit-ui-bundle` of your
   `assets/controllers.json`.
 - Not in this lot: the saved filters (3.1.f), the pager (3.1.d: the filters send the list back to the first page through
@@ -1208,7 +1224,13 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
 - New controllers `filters`, `filter-field` and `filter-period` (the filters, lot 3.1.e): same file, same package.
 - New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
-  `initChoiceTomSelect`…) no longer works. *Replacement to be filled (lot 3.2.c).*
+  `initChoiceTomSelect`…) no longer works. A field of a form rendered by Crudit (or with the theme of CruditUiBundle)
+  needs no call: the controller `combobox` connects to every list with search, also those added later (a row of a
+  collection, a modal, a Turbo frame). A list written by hand in a template: include
+  `@LleCruditUi/form/_combobox.html.twig` (its header gives the values) instead of calling `initTomSelect()`.
+- New controller `combobox` (lists with search, lot 3.2.c): enable it in `@2lenet/crudit-ui-bundle` of your
+  `assets/controllers.json` (`fetch: lazy`).
+- `tom-select` is no longer a dependency of Crudit's `package.json`: declare it in yours if you still use it.
 - Tom Select, CKEditor and EasyMDE are replaced by in-house components. HTML already saved by
   CKEditor is read as is. FOSCKEditorBundle is no longer needed.
 - If your project imported `bootstrap`, `jquery` or `@popperjs/core` thanks to Crudit's

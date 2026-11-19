@@ -13,7 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * FormType that uses autocomplete for entities.
+ * An entity chosen in a list with search (lot 3.2.c): the choices are asked to the route autocomplete of its CRUD
+ * (`GET <url>?q=&offset=&limit=`, TraitCrudController::autocomplete()), 20 at a time. The value is the id, or the ids
+ * joined by a comma with `multiple`.
  */
 class AutocompleteType extends AbstractType
 {
@@ -66,42 +68,33 @@ class AutocompleteType extends AbstractType
 
         $view->vars["url"] = $url;
 
-        // Gestion valeur déjà existante
-        if ($id = $view->vars["value"]) {
+        // The choices made: their label, in the order of the value
+        $selected = [];
+        $value = $view->vars["value"];
+        if (is_string($value) && $value !== '' && $classFqcn) {
+            $ids = $options["multiple"] ? explode(",", $value) : [$value];
             /** @var class-string $classFqcn */
-            if ($options["multiple"]) {
-                $entities = $this->em
-                    ->getRepository($classFqcn)
-                    ->findBy(["id" => explode(",", $id)]);
-            } else {
-                $entities = [
-                    $this->em
-                        ->getRepository($classFqcn)
-                        ->find($id),
-                ];
-            }
-
-            $items = [];
+            $repository = $this->em->getRepository($classFqcn);
+            $entities = $options["multiple"] ? $repository->findBy(["id" => $ids]) : array_filter([$repository->find($value)]);
+            $labels = [];
             /** @var object $entity */
             foreach ($entities as $entity) {
-                $id = null;
-
-                if (\method_exists($entity, 'getId')) {
-                    $id = $entity->getId();
+                if (\method_exists($entity, 'getId') && $entity instanceof \Stringable) {
+                    $labels[(string) $entity->getId()] = (string) $entity;
                 }
-
-                /** @var \Stringable $entity */
-                $items[] = [
-                    "id" => $id,
-                    "text" => (string)$entity,
-                ];
             }
-
-            $view->vars["items"] = json_encode($items);
+            foreach ($ids as $id) {
+                if (isset($labels[$id])) {
+                    $selected[] = ["value" => $id, "label" => $labels[$id]];
+                }
+            }
         }
 
-        // Gestion multi valeurs
         $view->vars["multiple"] = $options["multiple"];
+        // The list with search of CruditUiBundle (block crudit_ui_combobox_widget), its choices asked to the route
+        $view->vars["combobox"] = true;
+        $view->vars["combobox_url"] = $url;
+        $view->vars["combobox_selected"] = $selected;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

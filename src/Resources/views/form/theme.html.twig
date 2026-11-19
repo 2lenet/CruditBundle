@@ -44,9 +44,10 @@
     {%- endif -%}
 {%- endblock -%}
 
-{% block autocomplete_widget %}
-    {% include '@LleCrudit/form/_autocomplete_widget.html.twig' %}
-{% endblock %}
+{# An entity in a list with search (AutocompleteType): the list of CruditUiBundle, its choices asked to the server #}
+{%- block autocomplete_widget -%}
+    {{- block('crudit_ui_combobox_widget') -}}
+{%- endblock autocomplete_widget -%}
 
 {% block crudit_gedmo_translatable_widget %}
     {% include '@LleCrudit/form/_gedmo_translatable_widget.html.twig' %}

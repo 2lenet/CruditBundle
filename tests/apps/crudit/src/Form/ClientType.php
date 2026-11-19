@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\Client;
 use App\Enum\Priority;
+use Lle\CruditBundle\Form\Type\AutocompleteType;
 use Lle\CruditBundle\Form\Type\GroupType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\Form\AbstractType;
@@ -26,6 +28,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * as boxes, a unit; a field with its own autocomplete and a tooltip_html to clean.
  * The base types (lot 3.2.b): a boolean guessed (a switch) and one kept a checkbox, a counter of characters, the format
  * helpers of the 1.x, a telephone, an address, an amount, a colour, a segmented control, a date in lists.
+ * The rich types (lot 3.2.c): an entity (a list with search, its choices asked to the route autocomplete) and a
+ * choice with several answers (a list with search, its choices in the page).
  */
 class ClientType extends AbstractType
 {
@@ -64,6 +68,16 @@ class ClientType extends AbstractType
             ->add('color', ColorType::class, ['required' => false])
             ->add('priority', EnumType::class, ['class' => Priority::class, 'required' => false, 'expanded' => true, 'segmented' => true])
             ->add('createdAt', DateType::class, ['widget' => 'choice', 'years' => range(2020, 2030), 'span' => 2])
-            ->add('blocked', null, ['required' => false, 'switch' => false]); // a boolean kept a checkbox
+            ->add('blocked', null, ['required' => false, 'switch' => false]) // a boolean kept a checkbox
+            // An entity: AutocompleteType (as guessed), on the route of this application (the default is app_crudit_client_autocomplete)
+            ->add('referrer', AutocompleteType::class, ['class' => Client::class, 'route' => 'app_client_autocomplete', 'required' => false, 'help' => 'The client who sent this one', 'span' => 2])
+            ->add('zones', ChoiceType::class, [
+                'mapped' => false,
+                'multiple' => true,
+                'required' => false,
+                'span' => 2,
+                'choices' => ['North' => 'n', 'South' => 's', 'East' => 'e', 'West' => 'w', 'Côte d’Azur' => 'cst'],
+                'data' => ['s'],
+            ]);
     }
 }

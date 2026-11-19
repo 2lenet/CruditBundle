@@ -1,7 +1,6 @@
 import './action';
 import './editinplace';
 import './markdown_textarea';
-import './filters';
 import './flash';
 import './form';
 import './scroll-to-top';
