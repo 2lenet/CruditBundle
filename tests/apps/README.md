@@ -51,8 +51,9 @@ and the assets are their own: a change of an entity, of a `CrudConfig` or of the
   of the forms expect a 200.
 
 The CI (`.github/workflows/app.yml`) runs `crudit` in dev and prod (with `asset-map:compile`), `encore` in dev
-(`encore dev`, the build of every day) and prod, and `turbo` in dev and prod. Each job runs the smoke test on the four
-projects, building the database again before each run.
+(`encore dev`, the build of every day) and prod, and `turbo` in dev and prod. There is one job per application, environment
+and project (`chromium`, `webkit`, `iphone`, `pixel`), 24 in parallel: the four projects in a row took 30 to 50 minutes.
+PHPUnit runs once, in the `chromium` job of `crudit`.
 
 ### Running the tests locally, with nothing to install
 
