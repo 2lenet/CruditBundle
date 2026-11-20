@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Filter\FilterType;
 
+use Doctrine\ORM\Events;
 use Doctrine\ORM\QueryBuilder;
 use Gedmo\Translatable\TranslatableListener;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
@@ -30,9 +31,11 @@ class StringFilterType extends AbstractFilterType
     protected bool $searchInTranslations = false;
 
     /**
-     * Makes each translation subquery alias unique in the whole query.
+     * The TranslatableListener of each event manager (null: none), looked for once.
+     *
+     * @var \WeakMap<object, TranslatableListener|null>|null
      */
-    private static int $translationAliasCount = 0;
+    private static ?\WeakMap $translatableListeners = null;
 
     public static function new(string $fieldname): self
     {
@@ -64,7 +67,16 @@ class StringFilterType extends AbstractFilterType
         [$column, $alias, $paramname] = $this->getQueryParams($queryBuilder);
 
         $query = $this->getPattern($op, $column, $alias, $column, $paramname);
-        $query = $this->addTranslationPattern($queryBuilder, $query, $op, $this->columnName, $alias, $column, $paramname);
+        $query = $this->addTranslationPattern(
+            $queryBuilder,
+            $query,
+            $op,
+            $this->columnName,
+            $alias,
+            $column,
+            $paramname,
+            $paramname
+        );
         $this->applyAdditionnalFields($queryBuilder, $query, $op, $paramname);
 
         if (in_array($op, [FilterTypeInterface::OPERATOR_IS_NULL, FilterTypeInterface::OPERATOR_IS_NOT_NULL])) {
@@ -117,7 +129,11 @@ class StringFilterType extends AbstractFilterType
         string $paramname
     ): void {
         foreach ($this->additionnalFields as $additionnalField) {
-            [$additionnalColumn, $additionnalAlias] = $this->getQueryParams($queryBuilder, $additionnalField);
+            // the value is bound to the parameter of the filter; the field's own name gives its subquery alias
+            [$additionnalColumn, $additionnalAlias, $additionnalParamname] = $this->getQueryParams(
+                $queryBuilder,
+                $additionnalField
+            );
             $pattern = $this->getPattern($op, $additionnalColumn, $additionnalAlias, $additionnalColumn, $paramname);
             $query .= ' OR ' . $this->addTranslationPattern(
                 $queryBuilder,
@@ -126,7 +142,8 @@ class StringFilterType extends AbstractFilterType
                 $additionnalField,
                 $additionnalAlias,
                 $additionnalColumn,
-                $paramname
+                $paramname,
+                $additionnalParamname
             );
         }
     }
@@ -136,6 +153,8 @@ class StringFilterType extends AbstractFilterType
      * the search also looks into the field translations, in all locales:
      * - positive operators (contains, starts with, ends with, equal): column OR one translation matches;
      * - negative operators (not equal, does not contain): column AND no translation matches.
+     * $aliasKey (the name of the field's own parameter, unique in the query) gives the alias of the subquery: the same
+     * for each request, so that the DQL stays the same and the query cache of Doctrine is used.
      */
     protected function addTranslationPattern(
         QueryBuilder $queryBuilder,
@@ -145,6 +164,7 @@ class StringFilterType extends AbstractFilterType
         string $alias,
         string $col,
         string $paramname,
+        string $aliasKey,
     ): string {
         if (!$this->searchInTranslations) {
             return $pattern;
@@ -165,8 +185,8 @@ class StringFilterType extends AbstractFilterType
             return $pattern;
         }
 
-        // the alias must be unique in the whole query
-        $t = 'crudit_tr_' . ++self::$translationAliasCount;
+        // unique in the whole query, and the same from a request to the next
+        $t = 'crudit_tr' . $aliasKey;
 
         $subquery = 'SELECT ' . $t . '.id FROM ' . $translationClass . ' ' . $t
             . ' WHERE ' . $t . '.object = ' . $alias
@@ -207,16 +227,26 @@ class StringFilterType extends AbstractFilterType
         return $em->getClassMetadata($translationClass)->hasAssociation('object') ? $translationClass : null;
     }
 
+    /**
+     * The listener is subscribed to postLoad: only the listeners of this event are asked (getAllListeners() would
+     * create every lazy listener of the entity manager), once per event manager.
+     */
     protected function getTranslatableListener(QueryBuilder $queryBuilder): ?TranslatableListener
     {
-        foreach ($queryBuilder->getEntityManager()->getEventManager()->getAllListeners() as $listeners) {
-            foreach ($listeners as $listener) {
+        $eventManager = $queryBuilder->getEntityManager()->getEventManager();
+        self::$translatableListeners ??= new \WeakMap();
+
+        if (!self::$translatableListeners->offsetExists($eventManager)) {
+            $found = null;
+            foreach ($eventManager->getListeners(Events::postLoad) as $listener) {
                 if ($listener instanceof TranslatableListener) {
-                    return $listener;
+                    $found = $listener;
+                    break;
                 }
             }
+            self::$translatableListeners[$eventManager] = $found;
         }
 
-        return null;
+        return self::$translatableListeners[$eventManager];
     }
 }

@@ -142,6 +142,18 @@ class StringFilterTypeTest extends TestCase
         self::assertStringNotContainsString(".field = 'code'", $dql);
     }
 
+    public function testTheDqlIsTheSameFromARequestToTheNext(): void
+    {
+        $filter = StringFilterType::new('code')->setAdditionnalFields(['label'])->setSearchInTranslations(true);
+
+        $first = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo')->getDQL();
+        $second = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo')->getDQL();
+
+        // The alias comes from the name of the field: the query cache of Doctrine finds the same DQL
+        self::assertSame($first, $second);
+        self::assertStringContainsString('FROM ' . ProductTranslation::class . ' crudit_tr_label ', $first);
+    }
+
     public function testSearchInTranslationsDisabledByDefault(): void
     {
         $qb = $this->applyFilter(StringFilterType::new('label'), FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
