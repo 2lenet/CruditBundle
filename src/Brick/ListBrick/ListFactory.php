@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Brick\ListBrick;
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
 use Lle\CruditBundle\Brick\RuptureAwareTrait;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\Path;
@@ -90,6 +91,7 @@ class ListFactory extends AbstractBasicBrickFactory
 
         $dsParams = $brickConfigurator->getDatasourceParams();
         $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
+        $this->backToTheFirstPage($dsParams, $brickConfigurator);
         $this->prependRuptureSorts($dsParams, $brickConfigurator->getFields());
         $resources = $brickConfigurator->getDatasource()->list($dsParams);
 
@@ -103,6 +105,26 @@ class ListFactory extends AbstractBasicBrickFactory
         }
 
         return $this->annotateRuptureBreaks($lines);
+    }
+
+    /**
+     * A page past the last one (a filter applied from page 3 leaves two pages, a list that shrank) shows nothing and no
+     * way back: the list goes back to the first page, in the session too (else the next visit finds the same offset).
+     */
+    private function backToTheFirstPage(DatasourceParams $dsParams, ListConfig $brickConfigurator): void
+    {
+        if ($dsParams->getCount() < 1 || $dsParams->getOffset() < $dsParams->getCount()) {
+            return;
+        }
+
+        $dsParams->setOffset(0);
+        $session = $this->getRequest()->getSession();
+        $key = $brickConfigurator->getCrudConfig()->getDatasourceParamsKey();
+        $stored = $session->get($key);
+        if (is_array($stored)) {
+            $stored['offset'] = 0;
+            $session->set($key, $stored);
+        }
     }
 
     protected function getTotals(ListConfig $brickConfigurator): array

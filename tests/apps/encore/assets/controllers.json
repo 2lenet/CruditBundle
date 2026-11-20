@@ -87,6 +87,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "pager": {
+                "enabled": true,
+                "fetch": "eager"
+            },
             "saved-filters": {
                 "enabled": true,
                 "fetch": "eager"

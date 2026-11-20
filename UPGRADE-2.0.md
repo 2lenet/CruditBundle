@@ -30,6 +30,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
    - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
    - [Saved filters: a table to create, a route to import, the controller `saved-filters`](#saved-filters-lot-31f) *(lot 3.1.f)*
+   - [The pager: one, below the table; the controller `pager`; `_pager.html.twig` and `items-per-page` gone](#the-pager-lot-31d) *(lot 3.1.d)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
    - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
    - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*
@@ -779,10 +780,10 @@ CruditUiBundle (a table from `md` up, cards below, the same data), fed by the Tw
   - the `path` of a total is not a link any more (it never worked: it used the variable of the last row);
   - the name of a row ("Edit *name*") is `__toString()` of the resource when it has one, else the text of its first
     non-empty cell: give `__toString()` to the resources whose first column is a badge, an image or a date;
-  - the pager is shown below the table only, no more above (it comes back with lot 3.1.d).
+  - the pager is shown below the table only, no more above (see [The pager](#the-pager-lot-31d)).
 - Icons of the actions: a Font Awesome name of 1.x that has an equivalent in the design system is converted
   (`trash-alt`, `pencil`…), an Iconify name (`mdi:pencil`) is used as it is.
-- **Not in this lot** (the old markup stays for now): the pager (3.1.d). The filters are the bar and the panel of
+- **Not in this lot** (the old markup stays for now): the pager of the sublist (3.3.c). The filters are the bar and the panel of
   lot 3.1.e (see [Filters](#filters-lot-31e)). The batch actions are
   back with lot 3.1.c (see [Batch actions](#batch-actions-lot-31c)). The sublist (3.3.c) still uses
   the old templates (`list_items/_actions.html.twig` and `list_items/actions/*`).
@@ -1077,7 +1078,7 @@ panel (in the page from 768 px, a side panel on a phone), the active ones as chi
   counter of chosen items) and the filter styles of `sb-admin` are gone.
 - **Enable the controllers** `filters`, `filter-field` and `filter-period` in `@2lenet/crudit-ui-bundle` of your
   `assets/controllers.json`.
-- Not in this lot: the pager (3.1.d: the filters send the list back to the first page through `<set>_filter`, as before).
+- The filters send the list back to the first page through `<set>_filter`, as before (see [The pager](#the-pager-lot-31d)).
   The saved filters are the next lot: see [Saved filters](#saved-filters-lot-31f).
 
 ### Saved filters *(lot 3.1.f)*
@@ -1147,6 +1148,35 @@ Behavior to know:
 - **Your own templates**: the bar is `Filter:Bar` with its prop `saved`; a project that overrides `brick/filter/index.html.twig`
   must pass `:saved="bar.saved|default(null)"`.
 - **Not in this lot**: a default set ("open this list with my set"), and sharing sets between users.
+
+### The pager *(lot 3.1.d)*
+
+The list has **one pager, below the table** (it had two, above and below, with the same ids twice). It is the component
+`LleCruditUi:Pager`, fed by `crudit_pager(view)` (`PagerViewBuilder`): the summary ("1 to 30 of 131 clients"), first,
+previous, the numbers (`1 … 5 6 7 … 12`), next, last, and the rows per page.
+
+- **The parameters of the 1.x stay**: `<list>_offset` (the number of the first row) and `<list>_limit`, kept in the
+  session. `getNbItems()`, `getChoicesNbItems()` and the sublist's `canModifyNbEntityPerPage` work as before. A `limit` that is
+  not among the choices (`getNbItems()` returns 25) is added to them.
+- **Links, not buttons**: a page opens in another tab. The current page is not a link (`aria-current="page"`); first and
+  previous on the first page, next and last on the last one, are not links (`role="link" aria-disabled="true"`). Below 768 px the pager is
+  previous, "2 / 5", next.
+- **The rows per page** reload the list as soon as the choice is made (with the keyboard, an arrow key waits for Enter or for the end of the focus), and **go back to the first page**. The form sends
+  `<list>_offset=0` itself: the offset is kept in the session, a form without it would read the old page.
+- **A page past the last one** (a filter applied from page 3, rows deleted) goes back to the first page, in the session
+  too. It used to show an empty table with no way back.
+- The label of the summary is the title of the list, in lowercase (`getTitle('list')`: "Clients" gives "clients"): give
+  your lists a plural title.
+- **Enable the controller** `pager` in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`
+  (`"pager": {"enabled": true, "fetch": "eager"}`); without it, changing the rows per page does nothing (the
+  button "Apply" only shows when JavaScript is off).
+- **Removed** from the list: `list_items/_pager.html.twig` is not included any more (the file stays: the sublist still
+  uses it, until lot 3.3.c), the Bootstrap classes `pagination` and `page-item`, the `<select id="items-per-page">` and its
+  inline `onchange`. A project that overrode `_pager.html.twig` for the list has to move its change: the pager is in the
+  footer of the `Table`, in `list_items/index.html.twig`; there is no block of its own (a block named `footer` inside
+  the block `footer` of a component is refused by Symfony UX TwigComponent 3.7).
+- **The selection of the table follows the pager** (lot 3.1.c) because the parameter ends with `_offset`.
+- **Not in this lot**: the sublist (3.3.c); it keeps its pager, with the old markup.
 
 ### The record *(lot 3.3.a)*
 
@@ -1275,6 +1305,7 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
 - New controller `print` (`PrintAction`, lot 3.1.a): enable it in your `assets/controllers.json`, as the other
   controllers of `@2lenet/crudit-bundle`.
 - New controller `selection-bar` (batch actions, lot 3.1.c): enable it in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`.
+- New controller `pager` (the rows per page of the list, lot 3.1.d): enable it the same way.
 - New controllers `filters`, `filter-field` and `filter-period` (the filters, lot 3.1.e): same file, same package.
 - New controller `saved-filters` (the saved filters, lot 3.1.f): same file, same package.
 - New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
