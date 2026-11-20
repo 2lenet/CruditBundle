@@ -45,6 +45,7 @@ class PagerViewBuilderTest extends TestCase
         self::assertSame('équipes de Lyon', $this->build($params, ['title' => 'Équipes de Lyon'])['label'], 'only the first letter');
         self::assertSame('PDF reçus', $this->build($params, ['title' => 'PDF reçus'])['label'], 'an acronym keeps its capitals');
         self::assertSame('client', $this->build($params, ['title' => null])['label'], 'without title, the name of the list');
+        self::assertSame('client', $this->build($params, ['name' => 'CLIENT', 'title' => null])['label'], 'the name of a CrudConfig is in capitals, not an acronym');
     }
 
     public function testTheListCanForbidTheChoiceOfTheRowsPerPage(): void
@@ -94,6 +95,10 @@ class PagerViewBuilderTest extends TestCase
 
         $view->setConfig(['name' => 'Other', 'title' => 'crud.title.list.missing', 'datasource_params' => $params]);
         self::assertSame('other', $this->labelOf($builder, $view), 'a title that is not translated is not shown: the name');
+
+        // getName() of a CrudConfig is in capitals: not kept as an acronym
+        $view->setConfig(['name' => 'ORDER', 'title' => 'crud.title.list.missing', 'datasource_params' => $params]);
+        self::assertSame('order', $this->labelOf($builder, $view), 'the name ORDER');
     }
 
     public function testTheCurrentRequestIsRead(): void

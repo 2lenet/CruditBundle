@@ -68,7 +68,8 @@ class PagerViewBuilder
     {
         $domain = $config['translation_domain'] ?? null;
         $name = (string) $config['name'];
-        $label = $name;
+        // the name of a CrudConfig is in capitals (CLIENT): as a last resort, in lowercase
+        $label = strtolower($name);
         foreach (['crud.pager.label.' . strtolower($name), $config['title'] ?? null] as $key) {
             if (!$key) {
                 continue;
