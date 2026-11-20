@@ -100,8 +100,8 @@ class TelephoneType extends AbstractType
             // picking it would just lead to calling_code_required
             'placeholder' => $legacy ? self::UNKNOWN_CALLING_CODE : false,
             'translation_domain' => false,
-            // Native select laid transparent over the "+33" box of the widget, TomSelect would replace it
-            'disable_tom_select' => true,
+            // Native select laid transparent over the "+33" box of the widget, never a list with search
+            'combobox' => false,
             'attr' => [
                 'class' => 'crudit-telephone-country',
             ],

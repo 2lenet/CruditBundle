@@ -13,7 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * FormType that uses autocomplete for entities.
+ * An entity chosen in a list with search (lot 3.2.c): the choices are asked to the route autocomplete of its CRUD
+ * (`GET <url>?q=&offset=&limit=`, TraitCrudController::autocomplete()), 20 at a time. The value is the id, or the ids
+ * joined by a comma with `multiple`.
  */
 class AutocompleteType extends AbstractType
 {
@@ -43,7 +45,7 @@ class AutocompleteType extends AbstractType
     {
         $classFqcn = $options["class"];
 
-        // Gestion URL autocomplete
+        // URL of the route that gives the choices
         if ($route = $options["route"]) {
             $url = $this->router->generate($route);
         } elseif ($options["url"]) {
@@ -66,42 +68,37 @@ class AutocompleteType extends AbstractType
 
         $view->vars["url"] = $url;
 
-        // Gestion valeur déjà existante
-        if ($id = $view->vars["value"]) {
+        // The choices made: their label, in the order of the value
+        $selected = [];
+        $value = $view->vars["value"];
+        if (is_string($value) && $value !== '' && $classFqcn) {
+            $ids = $options["multiple"] ? array_values(array_unique(explode(",", $value))) : [$value];
             /** @var class-string $classFqcn */
-            if ($options["multiple"]) {
-                $entities = $this->em
-                    ->getRepository($classFqcn)
-                    ->findBy(["id" => explode(",", $id)]);
-            } else {
-                $entities = [
-                    $this->em
-                        ->getRepository($classFqcn)
-                        ->find($id),
-                ];
-            }
-
-            $items = [];
+            $repository = $this->em->getRepository($classFqcn);
+            $entities = $options["multiple"] ? $repository->findBy(["id" => $ids]) : array_filter([$repository->find($value)]);
+            $labels = [];
             /** @var object $entity */
             foreach ($entities as $entity) {
-                $id = null;
-
+                // getId() is already needed by EntityToIdTransformer to give the value
                 if (\method_exists($entity, 'getId')) {
-                    $id = $entity->getId();
+                    // an entity without __toString() is shown with its id, but stays chosen: the hidden input of the
+                    // list is made from the choices shown, an entity left out would be removed when saving the form
+                    $id = (string) $entity->getId();
+                    $labels[$id] = $entity instanceof \Stringable ? (string) $entity : $id;
                 }
-
-                /** @var \Stringable $entity */
-                $items[] = [
-                    "id" => $id,
-                    "text" => (string)$entity,
-                ];
             }
-
-            $view->vars["items"] = json_encode($items);
+            // an id without entity (hidden by a Doctrine filter, deleted) stays chosen, shown with the id: the form then
+            // refuses it (EntityToIdTransformer), instead of removing it from the relation without a message
+            foreach ($ids as $id) {
+                $selected[] = ["value" => $id, "label" => $labels[$id] ?? $id];
+            }
         }
 
-        // Gestion multi valeurs
         $view->vars["multiple"] = $options["multiple"];
+        // The list with search of CruditUiBundle (block crudit_ui_combobox_widget), its choices asked to the route
+        $view->vars["combobox"] = true;
+        $view->vars["combobox_url"] = $url;
+        $view->vars["combobox_selected"] = $selected;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

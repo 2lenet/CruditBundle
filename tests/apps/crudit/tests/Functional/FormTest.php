@@ -6,6 +6,7 @@ namespace App\Tests\Functional;
 
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
+use Lle\CruditBundle\Form\Type\AutocompleteType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -21,7 +22,8 @@ use Twig\Environment;
  * client (ClientEditType): the widgets of other bundles, titles of sections under the title of the form, a translation
  * domain, the error of a sub-form laid out field by field. The base types (lot 3.2.b): keyboards of a phone, autofill
  * kept away from the inputs typed in only, counter of characters, format helpers, telephone, colour, segmented
- * control, date in lists, a boolean guessed as a switch.
+ * control, date in lists, a boolean guessed as a switch. The rich types (lot 3.2.c): an entity and a choice with
+ * several answers in a list with search.
  */
 class FormTest extends AppTestCase
 {
@@ -291,6 +293,131 @@ class FormTest extends AppTestCase
         $line = $crawler->filter('.crudit-form-grid > .crudit-form-field--span-full')->reduce(fn (Crawler $line) => str_contains($line->text(), 'Enter the postcode of the city.'));
         self::assertCount(1, $line);
         self::assertSame(1, $line->nextAll()->filter('.crudit-ui-field')->reduce(fn (Crawler $field) => $field->filter('#client_address_city')->count() > 0)->count());
+    }
+
+    public function testAnEntityIsAListWithSearchAskedToTheServer(): void
+    {
+        $form = $this->form();
+        $root = $form->filter('.crudit-ui-combobox')->reduce(fn (Crawler $box) => $box->filter('#client_referrer')->count() > 0);
+
+        self::assertSame('2lenet--crudit-ui-bundle--combobox', $root->attr('data-controller'));
+        self::assertSame('/client/autocomplete', $root->attr('data-2lenet--crudit-ui-bundle--combobox-url-value'));
+        self::assertSame('false', $root->attr('data-2lenet--crudit-ui-bundle--combobox-multiple-value'));
+        $input = $root->filter('#client_referrer');
+        self::assertSame('combobox', $input->attr('role'));
+        self::assertSame('off', $input->attr('autocomplete'), 'the list is the one of Crudit, not the autofill of the browser');
+        self::assertSame('client_referrer_help', $input->attr('aria-describedby'));
+        self::assertNull($input->attr('name'));
+        self::assertSame('', $root->filter('input[type="hidden"][name="client[referrer]"]')->attr('value'));
+        self::assertCount(1, $form->filter('label[for="client_referrer"]'), 'the label points to the input');
+        self::assertCount(0, $form->filter('.entity-select, .choice-tom-select'), 'no Tom Select');
+    }
+
+    public function testAChoiceWithSeveralAnswersIsAListWithSearchInThePage(): void
+    {
+        $root = $this->form()->filter('.crudit-ui-combobox')->reduce(fn (Crawler $box) => $box->filter('#client_zones')->count() > 0);
+
+        self::assertNull($root->attr('data-2lenet--crudit-ui-bundle--combobox-url-value'));
+        self::assertSame('true', $root->attr('data-2lenet--crudit-ui-bundle--combobox-multiple-value'));
+        self::assertSame(['South'], $root->filter('.crudit-ui-combobox__token-label')->each(fn (Crawler $label) => $label->text()));
+        $select = $root->filter('select[name="client[zones][]"]');
+        // group_by and preferred_choices: the groups flattened, the preferred choice (cst) once, in the order of the choices
+        self::assertSame(['n', 's', 'e', 'w', 'cst'], $select->filter('option')->each(fn (Crawler $option) => $option->attr('value')));
+        self::assertCount(0, $select->filter('optgroup'));
+        self::assertSame(['s'], $select->filter('option[selected]')->each(fn (Crawler $option) => $option->attr('value')));
+    }
+
+    public function testTheTextOfTheRouteAutocompleteIsReceivedAsTyped(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->persist((new Client())->setName('Lab')->setEmail('c++lab@example.org'));
+        $em->flush();
+
+        // The browser encodes the + (%2B): not decoded again into a space, which would find every e-mail with a "c"
+        $this->client->request('GET', '/client/autocomplete', ['q' => 'c++', 'offset' => 0, 'limit' => 20]);
+        $answer = json_decode((string) $this->client->getResponse()->getContent(), true);
+        self::assertSame(1, $answer['total_count']);
+        self::assertSame(['Lab'], array_column($answer['items'], 'text'));
+
+        $this->client->request('GET', '/client/autocomplete', ['q' => 'chloé', 'offset' => 0, 'limit' => 20]);
+        $answer = json_decode((string) $this->client->getResponse()->getContent(), true);
+        self::assertSame(1, $answer['total_count']);
+        self::assertSame(['Chloé'], array_column($answer['items'], 'text'));
+    }
+
+    public function testTheChoicesOfAListWithSearchAreSaved(): void
+    {
+        $bob = $this->idOf('Bob');
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Dan', 'client[referrer]' => (string) $bob]);
+        $form['client[zones]']->select(['n', 'cst']);
+        $this->client->submit($form);
+        self::assertResponseRedirects();
+
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+        $dan = $em->getRepository(Client::class)->findOneBy(['name' => 'Dan']);
+        self::assertSame($bob, $dan?->getReferrer()?->getId());
+    }
+
+    public function testTheChoiceMadeIsShownByItsLabel(): void
+    {
+        $view = $this->formFactory()->createNamedBuilder('client', FormType::class, null, ['csrf_protection' => false])
+            ->add('referrer', AutocompleteType::class, ['class' => Client::class, 'route' => 'app_client_autocomplete', 'multiple' => true])
+            ->getForm();
+        $view->setData(['referrer' => [$this->entity('Chloé'), $this->entity('Alice')]]);
+        $html = new Crawler($this->renderWidget($view->createView(), "{{ form_widget(form.referrer) }}", '@LleCrudit/form/theme.html.twig'));
+
+        self::assertSame(['Chloé', 'Alice'], $html->filter('.crudit-ui-combobox__token-label')->each(fn (Crawler $label) => $label->text()), 'in the order of the value');
+        self::assertSame($this->idOf('Chloé') . ',' . $this->idOf('Alice'), $html->filter('input[type="hidden"][name="client[referrer]"]')->attr('value'));
+        self::assertSame('true', $html->filter('.crudit-ui-combobox')->attr('data-2lenet--crudit-ui-bundle--combobox-multiple-value'));
+    }
+
+    public function testTheValuesJoinedOfAListWithSearchFromTheServerAreItsEntities(): void
+    {
+        // The hidden input of the list with search sends the ids joined by a comma
+        $form = $this->formFactory()->createNamedBuilder('client', FormType::class, null, ['csrf_protection' => false])
+            ->add('referrer', AutocompleteType::class, ['class' => Client::class, 'route' => 'app_client_autocomplete', 'multiple' => true])
+            ->getForm();
+        $form->submit(['referrer' => $this->idOf('Chloé') . ',' . $this->idOf('Alice')]);
+
+        self::assertTrue($form->isSynchronized());
+        /** @var list<Client> $referrers */
+        $referrers = $form->get('referrer')->getData();
+        $names = array_map(fn (Client $client) => $client->getName(), $referrers);
+        sort($names);
+        self::assertSame(['Alice', 'Chloé'], $names);
+
+        $form = $this->formFactory()->createNamedBuilder('client', FormType::class, null, ['csrf_protection' => false])
+            ->add('referrer', AutocompleteType::class, ['class' => Client::class, 'route' => 'app_client_autocomplete', 'multiple' => true])
+            ->getForm();
+        $form->submit(['referrer' => $this->idOf('Alice') . ',999999']);
+        self::assertFalse($form->get('referrer')->isSynchronized(), 'an unknown id is refused');
+    }
+
+    public function testTheRouteAutocompleteAnswersTheChoicesOfTheText(): void
+    {
+        $this->client->request('GET', '/client/autocomplete?q=bob&offset=0&limit=20');
+        self::assertResponseIsSuccessful();
+        /** @var array{items: list<array{id: int, text: string}>, next_offset: int, total_count: int} $data */
+        $data = json_decode((string) $this->client->getResponse()->getContent(), true);
+
+        self::assertSame([['id' => $this->idOf('Bob'), 'text' => 'Bob']], $data['items']);
+        self::assertSame(1, $data['total_count']);
+        self::assertSame(20, $data['next_offset']);
+    }
+
+    private function entity(string $name): Client
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $client = $em->getRepository(Client::class)->findOneBy(['name' => $name]);
+        self::assertNotNull($client);
+
+        return $client;
     }
 
     private function idOf(string $name): int

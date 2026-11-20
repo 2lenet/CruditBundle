@@ -1263,6 +1263,64 @@ for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
 }
 ok('form: base types (telephone, counter, format helpers, segmented control, colour, date in lists)');
 
+// ---------- Rich types (lot 3.2.c): an entity in a list with search, its choices asked to the route autocomplete
+// (20 at a time, the next ones at the end of the list), a choice with several answers filtered in the page; the
+// choices are sent with the form.
+for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
+    page = await open(width, '/client/new', {rtl});
+    await page.focus('#client_referrer');
+    await page.waitForFunction(() => document.querySelectorAll('#client_referrer_listbox [role="option"]').length === 20, {timeout: 5000}).catch(() => null);
+    assert.equal(await page.$$eval('#client_referrer_listbox [role="option"]', (options) => options.length), 20, `the first choices of the server when the list opens at ${width}`);
+    // The list under its input (above it when there is no room below), inside the screen
+    const box = await page.$eval('#client_referrer_listbox', (list) => {
+        const rect = list.getBoundingClientRect();
+        const field = list.previousElementSibling.getBoundingClientRect();
+
+        return {left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, fieldTop: field.top, fieldBottom: field.bottom, screen: document.documentElement.clientWidth, height: window.innerHeight};
+    });
+    const nextToField = (box.top >= box.fieldBottom && box.top - box.fieldBottom < 16) || (box.bottom <= box.fieldTop && box.fieldTop - box.bottom < 16);
+    assert.ok(nextToField && box.left >= 0 && box.right <= box.screen && box.top >= 0 && box.bottom <= box.height, `the list is next to its input, in the screen at ${width} (${JSON.stringify(box)})`);
+    await axeOn(page, 'main form', `list with search open at ${width}${rtl ? ', RTL' : ''}`);
+    if (width === 1440) {
+        await page.$eval('#client_referrer_listbox', (list) => {
+            list.scrollTop = list.scrollHeight;
+        });
+        await page.waitForFunction(() => document.querySelectorAll('#client_referrer_listbox [role="option"]').length === 25, {timeout: 5000}).catch(() => null);
+        assert.equal(await page.$$eval('#client_referrer_listbox [role="option"]', (options) => options.length), 25, 'the end of the list asks the next choices');
+        await page.keyboard.type('client07');
+        await page.waitForFunction(() => {
+            const options = document.querySelectorAll('#client_referrer_listbox [role="option"]');
+            return options.length === 1 && options[0].textContent === 'Client 07';
+        }, {timeout: 5000}).catch(() => null);
+        assert.deepEqual(await page.$$eval('#client_referrer_listbox [role="option"]', (options) => options.map((option) => option.textContent)), ['Client 07'], 'the choices of the text typed');
+        await page.keyboard.press('Enter');
+        assert.equal(await page.$eval('#client_referrer', (input) => input.getAttribute('aria-expanded')), 'false', 'a choice closes a list with one answer');
+        assert.deepEqual(await page.$$eval('.crudit-ui-combobox:has(#client_referrer) .crudit-ui-combobox__token-label', (labels) => labels.map((label) => label.textContent)), ['Client 07']);
+        assert.notEqual(await page.$eval('input[type="hidden"][name="client[referrer]"]', (input) => input.value), '', 'the choice is in the field sent');
+
+        await page.focus('#client_zones');
+        await page.keyboard.type('nor');
+        await page.keyboard.press('Enter');
+        await page.keyboard.press('Escape');
+        assert.deepEqual(await page.$eval('select[name="client[zones][]"]', (select) => [...select.selectedOptions].map((option) => option.value)), ['n', 's'], 'Enter adds the choice to the others');
+        assert.deepEqual(await page.$$eval('.crudit-ui-combobox:has(#client_zones) .crudit-ui-combobox__token-label', (labels) => labels.map((label) => label.textContent)), ['South', 'North'], 'the tokens in the order of the choices');
+        await shot(page, 'form-rich-types');
+
+        await page.click('#client_name', {clickCount: 3});
+        await page.keyboard.type('Client of the smoke test');
+        await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('main form button[type="submit"]')]);
+        // Saved: its record shows the entity chosen
+        const savedId = await page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows
+            .find((row) => row.textContent.includes('Client of the smoke test'))
+            ?.querySelector('input[type="checkbox"]')?.dataset.id ?? null);
+        assert.ok(savedId, `the form with the lists with search is not saved (${page.url()})`);
+        await page.goto(`${base}/client/show/${savedId}`, {waitUntil: 'networkidle0'});
+        assert.ok((await page.$eval('main', (main) => main.textContent)).includes('Client 07'), 'the entity chosen is not saved');
+    }
+    await page.close();
+}
+ok('form: rich types (list with search, from the server or the page)');
+
 // ---------- Filters (lot 3.1.e): the bar, the panel, the chips; the state is kept by the server (session)
 const rowsOf = (page) => page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows.length);
 const filterNav = async (page, action) => {

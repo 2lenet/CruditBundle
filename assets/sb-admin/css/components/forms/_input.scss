@@ -33,37 +33,6 @@ $input-height: 42px;
         height: auto;
         min-height: $form-floating-height;
 
-        &.entity-select, &.tom-select, &.choice-tom-select {
-            min-height: $input-height;
-            padding: 0;
-            background-color: $white;
-
-            & .ts-control {
-                height: $input-height;
-                border: none;
-
-                & > input {
-                    height: 21px !important;
-                    margin-bottom: -7px !important;
-                }
-            }
-
-            & .ts-dropdown {
-                & .active {
-                    background-color: #e9ecef !important;
-                    color: black !important;
-                }
-
-                & [data-selectable] .highlight {
-                    background-color: rgba(255,237,40,.4);
-                }
-            }
-
-            & + .form-label {
-                z-index: 1;
-            }
-        }
-
         div[class^="col-"] {
             display: flex;
             justify-content: flex-start;
@@ -80,11 +49,6 @@ $input-height: 42px;
         top: -25px;
         left: calc(-50% - 10px);
         transform: scale(0.7) translateX(calc(50% + 0.8rem));
-    }
-
-    & > .choice-tom-select.form-select {
-        height: inherit !important;
-        padding: 0 !important;
     }
 }
 
