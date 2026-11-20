@@ -116,6 +116,7 @@ class SavedFilterManager
     /**
      * @param array<string, mixed> $query
      * @throws SavedFilterException
+     * @throws UniqueConstraintViolationException the name was saved by another request since the search of a duplicate
      */
     private function doSave(FilterSetInterface $filterset, string $name, array $query): SavedFilter
     {
@@ -328,7 +329,7 @@ class SavedFilterManager
     {
         $owner = $this->security->getUser()?->getUserIdentifier();
 
-        return $owner === null || $owner === '' || mb_strlen($owner) > SavedFilter::OWNER_LENGTH ? null : $owner;
+        return $owner === null || mb_strlen($owner) > SavedFilter::OWNER_LENGTH ? null : $owner;
     }
 
     /**
@@ -349,10 +350,13 @@ class SavedFilterManager
      */
     private function resetManager(): void
     {
-        $manager = $this->registry?->getManagerForClass(SavedFilter::class);
-        foreach ($this->registry?->getManagerNames() ?? [] as $name => $service) {
-            if ($this->registry?->getManager($name) === $manager) {
-                $this->registry->resetManager($name);
+        if ($this->registry === null) {
+            return;
+        }
+        $manager = $this->registry->getManagerForClass(SavedFilter::class);
+        foreach (array_keys($this->registry->getManagerNames()) as $name) {
+            if ($this->registry->getManager((string) $name) === $manager) {
+                $this->registry->resetManager((string) $name);
 
                 return;
             }
