@@ -1,8 +1,4 @@
 {% set name = view.config.name|lower %}
-{% set merge_params = {
-    (name ~ '_sort'): field.options.sortProperty ?? field.name,
-    (name ~ '_sort_order'): 'asc'
-} %}
 {% set params = app.request.session.get('crudit_datasourceparams_' ~ name) %}
 {% set sorts = params.sorts ?? [
     [app.request.query.get(name ~ '_sort_order'), app.request.query.get(name ~ '_sort')]
@@ -10,6 +6,15 @@
 
 {% set order = sorts|first|last %}
 {% set sorted = (sorts|first|first == field.options.sortProperty ?? field.name) %}
+
+{% set next_order = field.firstSortOrder %}
+{% if sorted %}
+    {% set next_order = order|lower == 'asc' ? 'desc' : 'asc' %}
+{% endif %}
+{% set merge_params = {
+    (name ~ '_sort'): field.options.sortProperty ?? field.name,
+    (name ~ '_sort_order'): next_order
+} %}
 
 {% set icon = 'fa-sort' %}
 {% set icon_class = 'text-dark' %}
@@ -20,7 +25,6 @@
 {% if sorted and order|lower == 'asc' %}
     {% set icon = 'fa-sort-down' %}
     {% set icon_class = 'text-success' %}
-    {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
 {% endif %}
 
 {% set parameters = app.request.query.all()|merge(merge_params) %}

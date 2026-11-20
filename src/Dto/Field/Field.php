@@ -5,9 +5,26 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Dto\Field;
 
 use Lle\CruditBundle\Dto\Path;
+use Lle\CruditBundle\Field\DateField;
+use Lle\CruditBundle\Field\DateTimeField;
 
 class Field
 {
+    public const SORT_ASC = 'asc';
+
+    public const SORT_DESC = 'desc';
+
+    private const DATE_TYPES = [
+        'date',
+        'date_immutable',
+        'datetime',
+        'datetime_immutable',
+        'datetimetz',
+        'datetimetz_immutable',
+        DateField::class,
+        DateTimeField::class,
+    ];
+
     private string $label;
 
     private string $name;
@@ -33,6 +50,8 @@ class Field
     private bool $ruptSubtotals = false;
 
     private bool $ruptSortPriority = false;
+
+    private ?string $firstSortOrder = null;
 
     private bool $ruptHideFromList = true;
 
@@ -327,6 +346,31 @@ class Field
     public function withRuptSortPriority(): self
     {
         $this->ruptSortPriority = true;
+
+        return $this;
+    }
+
+    /**
+     * Sort order applied on the first click on the column header:
+     * the most recent first for a date, ascending otherwise, unless forced with setFirstSortOrder().
+     */
+    public function getFirstSortOrder(): string
+    {
+        if ($this->firstSortOrder !== null) {
+            return $this->firstSortOrder;
+        }
+
+        return in_array($this->type, self::DATE_TYPES, true) ? self::SORT_DESC : self::SORT_ASC;
+    }
+
+    public function setFirstSortOrder(string $order): self
+    {
+        $order = strtolower($order);
+        if (!in_array($order, [self::SORT_ASC, self::SORT_DESC], true)) {
+            throw new \InvalidArgumentException(sprintf('Invalid sort order "%s".', $order));
+        }
+
+        $this->firstSortOrder = $order;
 
         return $this;
     }

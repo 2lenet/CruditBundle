@@ -25,6 +25,15 @@ That's it! Several files have been created:
     }
 ```
 
+### Order of the first click on a column header
+
+The first click on a date column sorts the most recent first; any other column sorts ascending. A column is a date when its type is `date`, `date_immutable`, `datetime`, `datetime_immutable`, `datetimetz`, `datetimetz_immutable`, `DateField` or `DateTimeField`, whether the type is set on the field or guessed from the Doctrine mapping. The type is only guessed when rows are displayed, so an empty list sorts ascending on the first click. Use `setFirstSortOrder()` to force the order of a column (`asc` or `desc`, any other value throws an `InvalidArgumentException`):
+
+```php
+Field::new('birthDate')->setFirstSortOrder(Field::SORT_ASC),  // oldest first
+Field::new('amount')->setFirstSortOrder(Field::SORT_DESC),    // highest first
+```
+
 ## How to change the default sorting of your autocomplete route
 
 ```php
