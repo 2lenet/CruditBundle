@@ -13,6 +13,7 @@ use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -107,6 +108,10 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         }
 
         $target = $entityManager ?? $default ?? (in_array('default', $managers, true) ? 'default' : $managers[0]);
+        if (!in_array($target, $managers, true)) {
+            // A name that is none of the managers would make a new one, on the default connection, with this entity only.
+            throw new InvalidConfigurationException(sprintf('The entity manager "%s" of "lle_crudit.saved_filters.entity_manager" is not one of those of doctrine.orm.entity_managers (%s).', $target, implode(', ', $managers)));
+        }
         $container->prependExtensionConfig('doctrine', ['orm' => ['entity_managers' => [$target => ['mappings' => $mapping]]]]);
     }
 

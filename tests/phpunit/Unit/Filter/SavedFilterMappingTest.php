@@ -70,6 +70,19 @@ class SavedFilterMappingTest extends TestCase
         self::assertArrayHasKey('LleCruditBundle', $orm['entity_managers'][$manager]['mappings']);
     }
 
+    public function testAnEntityManagerThatDoesNotExistIsRefused(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.bundles', ['DoctrineBundle' => 'x']);
+        $container->setParameter('kernel.bundles_metadata', []);
+        $container->prependExtensionConfig('lle_crudit', ['saved_filters' => ['entity_manager' => 'mian']]);
+        $container->prependExtensionConfig('doctrine', ['orm' => ['entity_managers' => ['main' => [], 'other' => []]]]);
+
+        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+        $this->expectExceptionMessage('"mian"');
+        (new LleCruditExtension())->prepend($container);
+    }
+
     /**
      * @return iterable<string, array{list<array<string, mixed>>, array<string, mixed>, ?string}>
      */

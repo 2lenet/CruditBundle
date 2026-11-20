@@ -106,7 +106,8 @@ class SavedFilterManager
             return $this->doSave($filterset, $name, $query);
         } catch (UniqueConstraintViolationException) {
             // Two requests saved the same name at once (a double click), the second one lost: the manager is closed by
-            // the error. Once more, with a new manager: the set of the winner is found and replaced.
+            // the error. Once more, with a new manager: the set of the winner is found and replaced. Not in a
+            // transaction of the caller: on PostgreSQL the error leaves it aborted, and the second try fails too.
             $this->resetManager();
 
             return $this->doSave($filterset, $name, $query);

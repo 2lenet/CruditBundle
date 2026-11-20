@@ -121,7 +121,7 @@ class FilterViewBuilder
             'id' => 'crudit-filters-' . $setId,
             'label' => $this->translator->trans('crudit.filter.region', ['%title%' => (string) ($config['title'] ?? '')], 'LleCruditBundle'),
             'filters' => $items,
-            'resetUrl' => $this->resetUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters))),
+            'resetUrl' => $this->resetUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters)), $this->offsetName($config)),
             'applyName' => $setId . '_filter',
             'saved' => $this->saved($filterset, $filters, $view, $domain),
         ];
@@ -171,7 +171,7 @@ class FilterViewBuilder
         return [
             'saveUrl' => $saveUrl,
             'token' => $this->savedFilters->createToken(),
-            'redirect' => $this->pageUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters))),
+            'redirect' => $this->pageUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters)), $this->offsetName($view->getConfig())),
             'max' => $this->savedFilters->getMax(),
             'items' => $items,
         ];
@@ -207,9 +207,22 @@ class FilterViewBuilder
      *
      * @param list<string> $filterIds the filters of the set
      */
-    private function resetUrl(string $setId, array $filterIds): string
+    private function resetUrl(string $setId, array $filterIds, ?string $offsetName): string
     {
-        return $this->pageUrl($setId, $filterIds, [$setId . '_reset' => '1']);
+        return $this->pageUrl($setId, $filterIds, $offsetName, [$setId . '_reset' => '1']);
+    }
+
+    /**
+     * The parameter that holds the page of the list (`<crud name in lower case>_offset`, read by AbstractCrudConfig):
+     * the name of the CRUD, not the id of the filter set.
+     *
+     * @param array<string, mixed> $config the config of the filter brick
+     */
+    private function offsetName(array $config): ?string
+    {
+        $name = $config['name'] ?? null;
+
+        return is_string($name) && $name !== '' ? strtolower($name) . '_offset' : null;
     }
 
     /**
@@ -217,10 +230,13 @@ class FilterViewBuilder
      * sublist of a record), without the ones of this set's filters: where to come back after a set is saved or
      * recalled, or the filters are reset.
      *
+     * The page of the list (`$offsetName`) is dropped too: the filters changed, so the list starts again at its first page;
+     * kept, the offset in the address would win over the reset done in the session, and could land on an empty page.
+     *
      * @param list<string> $filterIds the filters of the set
      * @param array<string, string> $more parameters to add
      */
-    private function pageUrl(string $setId, array $filterIds, array $more = []): string
+    private function pageUrl(string $setId, array $filterIds, ?string $offsetName, array $more = []): string
     {
         $request = $this->requestStack->getCurrentRequest();
         $query = [];
@@ -230,7 +246,7 @@ class FilterViewBuilder
             // The parameters of this set's filters (`filter_<set>_<filter>_op`…), not of a set whose id starts the same.
             $isOwn = in_array($name, [$setId . '_filter', $setId . '_reset'], true)
                 || array_filter($own, static fn (string $prefix): bool => str_starts_with($name, $prefix)) !== [];
-            if (!$isOwn) {
+            if (!$isOwn && $name !== $offsetName) {
                 $query[$name] = $value;
             }
         }

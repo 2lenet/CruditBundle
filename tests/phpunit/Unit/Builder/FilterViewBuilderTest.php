@@ -128,6 +128,23 @@ class FilterViewBuilderTest extends TestCase
         self::assertSame('/monappli/index.php/clients/?filter_client_order_name_value=y&tab=2&client_reset=1', $bar['resetUrl']);
     }
 
+    // The page of the list is `<crud name>_offset`, not the id of the filter set: kept in the address, it would win over the
+    // reset of the session and land on an empty page. The offset of another list stays.
+    public function testTheResetAddressDropsThePageOfTheList(): void
+    {
+        $set = new class () extends AbstractFilterSet {
+            public function getId(): string
+            {
+                return 'client';
+            }
+        };
+        $view = $this->view();
+        $view->setConfig(['translation_domain' => 'messages', 'title' => 'Clients', 'name' => 'Customer']);
+        $bar = $this->builder(null, '/clients/?customer_offset=60&order_offset=20&tab=2')->build($set, ['client_name' => StringFilterType::new('name')], $view);
+
+        self::assertSame('/clients/?order_offset=20&tab=2&client_reset=1', $bar['resetUrl']);
+    }
+
     public function testADateTimeIsOneDatetimeLocalValue(): void
     {
         self::assertSame('2026-11-05T10:30', $this->item(DateTimeFilterType::new('at'), ['op' => 'eq', 'value' => '2026-11-05T10:30', 'time' => ''])['value']);
