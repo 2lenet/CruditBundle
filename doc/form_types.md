@@ -19,10 +19,14 @@ are tokens in the field, each with a button that removes it; the arrows move in 
 it. The choices are asked to `GET <url>?q=<text>&offset=<n>&limit=20`: the first ones when the list opens, those of the
 text typed after a pause, the next ones when the list is scrolled to its end. The route `autocomplete` of a CRUD answers
 so (`{"items": [{"id", "text"}], "next_offset", "total_count"}`, the `searchFields` of the datasource, sorted by
-`getDefaultAutocompleteSort()`). The value sent is the id, or the ids joined by a comma.
+`getDefaultAutocompleteSort()`). `next_offset` is the `offset` of the next page (`offset + limit`, even past the end):
+the list asks no more once `next_offset` reaches `total_count`, a route of your own must give the same answer. The
+text `q` is received as typed (no `urldecode()` needed). The value sent is the id, or the ids joined by a comma.
+An entity without `__toString()` is shown with its id.
 
 Enable the controller `combobox` of `@2lenet/crudit-ui-bundle` in `assets/controllers.json`
-(`{"enabled": true, "fetch": "lazy"}`).
+(`{"enabled": true, "fetch": "lazy"}`). Without it the native `<select>` stays hidden and the choices cannot be
+changed: this goes for every list with search of the theme of Crudit, a `ChoiceType` with several answers too.
 
 ### Choices: native list or list with search
 
@@ -103,7 +107,7 @@ the existing data when switching the field: `TelephoneTransformer::isLegacy()` s
 
 The widget is the `crudit_telephone_widget` block (`.crudit-telephone` input group): a compact box showing the calling
 code (`+41`, from the `calling_code` view variable) on the left, with the native country select laid transparent over
-it (no TomSelect), and the number input on the right. Each country option carries its calling code in a `data-code`
+it, and the number input on the right. Each country option carries its calling code in a `data-code`
 attribute, copied into the box on change. Override the block in your own form theme to restyle it. With `form_row()`,
 the `crudit_telephone_row` block renders a regular `<label>` pointing to the number input, instead of the
 `<fieldset>`/`<legend>` Bootstrap uses for compound fields.

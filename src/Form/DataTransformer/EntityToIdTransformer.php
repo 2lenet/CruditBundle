@@ -49,11 +49,11 @@ class EntityToIdTransformer implements DataTransformerInterface
     {
         // Multiple input
         if ($this->isMultiple()) {
-            $result = [];
-
             if ($value === null) {
-                return $result;
+                return '';
             }
+
+            $result = [];
 
             foreach ($value as $e) {
                 $result[] = $e->getId();

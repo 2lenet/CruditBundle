@@ -978,6 +978,10 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
     `ChoiceType` (an `EntityType` too) changes it: `true` for a long list with one answer, `false` for a native list.
   - **`disable_tom_select` is removed** (an "option does not exist" error): use `combobox: false`. The class
     `choice-tom-select` is no longer set.
+  - The Twig function **`entity_id_to_tomselect`** is removed (it gave `{id, text}` to Tom Select): a list written by
+    hand includes `@LleCruditUi/form/_combobox.html.twig`, which takes the choices made as `{value, label}`.
+  - The route `autocomplete` no longer calls `urldecode()` on `q`: the text is received as typed (a `+` or a `%` is
+    kept). Your own `autocompleteQuery()` gets the same text as `autocompleteCountQuery()`.
   - Enable the controller **`combobox`** in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`
     (`{"enabled": true, "fetch": "lazy"}`: loaded on the pages that have one). JavaScript is needed to change a choice.
   - Your styles of `.ts-control`, `.ts-dropdown`, `.entity-select` or `.choice-tom-select` no longer apply: the classes
@@ -1223,6 +1227,9 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
 - New controller `selection-bar` (batch actions, lot 3.1.c): enable it in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`.
 - New controllers `filters`, `filter-field` and `filter-period` (the filters, lot 3.1.e): same file, same package.
 - New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
+- **Not yet migrated: edit in place** (`editinplace.js`, which still reads Tom Select). The layout of the 2.0 no
+  longer loads it, so no field is edited in place for now; it comes back with lot 3.4.b, a relation then edited with
+  the list with search.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
   `initChoiceTomSelect`…) no longer works. A field of a form rendered by Crudit (or with the theme of CruditUiBundle)
   needs no call: the controller `combobox` connects to every list with search, also those added later (a row of a

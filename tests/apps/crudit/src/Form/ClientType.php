@@ -77,6 +77,9 @@ class ClientType extends AbstractType
                 'required' => false,
                 'span' => 2,
                 'choices' => ['North' => 'n', 'South' => 's', 'East' => 'e', 'West' => 'w', 'Côte d’Azur' => 'cst'],
+                // Groups and preferred choices: the list flattens the groups and shows each choice once, in the order of the choices
+                'group_by' => fn (string $value) => in_array($value, ['n', 's'], true) ? 'North-South' : 'East-West',
+                'preferred_choices' => ['cst'],
                 'data' => ['s'],
             ]);
     }

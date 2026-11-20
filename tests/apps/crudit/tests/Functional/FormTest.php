@@ -321,8 +321,29 @@ class FormTest extends AppTestCase
         self::assertSame('true', $root->attr('data-2lenet--crudit-ui-bundle--combobox-multiple-value'));
         self::assertSame(['South'], $root->filter('.crudit-ui-combobox__token-label')->each(fn (Crawler $label) => $label->text()));
         $select = $root->filter('select[name="client[zones][]"]');
+        // group_by and preferred_choices: the groups flattened, the preferred choice (cst) once, in the order of the choices
         self::assertSame(['n', 's', 'e', 'w', 'cst'], $select->filter('option')->each(fn (Crawler $option) => $option->attr('value')));
+        self::assertCount(0, $select->filter('optgroup'));
         self::assertSame(['s'], $select->filter('option[selected]')->each(fn (Crawler $option) => $option->attr('value')));
+    }
+
+    public function testTheTextOfTheRouteAutocompleteIsReceivedAsTyped(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->persist((new Client())->setName('Lab')->setEmail('c++lab@example.org'));
+        $em->flush();
+
+        // The browser encodes the + (%2B): not decoded again into a space, which would find every e-mail with a "c"
+        $this->client->request('GET', '/client/autocomplete', ['q' => 'c++', 'offset' => 0, 'limit' => 20]);
+        $answer = json_decode((string) $this->client->getResponse()->getContent(), true);
+        self::assertSame(1, $answer['total_count']);
+        self::assertSame(['Lab'], array_column($answer['items'], 'text'));
+
+        $this->client->request('GET', '/client/autocomplete', ['q' => 'chloé', 'offset' => 0, 'limit' => 20]);
+        $answer = json_decode((string) $this->client->getResponse()->getContent(), true);
+        self::assertSame(1, $answer['total_count']);
+        self::assertSame(['Chloé'], array_column($answer['items'], 'text'));
     }
 
     public function testTheChoicesOfAListWithSearchAreSaved(): void

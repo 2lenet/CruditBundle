@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace phpunit\Unit\Form\DataTransformer;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +33,7 @@ class EntityToIdTransformerTest extends TestCase
     public function testSeveralEntitiesBecomeTheirIdsJoined(): void
     {
         self::assertSame('3,7', $this->transformer(true)->transform([$this->clients[3], $this->clients[7]]));
-        self::assertSame([], $this->transformer(true)->transform(null));
+        self::assertSame('', $this->transformer(true)->transform(null));
     }
 
     public function testAnIdBecomesItsEntity(): void

@@ -45,7 +45,7 @@ class AutocompleteType extends AbstractType
     {
         $classFqcn = $options["class"];
 
-        // Gestion URL autocomplete
+        // URL of the route that gives the choices
         if ($route = $options["route"]) {
             $url = $this->router->generate($route);
         } elseif ($options["url"]) {
@@ -79,8 +79,12 @@ class AutocompleteType extends AbstractType
             $labels = [];
             /** @var object $entity */
             foreach ($entities as $entity) {
-                if (\method_exists($entity, 'getId') && $entity instanceof \Stringable) {
-                    $labels[(string) $entity->getId()] = (string) $entity;
+                // getId() is already needed by EntityToIdTransformer to give the value
+                if (\method_exists($entity, 'getId')) {
+                    // an entity without __toString() is shown with its id, but stays chosen: the hidden input of the
+                    // list is made from the choices shown, an entity left out would be removed when saving the form
+                    $id = (string) $entity->getId();
+                    $labels[$id] = $entity instanceof \Stringable ? (string) $entity : $id;
                 }
             }
             foreach ($ids as $id) {
