@@ -3,6 +3,7 @@
 namespace Lle\CruditBundle\Filter\FilterType;
 
 use Doctrine\ORM\QueryBuilder;
+use Gedmo\Translatable\TranslatableListener;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 
 class StringFilterType extends AbstractFilterType
@@ -26,7 +27,12 @@ class StringFilterType extends AbstractFilterType
         FilterTypeInterface::OPERATOR_DOES_NOT_CONTAIN => FilterTypeInterface::OPERATOR_CONTAINS,
     ];
 
-    protected bool $searchInTranslations = true;
+    protected bool $searchInTranslations = false;
+
+    /**
+     * Makes each translation subquery alias unique in the whole query.
+     */
+    private static int $translationAliasCount = 0;
 
     public static function new(string $fieldname): self
     {
@@ -37,6 +43,7 @@ class StringFilterType extends AbstractFilterType
     {
         return [
             FilterTypeInterface::OPERATOR_CONTAINS => ['icon' => 'fa fa-text-width'],
+            FilterTypeInterface::OPERATOR_DOES_NOT_CONTAIN => ['icon' => 'fas fa-remove-format'],
             FilterTypeInterface::OPERATOR_STARTS_WITH => ['icon' => 'far fa-caret-square-right'],
             FilterTypeInterface::OPERATOR_ENDS_WITH => ['icon' => 'far fa-caret-square-left'],
             FilterTypeInterface::OPERATOR_EQUAL => ['icon' => 'fas fa-equals'],
@@ -89,7 +96,7 @@ class StringFilterType extends AbstractFilterType
     }
 
     /**
-     * Set to false to search only in the field itself, even if the entity has translations.
+     * Set to true to also search in the Gedmo translations of the field (all locales).
      */
     public function setSearchInTranslations(bool $searchInTranslations): static
     {
@@ -125,8 +132,8 @@ class StringFilterType extends AbstractFilterType
     }
 
     /**
-     * If the entity holding the field has its own Gedmo translation table (a "translations" relation),
-     * the search also looks into the field translations:
+     * If the search in translations is enabled and the field is translatable (Gedmo personal translation),
+     * the search also looks into the field translations, in all locales:
      * - positive operators (contains, starts with, ends with, equal): column OR one translation matches;
      * - negative operators (not equal, does not contain): column AND no translation matches.
      */
@@ -159,37 +166,57 @@ class StringFilterType extends AbstractFilterType
         }
 
         // the alias must be unique in the whole query
-        $t = 'crudit_tr_' . preg_replace('/\W/', '_', $this->id . '_' . $fieldPath);
+        $t = 'crudit_tr_' . ++self::$translationAliasCount;
 
         $subquery = 'SELECT ' . $t . '.id FROM ' . $translationClass . ' ' . $t
             . ' WHERE ' . $t . '.object = ' . $alias
             . ' AND ' . $t . ".field = '" . ltrim($col, '.') . "'"
-            . ' AND ' . parent::getPattern($positiveOp, $col, $t, '.content', $paramname);
+            . ' AND ' . $this->getPattern($positiveOp, $col, $t, '.content', $paramname);
 
         return '(' . $pattern . $glue . '(' . $subquery . '))';
     }
 
     /**
-     * Returns the Gedmo translation class of the entity holding the field (path like "relation:field"),
-     * or null if this entity has no translations.
+     * Returns the Gedmo personal translation class of the entity holding the field (path like "relation:field"),
+     * or null if the field is not translatable.
      */
     protected function getTranslationClass(QueryBuilder $queryBuilder, string $fieldPath): ?string
     {
         $em = $queryBuilder->getEntityManager();
+        $listener = $this->getTranslatableListener($queryBuilder);
+        if ($listener === null) {
+            return null;
+        }
+
         $metadata = $em->getClassMetadata($queryBuilder->getRootEntities()[0]);
 
         $associations = explode(':', $fieldPath);
-        array_pop($associations);
+        $field = array_pop($associations);
         foreach ($associations as $association) {
             $metadata = $em->getClassMetadata($metadata->getAssociationTargetClass($association));
         }
 
-        if (!$metadata->hasAssociation('translations')) {
+        $config = $listener->getConfiguration($em, $metadata->getName());
+        if (!in_array($field, $config['fields'] ?? [], true) || !isset($config['translationClass'])) {
             return null;
         }
 
-        $translationClass = $metadata->getAssociationTargetClass('translations');
+        // only personal translations (a translation table per entity, with an "object" relation)
+        $translationClass = $config['translationClass'];
 
         return $em->getClassMetadata($translationClass)->hasAssociation('object') ? $translationClass : null;
+    }
+
+    protected function getTranslatableListener(QueryBuilder $queryBuilder): ?TranslatableListener
+    {
+        foreach ($queryBuilder->getEntityManager()->getEventManager()->getAllListeners() as $listeners) {
+            foreach ($listeners as $listener) {
+                if ($listener instanceof TranslatableListener) {
+                    return $listener;
+                }
+            }
+        }
+
+        return null;
     }
 }

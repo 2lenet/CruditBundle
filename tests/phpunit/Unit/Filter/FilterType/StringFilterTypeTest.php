@@ -2,10 +2,12 @@
 
 namespace phpunit\Unit\Filter\FilterType;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\QueryBuilder;
+use Gedmo\Translatable\TranslatableListener;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
 use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use phpunit\Unit\Filter\FilterType\Fixtures\Product;
@@ -22,8 +24,13 @@ class StringFilterTypeTest extends TestCase
         }
     }
 
-    private function createEntityManager(): EntityManager
+    private function createEntityManager(bool $withTranslatableListener = true): EntityManager
     {
+        $eventManager = new EventManager();
+        if ($withTranslatableListener) {
+            $eventManager->addEventSubscriber(new TranslatableListener());
+        }
+
         $config = ORMSetup::createAttributeMetadataConfig([__DIR__ . '/Fixtures'], true);
         $config->enableNativeLazyObjects(true);
 
@@ -32,12 +39,16 @@ class StringFilterTypeTest extends TestCase
             'serverVersion' => '8.0.0',
         ]);
 
-        return new EntityManager($connection, $config);
+        return new EntityManager($connection, $config, $eventManager);
     }
 
-    private function applyFilter(StringFilterType $filter, string $op, ?string $value): QueryBuilder
-    {
-        $qb = $this->createEntityManager()->createQueryBuilder()->select('root')->from(Product::class, 'root');
+    private function applyFilter(
+        StringFilterType $filter,
+        string $op,
+        ?string $value,
+        bool $withTranslatableListener = true,
+    ): QueryBuilder {
+        $qb = $this->createEntityManager($withTranslatableListener)->createQueryBuilder()->select('root')->from(Product::class, 'root');
         $filter->setData(['op' => $op, 'value' => $value]);
         $filter->apply($qb);
 
@@ -49,7 +60,7 @@ class StringFilterTypeTest extends TestCase
 
     public function testTranslationPositiveOperator(): void
     {
-        $qb = $this->applyFilter(StringFilterType::new('label'), FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
+        $qb = $this->applyFilter(StringFilterType::new('label')->setSearchInTranslations(true), FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
 
         $dql = $qb->getDQL();
         self::assertStringContainsString('root.label LIKE :_label', $dql);
@@ -63,7 +74,7 @@ class StringFilterTypeTest extends TestCase
 
     public function testTranslationNegativeOperator(): void
     {
-        $qb = $this->applyFilter(StringFilterType::new('label'), FilterTypeInterface::OPERATOR_NOT_EQUAL, 'foo');
+        $qb = $this->applyFilter(StringFilterType::new('label')->setSearchInTranslations(true), FilterTypeInterface::OPERATOR_NOT_EQUAL, 'foo');
 
         $dql = $qb->getDQL();
         self::assertStringContainsString('root.label <> :_label', $dql);
@@ -71,9 +82,29 @@ class StringFilterTypeTest extends TestCase
         self::assertStringContainsString('.content = :_label', $dql);
     }
 
+    public function testTranslationDoesNotContainOperator(): void
+    {
+        $filter = StringFilterType::new('label')->setSearchInTranslations(true);
+        $qb = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_DOES_NOT_CONTAIN, 'foo');
+
+        $dql = $qb->getDQL();
+        self::assertStringContainsString('root.label NOT LIKE :_label', $dql);
+        self::assertStringContainsString(' AND NOT EXISTS (SELECT ', $dql);
+        self::assertStringContainsString('.content LIKE :_label', $dql);
+        self::assertSame('%foo%', $qb->getParameter('_label')?->getValue());
+    }
+
+    public function testDoesNotContainIsOffered(): void
+    {
+        self::assertArrayHasKey(
+            FilterTypeInterface::OPERATOR_DOES_NOT_CONTAIN,
+            StringFilterType::new('label')->getOperators(),
+        );
+    }
+
     public function testNullOperatorIgnoresTranslations(): void
     {
-        $qb = $this->applyFilter(StringFilterType::new('label'), FilterTypeInterface::OPERATOR_IS_NULL, null);
+        $qb = $this->applyFilter(StringFilterType::new('label')->setSearchInTranslations(true), FilterTypeInterface::OPERATOR_IS_NULL, null);
 
         self::assertStringNotContainsString('EXISTS', $qb->getDQL());
     }
@@ -90,7 +121,7 @@ class StringFilterTypeTest extends TestCase
 
     public function testEntityWithoutTranslations(): void
     {
-        $qb = $this->applyFilter(StringFilterType::new('category:name'), FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
+        $qb = $this->applyFilter(StringFilterType::new('category:name')->setSearchInTranslations(true), FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
 
         $dql = $qb->getDQL();
         self::assertStringContainsString('category.name LIKE :category_name', $dql);
@@ -99,13 +130,38 @@ class StringFilterTypeTest extends TestCase
 
     public function testAdditionnalTranslatableField(): void
     {
-        $filter = StringFilterType::new('code')->setAdditionnalFields(['label', 'category:name']);
+        $filter = StringFilterType::new('code')
+            ->setAdditionnalFields(['label', 'category:name'])
+            ->setSearchInTranslations(true);
         $qb = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
 
         $dql = $qb->getDQL();
-        // code and label are on Product (which has translations), category:name is not
-        self::assertSame(2, substr_count($dql, 'EXISTS'));
-        self::assertStringContainsString(".field = 'code'", $dql);
+        // only label is translatable: code is not, category:name is on an entity without translations
+        self::assertSame(1, substr_count($dql, 'EXISTS'));
         self::assertStringContainsString(".field = 'label'", $dql);
+        self::assertStringNotContainsString(".field = 'code'", $dql);
+    }
+
+    public function testSearchInTranslationsDisabledByDefault(): void
+    {
+        $qb = $this->applyFilter(StringFilterType::new('label'), FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
+
+        self::assertStringNotContainsString('EXISTS', $qb->getDQL());
+    }
+
+    public function testNotTranslatableField(): void
+    {
+        $filter = StringFilterType::new('code')->setSearchInTranslations(true);
+        $qb = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo');
+
+        self::assertStringNotContainsString('EXISTS', $qb->getDQL());
+    }
+
+    public function testWithoutTranslatableListener(): void
+    {
+        $filter = StringFilterType::new('label')->setSearchInTranslations(true);
+        $qb = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo', false);
+
+        self::assertStringNotContainsString('EXISTS', $qb->getDQL());
     }
 }
