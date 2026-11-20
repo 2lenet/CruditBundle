@@ -12,22 +12,25 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * The owner is the identifier of the user (`getUserIdentifier()`), not an association: the class of the users belongs
  * to the project, and the table is the same everywhere (UPGRADE-2.0.md gives the migration). `criteria` has the shape
- * of what the session keeps: `{<filter id>: {op, value, to?, preset?}}`.
+ * of what the session keeps: `{<filter id>: {op, value, to?, preset?}}`. The unique index (owner, filterset, name) also serves
+ * the search by (owner, filterset), so there is no other index.
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'crudit_saved_filter')]
 #[ORM\UniqueConstraint(name: 'crudit_saved_filter_name', columns: ['owner', 'filterset', 'name'])]
-#[ORM\Index(name: 'crudit_saved_filter_owner', columns: ['owner', 'filterset'])]
 class SavedFilter
 {
     public const int NAME_LENGTH = 100;
+
+    /** The identifier of a user longer than this is not saved (the feature is off for that user), never cut: two users would share their sets. */
+    public const int OWNER_LENGTH = 255;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: self::OWNER_LENGTH)]
     private string $owner;
 
     #[ORM\Column(length: 100)]

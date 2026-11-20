@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Filter;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
@@ -20,7 +21,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 /**
  * The sets of filters a user saved for a list (lot 3.1.f).
  *
- * - **Per user**: the identifier of the user of the firewall. Without a user, or with `saved_filters.enabled` false,
+ * - **Per user**: the identifier of the user of the firewall (two firewalls, or two classes of users, with the same
+ *   identifier share their sets: the owner is a string, not an association). Without a user, or with `saved_filters.enabled` false,
  *   nothing is available. A set of another user does not exist for this one (not found, not forbidden).
  * - **What is saved** is what the form of the filters sends, through the same checks as the page (FilterState): the
  *   filters the user may use and that are not `hidden`, those with a criterion only. A hidden filter keeps its value
@@ -100,6 +102,23 @@ class SavedFilterManager
      */
     public function save(FilterSetInterface $filterset, string $name, array $query): SavedFilter
     {
+        try {
+            return $this->doSave($filterset, $name, $query);
+        } catch (UniqueConstraintViolationException) {
+            // Two requests saved the same name at once (a double click), the second one lost: the manager is closed by
+            // the error. Once more, with a new manager: the set of the winner is found and replaced.
+            $this->resetManager();
+
+            return $this->doSave($filterset, $name, $query);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $query
+     * @throws SavedFilterException
+     */
+    private function doSave(FilterSetInterface $filterset, string $name, array $query): SavedFilter
+    {
         $owner = $this->requireOwner();
         $name = trim((string) preg_replace('/\s+/u', ' ', $name));
         if ($name === '' || mb_strlen($name) > SavedFilter::NAME_LENGTH) {
@@ -114,11 +133,17 @@ class SavedFilterManager
             throw new SavedFilterException(SavedFilterException::TOO_BIG);
         }
 
-        $existing = null;
+        // The same name is the one of the database: its collation decides (utf8mb4_unicode_ci: "Été" is "ete"), and it is
+        // the unique index that would refuse the other. The comparison without regard to the case catches the rest
+        // (SQLite and the binary collations tell "Late" from "late").
         $sets = $this->list($filterset->getId());
-        foreach ($sets as $set) {
-            if (mb_strtolower($set->getName()) === mb_strtolower($name)) {
-                $existing = $set;
+        $existing = $this->manager()->getRepository(SavedFilter::class)->findOneBy(['owner' => $owner, 'filterset' => $filterset->getId(), 'name' => $name]);
+        if (!$existing instanceof SavedFilter) {
+            $existing = null;
+            foreach ($sets as $set) {
+                if (mb_strtolower($set->getName()) === mb_strtolower($name)) {
+                    $existing = $set;
+                }
             }
         }
         if ($existing === null && count($sets) >= $this->max) {
@@ -294,9 +319,16 @@ class SavedFilterManager
         return $set;
     }
 
+    /**
+     * The identifier of the user, null without a user or with an identifier that the column cannot keep (an identifier
+     * cut would be the one of another user). During a `switch_user` it is the user impersonated, as for the rest of the
+     * application: the sets of an account are those of the one who acts in it.
+     */
     private function owner(): ?string
     {
-        return $this->security->getUser()?->getUserIdentifier();
+        $owner = $this->security->getUser()?->getUserIdentifier();
+
+        return $owner === null || $owner === '' || mb_strlen($owner) > SavedFilter::OWNER_LENGTH ? null : $owner;
     }
 
     /**
@@ -310,6 +342,21 @@ class SavedFilterManager
         }
 
         return $owner;
+    }
+
+    /**
+     * A new entity manager for the class, after an error closed the one in use.
+     */
+    private function resetManager(): void
+    {
+        $manager = $this->registry?->getManagerForClass(SavedFilter::class);
+        foreach ($this->registry?->getManagerNames() ?? [] as $name => $service) {
+            if ($this->registry?->getManager($name) === $manager) {
+                $this->registry->resetManager($name);
+
+                return;
+            }
+        }
     }
 
     private function manager(): EntityManagerInterface

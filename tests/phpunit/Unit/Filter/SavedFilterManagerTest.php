@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace phpunit\Unit\Filter;
 
 use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -81,7 +83,15 @@ class SavedFilterManagerTest extends TestCase
         $security->method('isGranted')->willReturnCallback(fn (string $role): bool => $this->adminOnlyGranted);
         $this->state = new FilterState([$this->set], $security, new RequestStack());
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->method('getManagerForClass')->willReturn($this->em);
+        $registry->method('getManagerForClass')->willReturnCallback(fn () => $this->em);
+        $registry->method('getManagerNames')->willReturn(['default' => 'doctrine.orm.default_entity_manager']);
+        $registry->method('getManager')->willReturnCallback(fn () => $this->em);
+        // What the real registry does after an error closed the manager: a new one, on the same connection.
+        $registry->method('resetManager')->willReturnCallback(function (): EntityManager {
+            $this->em = new EntityManager($this->em->getConnection(), $this->em->getConfiguration());
+
+            return $this->em;
+        });
         $tokens = $this->createMock(CsrfTokenManagerInterface::class);
         $tokens->method('isTokenValid')->willReturn(true);
 
@@ -131,6 +141,41 @@ class SavedFilterManagerTest extends TestCase
             ['name' => ['op' => 'contains', 'value' => 'Ali'], 'status' => ['op' => 'in', 'value' => 'a,b'], 'secret' => ['op' => 'eq', 'value' => 'x']],
             $saved->getCriteria(),
         );
+    }
+
+    public function testTwoRequestsThatSaveTheSameNameAtOnceEndWithOneSet(): void
+    {
+        $manager = $this->manager();
+        $criteria = $this->form(['name_op' => 'contains', 'name_value' => 'Ali']);
+        // The other request saves the name between the search of a duplicate and the insert: the unique index refuses ours.
+        $this->em->getEventManager()->addEventListener(Events::onFlush, new class ($this->em->getConnection()) {
+            public function __construct(private readonly \Doctrine\DBAL\Connection $connection)
+            {
+            }
+
+            public function onFlush(OnFlushEventArgs $args): void
+            {
+                $this->connection->insert('crudit_saved_filter', ['owner' => 'alice', 'filterset' => 'client', 'name' => 'Same', 'criteria' => '{}', 'created_at' => '2026-01-01 00:00:00', 'updated_at' => '2026-01-01 00:00:00']);
+            }
+        });
+
+        $saved = $manager->save($this->set, 'Same', $criteria);
+
+        self::assertSame('Same', $saved->getName());
+        self::assertSame(['name' => ['op' => 'contains', 'value' => 'Ali']], $saved->getCriteria());
+        self::assertCount(1, $manager->list('client'), 'the set of the other request is replaced, not doubled');
+    }
+
+    public function testAnIdentifierTheColumnCannotKeepMakesTheFeatureUnavailable(): void
+    {
+        $this->user = str_repeat('a', SavedFilter::OWNER_LENGTH);
+        self::assertTrue($this->manager()->isAvailable());
+
+        $this->user = str_repeat('a', SavedFilter::OWNER_LENGTH + 1);
+        $manager = $this->manager();
+        self::assertFalse($manager->isAvailable(), 'an identifier cut to fit would be the one of another user');
+        $this->expectExceptionObject(new SavedFilterException(SavedFilterException::UNAVAILABLE));
+        $manager->save($this->set, 'Mine', $this->form(['name_op' => 'contains', 'name_value' => 'Ali']));
     }
 
     public function testAFilterTheUserMayNotUseIsNotSaved(): void

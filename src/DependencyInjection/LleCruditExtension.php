@@ -57,8 +57,10 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
     }
 
     /**
-     * The entity of the saved filters (lot 3.1.f) is mapped by attributes, in the default entity manager, unless the
-     * project turned the feature off.
+     * The entity of the saved filters (lot 3.1.f) is mapped by attributes, in the default entity manager (or the one of
+     * `saved_filters.entity_manager`), unless the project turned the feature off. The decision is taken here, while the
+     * container is built: `enabled` must be a boolean written in the configuration. A value from an environment variable
+     * (`%env(bool:…)%`) is not known yet, the entity is then mapped, and the feature is still off at run time.
      */
     private function prependSavedFilters(ContainerBuilder $container): void
     {
@@ -69,27 +71,43 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         }
         // `saved_filters.enabled: false`: no entity, so no table to create in the migrations of the project.
         $enabled = true;
+        $entityManager = null;
         foreach ($container->getExtensionConfig('lle_crudit') as $config) {
             // The configurations are merged in this order: the last one that says it wins.
             $enabled = $config['saved_filters']['enabled'] ?? $enabled;
+            $entityManager = $config['saved_filters']['entity_manager'] ?? $entityManager;
         }
         if ($enabled === false) {
             return;
         }
 
-        $container->prependExtensionConfig('doctrine', [
-            'orm' => [
-                'mappings' => [
-                    'LleCruditBundle' => [
-                        'type' => 'attribute',
-                        'is_bundle' => false,
-                        'dir' => \dirname(__DIR__) . '/Entity',
-                        'prefix' => 'Lle\\CruditBundle\\Entity',
-                        'alias' => 'LleCrudit',
-                    ],
-                ],
+        $mapping = [
+            'LleCruditBundle' => [
+                'type' => 'attribute',
+                'is_bundle' => false,
+                'dir' => \dirname(__DIR__) . '/Entity',
+                'prefix' => 'Lle\\CruditBundle\\Entity',
+                'alias' => 'LleCrudit',
             ],
-        ]);
+        ];
+
+        // A project with `entity_managers` names its managers: a mapping at the root of `orm` would make a manager
+        // `default` of its own, with this entity only. The mapping goes to the manager the project chose (or its default one).
+        $managers = [];
+        $default = null;
+        foreach ($container->getExtensionConfig('doctrine') as $config) {
+            $orm = is_array($config['orm'] ?? null) ? $config['orm'] : [];
+            $managers = array_merge($managers, array_keys(is_array($orm['entity_managers'] ?? null) ? $orm['entity_managers'] : []));
+            $default = $orm['default_entity_manager'] ?? $default;
+        }
+        if ($managers === []) {
+            $container->prependExtensionConfig('doctrine', ['orm' => ['mappings' => $mapping]]);
+
+            return;
+        }
+
+        $target = $entityManager ?? $default ?? (in_array('default', $managers, true) ? 'default' : $managers[0]);
+        $container->prependExtensionConfig('doctrine', ['orm' => ['entity_managers' => [$target => ['mappings' => $mapping]]]]);
     }
 
     public function load(array $configs, ContainerBuilder $container): void

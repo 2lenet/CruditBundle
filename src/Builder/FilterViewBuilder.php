@@ -168,12 +168,10 @@ class FilterViewBuilder
             return null;
         }
 
-        $request = $this->requestStack->getCurrentRequest();
-
         return [
             'saveUrl' => $saveUrl,
             'token' => $this->savedFilters->createToken(),
-            'redirect' => ($request?->getBaseUrl() ?? '') . ($request?->getPathInfo() ?? ''),
+            'redirect' => $this->pageUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters))),
             'max' => $this->savedFilters->getMax(),
             'items' => $items,
         ];
@@ -205,12 +203,24 @@ class FilterViewBuilder
     }
 
     /**
-     * The address that brings the filters of this set back to their defaults: the current page (with the base URL of
-     * the application) and its other parameters (another list, a tab), without the ones of this set's filters.
+     * The address that brings the filters of this set back to their defaults (see pageUrl()).
      *
      * @param list<string> $filterIds the filters of the set
      */
     private function resetUrl(string $setId, array $filterIds): string
+    {
+        return $this->pageUrl($setId, $filterIds, [$setId . '_reset' => '1']);
+    }
+
+    /**
+     * The current page (with the base URL of the application) and its other parameters (another list, a tab, the
+     * sublist of a record), without the ones of this set's filters: where to come back after a set is saved or
+     * recalled, or the filters are reset.
+     *
+     * @param list<string> $filterIds the filters of the set
+     * @param array<string, string> $more parameters to add
+     */
+    private function pageUrl(string $setId, array $filterIds, array $more = []): string
     {
         $request = $this->requestStack->getCurrentRequest();
         $query = [];
@@ -224,9 +234,9 @@ class FilterViewBuilder
                 $query[$name] = $value;
             }
         }
-        $query[$setId . '_reset'] = '1';
+        $query += $more;
 
-        return ($request?->getBaseUrl() ?? '') . ($request?->getPathInfo() ?? '') . '?' . http_build_query($query);
+        return ($request?->getBaseUrl() ?? '') . ($request?->getPathInfo() ?? '') . ($query !== [] ? '?' . http_build_query($query) : '');
     }
 
     /**

@@ -119,13 +119,13 @@ class SavedFiltersController
     }
 
     /**
-     * Back to the list: `redirect` when it is an address of the site (one slash, no host), else the home page.
+     * Back to the list: `redirect` when it is an address of the site (one slash, no host), else the home page of the application (with its base URL).
      */
     private function back(Request $request): RedirectResponse
     {
         $redirect = $request->request->getString('redirect');
         $local = str_starts_with($redirect, '/') && !str_starts_with($redirect, '//') && !str_contains($redirect, '\\') && !preg_match('/[\x00-\x1f]/', $redirect);
 
-        return new RedirectResponse($local ? $redirect : '/', Response::HTTP_SEE_OTHER);
+        return new RedirectResponse($local ? $redirect : $request->getBaseUrl() . '/', Response::HTTP_SEE_OTHER);
     }
 }

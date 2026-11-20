@@ -217,8 +217,8 @@ class ConfigurationTest extends TestCase
 
     public function testSavedFiltersDefaults(): void
     {
-        self::assertSame(['enabled' => true, 'max' => 10, 'max_size' => 8192], $this->process([])['saved_filters']);
-        self::assertSame(['enabled' => false, 'max' => 5, 'max_size' => 8192], $this->process(['saved_filters' => ['enabled' => false, 'max' => 5]])['saved_filters']);
+        self::assertSame(['enabled' => true, 'max' => 10, 'entity_manager' => null, 'max_size' => 8192], $this->process([])['saved_filters']);
+        self::assertSame(['enabled' => false, 'max' => 5, 'entity_manager' => null, 'max_size' => 8192], $this->process(['saved_filters' => ['enabled' => false, 'max' => 5]])['saved_filters']);
     }
 
     public function testInvalidSavedFilters(): void

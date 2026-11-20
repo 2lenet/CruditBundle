@@ -682,7 +682,7 @@ to add them.
 | `add_exit_impersonation_button` | **Removed**: the banner of the impersonation is always shown during one (and the way back in the user menu), see [The header](#the-header-lot-22a). Remove the key |
 | `layout` (`logo`, `logo_dark`, `logo_small`, `favicon`, `version`, `release_date`, `footer_links`) | New: logo, favicon and footer, see [Logo and footer](#logo-and-footer-lot-21c) |
 | `search` (`entities`, `screens`, `limit`, `min_length`, `enabled`) | New: the global search, see [Global search](#global-search-lot-22c) |
-| `saved_filters` (`enabled`, `max`, `max_size`) | New: the filters a user saves, see [Saved filters](#saved-filters-lot-31f) |
+| `saved_filters` (`enabled`, `max`, `max_size`, `entity_manager`) | New: the filters a user saves, see [Saved filters](#saved-filters-lot-31f) |
 | `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 
 ## 7. Template overrides
@@ -1088,16 +1088,20 @@ panel) and recalls them in one click. The filters only: not the search, the sort
 
 1. **The table `crudit_saved_filter`.** The entity `Lle\CruditBundle\Entity\SavedFilter` is mapped by the bundle (attributes, the
    default entity manager), so Doctrine finds it: `bin/console doctrine:migrations:diff`, check the migration, then
-   `doctrine:migrations:migrate`. The migration is the same in every project. For MariaDB (generated from the mapping; for
-   another platform, let `diff` write it):
+   `doctrine:migrations:migrate`. For MariaDB, the SQL below is what the mapping gives (with DBAL 3, `diff` also adds the comments
+   `(DC2Type:datetime_immutable)`, and another platform has its own SQL: let `diff` write the migration, this is only to read):
 
    ```sql
-   CREATE TABLE crudit_saved_filter (id INT AUTO_INCREMENT NOT NULL, owner VARCHAR(180) NOT NULL, filterset VARCHAR(100) NOT NULL, name VARCHAR(100) NOT NULL, criteria JSON NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, INDEX crudit_saved_filter_owner (owner, filterset), UNIQUE INDEX crudit_saved_filter_name (owner, filterset, name), PRIMARY KEY (id));
+   CREATE TABLE crudit_saved_filter (id INT AUTO_INCREMENT NOT NULL, owner VARCHAR(255) NOT NULL, filterset VARCHAR(100) NOT NULL, name VARCHAR(100) NOT NULL, criteria JSON NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, UNIQUE INDEX crudit_saved_filter_name (owner, filterset, name), PRIMARY KEY (id));
    ```
 
    The owner is the **identifier of the user** (`getUserIdentifier()`), a string: no association with the class of your users, so
    the table does not depend on your project. A project that does not want the feature sets `lle_crudit.saved_filters.enabled: false`:
-   the entity is not mapped, there is no table to create and nothing is shown. **With the feature on and the table missing,
+   the entity is not mapped, there is no table to create and nothing is shown. **Write a boolean there**: the mapping is decided while the
+   container is built, and the value of an environment variable (`%env(bool:…)%`) is not known yet: the entity is then mapped (and a
+   table is wanted by `diff`), the feature is still off at run time.
+   **With several entity managers** (`doctrine.orm.entity_managers`), the entity is mapped in your default manager, or in the one named by
+   `lle_crudit.saved_filters.entity_manager`: give it if the table must be in another database. **With the feature on and the table missing,
    the lists still work** (no "My filters", a warning in the logs).
 2. **Import the routes** of the bundle, as for the [global search](#global-search-lot-22c) (the same file, nothing more if you did):
 
@@ -1115,8 +1119,22 @@ panel) and recalls them in one click. The filters only: not the search, the sort
 Behavior to know:
 
 - **Per user**: nothing without a signed-in user (the feature does not exist for an anonymous visitor: the routes answer 404).
-  A set of another user is reported as gone, never as forbidden. No sharing between users.
-- **`lle_crudit.saved_filters`**: `enabled` (`true`), `max` (**10** sets per user and per list), `max_size` (8192 bytes of criteria).
+  A set of another user is reported as gone, never as forbidden. No sharing between users. The owner is `getUserIdentifier()`, a
+  string of 255 characters at most: **a user whose identifier is longer has no "My filters"** (cut, it would be the identifier of
+  another). Two firewalls, or two classes of users, that give the same identifier share their sets. During a `switch_user`, the
+  sets are those of the user impersonated, as for anything the application keeps for an account.
+- **A name is the same name for the database**: a name already taken replaces its set, and "taken" is decided by the collation of
+  the column (with `utf8mb4_unicode_ci`, « Été » and « ete » are one name), then by a comparison without regard to the case. The
+  button of the panel says « Replace » from the case only. Two saves of one name at the same moment end with one set.
+- **`lle_crudit.saved_filters`**: `enabled` (`true`), `max` (**10** sets per user and per list), `max_size` (8192 bytes of criteria),
+  `entity_manager` (the manager that maps the table, your default one by default).
+- **The list a set belongs to** is the `getId()` of its filter set, the short name of the class by default: two filter sets of the same
+  short name (two namespaces) share their sets, as they already share their session. Give them different ids.
+- **After a save or a recall** you come back to the same page with its other parameters (a tab, the sublist of a record, another list),
+  without the filters' own, as "Reset" does; outside a list, to the home page of the application (its base URL kept).
+- **A recalled set replaces all the filters of the list**: a filter that has a default (`setDefault()`) and is not in the set is empty,
+  because the set is what was in the panel when it was saved (a default the user had cleared stays cleared). "Reset" brings the
+  defaults back. The defaults themselves are unchanged: they apply to a user who has not chosen anything.
 - **What is saved**: the filters of the panel as they are (the draft included), through the same checks as the page. A
   `hidden` filter is not saved and keeps its value when a set is recalled (a link of "See also" may have set it); a filter
   you gave a `role` is saved and recalled only for a user granted it; a boolean left on "All" is no criterion. A set with no criterion cannot be saved.
