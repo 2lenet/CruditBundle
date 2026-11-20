@@ -914,7 +914,7 @@ assert.equal(await page.evaluate(() => Boolean(document.querySelector('.crudit-u
 await page.evaluate(axeSource);
 assert.deepEqual(await page.evaluate(async () => (await axe.run('.crudit-ui-pager', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)), [], 'axe pager');
 ok('pager: summary, current page, under the table, axe');
-// a link keeps the sort and the rows per page; the keyboard reaches it
+// a link keeps the sort and the rows per page
 await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('.crudit-ui-pager nav a[href*="client_offset=20"]')]);
 assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '21 to 25 of 25 clients');
 assert.equal(await page.$$eval('.crudit-ui-pager nav [aria-disabled="true"]', (e) => e.filter((n) => n.tagName === 'A').length), 0, 'pager: a dead link on the last page');
@@ -923,9 +923,9 @@ assert.equal(await page.$$eval('tbody tr.crudit-ui-table__row', (e) => e.length)
 await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.$eval('.crudit-ui-pager select', (select) => { select.value = '30'; select.dispatchEvent(new Event('change', {bubbles: true})); })]);
 assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '1 to 25 of 25 clients', 'pager: the rows per page do not go back to the first page');
 assert.equal(await page.$eval('.crudit-ui-pager select', (e) => e.value), '30');
-// a page past the last one goes back to the first page
+// a page past the last one goes to the last page
 page = await open(1440, '/client/?client_limit=10&client_offset=500');
-assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '1 to 10 of 25 clients', 'pager: a page past the end shows nothing');
+assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '21 to 25 of 25 clients', 'pager: a page past the end does not go to the last page');
 // on a phone: previous, "1 / 3", next, and the page does not scroll sideways
 page = await open(360, '/client/?client_limit=10');
 assert.equal(await page.$eval('.crudit-ui-pager__status', (e) => e.textContent.trim()), '1 / 3');

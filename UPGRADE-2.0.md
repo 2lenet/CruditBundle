@@ -1163,10 +1163,20 @@ previous, the numbers (`1 … 5 6 7 … 12`), next, last, and the rows per page.
   previous, "2 / 5", next.
 - **The rows per page** reload the list as soon as the choice is made (with the keyboard, an arrow key waits for Enter or for the end of the focus), and **go back to the first page**. The form sends
   `<list>_offset=0` itself: the offset is kept in the session, a form without it would read the old page.
-- **A page past the last one** (a filter applied from page 3, rows deleted) goes back to the first page, in the session
-  too. It used to show an empty table with no way back.
-- The label of the summary is the title of the list, in lowercase (`getTitle('list')`: "Clients" gives "clients"): give
-  your lists a plural title.
+- **A page past the last one** (the last row of the last page was deleted, a filter or a bookmarked address leaves fewer
+  pages) goes to the **last page**, in the session too. It used to show an empty table with no way back.
+- **The label of the summary** ("1 to 30 of 131 clients") comes from the translation `crud.pager.label.<name of the list>`
+  (lowercase name, in the translation domain of the list), else from the title of the list (`getTitle('list')`:
+  `crud.title.list.<name>`) when it is translated, else from the name of the list. Its first letter is put in lowercase,
+  unless the second one is a capital ("PDF received" stays). Many projects translate the title as "List of the clients":
+  give the list a `crud.pager.label.<name>` ("clients") so that the summary reads well.
+- **An empty list has no pager**: the old one said "No item found" (`crud.pagination.noItem`); the table now shows its
+  empty state instead, with the action that creates the first record if the list has one.
+- **An offset that is not the first row of a page** (a bookmarked address, `client_offset=30` with `client_limit=50`)
+  goes back to the first row of its page (here 0): the summary and the rows agree.
+- **New method** `setDatasourceOffset(Request $request, int $offset, ?string $sessionKey = null)` on `CrudConfigInterface` (implemented by
+  `AbstractCrudConfig`): replaces the offset kept in the session. A CrudConfig that does not extend `AbstractCrudConfig`, or
+  that overrides `getDatasourceParams()` with another session structure, implements it too.
 - **Enable the controller** `pager` in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`
   (`"pager": {"enabled": true, "fetch": "eager"}`); without it, changing the rows per page does nothing (the
   button "Apply" only shows when JavaScript is off).

@@ -91,7 +91,7 @@ class ListFactory extends AbstractBasicBrickFactory
 
         $dsParams = $brickConfigurator->getDatasourceParams();
         $dsParams->setCount($brickConfigurator->getDatasource()->count($dsParams));
-        $this->backToTheFirstPage($dsParams, $brickConfigurator);
+        $this->backToTheLastPage($dsParams, $brickConfigurator);
         $this->prependRuptureSorts($dsParams, $brickConfigurator->getFields());
         $resources = $brickConfigurator->getDatasource()->list($dsParams);
 
@@ -108,23 +108,18 @@ class ListFactory extends AbstractBasicBrickFactory
     }
 
     /**
-     * A page past the last one (a filter applied from page 3 leaves two pages, a list that shrank) shows nothing and no
-     * way back: the list goes back to the first page, in the session too (else the next visit finds the same offset).
+     * A page past the last one (the last row of the last page was deleted, a list that shrank, an old address) shows
+     * nothing and no way back: the list goes to the last page, in the session too (else the next visit finds the same
+     * offset). The CrudConfig owns the session.
      */
-    private function backToTheFirstPage(DatasourceParams $dsParams, ListConfig $brickConfigurator): void
+    private function backToTheLastPage(DatasourceParams $dsParams, ListConfig $brickConfigurator): void
     {
         if ($dsParams->getCount() < 1 || $dsParams->getOffset() < $dsParams->getCount()) {
             return;
         }
 
-        $dsParams->setOffset(0);
-        $session = $this->getRequest()->getSession();
-        $key = $brickConfigurator->getCrudConfig()->getDatasourceParamsKey();
-        $stored = $session->get($key);
-        if (is_array($stored)) {
-            $stored['offset'] = 0;
-            $session->set($key, $stored);
-        }
+        $dsParams->setOffset(($dsParams->getNbPages() - 1) * $dsParams->getLimit());
+        $brickConfigurator->getCrudConfig()->setDatasourceOffset($this->getRequest(), $dsParams->getOffset());
     }
 
     protected function getTotals(ListConfig $brickConfigurator): array

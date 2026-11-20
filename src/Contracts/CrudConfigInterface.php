@@ -70,6 +70,11 @@ interface CrudConfigInterface
 
     public function getDatasourceParams(Request $request, ?string $sessionKey = null): DatasourceParams;
 
+    /**
+     * Replaces the offset kept in the session by getDatasourceParams(): the next visit starts at this row.
+     */
+    public function setDatasourceOffset(Request $request, int $offset, ?string $sessionKey = null): void;
+
     public function getDatasourceParamsKey(): string;
 
     public function getController(): ?string;

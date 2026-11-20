@@ -18,8 +18,8 @@ class PagerExtension
     }
 
     #[AsTwigFunction('crudit_pager')]
-    public function pager(BrickView $view, ?string $anchor = null): ?array
+    public function pager(BrickView $view): ?array
     {
-        return $this->builder->build($view, $anchor);
+        return $this->builder->build($view);
     }
 }

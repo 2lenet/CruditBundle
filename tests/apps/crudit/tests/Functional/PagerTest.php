@@ -54,12 +54,34 @@ class PagerTest extends AppTestCase
         self::assertStringContainsString('client_offset=0', $crawler->filter('main .crudit-ui-pager__edge a')->first()->attr('href'));
     }
 
-    public function testThePageBeyondTheLastGoesBackToTheFirstOne(): void
+    public function testThePageBeyondTheLastGoesToTheLastOne(): void
     {
-        self::assertSame(['Alice', 'Bob'], $this->names('/client/?client_limit=2&client_offset=50'));
+        // 3 clients, 2 a page: the last row of the last page was deleted, or the address is old
+        self::assertSame(['Chloé'], $this->names('/client/?client_limit=2&client_offset=50'));
+        $crawler = $this->client->request('GET', '/client/?client_limit=2&client_offset=50');
+        self::assertMatchesRegularExpression('/^3 to 3 of 3 /', trim($crawler->filter('main .crudit-ui-pager__summary')->text()));
 
-        // the session holds the first page too: the next visit, without parameters, does not start at 50
-        self::assertSame(['Alice', 'Bob'], $this->names('/client/'));
+        // the session holds the last page too: the next visit, without parameters, does not start at 50
+        self::assertSame(['Chloé'], $this->names('/client/'));
+    }
+
+    public function testAnOffsetThatIsNotTheStartOfAPageGoesBackToTheStartOfItsPage(): void
+    {
+        // 30 rows at the limit of 50 (an old address, a limit that changed) would show the rows 31 to 80 as the page 1
+        $crawler = $this->client->request('GET', '/client/?client_limit=2&client_offset=1');
+
+        self::assertSame(['Alice', 'Bob'], $crawler->filter('main tbody tr.crudit-ui-table__row th[scope=row]')->each(fn ($th) => trim($th->text())));
+        self::assertMatchesRegularExpression('/^1 to 2 of 3 /', trim($crawler->filter('main .crudit-ui-pager__summary')->text()));
+    }
+
+    public function testAnEmptyListHasNoPagerButTheEmptyState(): void
+    {
+        $crawler = $this->client->request('GET', '/client/?filter_client_name_op=contains&filter_client_name_value=nobody-has-this-name&client_filter=filter');
+
+        self::assertResponseIsSuccessful();
+        self::assertCount(0, $crawler->filter('main .crudit-ui-pager'), 'no result: no pager, the table says it');
+        self::assertCount(0, $crawler->filter('main tbody tr.crudit-ui-table__row'));
+        self::assertCount(1, $crawler->filter('main .crudit-ui-empty-state'));
     }
 
     public function testTheRowsPerPageAreAFormThatGoesBackToTheFirstPage(): void

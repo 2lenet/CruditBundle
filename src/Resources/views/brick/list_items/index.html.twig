@@ -24,7 +24,7 @@
 >
     <twig:block name="footer">
         {% set pager = crudit_pager(view) %}
-        {% if pager %}<twig:LleCruditUi:Pager :id="pager.id" :label="pager.label" :total="pager.total" :page="pager.page" :perPage="pager.perPage" :perPageChoices="pager.perPageChoices" :path="pager.path" :query="pager.query" :pageParam="pager.pageParam" :mode="pager.mode" :limitParam="pager.limitParam"/>{% endif %}
+        {% if pager %}{{ component('LleCruditUi:Pager', pager) }}{% endif %}
     </twig:block>
 </twig:LleCruditUi:Table>
 {% include '@LleCrudit/brick/list_items/_batch.html.twig' with {list: table, view: view} only %}

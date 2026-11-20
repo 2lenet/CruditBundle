@@ -202,6 +202,12 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
             $params['offset'] = max((int)$offset, 0);
         }
 
+        // An offset that is not the first row of a page (a link of an older version, a changed limit: 30 rows at the
+        // limit of 50) would show rows 31 to 80 as the page 1: back to the first row of its page
+        if ($params['limit'] > 0) {
+            $params['offset'] = intdiv($params['offset'], $params['limit']) * $params['limit'];
+        }
+
         $sortField = $request->query->get(strtolower($name) . '_sort');
         $sortOrder = $request->query->get(strtolower($name) . '_sort_order');
         if ($sortField !== null) {
@@ -211,6 +217,17 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         $request->getSession()->set($sessionKey, $params);
 
         return new DatasourceParams(...array_values($params));
+    }
+
+    public function setDatasourceOffset(Request $request, int $offset, ?string $sessionKey = null): void
+    {
+        $session = $request->getSession();
+        $sessionKey = $sessionKey ?? $this->getDatasourceParamsKey();
+        $params = $session->get($sessionKey);
+        if (is_array($params)) {
+            $params['offset'] = max($offset, 0);
+            $session->set($sessionKey, $params);
+        }
     }
 
     public function getDatasourceParamsKey(): string
