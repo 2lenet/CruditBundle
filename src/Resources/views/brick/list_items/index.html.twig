@@ -1,6 +1,6 @@
 {#
  # The list: the Table of CruditUiBundle, fed by crudit_table() (TableViewBuilder: columns, rows, groups, totals, sort,
- # actions). A project puts a text above the table in the block `before`. The selection and the batch actions are the SelectionBar (`_batch`); the pager (3.1.d) and the filters (3.1.e) follow in their lots.
+ # actions). A project puts a text above the table in the block `before`. The selection and the batch actions are the SelectionBar (`_batch`); the pager is the Pager of CruditUiBundle, in the footer of the Table, fed by crudit_pager() (PagerViewBuilder).
  #}
 {% block autorefresh %}
     {% if view.data.auto_refresh is defined and view.data.auto_refresh %}
@@ -23,7 +23,8 @@
     :selectable="table.selectable"
 >
     <twig:block name="footer">
-        {% include '@LleCrudit/brick/list_items/_pager.html.twig' %}
+        {% set pager = crudit_pager(view) %}
+        {% if pager %}{{ component('LleCruditUi:Pager', pager) }}{% endif %}
     </twig:block>
 </twig:LleCruditUi:Table>
 {% include '@LleCrudit/brick/list_items/_batch.html.twig' with {list: table, view: view} only %}
