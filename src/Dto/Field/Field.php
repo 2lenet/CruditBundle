@@ -14,7 +14,16 @@ class Field
 
     public const SORT_DESC = 'desc';
 
-    private const DATE_TYPES = ['date', 'datetime', DateField::class, DateTimeField::class];
+    private const DATE_TYPES = [
+        'date',
+        'date_immutable',
+        'datetime',
+        'datetime_immutable',
+        'datetimetz',
+        'datetimetz_immutable',
+        DateField::class,
+        DateTimeField::class,
+    ];
 
     private string $label;
 
@@ -356,7 +365,12 @@ class Field
 
     public function setFirstSortOrder(string $order): self
     {
-        $this->firstSortOrder = strtolower($order);
+        $order = strtolower($order);
+        if (!in_array($order, [self::SORT_ASC, self::SORT_DESC], true)) {
+            throw new \InvalidArgumentException(sprintf('Invalid sort order "%s".', $order));
+        }
+
+        $this->firstSortOrder = $order;
 
         return $this;
     }
