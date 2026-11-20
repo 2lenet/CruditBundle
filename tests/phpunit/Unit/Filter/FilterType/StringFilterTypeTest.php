@@ -149,9 +149,26 @@ class StringFilterTypeTest extends TestCase
         $first = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo')->getDQL();
         $second = $this->applyFilter($filter, FilterTypeInterface::OPERATOR_CONTAINS, 'foo')->getDQL();
 
-        // The alias comes from the name of the field: the query cache of Doctrine finds the same DQL
+        // The alias comes from the filter and the field: the query cache of Doctrine finds the same DQL
         self::assertSame($first, $second);
-        self::assertStringContainsString('FROM ' . ProductTranslation::class . ' crudit_tr_label ', $first);
+        self::assertStringContainsString('FROM ' . ProductTranslation::class . ' crudit_tr_code_label ', $first);
+    }
+
+    public function testTwoFiltersOnTheSameTranslatableField(): void
+    {
+        $qb = $this->createEntityManager()->createQueryBuilder()->select('root')->from(Product::class, 'root');
+        $search = StringFilterType::new('code')->setAdditionnalFields(['label'])->setSearchInTranslations(true);
+        $search->setData(['op' => FilterTypeInterface::OPERATOR_CONTAINS, 'value' => 'foo']);
+        $search->apply($qb);
+        $label = StringFilterType::new('label')->setSearchInTranslations(true);
+        $label->setData(['op' => FilterTypeInterface::OPERATOR_CONTAINS, 'value' => 'bar']);
+        $label->apply($qb);
+
+        // Doctrine shares the aliases between the query and its subqueries: each filter has its own
+        $qb->getQuery()->getAST();
+        $dql = $qb->getDQL();
+        self::assertStringContainsString(' crudit_tr_code_label ', $dql);
+        self::assertStringContainsString(' crudit_tr_label_label ', $dql);
     }
 
     public function testSearchInTranslationsDisabledByDefault(): void

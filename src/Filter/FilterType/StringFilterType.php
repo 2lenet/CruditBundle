@@ -153,8 +153,9 @@ class StringFilterType extends AbstractFilterType
      * the search also looks into the field translations, in all locales:
      * - positive operators (contains, starts with, ends with, equal): column OR one translation matches;
      * - negative operators (not equal, does not contain): column AND no translation matches.
-     * $aliasKey (the name of the field's own parameter, unique in the query) gives the alias of the subquery: the same
-     * for each request, so that the DQL stays the same and the query cache of Doctrine is used.
+     * The id of the filter and $aliasKey (the name of the field's own parameter) give the alias of the subquery: unique
+     * in the query, even when two filters search the same field, and the same for each request, so that the DQL stays
+     * the same and the query cache of Doctrine is used.
      */
     protected function addTranslationPattern(
         QueryBuilder $queryBuilder,
@@ -186,7 +187,7 @@ class StringFilterType extends AbstractFilterType
         }
 
         // unique in the whole query, and the same from a request to the next
-        $t = 'crudit_tr' . $aliasKey;
+        $t = 'crudit_tr_' . preg_replace('/\W/', '_', $this->id) . '_' . ltrim($aliasKey, '_');
 
         $subquery = 'SELECT ' . $t . '.id FROM ' . $translationClass . ' ' . $t
             . ' WHERE ' . $t . '.object = ' . $alias
