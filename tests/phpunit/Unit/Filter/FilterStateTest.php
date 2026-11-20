@@ -9,6 +9,7 @@ use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Filter\FilterType\ChoiceFilterType;
 use Lle\CruditBundle\Filter\FilterType\DateTimeFilterType;
 use Lle\CruditBundle\Filter\FilterType\NumberFilterType;
+use Lle\CruditBundle\Filter\FilterType\PeriodeFilterType;
 use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -42,6 +43,7 @@ class FilterStateTest extends TestCase
                     ChoiceFilterType::new('status', ['a' => 'a', 'b' => 'b', 'c' => 'c'], true)->setAdditionnalKeys(['items']),
                     NumberFilterType::new('amount'),
                     DateTimeFilterType::new('seen'),
+                    PeriodeFilterType::new('planned'),
                 ];
             }
         };
@@ -178,5 +180,35 @@ class FilterStateTest extends TestCase
         $this->send(['client_reset' => '1']);
 
         self::assertArrayNotHasKey('value', $this->data('name'));
+    }
+
+    public function testTheNameOfAReadyMadePeriodIsKeptWithItsDates(): void
+    {
+        $this->send(['filter_client_planned_op' => 'interval', 'filter_client_planned_value' => '2026-11-01', 'filter_client_planned_to' => '2026-11-30', 'filter_client_planned_preset' => 'this_month']);
+
+        self::assertSame(['op' => 'interval', 'value' => '2026-11-01', 'to' => '2026-11-30', 'preset' => 'this_month'], $this->data('planned'));
+    }
+
+    public function testAnUnknownPeriodNameIsDroppedAndTheDatesStay(): void
+    {
+        $this->send(['filter_client_planned_op' => 'interval', 'filter_client_planned_value' => '2026-11-01', 'filter_client_planned_to' => '2026-11-30', 'filter_client_planned_preset' => 'next_century']);
+
+        self::assertSame(['op' => 'interval', 'value' => '2026-11-01', 'to' => '2026-11-30'], $this->data('planned'));
+    }
+
+    public function testAnEmptyPeriodNameMeansTheDatesWereTypedByHand(): void
+    {
+        $this->send(['filter_client_planned_op' => 'interval', 'filter_client_planned_value' => '2026-11-01', 'filter_client_planned_to' => '2026-11-30', 'filter_client_planned_preset' => 'this_month']);
+        $this->send(['filter_client_planned_op' => 'interval', 'filter_client_planned_value' => '2026-11-02', 'filter_client_planned_to' => '2026-11-30', 'filter_client_planned_preset' => '']);
+
+        self::assertArrayNotHasKey('preset', $this->data('planned'));
+    }
+
+    public function testNewDatesWithoutTheNameDropTheOldName(): void
+    {
+        $this->send(['filter_client_planned_op' => 'interval', 'filter_client_planned_value' => '2026-11-01', 'filter_client_planned_to' => '2026-11-30', 'filter_client_planned_preset' => 'this_month']);
+        $this->send(['filter_client_planned_value' => '2026-10-01', 'filter_client_planned_to' => '2026-10-31']);
+
+        self::assertSame(['op' => 'interval', 'value' => '2026-10-01', 'to' => '2026-10-31'], $this->data('planned'));
     }
 }

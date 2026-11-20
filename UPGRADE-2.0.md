@@ -29,6 +29,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [Declare a tone per state of your workflows, replace your links to the transitions](#workflows-lot-34c) *(lot 3.4.c)*
    - [Batch actions: the selection bar, `ids` and `all_page`, the free modals](#batch-actions-lot-31c) *(lot 3.1.c)*
    - [Filters: the bar and the panel, `setPrimary()`, your filter templates, the controllers to enable](#filters-lot-31e) *(lot 3.1.e)*
+   - [Saved filters: a table to create, a route to import, the controller `saved-filters`](#saved-filters-lot-31f) *(lot 3.1.f)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
    - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
    - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*
@@ -681,6 +682,7 @@ to add them.
 | `add_exit_impersonation_button` | **Removed**: the banner of the impersonation is always shown during one (and the way back in the user menu), see [The header](#the-header-lot-22a). Remove the key |
 | `layout` (`logo`, `logo_dark`, `logo_small`, `favicon`, `version`, `release_date`, `footer_links`) | New: logo, favicon and footer, see [Logo and footer](#logo-and-footer-lot-21c) |
 | `search` (`entities`, `screens`, `limit`, `min_length`, `enabled`) | New: the global search, see [Global search](#global-search-lot-22c) |
+| `saved_filters` (`enabled`, `max`, `max_size`) | New: the filters a user saves, see [Saved filters](#saved-filters-lot-31f) |
 | `lle_crudit_ui.icons.library`, `lle_crudit_ui.icons.map` | New (CruditUiBundle): icon library and replacement of any icon, see [Icons](#icons) |
 
 ## 7. Template overrides
@@ -1075,8 +1077,58 @@ panel (in the page from 768 px, a side panel on a phone), the active ones as chi
   counter of chosen items) and the filter styles of `sb-admin` are gone.
 - **Enable the controllers** `filters`, `filter-field` and `filter-period` in `@2lenet/crudit-ui-bundle` of your
   `assets/controllers.json`.
-- Not in this lot: the saved filters (3.1.f), the pager (3.1.d: the filters send the list back to the first page through
-  `<set>_filter`, as before).
+- Not in this lot: the pager (3.1.d: the filters send the list back to the first page through `<set>_filter`, as before).
+  The saved filters are the next lot: see [Saved filters](#saved-filters-lot-31f).
+
+### Saved filters *(lot 3.1.f)*
+
+New: a signed-in user saves the filters of a list under a name (**"My filters"** next to "Filters", **"Save these filters"** in the
+panel) and recalls them in one click. The filters only: not the search, the sort or the columns. The defaults of the filters
+(`setDefault()`) are unchanged. **A table to create, a route to import, a controller to enable.**
+
+1. **The table `crudit_saved_filter`.** The entity `Lle\CruditBundle\Entity\SavedFilter` is mapped by the bundle (attributes, the
+   default entity manager), so Doctrine finds it: `bin/console doctrine:migrations:diff`, check the migration, then
+   `doctrine:migrations:migrate`. The migration is the same in every project. For MariaDB (generated from the mapping; for
+   another platform, let `diff` write it):
+
+   ```sql
+   CREATE TABLE crudit_saved_filter (id INT AUTO_INCREMENT NOT NULL, owner VARCHAR(180) NOT NULL, filterset VARCHAR(100) NOT NULL, name VARCHAR(100) NOT NULL, criteria JSON NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, INDEX crudit_saved_filter_owner (owner, filterset), UNIQUE INDEX crudit_saved_filter_name (owner, filterset, name), PRIMARY KEY (id));
+   ```
+
+   The owner is the **identifier of the user** (`getUserIdentifier()`), a string: no association with the class of your users, so
+   the table does not depend on your project. A project that does not want the feature sets `lle_crudit.saved_filters.enabled: false`:
+   the entity is not mapped, there is no table to create and nothing is shown. **With the feature on and the table missing,
+   the lists still work** (no "My filters", a warning in the logs).
+2. **Import the routes** of the bundle, as for the [global search](#global-search-lot-22c) (the same file, nothing more if you did):
+
+   ```yaml
+   # config/routes/lle_crudit.yaml
+   lle_crudit:
+       resource: '@LleCruditBundle/Resources/config/routes.yaml'
+   ```
+
+   Without the import, "My filters" is not shown (no error). Three routes, all POST with a CSRF token:
+   `lle_crudit_saved_filters_save`, `_apply` and `_delete` (`/crudit/filters/{filterset}/saved…`).
+3. **Enable the controller** `saved-filters` in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`. Without it the
+   button "Save these filters" does nothing.
+
+Behavior to know:
+
+- **Per user**: nothing without a signed-in user (the feature does not exist for an anonymous visitor: the routes answer 404).
+  A set of another user is reported as gone, never as forbidden. No sharing between users.
+- **`lle_crudit.saved_filters`**: `enabled` (`true`), `max` (**10** sets per user and per list), `max_size` (8192 bytes of criteria).
+- **What is saved**: the filters of the panel as they are (the draft included), through the same checks as the page. A
+  `hidden` filter is not saved and keeps its value when a set is recalled (a link of "See also" may have set it); a filter
+  you gave a `role` is saved and recalled only for a user granted it; a boolean left on "All" is no criterion. A set with no criterion cannot be saved.
+- **A recalled set is checked again**, filter by filter: a filter you removed, a condition the type no longer has or a right
+  taken away are left out, without an error; with nothing left, the set is refused and the filters in use stay as they are.
+- **A ready-made period is saved by its name**: a set "This month" stays true next month (the dates are worked out again when the
+  set is recalled; a period typed by hand stays fixed). The filter type `PeriodeFilterType` gets the key `preset`
+  (`setAdditionnalKeys(['to', 'preset'])` in `new()`: add it if your own type calls `setAdditionnalKeys()`); the names are those of
+  `Lle\CruditUiBundle\Filter\PeriodPreset`. Your own `periods` given to `Filter:Period` have no name, and are saved as dates.
+- **Your own templates**: the bar is `Filter:Bar` with its prop `saved`; a project that overrides `brick/filter/index.html.twig`
+  must pass `:saved="bar.saved|default(null)"`.
+- **Not in this lot**: a default set ("open this list with my set"), and sharing sets between users.
 
 ### The record *(lot 3.3.a)*
 
@@ -1206,6 +1258,7 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
   controllers of `@2lenet/crudit-bundle`.
 - New controller `selection-bar` (batch actions, lot 3.1.c): enable it in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`.
 - New controllers `filters`, `filter-field` and `filter-period` (the filters, lot 3.1.e): same file, same package.
+- New controller `saved-filters` (the saved filters, lot 3.1.f): same file, same package.
 - New controller `workflow` (the transitions of a workflow, lot 3.4.c): enable it in your `assets/controllers.json`.
 - Importing `form.js`, `filters.js` or `editinplace.js` from `vendor/` (`initTomSelect`,
   `initChoiceTomSelect`…) no longer works. *Replacement to be filled (lot 3.2.c).*

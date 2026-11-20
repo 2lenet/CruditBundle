@@ -4,6 +4,7 @@ namespace Lle\CruditBundle\Filter;
 
 use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\FilterTypeInterface;
+use Lle\CruditUiBundle\Filter\PeriodPreset;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -55,17 +56,7 @@ class FilterState
                     }
                 }
 
-                foreach ($filterset->getFilters() as $filterType) {
-                    if (
-                        $filterType->getRole() !== null &&
-                        $this->security->isGranted($filterType->getRole()) === false
-                    ) {
-                        unset($filterdata[$filterId][$filterType->getId()]);
-                        continue;
-                    }
-                    $key = "filter_" . $filterId . '_' . $filterType->getId();
-                    $filterdata[$filterId] = $this->applyFilterRequest($request, $filterdata[$filterId], $filterType, $key);
-                }
+                $filterdata[$filterId] = $this->applyQuery($filterset, $filterdata[$filterId], $request->query->all());
             }
         }
         $this->filterdata = $filterdata;
@@ -83,12 +74,12 @@ class FilterState
      * - A list is joined with commas, the format stored since the 1.x; a value of another shape (an array of arrays) is
      *   ignored, a value is cut to MAX_LENGTH characters, and a list of more than MAX_ITEMS values is ignored (the filter keeps its previous value).
      *
+     * @param array<string, mixed> $query the parameters sent (the query string of the request)
      * @param array<string, mixed> $set the data of the filter set
      * @return array<string, mixed>
      */
-    private function applyFilterRequest(Request $request, array $set, FilterTypeInterface $filterType, string $key): array
+    private function applyFilterRequest(array $query, array $set, FilterTypeInterface $filterType, string $key): array
     {
-        $query = $request->query->all();
         $id = $filterType->getId();
         $operators = array_keys($filterType->getOperators());
 
@@ -113,6 +104,14 @@ class FilterState
             } elseif ($hasOp && $name !== 'items') {
                 // In the form, with nothing sent: emptied.
                 $set[$id][$name] = '';
+            }
+        }
+        // The name of a ready-made period is one of PeriodPreset, or it is dropped (the dates stay). It is dropped too
+        // when new dates come without it (an address written by hand): they would no longer be the period.
+        if (isset($set[$id]['preset'])) {
+            $datesChanged = array_key_exists($key . '_value', $query) || array_key_exists($key . '_to', $query);
+            if (PeriodPreset::fromName($set[$id]['preset']) === null || ($datesChanged && !array_key_exists($key . '_preset', $query))) {
+                unset($set[$id]['preset']);
             }
         }
         // The labels of the chosen items (`items`, written by the autocomplete of the 1.x) no longer match a value that
@@ -152,6 +151,84 @@ class FilterState
         }
 
         return mb_substr((string) $value, 0, self::MAX_LENGTH);
+    }
+
+    /**
+     * What the parameters sent change in the data of a filter set: one filter after the other, those the user may not
+     * use are removed.
+     *
+     * @param array<string, mixed> $data the data of the filter set
+     * @param array<string, mixed> $query
+     * @return array<string, mixed>
+     */
+    private function applyQuery(FilterSetInterface $filterset, array $data, array $query): array
+    {
+        foreach ($filterset->getFilters() as $filterType) {
+            if ($filterType->getRole() !== null && $this->security->isGranted($filterType->getRole()) === false) {
+                unset($data[$filterType->getId()]);
+                continue;
+            }
+            $key = 'filter_' . $filterset->getId() . '_' . $filterType->getId();
+            $data = $this->applyFilterRequest($query, $data, $filterType, $key);
+        }
+
+        return $data;
+    }
+
+    public function getFilterSet(string $filterSetId): ?FilterSetInterface
+    {
+        foreach ($this->filtersets as $filterset) {
+            if ($filterset->getId() === $filterSetId) {
+                return $filterset;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The data of a filter set built from parameters alone (a form sent, a saved set), as the page would keep them:
+     * the same checks, nothing of what was applied before.
+     *
+     * @param array<string, mixed> $query
+     * @return array<string, mixed>
+     */
+    public function fromQuery(FilterSetInterface $filterset, array $query): array
+    {
+        return $this->applyQuery($filterset, [], $query);
+    }
+
+    /**
+     * The data now kept in the session for a filter set.
+     *
+     * @return array<string, mixed>
+     */
+    public function getSetData(string $filterSetId): array
+    {
+        $this->loadData();
+
+        return $this->filterdata[$filterSetId] ?? [];
+    }
+
+    /**
+     * Replaces the data of a filter set (a saved set recalled): the list goes back to its first page.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function replaceSetData(Request $request, string $filterSetId, array $data): void
+    {
+        $session = $request->getSession();
+        $filterdata = $session->get('crudit_filters') ?? [];
+        $filterdata[$filterSetId] = $data;
+        $session->set('crudit_filters', $filterdata);
+        $this->filterdata = $filterdata;
+
+        $sessionKey = 'crudit_datasourceparams_' . $filterSetId;
+        $params = $session->get($sessionKey);
+        if (isset($params['offset'])) {
+            $params['offset'] = 0;
+            $session->set($sessionKey, $params);
+        }
     }
 
     public function getData(string $filterSetId, string $filterId): ?array

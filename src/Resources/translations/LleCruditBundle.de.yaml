@@ -213,3 +213,16 @@ crudit:
 
     telephone:
         calling_code: "Ländervorwahl"
+
+    saved_filters:
+        saved: "Die Filter „%name%“ wurden gespeichert."
+        applied: "Die Filter „%name%“ wurden angewendet."
+        deleted: "Die Filter „%name%“ wurden gelöscht."
+        error:
+            unavailable: "Gespeicherte Filter sind nicht verfügbar."
+            no_filter: "Kein Filter zu speichern: Wählen Sie mindestens ein Kriterium."
+            name: "Geben Sie den Filtern einen Namen (höchstens %limit% Zeichen)."
+            too_many: "Höchstens %limit% Filtersätze für diese Ansicht: Löschen Sie einen, bevor Sie einen weiteren speichern."
+            too_big: "Diese Filter sind zu umfangreich, um gespeichert zu werden."
+            not_found: "Diese Filter existieren nicht mehr."
+            nothing_left: "Kein Kriterium dieser Filter ist noch verwendbar: Sie wurden nicht angewendet."

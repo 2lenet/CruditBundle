@@ -213,3 +213,16 @@ crudit:
 
     telephone:
         calling_code: "Prefisso internazionale"
+
+    saved_filters:
+        saved: "I filtri «%name%» sono salvati."
+        applied: "I filtri «%name%» sono applicati."
+        deleted: "I filtri «%name%» sono eliminati."
+        error:
+            unavailable: "I filtri salvati non sono disponibili."
+            no_filter: "Nessun filtro da salvare: scegliete almeno un criterio."
+            name: "Dare un nome ai filtri (al massimo %limit% caratteri)."
+            too_many: "Al massimo %limit% serie di filtri per questa schermata: eliminatene una prima di salvarne un’altra."
+            too_big: "Questi filtri sono troppo grandi per essere salvati."
+            not_found: "Questi filtri non esistono più."
+            nothing_left: "Nessun criterio di questi filtri è più utilizzabile: non sono applicati."

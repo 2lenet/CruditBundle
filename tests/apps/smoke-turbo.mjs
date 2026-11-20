@@ -273,7 +273,7 @@ try {
     await page.click('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]');
     await sleep(400);
     await page.click('dialog.crudit-ui-filter-panel label:has([name="filter_client_active_value"][value="true"])');
-    await after('turbo:load', () => page.click('dialog.crudit-ui-filter-panel button[type="submit"]'));
+    await after('turbo:load', () => page.click('dialog.crudit-ui-filter-panel [data-2lenet--crudit-ui-bundle--filters-target="apply"]'));
     await sameWindow('panel');
     assert.equal(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open), true, 'the panel is closed after Apply');
     assert.equal(await page.$$eval('main ul.crudit-ui-chips > li', (chips) => chips.length), 1, 'one chip');
@@ -453,6 +453,52 @@ try {
     await go('/');
     await audit('the home page reached by Turbo');
     ok('axe: the pages reached by Turbo');
+
+    // ---------- Saved filters (lot 3.1.f), signed in as alice (the session keeps her afterwards, so this is the last step):
+    // saving, recalling, removing and deleting a set are POST forms sent by Turbo (a redirect, no full load).
+    await page.setExtraHTTPHeaders({Authorization: 'Basic ' + Buffer.from('alice:alice').toString('base64')});
+    const toast = (expected) => page.waitForFunction((text) => document.querySelector('#crudit-ui-toasts')?.textContent.includes(text), {timeout: 5000}, expected);
+    const SAVE = 'button[aria-controls="crudit-filters-client-save"]';
+    const MY_FILTERS = '.crudit-ui-filter-saved .crudit-ui-dropdown > button';
+    await go('/client/?client_reset=1');
+    await go('/client/');
+    const everyRow = await rows();
+    assert.ok(await page.$('.crudit-ui-filter-saved'), 'a user has "My filters" in a page visited by Turbo');
+    // The panel is remembered open by the steps before: open it only if it is closed.
+    if (!(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open))) {
+        await page.click('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]');
+        await sleep(400);
+    }
+    await page.click('dialog.crudit-ui-filter-panel label:has([name="filter_client_active_value"][value="true"])');
+    await page.click(SAVE);
+    await page.type('#crudit-filters-client-save-name', 'Active clients');
+    await after('turbo:load', () => page.keyboard.press('Enter'));
+    await sameWindow('save filters');
+    await toast('The filters “Active clients” are saved.');
+    assert.equal(await path(), '/client/', 'the address after the save is the list, clean');
+    assert.ok((await rows()) < everyRow, 'the saved filters are not applied');
+    assert.equal(await text('.crudit-ui-filter-saved__label'), 'Active clients', 'the set in use is not in the button');
+    // The set in use removes its filters (a link), the set applies them again (a POST), both visits of Turbo.
+    await page.click(MY_FILTERS);
+    await after('turbo:load', () => page.click('a.crudit-ui-filter-saved__apply'));
+    assert.equal(await rows(), everyRow, 'the set in use does not remove its filters');
+    await page.click(MY_FILTERS);
+    await after('turbo:load', () => page.click('button.crudit-ui-filter-saved__apply'));
+    await toast('The filters “Active clients” are applied.');
+    assert.ok((await rows()) < everyRow, 'the set is not applied again');
+    await sameWindow('recall filters');
+    // The deletion is asked in place, then sent.
+    await page.click(MY_FILTERS);
+    await page.click('.crudit-ui-filter-saved__item .crudit-ui-icon-btn');
+    assert.equal(await focus(), 'Cancel', 'the question of the deletion does not give the focus to Cancel');
+    await after('turbo:load', () => page.click('.crudit-ui-filter-saved__confirm .crudit-ui-btn--danger'));
+    await toast('The filters “Active clients” are deleted.');
+    await sameWindow('delete filters');
+    await page.click(MY_FILTERS);
+    assert.ok(await page.$('.crudit-ui-filter-saved__empty'), 'the deleted set is still listed');
+    assert.equal(await page.$eval('#crudit-filters-client-saved-form input[name=_token]', (input) => input.value.length > 20), true, 'the token is not in the page visited');
+    await page.keyboard.press('Escape');
+    ok('saved filters: saved, recalled, removed and deleted by Turbo, no full load');
 
     known.forEach((defect) => console.warn('KNOWN DEFECT', defect));
     assert.deepEqual(errors, [], 'errors in the page');

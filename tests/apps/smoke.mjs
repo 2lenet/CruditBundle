@@ -1295,7 +1295,7 @@ await shot(page, 'filters-panel');
 await axe(page, 'filters, panel open');
 // A filter of the panel applies with "Apply", and is a chip.
 await page.click('dialog.crudit-ui-filter-panel label:has([name="filter_client_active_value"][value="true"])');
-await filterNav(page, () => page.click('dialog.crudit-ui-filter-panel button[type="submit"]'));
+await filterNav(page, () => page.click('dialog.crudit-ui-filter-panel [data-2lenet--crudit-ui-bundle--filters-target="apply"]'));
 assert.ok(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open), 'filters: the panel stays open after Apply');
 assert.equal(await page.$$eval('main ul.crudit-ui-chips > li', (chips) => chips.length), 1, 'filters: one chip, the name is a main filter');
 assert.ok((await page.$eval('main ul.crudit-ui-chips > li', (chip) => chip.textContent)).includes('Active'), 'filters: the chip names its filter');
@@ -1308,6 +1308,104 @@ await filterNav(page, () => page.click('dialog.crudit-ui-filter-panel a[href*="c
 assert.equal(await rowsOf(page), allRows, 'filters: reset brings all the rows back');
 ok('filters: the panel, a chip, reset');
 await page.close();
+// ---------- Saved filters (lot 3.1.f): "My filters" and "Save these filters", per user (alice), POST with a CSRF token
+const FT = '[data-2lenet--crudit-ui-bundle--filters-target="toggle"]';
+const SAVE = 'button[aria-controls="crudit-filters-client-save"]';
+const toastSays = (page, text) => page.waitForFunction((expected) => document.querySelector('#crudit-ui-toasts')?.textContent.includes(expected), {timeout: 3000}, text);
+const savedNav = (page, action) => Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), action()]);
+page = await open(1440, '/client/', {user: 'alice'});
+assert.ok(await visible(page, '.crudit-ui-filter-saved'), 'saved filters: "My filters" is in the bar of a user');
+assert.equal(await page.$eval('.crudit-ui-filter-saved__label', (label) => label.textContent), 'My filters');
+// The fields of the save are kept out of the form: the address of a GET of the filters never carries the token or the name.
+assert.equal(await page.$$eval('form.crudit-ui-filter-bar input[name="_token"], form.crudit-ui-filter-bar input[name="redirect"]', (fields) => fields.every((field) => field.disabled) && fields.length), 2, 'saved filters: token and address are disabled');
+assert.equal(await page.$eval('#crudit-filters-client-save-name', (field) => field.hasAttribute('name')), false, 'saved filters: the name has no name until Save');
+await page.click(FT);
+assert.equal(await page.$eval('.crudit-ui-filter-save', (region) => region.hidden), true, 'saved filters: the name field is folded');
+assert.equal(await attr(page, SAVE, 'aria-expanded'), 'false');
+await page.click(SAVE);
+assert.equal(await attr(page, SAVE, 'aria-expanded'), 'true');
+assert.ok(await visible(page, '.crudit-ui-filter-save'), 'saved filters: "Save these filters" shows the name');
+assert.equal(await page.evaluate(() => document.activeElement.id), 'crudit-filters-client-save-name', 'saved filters: the focus is in the name');
+// Escape folds the field, the panel stays open, the focus goes back to the button.
+await page.keyboard.press('Escape');
+assert.equal(await page.$eval('.crudit-ui-filter-save', (region) => region.hidden), true, 'saved filters: Escape folds the field');
+assert.equal(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open), true, 'saved filters: Escape does not close the panel');
+assert.equal(await page.evaluate((sel) => document.activeElement === document.querySelector(sel), SAVE), true, 'saved filters: the focus is back on the button');
+// No criterion: the server says so, nothing is saved.
+await page.click(SAVE);
+await page.type('#crudit-filters-client-save-name', 'Nothing');
+await savedNav(page, () => page.keyboard.press('Enter'));
+await toastSays(page, 'No filter to save');
+assert.ok(!page.url().includes('_token') && !page.url().includes('name='), 'saved filters: the address carries neither the token nor the name');
+// A filter of the panel (the draft, not applied), then "Save these filters": saved and applied.
+if (!(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open))) {
+    await page.click(FT);
+}
+await page.click('dialog.crudit-ui-filter-panel label:has([name="filter_client_active_value"][value="true"])');
+await page.click(SAVE);
+await page.type('#crudit-filters-client-save-name', '  Active   clients ');
+await shot(page, 'saved-filters-name');
+await axe(page, 'saved filters, name field open');
+await savedNav(page, () => page.keyboard.press('Enter'));
+await toastSays(page, 'The filters “Active clients” are saved.');
+assert.ok(!page.url().includes('_token') && !page.url().includes('Active'), 'saved filters: back on the list, the address is clean');
+assert.ok((await rowsOf(page)) < allRows, 'saved filters: the filters are applied');
+assert.equal(await page.$eval('.crudit-ui-filter-saved__label', (label) => label.textContent), 'Active clients', 'saved filters: the set in use is in the button');
+assert.ok((await attr(page, '.crudit-ui-filter-saved__button', 'class')).includes('--active'));
+const savedRows = await rowsOf(page);
+// The list of the sets: the one in use is checked and removes its filters.
+await page.click('.crudit-ui-filter-saved .crudit-ui-dropdown > button');
+assert.ok(await visible(page, '.crudit-ui-filter-saved__list'), 'saved filters: the list opens');
+assert.equal(await page.$eval('.crudit-ui-filter-saved__apply', (link) => [link.tagName, link.getAttribute('aria-current')]).then(String), 'A,true', 'saved filters: the set in use is a link, checked');
+await shot(page, 'saved-filters-list');
+await axe(page, 'saved filters, list open');
+await savedNav(page, () => page.click('a.crudit-ui-filter-saved__apply'));
+assert.equal(await rowsOf(page), allRows, 'saved filters: a click on the set in use removes its filters');
+assert.equal(await page.$eval('.crudit-ui-filter-saved__label', (label) => label.textContent), 'My filters', 'saved filters: no set in use');
+// A click on the set applies it again (a POST).
+await page.click('.crudit-ui-filter-saved .crudit-ui-dropdown > button');
+await savedNav(page, () => page.click('button.crudit-ui-filter-saved__apply'));
+assert.equal(await rowsOf(page), savedRows, 'saved filters: a click on a set applies it');
+// The same name replaces the set: "Replace".
+if (!(await page.$eval('dialog.crudit-ui-filter-panel', (panel) => panel.open))) {
+    await page.click(FT);
+}
+await page.click(SAVE);
+await page.type('#crudit-filters-client-save-name', 'ACTIVE CLIENTS');
+assert.equal((await page.$eval('[data-2lenet--crudit-ui-bundle--saved-filters-target="submit"]', (button) => button.textContent)).trim(), 'Replace', 'saved filters: a name already taken says Replace');
+assert.ok((await page.$eval('#crudit-filters-client-save-help', (help) => help.textContent)).includes('replaced'), 'saved filters: and says why');
+await page.keyboard.press('Escape');
+// The bin asks in place and names the set; Escape folds the question, the list stays open.
+await page.click('.crudit-ui-filter-saved .crudit-ui-dropdown > button');
+await page.click('.crudit-ui-filter-saved__item .crudit-ui-icon-btn');
+assert.ok(await visible(page, '.crudit-ui-filter-saved__confirm'), 'saved filters: the deletion is asked in place');
+assert.ok((await page.$eval('.crudit-ui-filter-saved__confirm', (confirm) => confirm.textContent)).includes('Delete the filters “Active clients”?'), 'saved filters: the question names the set');
+assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), 'Cancel', 'saved filters: the focus is on Cancel');
+await page.keyboard.press('Escape');
+assert.equal(await page.$eval('.crudit-ui-filter-saved__confirm', (confirm) => confirm.hidden), true, 'saved filters: Escape folds the question');
+assert.ok(await visible(page, '.crudit-ui-filter-saved__list'), 'saved filters: and the list stays open');
+await page.click('.crudit-ui-filter-saved__item .crudit-ui-icon-btn');
+await shot(page, 'saved-filters-delete');
+await axe(page, 'saved filters, deletion asked');
+await savedNav(page, () => page.click('.crudit-ui-filter-saved__confirm .crudit-ui-btn--danger'));
+await toastSays(page, 'The filters “Active clients” are deleted.');
+await page.click('.crudit-ui-filter-saved .crudit-ui-dropdown > button');
+assert.ok(await visible(page, '.crudit-ui-filter-saved__empty'), 'saved filters: no set left, the button says where to save one');
+ok('saved filters: save, apply, remove, replace, delete');
+await page.close();
+// A user who is not signed in has no saved filters.
+page = await open(1440, '/client/');
+assert.equal(await page.$('.crudit-ui-filter-saved'), null, 'saved filters: nothing without a user');
+assert.equal(await page.$('.crudit-ui-filter-save'), null);
+await page.close();
+// A phone: the bookmark alone, its name stays in the accessible name.
+page = await open(360, '/client/', {user: 'alice'});
+assert.ok(await visible(page, '.crudit-ui-filter-saved__button'), 'saved filters: the button is on a phone');
+assert.ok((await page.$eval('.crudit-ui-filter-saved__label', (label) => label.getBoundingClientRect().width)) <= 1, 'saved filters: the label is hidden visually on a phone');
+assert.ok((await page.$eval('.crudit-ui-filter-saved__button', (button) => button.textContent)).includes('My filters'), 'saved filters: but still read');
+await axe(page, 'saved filters, phone');
+await page.close();
+
 // A phone: the main filters are in the side panel, modal.
 page = await open(360, '/client/');
 await page.click('[data-2lenet--crudit-ui-bundle--filters-target="toggle"]');

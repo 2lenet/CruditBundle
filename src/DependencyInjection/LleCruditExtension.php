@@ -32,6 +32,8 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
      */
     public function prepend(ContainerBuilder $container): void
     {
+        $this->prependSavedFilters($container);
+
         if (!interface_exists(AssetMapperInterface::class)) {
             return;
         }
@@ -49,6 +51,42 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
             'asset_mapper' => [
                 'paths' => [
                     \dirname(__DIR__, 2) . '/assets/dist' => self::ASSETS_PACKAGE,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * The entity of the saved filters (lot 3.1.f) is mapped by attributes, in the default entity manager, unless the
+     * project turned the feature off.
+     */
+    private function prependSavedFilters(ContainerBuilder $container): void
+    {
+        /** @var array<string, mixed> $bundles */
+        $bundles = $container->getParameter('kernel.bundles');
+        if (!isset($bundles['DoctrineBundle'])) {
+            return;
+        }
+        // `saved_filters.enabled: false`: no entity, so no table to create in the migrations of the project.
+        $enabled = true;
+        foreach ($container->getExtensionConfig('lle_crudit') as $config) {
+            // The configurations are merged in this order: the last one that says it wins.
+            $enabled = $config['saved_filters']['enabled'] ?? $enabled;
+        }
+        if ($enabled === false) {
+            return;
+        }
+
+        $container->prependExtensionConfig('doctrine', [
+            'orm' => [
+                'mappings' => [
+                    'LleCruditBundle' => [
+                        'type' => 'attribute',
+                        'is_bundle' => false,
+                        'dir' => \dirname(__DIR__) . '/Entity',
+                        'prefix' => 'Lle\\CruditBundle\\Entity',
+                        'alias' => 'LleCrudit',
+                    ],
                 ],
             ],
         ]);
@@ -96,6 +134,9 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.search.limit', $search['limit']);
         $container->setParameter('lle_crudit.search.screens', $search['screens']);
         $container->setParameter('lle_crudit.search.entities', $search['entities']);
+        $container->setParameter('lle_crudit.saved_filters.enabled', $processedConfig['saved_filters']['enabled']);
+        $container->setParameter('lle_crudit.saved_filters.max', $processedConfig['saved_filters']['max']);
+        $container->setParameter('lle_crudit.saved_filters.max_size', $processedConfig['saved_filters']['max_size']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {
