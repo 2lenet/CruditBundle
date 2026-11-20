@@ -46,6 +46,11 @@ class EntityToIdTransformerTest extends TestCase
         self::assertSame([$this->clients[3], $this->clients[7]], $this->transformer(true)->reverseTransform('3,7'));
     }
 
+    public function testTheSameIdTwiceIsOneEntity(): void
+    {
+        self::assertSame([$this->clients[3]], $this->transformer(true)->reverseTransform('3,3'));
+    }
+
     public function testNoValueIsNoEntity(): void
     {
         self::assertNull($this->transformer(false)->reverseTransform(''));
@@ -70,7 +75,7 @@ class EntityToIdTransformerTest extends TestCase
         $repository = $this->createStub(EntityRepository::class);
         $repository->method('find')->willReturnCallback(fn (mixed $id) => $clients[(int) $id] ?? null);
         $repository->method('findBy')->willReturnCallback(fn (array $criteria) => array_values(array_filter(
-            array_map(fn (mixed $id) => $clients[(int) $id] ?? null, $criteria['id']),
+            array_map(fn (mixed $id) => $clients[(int) $id] ?? null, array_unique($criteria['id'])),
         )));
         $em = $this->createStub(EntityManagerInterface::class);
         $em->method('getRepository')->willReturn($repository);

@@ -72,7 +72,7 @@ class AutocompleteType extends AbstractType
         $selected = [];
         $value = $view->vars["value"];
         if (is_string($value) && $value !== '' && $classFqcn) {
-            $ids = $options["multiple"] ? explode(",", $value) : [$value];
+            $ids = $options["multiple"] ? array_values(array_unique(explode(",", $value))) : [$value];
             /** @var class-string $classFqcn */
             $repository = $this->em->getRepository($classFqcn);
             $entities = $options["multiple"] ? $repository->findBy(["id" => $ids]) : array_filter([$repository->find($value)]);
@@ -87,10 +87,10 @@ class AutocompleteType extends AbstractType
                     $labels[$id] = $entity instanceof \Stringable ? (string) $entity : $id;
                 }
             }
+            // an id without entity (hidden by a Doctrine filter, deleted) stays chosen, shown with the id: the form then
+            // refuses it (EntityToIdTransformer), instead of removing it from the relation without a message
             foreach ($ids as $id) {
-                if (isset($labels[$id])) {
-                    $selected[] = ["value" => $id, "label" => $labels[$id]];
-                }
+                $selected[] = ["value" => $id, "label" => $labels[$id] ?? $id];
             }
         }
 

@@ -81,7 +81,8 @@ class EntityToIdTransformer implements DataTransformerInterface
 
         // Multiple input
         if ($this->isMultiple()) {
-            $ids = explode(",", $value);
+            // the same id twice is one entity: findBy() gives it once
+            $ids = array_values(array_unique(explode(",", $value)));
 
             $entities = $this->em
                 ->getRepository($class)

@@ -37,6 +37,24 @@ class AutocompleteTypeTest extends TestCase
         self::assertSame([['value' => '7', 'label' => '7']], $view->vars['combobox_selected']);
     }
 
+    public function testAnIdWithoutEntityStaysChosen(): void
+    {
+        // hidden by a Doctrine filter, or deleted: the form refuses it when saved, instead of removing it silently
+        self::assertSame(
+            [['value' => '3', 'label' => 'Alice'], ['value' => '9', 'label' => '9']],
+            $this->buildView('3,9', true, [3 => $this->stringable(3, 'Alice')])->vars['combobox_selected'],
+        );
+        self::assertSame([['value' => '9', 'label' => '9']], $this->buildView('9', false, [])->vars['combobox_selected']);
+    }
+
+    public function testTheSameIdTwiceIsOneChoice(): void
+    {
+        self::assertSame(
+            [['value' => '3', 'label' => 'Alice']],
+            $this->buildView('3,3', true, [3 => $this->stringable(3, 'Alice')])->vars['combobox_selected'],
+        );
+    }
+
     /**
      * @param array<int, object> $entities
      */
@@ -46,7 +64,7 @@ class AutocompleteTypeTest extends TestCase
         $repository->method('find')->willReturnCallback(fn (mixed $id) => $entities[(int) $id] ?? null);
         $repository->method('findBy')->willReturnCallback(
             fn (array $criteria) => array_values(array_filter(
-                array_map(fn (mixed $id) => $entities[(int) $id] ?? null, $criteria['id']),
+                array_map(fn (mixed $id) => $entities[(int) $id] ?? null, array_unique($criteria['id'])),
             )),
         );
         $em = $this->createStub(EntityManagerInterface::class);
