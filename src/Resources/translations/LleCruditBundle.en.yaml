@@ -62,6 +62,7 @@ crudit:
         reset: "Reset"
         operator:
             contains: "Contains"
+            doesnotcontain: "Does not contain"
             startswith: "Starts with"
             endswith: "Ends with"
             isnull: "Is empty"

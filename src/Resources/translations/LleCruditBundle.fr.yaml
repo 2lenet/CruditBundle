@@ -65,6 +65,7 @@ crudit:
         reset: "Réinitialiser"
         operator:
             contains: "Contient"
+            doesnotcontain: "Ne contient pas"
             startswith: "Débute par"
             endswith: "Termine par"
             isnull: "Est vide"

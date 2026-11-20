@@ -196,7 +196,7 @@ class YourCustomFilterType extends EntityFilterType
 
 **Available filter types :**
 
-- StringFilterType : simple string search
+- StringFilterType : simple string search. Use `->setSearchInTranslations(true)` to also search in the Gedmo translations of the field (disabled by default): `StringFilterType::new('label')->setSearchInTranslations(true)`. The field must be `#[Gedmo\Translatable]` in an entity with its own translation table (`#[Gedmo\TranslationEntity]` on a personal translation, e.g. `produit_translation`); other fields are only searched in the column. Positive operators match the field OR a translation, negative operators (not equal, does not contain) require the field AND every translation not to match. Translations of all locales are searched. Each translated field adds a subquery on the translation table: an index on `(object_id, field)` of this table is recommended.
 - BooleanFilterType : true/false/both values
 - ChoiceFilterType : a select
 - EntityFilterType : autocomplete select for entities

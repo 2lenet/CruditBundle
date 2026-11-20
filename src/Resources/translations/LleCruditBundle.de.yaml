@@ -62,6 +62,7 @@ crudit:
         reset: "Löschen"
         operator:
             contains: "Inhalt"
+            doesnotcontain: "Enthält nicht"
             startswith: "Beginnt mit"
             endswith: "Endet mit"
             isnull: "Ist leer"
