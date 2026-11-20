@@ -213,3 +213,16 @@ crudit:
 
     telephone:
         calling_code: "Calling code"
+
+    saved_filters:
+        saved: "The filters “%name%” are saved."
+        applied: "The filters “%name%” are applied."
+        deleted: "The filters “%name%” are deleted."
+        error:
+            unavailable: "Saved filters are not available."
+            no_filter: "No filter to save: choose at least one criterion."
+            name: "Give the filters a name (%limit% characters at most)."
+            too_many: "%limit% sets of filters at most for this screen: delete one before saving another."
+            too_big: "These filters are too large to be saved."
+            not_found: "These filters no longer exist."
+            nothing_left: "None of the criteria of these filters can be used any more: they are not applied."

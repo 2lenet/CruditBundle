@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\Processor;
  * (route_params with a route only), logo_dark needs logo.
  * lle_crudit.search: on by default, with the screens and no entity; an entity is a CrudConfig class, alone or with its
  * options.
+ * lle_crudit.saved_filters: on by default, 10 sets per user and per list, criteria of 8 KB at most.
  * hide_if_disabled: true by default, delete_hide_if_disabled: as hide_if_disabled unless set.
  * form_columns: 4 by default, 1 to 4; css_class_columns_form is removed (Bootstrap classes).
  */
@@ -212,6 +213,18 @@ class ConfigurationTest extends TestCase
     {
         $this->expectException(InvalidConfigurationException::class);
         $this->process($config);
+    }
+
+    public function testSavedFiltersDefaults(): void
+    {
+        self::assertSame(['enabled' => true, 'max' => 10, 'entity_manager' => null, 'max_size' => 8192], $this->process([])['saved_filters']);
+        self::assertSame(['enabled' => false, 'max' => 5, 'entity_manager' => null, 'max_size' => 8192], $this->process(['saved_filters' => ['enabled' => false, 'max' => 5]])['saved_filters']);
+    }
+
+    public function testInvalidSavedFilters(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->process(['saved_filters' => ['max' => 0]]);
     }
 
     private function process(array $config): array

@@ -213,3 +213,16 @@ crudit:
 
     telephone:
         calling_code: "Indicatif"
+
+    saved_filters:
+        saved: "Les filtres « %name% » sont enregistrés."
+        applied: "Les filtres « %name% » sont appliqués."
+        deleted: "Les filtres « %name% » sont supprimés."
+        error:
+            unavailable: "Les filtres enregistrés ne sont pas disponibles."
+            no_filter: "Aucun filtre à enregistrer : choisissez au moins un critère."
+            name: "Donnez un nom aux filtres (%limit% caractères au plus)."
+            too_many: "%limit% jeux de filtres au plus pour cet écran : supprimez-en un avant d’en enregistrer un autre."
+            too_big: "Ces filtres sont trop volumineux pour être enregistrés."
+            not_found: "Ces filtres n’existent plus."
+            nothing_left: "Aucun critère de ces filtres n’est encore utilisable : ils ne sont pas appliqués."

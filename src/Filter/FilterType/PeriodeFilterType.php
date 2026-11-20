@@ -10,7 +10,8 @@ class PeriodeFilterType extends AbstractFilterType
     public static function new(string $fieldname): self
     {
         $f = new self($fieldname);
-        $f->setAdditionnalKeys(['to']);
+        // `preset`: the name of the ready-made period chosen ("this_month"), kept with its dates so that a saved set of filters stays relative
+        $f->setAdditionnalKeys(['to', 'preset']);
 
         return $f;
     }

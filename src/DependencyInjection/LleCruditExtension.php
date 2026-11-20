@@ -13,6 +13,7 @@ use Lle\CruditBundle\Contracts\FilterSetInterface;
 use Lle\CruditBundle\Contracts\MenuProviderInterface;
 use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -32,6 +33,8 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
      */
     public function prepend(ContainerBuilder $container): void
     {
+        $this->prependSavedFilters($container);
+
         if (!interface_exists(AssetMapperInterface::class)) {
             return;
         }
@@ -52,6 +55,64 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
                 ],
             ],
         ]);
+    }
+
+    /**
+     * The entity of the saved filters (lot 3.1.f) is mapped by attributes, in the default entity manager (or the one of
+     * `saved_filters.entity_manager`), unless the project turned the feature off. The decision is taken here, while the
+     * container is built: `enabled` must be a boolean written in the configuration. A value from an environment variable
+     * (`%env(bool:…)%`) is not known yet, the entity is then mapped, and the feature is still off at run time.
+     */
+    private function prependSavedFilters(ContainerBuilder $container): void
+    {
+        /** @var array<string, mixed> $bundles */
+        $bundles = $container->getParameter('kernel.bundles');
+        if (!isset($bundles['DoctrineBundle'])) {
+            return;
+        }
+        // `saved_filters.enabled: false`: no entity, so no table to create in the migrations of the project.
+        $enabled = true;
+        $entityManager = null;
+        foreach ($container->getExtensionConfig('lle_crudit') as $config) {
+            // The configurations are merged in this order: the last one that says it wins.
+            $enabled = $config['saved_filters']['enabled'] ?? $enabled;
+            $entityManager = $config['saved_filters']['entity_manager'] ?? $entityManager;
+        }
+        if ($enabled === false) {
+            return;
+        }
+
+        $mapping = [
+            'LleCruditBundle' => [
+                'type' => 'attribute',
+                'is_bundle' => false,
+                'dir' => \dirname(__DIR__) . '/Entity',
+                'prefix' => 'Lle\\CruditBundle\\Entity',
+                'alias' => 'LleCrudit',
+            ],
+        ];
+
+        // A project with `entity_managers` names its managers: a mapping at the root of `orm` would make a manager
+        // `default` of its own, with this entity only. The mapping goes to the manager the project chose (or its default one).
+        $managers = [];
+        $default = null;
+        foreach ($container->getExtensionConfig('doctrine') as $config) {
+            $orm = is_array($config['orm'] ?? null) ? $config['orm'] : [];
+            $managers = array_merge($managers, array_keys(is_array($orm['entity_managers'] ?? null) ? $orm['entity_managers'] : []));
+            $default = $orm['default_entity_manager'] ?? $default;
+        }
+        if ($managers === []) {
+            $container->prependExtensionConfig('doctrine', ['orm' => ['mappings' => $mapping]]);
+
+            return;
+        }
+
+        $target = $entityManager ?? $default ?? (in_array('default', $managers, true) ? 'default' : $managers[0]);
+        if (!in_array($target, $managers, true)) {
+            // A name that is none of the managers would make a new one, on the default connection, with this entity only.
+            throw new InvalidConfigurationException(sprintf('The entity manager "%s" of "lle_crudit.saved_filters.entity_manager" is not one of those of doctrine.orm.entity_managers (%s).', $target, implode(', ', $managers)));
+        }
+        $container->prependExtensionConfig('doctrine', ['orm' => ['entity_managers' => [$target => ['mappings' => $mapping]]]]);
     }
 
     public function load(array $configs, ContainerBuilder $container): void
@@ -96,6 +157,9 @@ class LleCruditExtension extends Extension implements ExtensionInterface, Prepen
         $container->setParameter('lle_crudit.search.limit', $search['limit']);
         $container->setParameter('lle_crudit.search.screens', $search['screens']);
         $container->setParameter('lle_crudit.search.entities', $search['entities']);
+        $container->setParameter('lle_crudit.saved_filters.enabled', $processedConfig['saved_filters']['enabled']);
+        $container->setParameter('lle_crudit.saved_filters.max', $processedConfig['saved_filters']['max']);
+        $container->setParameter('lle_crudit.saved_filters.max_size', $processedConfig['saved_filters']['max_size']);
 
         // Load the templates for the Crudit form types
         if ($container->hasParameter('twig.form.resources')) {

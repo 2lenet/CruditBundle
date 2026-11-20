@@ -135,6 +135,13 @@ services:
     # crudit_form_flattened(), crudit_form_has_required(), crudit_form_field_deprecations() by #[AsTwigFunction]
     Lle\CruditBundle\Twig\FormExtension: ~
 
+    Lle\CruditBundle\Filter\SavedFilterManager:
+        arguments:
+            $registry: '@?doctrine'
+            $enabled: '%lle_crudit.saved_filters.enabled%'
+            $max: '%lle_crudit.saved_filters.max%'
+            $maxSize: '%lle_crudit.saved_filters.max_size%'
+
     Lle\CruditBundle\Search\GlobalSearch:
         arguments:
             $propertyAccessor: '@property_accessor'

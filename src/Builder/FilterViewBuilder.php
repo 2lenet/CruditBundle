@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Builder;
 
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use Lle\CruditBundle\Contracts\FilterSetInterface;
@@ -22,8 +23,12 @@ use Lle\CruditBundle\Filter\FilterType\PeriodeFilterType;
 use Lle\CruditBundle\Filter\FilterType\StringFilterType;
 use Lle\CruditBundle\Filter\FilterType\TreeFilterType;
 use Lle\CruditBundle\Filter\FilterType\WorkflowFilterType;
+use Lle\CruditBundle\Filter\SavedFilterManager;
 use Lle\CruditUiBundle\Format\Formatter;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -90,6 +95,9 @@ class FilterViewBuilder
         private readonly EntityManagerInterface $entityManager,
         private readonly Formatter $formatter,
         private readonly Environment $twig,
+        private readonly ?SavedFilterManager $savedFilters = null,
+        private readonly ?RouterInterface $router = null,
+        private readonly ?LoggerInterface $logger = null,
     ) {
     }
 
@@ -113,18 +121,122 @@ class FilterViewBuilder
             'id' => 'crudit-filters-' . $setId,
             'label' => $this->translator->trans('crudit.filter.region', ['%title%' => (string) ($config['title'] ?? '')], 'LleCruditBundle'),
             'filters' => $items,
-            'resetUrl' => $this->resetUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters))),
+            'resetUrl' => $this->resetUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters)), $this->offsetName($config)),
             'applyName' => $setId . '_filter',
+            'saved' => $this->saved($filterset, $filters, $view, $domain),
         ];
     }
 
     /**
-     * The address that brings the filters of this set back to their defaults: the current page (with the base URL of
-     * the application) and its other parameters (another list, a tab), without the ones of this set's filters.
+     * The sets of filters the user saved for this list (the prop `saved` of the Filter:Bar, lot 3.1.f): null when the
+     * feature is off, there is no user, the routes are not imported by the project or its table is not there yet (the
+     * list must keep working: the migration is a thing to do, not a reason for every list to fail).
+     *
+     * @param array<string, FilterTypeInterface> $filters
+     *
+     * @return array<string, mixed>|null
+     */
+    private function saved(FilterSetInterface $filterset, array $filters, BrickView $view, ?string $domain): ?array
+    {
+        if ($this->savedFilters === null || $this->router === null || !$this->savedFilters->isAvailable()) {
+            return null;
+        }
+
+        $setId = $filterset->getId();
+        try {
+            $saveUrl = $this->router->generate('lle_crudit_saved_filters_save', ['filterset' => $setId]);
+            $sets = $this->savedFilters->list($setId);
+            $current = $this->savedFilters->current($filterset, $sets);
+            $items = [];
+            foreach ($sets as $set) {
+                $parameters = ['filterset' => $setId, 'id' => $set->getId()];
+                $items[] = [
+                    'id' => $set->getId(),
+                    'name' => $set->getName(),
+                    'summary' => $this->savedSummary($filterset, $filters, $set->getCriteria(), $view, $domain),
+                    'current' => $set === $current,
+                    'applyUrl' => $this->router->generate('lle_crudit_saved_filters_apply', $parameters),
+                    'deleteUrl' => $this->router->generate('lle_crudit_saved_filters_delete', $parameters),
+                ];
+            }
+        } catch (RoutingException) {
+            // The project did not import the routes (UPGRADE-2.0.md): no "My filters".
+            return null;
+        } catch (TableNotFoundException $e) {
+            $this->logger?->warning('Saved filters are on but the table crudit_saved_filter is missing: run the migration (UPGRADE-2.0.md), or set lle_crudit.saved_filters.enabled to false.', ['exception' => $e]);
+
+            return null;
+        }
+
+        return [
+            'saveUrl' => $saveUrl,
+            'token' => $this->savedFilters->createToken(),
+            'redirect' => $this->pageUrl($setId, array_map(static fn (FilterTypeInterface $filter): string => $filter->getId(), array_values($filters)), $this->offsetName($view->getConfig())),
+            'max' => $this->savedFilters->getMax(),
+            'items' => $items,
+        ];
+    }
+
+    /**
+     * The first two criteria of a saved set in words ("Status: Late · Urgent: Yes +1"), as its chips would say them.
+     *
+     * @param array<string, FilterTypeInterface> $filters
+     * @param array<string, array<string, string>> $criteria
+     */
+    private function savedSummary(FilterSetInterface $filterset, array $filters, array $criteria, BrickView $view, ?string $domain): string
+    {
+        $data = $this->savedFilters?->criteriaToData($filterset, $criteria) ?? [];
+        $separator = $this->translator->trans('crudit_ui.filter.separator', [], 'LleCruditUiBundle');
+        $parts = [];
+        foreach ($filters as $filter) {
+            if (!$filter instanceof AbstractFilterType || !isset($data[$filter->getId()])) {
+                continue;
+            }
+            // A copy: the filter of the page keeps the data of the page.
+            $item = $this->item($filterset->getId(), (clone $filter)->setData($data[$filter->getId()]), $view, $domain);
+            if (($item['active'] ?? false) && ($item['summary'] ?? '') !== '') {
+                $parts[] = $item['label'] . $separator . $item['summary'];
+            }
+        }
+
+        return implode(' · ', array_slice($parts, 0, 2)) . (count($parts) > 2 ? ' +' . (count($parts) - 2) : '');
+    }
+
+    /**
+     * The address that brings the filters of this set back to their defaults (see pageUrl()).
      *
      * @param list<string> $filterIds the filters of the set
      */
-    private function resetUrl(string $setId, array $filterIds): string
+    private function resetUrl(string $setId, array $filterIds, ?string $offsetName): string
+    {
+        return $this->pageUrl($setId, $filterIds, $offsetName, [$setId . '_reset' => '1']);
+    }
+
+    /**
+     * The parameter that holds the page of the list (`<crud name in lower case>_offset`, read by AbstractCrudConfig):
+     * the name of the CRUD, not the id of the filter set.
+     *
+     * @param array<string, mixed> $config the config of the filter brick
+     */
+    private function offsetName(array $config): ?string
+    {
+        $name = $config['name'] ?? null;
+
+        return is_string($name) && $name !== '' ? strtolower($name) . '_offset' : null;
+    }
+
+    /**
+     * The current page (with the base URL of the application) and its other parameters (another list, a tab, the
+     * sublist of a record), without the ones of this set's filters: where to come back after a set is saved or
+     * recalled, or the filters are reset.
+     *
+     * The page of the list (`$offsetName`) is dropped too: the filters changed, so the list starts again at its first page;
+     * kept, the offset in the address would win over the reset done in the session, and could land on an empty page.
+     *
+     * @param list<string> $filterIds the filters of the set
+     * @param array<string, string> $more parameters to add
+     */
+    private function pageUrl(string $setId, array $filterIds, ?string $offsetName, array $more = []): string
     {
         $request = $this->requestStack->getCurrentRequest();
         $query = [];
@@ -134,13 +246,13 @@ class FilterViewBuilder
             // The parameters of this set's filters (`filter_<set>_<filter>_op`…), not of a set whose id starts the same.
             $isOwn = in_array($name, [$setId . '_filter', $setId . '_reset'], true)
                 || array_filter($own, static fn (string $prefix): bool => str_starts_with($name, $prefix)) !== [];
-            if (!$isOwn) {
+            if (!$isOwn && $name !== $offsetName) {
                 $query[$name] = $value;
             }
         }
-        $query[$setId . '_reset'] = '1';
+        $query += $more;
 
-        return ($request?->getBaseUrl() ?? '') . ($request?->getPathInfo() ?? '') . '?' . http_build_query($query);
+        return ($request?->getBaseUrl() ?? '') . ($request?->getPathInfo() ?? '') . ($query !== [] ? '?' . http_build_query($query) : '');
     }
 
     /**
@@ -174,6 +286,7 @@ class FilterViewBuilder
             $value = $value . 'T' . ($time !== '' ? $time : '00:00');
         }
         $to = isset($data['to']) && is_scalar($data['to']) ? (string) $data['to'] : null;
+        $preset = isset($data['preset']) && is_scalar($data['preset']) && $data['preset'] !== '' ? (string) $data['preset'] : null;
 
         [$type] = $this->type($filter) ?? ['legacy'];
 
@@ -186,6 +299,7 @@ class FilterViewBuilder
             'operator' => $operator,
             'value' => $value,
             'to' => $to,
+            'preset' => $preset,
             'hidden' => $filter instanceof AbstractFilterType && $filter->isHidden(),
             'primary' => $filter instanceof AbstractFilterType && $filter->isPrimary(),
         ];

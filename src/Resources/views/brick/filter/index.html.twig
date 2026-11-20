@@ -4,4 +4,4 @@
  # found again after a record is still filtered.
  #}
 {% set bar = view.data.bar %}
-<twig:LleCruditUi:Filter:Bar :id="bar.id" :label="bar.label" :filters="bar.filters" :resetUrl="bar.resetUrl" :applyName="bar.applyName" />
+<twig:LleCruditUi:Filter:Bar :id="bar.id" :label="bar.label" :filters="bar.filters" :resetUrl="bar.resetUrl" :applyName="bar.applyName" :saved="bar.saved|default(null)" />
