@@ -59,14 +59,26 @@ class EntityToIdTransformerTest extends TestCase
 
     public function testAnUnknownIdIsRefused(): void
     {
-        $this->expectException(TransformationFailedException::class);
-        $this->transformer(false)->reverseTransform('9');
+        $exception = $this->failure(fn () => $this->transformer(false)->reverseTransform('9'));
+        self::assertSame('crudit.autocomplete.not_found', $exception->getInvalidMessage());
+        self::assertSame(['{{ ids }}' => '9'], $exception->getInvalidMessageParameters());
     }
 
     public function testAnUnknownIdAmongTheIdsJoinedIsRefused(): void
     {
-        $this->expectException(TransformationFailedException::class);
-        $this->transformer(true)->reverseTransform('3,9');
+        $exception = $this->failure(fn () => $this->transformer(true)->reverseTransform('3,9,12'));
+        self::assertSame('crudit.autocomplete.not_found', $exception->getInvalidMessage());
+        self::assertSame(['{{ ids }}' => '9, 12'], $exception->getInvalidMessageParameters(), 'the ids not found only');
+    }
+
+    private function failure(callable $transform): TransformationFailedException
+    {
+        try {
+            $transform();
+        } catch (TransformationFailedException $exception) {
+            return $exception;
+        }
+        self::fail('The id is not refused');
     }
 
     private function transformer(bool $multiple): EntityToIdTransformer

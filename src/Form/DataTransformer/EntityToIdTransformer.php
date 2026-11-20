@@ -89,10 +89,9 @@ class EntityToIdTransformer implements DataTransformerInterface
                 ->findBy(["id" => $ids]);
 
             if (count($entities) !== count($ids)) {
-                throw new TransformationFailedException(
-                // An identifier from the input wasn't found in database
-                    "Number of found entities does not equal the number of input values"
-                );
+                $found = array_map(fn (mixed $entity): string => (string) $entity->getId(), $entities);
+
+                throw $this->notFound(array_diff($ids, $found));
             }
 
             return $entities;
@@ -104,15 +103,24 @@ class EntityToIdTransformer implements DataTransformerInterface
             ->find($value);
 
         if (!$entity) {
-            throw new TransformationFailedException(
-                sprintf(
-                    "Entity of class %s with id '%s' does not exist!",
-                    $this->class,
-                    $value
-                )
-            );
+            throw $this->notFound([(string) $value]);
         }
 
         return $entity;
+    }
+
+    /**
+     * An id without entity (deleted, or hidden by a Doctrine filter): the form tells which one, its token can be
+     * removed to save the form.
+     *
+     * @param string[] $ids
+     */
+    private function notFound(array $ids): TransformationFailedException
+    {
+        $list = implode(', ', $ids);
+        $exception = new TransformationFailedException(sprintf("No entity of class %s with the id(s) %s", $this->class, $list));
+        $exception->setInvalidMessage('crudit.autocomplete.not_found', ['{{ ids }}' => $list]);
+
+        return $exception;
     }
 }

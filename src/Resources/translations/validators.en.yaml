@@ -1,4 +1,6 @@
 crudit:
+    autocomplete:
+        not_found: "A chosen item no longer exists or is no longer available to you (no. {{ ids }}): remove it to save."
     telephone:
         invalid: "This phone number is not valid."
         invalid_characters: "The number may only contain digits (spaces, dots, dashes, slashes and parentheses are allowed)."
