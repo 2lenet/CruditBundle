@@ -41,6 +41,9 @@ class CsvExporter extends AbstractExporter
         $headersAdded = false;
 
         if ($file) {
+            if ($params->getBom()) {
+                fwrite($file, "\xEF\xBB\xBF");
+            }
             /** @var ResourceView $resource */
             foreach ($resources as $resource) {
                 if ($params->getIncludeHeaders() && !$headersAdded) {
@@ -58,6 +61,7 @@ class CsvExporter extends AbstractExporter
 
                 fputcsv($file, $line, $params->getSeparator());
             }
+            fclose($file);
         }
 
         return $path;

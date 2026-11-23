@@ -48,7 +48,29 @@ abstract class AbstractExporter implements ExporterInterface
             }
         }
 
-        return trim((string)$result);
+        return trim($this->toString($result));
+    }
+
+    /**
+     * The text of a value: a list (tags, channels) is its values joined by a comma, an enumeration its value, an object
+     * that has no text is empty.
+     */
+    private function toString(mixed $value): string
+    {
+        if (is_array($value)) {
+            return implode(', ', array_map(fn ($item): string => $this->toString($item), $value));
+        }
+        if ($value instanceof \BackedEnum) {
+            return (string) $value->value;
+        }
+        if ($value instanceof \UnitEnum) {
+            return $value->name;
+        }
+        if (is_object($value) && !$value instanceof \Stringable) {
+            return '';
+        }
+
+        return (string) $value;
     }
 
     /**

@@ -105,6 +105,21 @@ crudit:
             action: "Esportare"
             notConfigured: "L'esportazione non è configurata"
 
+    # Dialog of the export of a list (lot 3.1.g)
+    export:
+        title: "Esporta l'elenco"
+        description: "Il file contiene tutti i risultati dell'elenco, con i filtri e l'ordinamento attuali, non solo la pagina visualizzata."
+        format:
+            xls:
+                label: "Excel"
+                description: "Una cartella di lavoro per rielaborare i dati"
+            csv:
+                label: "CSV"
+                description: "Un file di testo, separato da punti e virgola"
+            pdf:
+                label: "PDF"
+                description: "Un documento pronto per la stampa"
+
     # Header of a record (lot 3.3.a): when it was created and modified, joined by " · "
     show:
         created: "Creato il %date%"
@@ -185,6 +200,7 @@ crudit:
                 generic: "Il valore non può essere cambiato."
                 access_denied: "Non ti è permesso cambiare questo valore."
                 bad_request: "Stai cercando di cambiare un valore inesistente."
+            export: "Non è stato possibile generare l'esportazione."
             delete: "Impossibile eliminare questo oggetto."
             resource_not_found: "La risorsa non è stata trovata."
 

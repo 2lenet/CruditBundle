@@ -7,6 +7,7 @@ namespace Lle\CruditBundle\Controller;
 use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
+use Lle\CruditBundle\Exception\ExporterException;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
@@ -14,6 +15,7 @@ use Lle\CruditBundle\Resolver\ResourceResolver;
 use Lle\CruditBundle\Service\NavigationStack;
 use Lle\CruditBundle\Workflow\WorkflowStates;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -263,6 +265,16 @@ trait TraitCrudController
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EXPORT');
 
+        // an unknown format (an old link) is a message on the list, not an error page
+        $format = (string) $request->query->get("format", "csv");
+        try {
+            $exporter->getFileExtension($format);
+        } catch (ExporterException) {
+            $this->addFlash('danger', 'crudit.flash.error.export');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
+
         $datasource = $this->config->getDatasource();
         $dsParams = $this->config->getDatasourceParams($request);
 
@@ -305,15 +317,20 @@ trait TraitCrudController
             }
         }
 
-        $format = $request->query->get("format", "csv");
         $params = $this->config->getExportParams($format);
 
-        $path = $exporter->export(
-            $generator(),
-            $format,
-            $params,
-            $totals,
-        );
+        try {
+            $path = $exporter->export(
+                $generator(),
+                $format,
+                $params,
+                $totals,
+            );
+        } catch (ExporterException) {
+            $this->addFlash('danger', 'crudit.flash.error.export');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
 
         $response = new BinaryFileResponse($path);
         $response->deleteFileAfterSend();
@@ -327,6 +344,13 @@ trait TraitCrudController
 
         $contentType = $exporter->getContentType($format);
         $response->headers->set('Content-Type', $contentType);
+
+        // The dialog of the export (controller export of CruditUiBundle) sends a token and waits for this cookie: the file
+        // is made, the download begins. Readable by the script (not HttpOnly), it holds the token and nothing else.
+        $token = (string) $request->query->get('download_token', '');
+        if (preg_match('/^[A-Za-z0-9-]{8,64}$/', $token) === 1) {
+            $response->headers->setCookie(new Cookie('crudit_export', $token, 0, '/', null, $request->isSecure(), false, false, Cookie::SAMESITE_LAX));
+        }
 
         return $response;
     }

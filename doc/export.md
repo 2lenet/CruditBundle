@@ -60,51 +60,91 @@ public function getExportParams(string $format): ExportParams
 }
 ```
 
+### The dialog
+
+The action opens the dialog `LleCruditUi:ExportDialog`: the format as cards, and a sentence that says the file holds
+**all the results** of the list with the current filters and sort order. The formats are those of the `export` key of the
+action (in this order); without that key, all the exporters are offered. The download is followed by the controller
+`export` of CruditUiBundle (enable it in `assets/controllers.json`): the dialog closes and a toast says it is done.
+
+The CSV starts with a UTF-8 byte order mark so that Excel reads the accents: `ExportParams::setBom(false)` leaves it out.
+Details and migration: `UPGRADE-2.0.md`, "The export".
+
 ### Extending
 
 You can add your own exporters.
 
-Your exporter must implement Lle\CruditBundle\Contracts\ExporterInterface
+Your exporter must implement `Lle\CruditBundle\Contracts\ExporterInterface` (autoconfigured, tag `crudit.exporter`):
 
-* `getSupportedFormat`: your format. It has to be then added in the "export" config of your ListAction (see above)
-* `export`: the actual export action. It must return a Response.
+* `getSupportedFormat`: your format (`custom`). Add it to the `export` config of your ListAction, or leave that key out to
+  offer every exporter.
+* `getFileExtension` (`.json`) and `getContentType` (`application/json`).
+* `export`: writes the file and **returns its path**; the controller sends it and deletes it. Throw an
+  `ExporterException` for a failure: the user goes back to the list with a message.
+
+To name the format in the dialog, implement `DescribedExporterInterface` instead: `getLabel()`, `getDescription()` and
+`getIcon()` (`file-excel`, `file-csv`, `file-pdf`, or `file`). Without it, the dialog uses the translation `export.<format>`
+of the domain of the list, else the code in capitals.
 
 Example:
 
 ```php
 <?php
 
-
 namespace App\Service\CustomExporter;
 
+use Lle\CruditBundle\Contracts\DescribedExporterInterface;
+use Lle\CruditBundle\Exporter\ExportParams;
 
-class CustomExporter implements ExporterInterface
+class JsonExporter implements DescribedExporterInterface
 {
     public function getSupportedFormat(): string
     {
-        return "custom";
+        return 'json';
     }
 
-    public function export(iterable $resources, ExportParams $params): Response
+    public function getFileExtension(): string
     {
-        return new Response("Hello from custom export!");
+        return '.json';
+    }
+
+    public function getContentType(): string
+    {
+        return 'application/json';
+    }
+
+    public function getLabel(): string
+    {
+        return 'JSON';
+    }
+
+    public function getDescription(): ?string
+    {
+        return 'For other programs';
+    }
+
+    public function getIcon(): ?string
+    {
+        return null;
+    }
+
+    public function export(iterable $resources, ExportParams $params, array $totals = []): string
+    {
+        $path = tempnam(sys_get_temp_dir(), 'json');
+        $rows = [];
+        foreach ($resources as $resource) {
+            $row = [];
+            foreach ($resource->getFields() as $field) {
+                $row[$field->getField()->getName()] = $field->getRawValue();
+            }
+            $rows[] = $row;
+        }
+        file_put_contents($path, json_encode($rows));
+
+        return $path;
     }
 }
 ```
-
-Don't forget to add action in your CrudConfig
-
-```php
-ListAction::new()
-    ->setModal("@LleCrudit/modal/_export.html.twig")
-    ->setConfig(
-        [
-            "export" => ["custom"],
-        ]
-    );
-```
-
-Crudit will automatically detect the exporters and complete the export form.
 
 ### Pdf exporter
 
