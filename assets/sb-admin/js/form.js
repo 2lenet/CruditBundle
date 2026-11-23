@@ -1,28 +1,5 @@
 'use strict';
 
-import TomSelect from "tom-select";
-
-export function initChoiceTomSelect() {
-    document.querySelectorAll('select.choice-tom-select:not(.tomselected)').forEach(select => {
-        new TomSelect('#' + select.id,
-            {
-                plugins: [
-                    'remove_button',
-                ],
-                render: {
-                    item: function(data, escape) {
-                        return '<div><div class="item-text">' + escape(data.text) + '</div></div>';
-                    },
-                },
-                onItemAdd() {
-                    select.parentElement.querySelector('.ts-control > input').value = '';
-                    select.parentElement.querySelector('.ts-dropdown').style.display = 'none';
-                },
-            },
-        );
-    });
-}
-
 window.addEventListener('load', function () {
 
     /**
@@ -41,9 +18,4 @@ window.addEventListener('load', function () {
                 form.classList.add('was-validated');
             }, false);
         });
-
-    /**
-     * Apply TomSelect on choice types forms
-     */
-    initChoiceTomSelect();
 });

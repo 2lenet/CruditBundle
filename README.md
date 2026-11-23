@@ -116,7 +116,7 @@ The edit view is a classical Symfony Form. You write your own FormType
 Crudit provides some help to be nicely integrated :
 
 - Many FormType ( Datetime, Entity, etc ...)
-- Entity Dropdown based on TomSelect with autocomplete
+- Lists with search for entities (choices asked to the server) and choices with several answers
 - DoctrineFormGuesser to automatically use Crudit FormType.
 - Markdown editor based on EasyMDE
 - Layout customisation is possible ( doc TODO / Block principle )

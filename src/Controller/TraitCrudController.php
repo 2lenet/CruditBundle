@@ -173,7 +173,7 @@ trait TraitCrudController
         $nbItems = $dataSource->autocompleteCountQuery($request->query->get("q", ""));
 
         $items = $dataSource->autocompleteQuery(
-            urldecode($request->query->get("q", "")),
+            $request->query->get("q", ""),
             $this->config->getDefaultAutocompleteSort() ?? $this->config->getDefaultSort(),
             $rqParams
         );

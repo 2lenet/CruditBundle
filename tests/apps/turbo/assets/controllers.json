@@ -59,6 +59,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "combobox": {
+                "enabled": true,
+                "fetch": "lazy"
+            },
             "command-palette": {
                 "enabled": true,
                 "fetch": "eager"

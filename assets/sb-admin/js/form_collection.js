@@ -1,9 +1,6 @@
 // Handle CollectionType client side
 // https://symfony.com/doc/current/form/form_collections.html
 
-import {initTomSelect} from './filters';
-import {initChoiceTomSelect} from './form';
-
 let onLoad = (callback) => {
     if (document.readyState !== 'loading') {
         callback();
@@ -57,9 +54,6 @@ function addFormToCollection(e) {
     collectionHolder.appendChild(item);
     addTagFormDeleteLink(collectionHolder.lastChild);
     collectionHolder.dataset.index++;
-
-    initChoiceTomSelect();
-    initTomSelect();
 }
 
 function addTagFormDeleteLink(item) {
