@@ -1235,6 +1235,10 @@ fed by `crudit_export()`, `ExportViewBuilder`): the format as cards (icon, name,
   that hangs gives the same error after a minute, and a file that comes late still closes the dialog. **Enable the controller**
   `export` in your `assets/controllers.json` (`"export": {"enabled": true, "fetch": "eager"}`); without it, the form
   still downloads the file (in the page), and nothing else happens.
+- **Two things the hidden frame asks of the application.** The file must come with `Content-Disposition: attachment` (the
+  export of Crudit does): shown inline, the frame displays it and the dialog says nothing was downloaded. And the page must
+  allow `frame-src 'self'` in its Content Security Policy: with `frame-src 'none'` (or a `default-src` without `'self'`)
+  every export fails although the server answers well.
 - **A project that sends its own file** (its own route behind the dialog) puts the cookie with
   `DownloadCookie::attach($request, $response)`. Do not write it by hand: `Cookie::create()` is **HttpOnly** by default, the
   script then never sees it and every export ends in an error after a minute, the file being downloaded all the same;

@@ -1552,7 +1552,7 @@ await page.evaluate(() => {
 await page.click('dialog[open] button[type=submit]');
 assert.equal(await page.$$eval('dialog[open] button[type=submit] .crudit-ui-icon--spin', (e) => e.length), 1, 'export: the spinner shows in the button while it works');
 await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 4000});
-assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export did not start. Try again.');
+assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export did not start. Try again, or reload the page if your session has expired.');
 assert.equal(await page.$eval('dialog[open] button[type=submit]', (e) => e.getAttribute('aria-busy')), null, 'export: the button is free again');
 assert.equal(await page.$$eval('dialog[open] button[type=submit] .crudit-ui-icon--spin', (e) => e.length), 0, 'export: the spinner is gone');
 assert.equal(await page.$eval('dialog[open]', (e) => e.open), true, 'export: the dialog stays open on an error');
@@ -1562,8 +1562,34 @@ await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path
 await page.waitForFunction(() => !document.querySelector('dialog[open]'), {timeout: 3000});
 await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Export done.'), {timeout: 3000});
 ok('export: a file that comes after the delay still closes the dialog');
-// the server answers a page, not a file (an unknown format: a message and a redirect to the list): the error at once, the page does not move
+// A times out, the user sends B, the file of A arrives: the toast only, B goes on; then B closes the dialog
 await exportButton.click();
+await settle(page);
+const sendAttempt = async () => {
+    await page.click('dialog[open] button[type=submit]');
+    return page.$eval('dialog[open] input[name=download_token]', (e) => e.value);
+};
+await page.evaluate(() => {
+    const form = document.querySelector('dialog[open] form');
+    form.setAttribute('data-2lenet--crudit-ui-bundle--export-timeout-value', '800');
+    form.addEventListener('submit', (event) => event.preventDefault());
+});
+const tokenA = await sendAttempt();
+await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 4000});
+await page.evaluate(() => document.querySelector('dialog[open] form').setAttribute('data-2lenet--crudit-ui-bundle--export-timeout-value', '8000'));
+const tokenB = await sendAttempt();
+assert.notEqual(tokenA, tokenB, 'export: each attempt has its own token');
+await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path=/`; }, tokenA);
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Export done.'), {timeout: 3000});
+assert.equal(await page.$eval('dialog[open] button[type=submit]', (e) => e.getAttribute('aria-busy')), 'true', 'export: the older file does not stop the attempt in progress');
+await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path=/`; }, tokenB);
+await page.waitForFunction(() => !document.querySelector('dialog[open]'), {timeout: 3000});
+ok('export: the late file of an older attempt does not stop the attempt in progress');
+// the server answers a page, not a file (an unknown format: a message and a redirect to the list): the error at once, the page does not move.
+// A page of its own: the submits of the steps above were stopped, and the delay (60 s) is not the one that ends this wait.
+page = await open(1440, '/client/');
+const exportButton2 = await page.evaluateHandle(() => [...document.querySelectorAll('.crudit-page-actions button[command="show-modal"]')].find((b) => b.textContent.trim() === 'Export'));
+await exportButton2.click();
 await settle(page);
 const before = page.url();
 await page.evaluate(() => {
@@ -1572,14 +1598,14 @@ await page.evaluate(() => {
     radio.checked = true;
 });
 await page.click('dialog[open] button[type=submit]');
-await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 5000});
+await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 8000});
 assert.equal(page.url(), before, 'export: an error page does not take the user away');
-assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export did not start. Try again.');
+assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export did not start. Try again, or reload the page if your session has expired.');
 assert.equal(await page.$eval('dialog[open] form', (e) => e.getAttribute('target')), null, 'export: the form goes back to its own page');
 // the error is gone when the dialog opens again
 await page.keyboard.press('Escape');
 await settle(page);
-await exportButton.click();
+await exportButton2.click();
 await settle(page);
 assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.hidden), true, 'export: the error of the last try is gone');
 ok('export: a page in place of a file is an error at once, and it goes when the dialog opens again');
