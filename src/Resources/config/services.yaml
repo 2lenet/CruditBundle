@@ -116,8 +116,12 @@ services:
 
     Lle\CruditBundle\Builder\FilterViewBuilder: ~
 
+    Lle\CruditBundle\Builder\PagerViewBuilder: ~
+
     # Function declared by #[AsTwigFunction] (autoconfiguration)
     Lle\CruditBundle\Twig\TableExtension: ~
+
+    Lle\CruditBundle\Twig\PagerExtension: ~
 
     Lle\CruditBundle\Workflow\WorkflowStates:
         arguments:

@@ -802,7 +802,7 @@ ok('a server error is shown');
 await page.close();
 
 // ---------- Table of the list (lot 3.1.b): the Table of CruditUiBundle fed by the ListBrick. axe on the table only: the
-// header of the page and the pager are reworked in 3.1.a and 3.1.d.
+// header of the page is reworked in 3.1.a.
 const axeTable = async (page, label) => {
     await page.evaluate(axeSource);
     assert.deepEqual(await page.evaluate(async () => (await axe.run('.crudit-ui-table', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)), [], `axe table ${label}`);
@@ -896,7 +896,7 @@ assert.ok(!(await page.$eval('tbody tr:first-child input[type=checkbox]', (e) =>
 assert.match(await page.$eval('.crudit-ui-selection-bar__count', (e) => e.textContent.trim()), /^1 row selected/, 'the row of the page 1 is still counted');
 await page.click('tbody tr:nth-child(3) input[type=checkbox]');
 assert.match(await page.$eval('.crudit-ui-selection-bar__count', (e) => e.textContent.trim()), /^2 rows selected/);
-await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.evaluate(() => [...document.querySelectorAll('nav[aria-label=navigation] a[href*="client_offset=0"]')].find((a) => a.offsetParent).click())]);
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.evaluate(() => [...document.querySelectorAll('.crudit-ui-pager nav a[href*="client_offset=0"]')].find((a) => a.offsetParent).click())]);
 assert.ok(await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (e) => e.checked), 'back on the page 1, the row is checked');
 assert.equal(await page.$eval('tbody tr:nth-child(2) input[type=checkbox]', (b) => b.dataset.id), kept);
 await page.reload({waitUntil: 'networkidle0'});
@@ -905,6 +905,32 @@ await page.click('tbody tr:nth-child(2) input[type=checkbox]');
 await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('.crudit-ui-table__sort[href*="client_sort=email"]')]);
 assert.ok(!(await visible(page, '.crudit-ui-selection-bar')), 'a sort starts from an empty selection');
 ok('selection: follows the pager only');
+// ---------- Pager of the list (lot 3.1.d): the Pager of CruditUiBundle at the bottom of the table, the parameters of the 1.x
+page = await open(1440, '/client/?client_limit=10&client_offset=10');
+assert.equal(await page.$$eval('.crudit-ui-pager', (e) => e.length), 1, 'the pager is not alone');
+assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '11 to 20 of 25 clients', 'pager: summary');
+assert.equal(await page.$eval('.crudit-ui-pager nav [aria-current]', (e) => e.textContent.replace(/\s+/g, ' ').trim()), 'Page 2', 'pager: current page');
+assert.equal(await page.evaluate(() => Boolean(document.querySelector('.crudit-ui-table__table').compareDocumentPosition(document.querySelector('.crudit-ui-pager')) & Node.DOCUMENT_POSITION_FOLLOWING)), true, 'pager: under the table, not above it');
+await page.evaluate(axeSource);
+assert.deepEqual(await page.evaluate(async () => (await axe.run('.crudit-ui-pager', {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']})).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)), [], 'axe pager');
+ok('pager: summary, current page, under the table, axe');
+// a link keeps the sort and the rows per page
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('.crudit-ui-pager nav a[href*="client_offset=20"]')]);
+assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '21 to 25 of 25 clients');
+assert.equal(await page.$$eval('.crudit-ui-pager nav [aria-disabled="true"]', (e) => e.filter((n) => n.tagName === 'A').length), 0, 'pager: a dead link on the last page');
+assert.equal(await page.$$eval('tbody tr.crudit-ui-table__row', (e) => e.length), 5);
+// the rows per page: the list reloads at once, back to the first page (the server keeps the page in the session)
+await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.$eval('.crudit-ui-pager select', (select) => { select.value = '30'; select.dispatchEvent(new Event('change', {bubbles: true})); })]);
+assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '1 to 25 of 25 clients', 'pager: the rows per page do not go back to the first page');
+assert.equal(await page.$eval('.crudit-ui-pager select', (e) => e.value), '30');
+// a page past the last one goes to the last page
+page = await open(1440, '/client/?client_limit=10&client_offset=500');
+assert.equal(await page.$eval('.crudit-ui-pager__summary', (e) => e.textContent.trim()), '21 to 25 of 25 clients', 'pager: a page past the end does not go to the last page');
+// on a phone: previous, "1 / 3", next, and the page does not scroll sideways
+page = await open(360, '/client/?client_limit=10');
+assert.equal(await page.$eval('.crudit-ui-pager__status', (e) => e.textContent.trim()), '1 / 3');
+assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'pager: the page scrolls sideways on a phone');
+ok('pager: link, rows per page, page past the end, phone');
 // Clear
 page = await open(1440, '/client/');
 await page.click('tbody tr:first-child input[type=checkbox]');
