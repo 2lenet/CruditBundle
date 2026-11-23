@@ -201,7 +201,7 @@ services:
             $exporters: !tagged_iterator crudit.exporter
 
     Lle\CruditBundle\Exporter\:
-        exclude: '../../Exporter/{Exporter.php,ExportParams.php}'
+        exclude: '../../Exporter/{Exporter.php,ExportParams.php,DownloadCookie.php}'
         resource: '../../Exporter'
         tags: ['crudit.exporter']
 

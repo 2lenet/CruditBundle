@@ -1228,11 +1228,18 @@ fed by `crudit_export()`, `ExportViewBuilder`): the format as cards (icon, name,
   longer "Array" with a PHP warning.
 - **A message, not an error page**: an unknown format or an exporter that fails with an `ExporterException` puts the
   flash message `crudit.flash.error.export` and goes back to the list.
-- **The download is followed**: the dialog sends a token (`download_token`), the server answers the file with the cookie
-  `crudit_export=<token>` (readable by the script, it holds nothing else), and the controller `export` of
-  `@2lenet/crudit-ui-bundle` closes the dialog and says "Export done." in a toast; without the cookie for a minute, an
-  error and a second try. **Enable the controller** `export` in your `assets/controllers.json`
-  (`"export": {"enabled": true, "fetch": "eager"}`); without it, the form still downloads the file, and nothing else happens.
+- **The download is followed**: the dialog sends a token (`download_token`) and the form goes into a hidden frame, so
+  the page never moves. The server answers the file with the cookie `crudit_export=<token>`, and the controller `export` of
+  `@2lenet/crudit-ui-bundle` closes the dialog and says "Export done." in a toast. **A page in place of a file** (a 500, a
+  403, the login after the session ended, a redirect) is an error shown at once in the dialog, with a second try; a server
+  that hangs gives the same error after a minute, and a file that comes late still closes the dialog. **Enable the controller**
+  `export` in your `assets/controllers.json` (`"export": {"enabled": true, "fetch": "eager"}`); without it, the form
+  still downloads the file (in the page), and nothing else happens.
+- **A project that sends its own file** (its own route behind the dialog) puts the cookie with
+  `DownloadCookie::attach($request, $response)`. Do not write it by hand: `Cookie::create()` is **HttpOnly** by default, the
+  script then never sees it and every export ends in an error after a minute, the file being downloaded all the same;
+  and the script deletes it at the path `/`. The helper checks the token (`[A-Za-z0-9-]{8,64}`, it comes from the
+  client and ends in a header).
 - **Removed**: the blocks `header`, `body` and `footer` of `modal/_export.html.twig` (it no longer extends
   `_base_modal.html.twig`), the `<select>` and the keys `crudit.modal.export.*` (they stay, unused). A project that overrode
   the template builds its dialog on `LleCruditUi:ExportDialog` (props `id`, `title`, `description`, `action`, `formats`).

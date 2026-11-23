@@ -9,13 +9,13 @@ use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Exception\ExporterException;
 use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Exporter\DownloadCookie;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Lle\CruditBundle\Service\NavigationStack;
 use Lle\CruditBundle\Workflow\WorkflowStates;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -345,12 +345,8 @@ trait TraitCrudController
         $contentType = $exporter->getContentType($format);
         $response->headers->set('Content-Type', $contentType);
 
-        // The dialog of the export (controller export of CruditUiBundle) sends a token and waits for this cookie: the file
-        // is made, the download begins. Readable by the script (not HttpOnly), it holds the token and nothing else.
-        $token = (string) $request->query->get('download_token', '');
-        if (preg_match('/^[A-Za-z0-9-]{8,64}$/', $token) === 1) {
-            $response->headers->setCookie(new Cookie('crudit_export', $token, 0, '/', null, $request->isSecure(), false, false, Cookie::SAMESITE_LAX));
-        }
+        // The dialog of the export waits for this cookie: the file is made, the download begins
+        DownloadCookie::attach($request, $response);
 
         return $response;
     }

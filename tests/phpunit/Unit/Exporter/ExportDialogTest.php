@@ -7,10 +7,14 @@ namespace phpunit\Unit\Exporter;
 use Lle\CruditBundle\Builder\ExportViewBuilder;
 use Lle\CruditBundle\Contracts\DescribedExporterInterface;
 use Lle\CruditBundle\Exporter\CsvExporter;
+use Lle\CruditBundle\Exporter\DownloadCookie;
 use Lle\CruditBundle\Exporter\ExcelExporter;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Exporter\ExportParams;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -142,5 +146,47 @@ class ExportDialogTest extends TestCase
 
         self::assertSame('', file_get_contents($path));
         unlink($path);
+    }
+
+    public function testTheDownloadCookieIsReadableByTheScriptAtTheRoot(): void
+    {
+        $response = new Response();
+        DownloadCookie::attach(Request::create('/client/export', 'GET', ['download_token' => '0a1b2c3d-4e5f']), $response);
+
+        $cookies = $response->headers->getCookies();
+        self::assertCount(1, $cookies);
+        self::assertSame('crudit_export', $cookies[0]->getName());
+        self::assertSame('0a1b2c3d-4e5f', $cookies[0]->getValue());
+        self::assertFalse($cookies[0]->isHttpOnly(), 'the script of the dialog reads it');
+        self::assertSame('/', $cookies[0]->getPath(), 'the script deletes it there');
+        self::assertSame(Cookie::SAMESITE_LAX, $cookies[0]->getSameSite());
+    }
+
+    /**
+     * @dataProvider invalidTokens
+     */
+    public function testNoCookieForATokenThatIsNotAPlainIdentifier(mixed $token): void
+    {
+        $response = new Response();
+        DownloadCookie::attach(Request::create('/client/export', 'GET', ['download_token' => $token]), $response);
+
+        self::assertSame([], $response->headers->getCookies());
+    }
+
+    public static function invalidTokens(): iterable
+    {
+        yield 'too short' => ['abc'];
+        yield 'too long' => [str_repeat('a', 65)];
+        yield 'a semicolon' => ['abcdefgh;path=/evil'];
+        yield 'a space' => ['abcdefgh ijkl'];
+        yield 'an array' => [['abcdefgh']];
+    }
+
+    public function testNoCookieWithoutAToken(): void
+    {
+        $response = new Response();
+        DownloadCookie::attach(Request::create('/client/export'), $response);
+
+        self::assertSame([], $response->headers->getCookies());
     }
 }
