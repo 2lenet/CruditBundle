@@ -84,6 +84,7 @@ class EntityToIdTransformer implements DataTransformerInterface
             // the same id twice is one entity: findBy() gives it once
             $ids = array_values(array_unique(explode(",", $value)));
 
+            /** @var list<mixed> $entities */
             $entities = $this->em
                 ->getRepository($class)
                 ->findBy(["id" => $ids]);
