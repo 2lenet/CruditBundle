@@ -1,4 +1,6 @@
 crudit:
+    autocomplete:
+        not_found: "Un élément choisi n'existe plus ou ne vous est plus accessible (n° {{ ids }}) : retirez-le pour enregistrer."
     telephone:
         invalid: "Ce numéro de téléphone n'est pas valide."
         invalid_characters: "Le numéro ne doit contenir que des chiffres (espaces, points, tirets, barres obliques et parenthèses acceptés)."

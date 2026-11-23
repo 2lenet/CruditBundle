@@ -2,7 +2,7 @@
 
 namespace phpunit\Unit\Form\Type;
 
-use Lle\CruditBundle\Form\Extension\TomSelectExtension;
+use Lle\CruditBundle\Form\Extension\ComboboxExtension;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\Form\Test\TypeTestCase;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
@@ -13,7 +13,7 @@ class TelephoneTypeTest extends TypeTestCase
 
     protected function getTypeExtensions(): array
     {
-        return [new TomSelectExtension()];
+        return [new ComboboxExtension()];
     }
 
     protected function setUp(): void
@@ -114,14 +114,11 @@ class TelephoneTypeTest extends TypeTestCase
         self::assertSame('+41', $preferred[0]->attr['data-code']);
     }
 
-    public function testCountrySelectIsNotTomSelect(): void
+    public function testCountrySelectIsNotAListWithSearch(): void
     {
         $view = $this->factory->create(TelephoneType::class)->createView();
 
-        self::assertStringNotContainsString(
-            TomSelectExtension::TOMSELECT_CLASSNAME,
-            $view['country']->vars['attr']['class'],
-        );
+        self::assertFalse($view['country']->vars['combobox']);
     }
 
     public function testUnknownDefaultCountryIsRejected(): void

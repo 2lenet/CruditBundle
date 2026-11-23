@@ -61,6 +61,6 @@ services:
     Lle\CruditBundle\Form\Extension\LatinDigitsExtension:
         tags:
             - { name: form.type_extension }
-    Lle\CruditBundle\Form\Extension\TomSelectExtension:
+    Lle\CruditBundle\Form\Extension\ComboboxExtension:
         tags:
             - { name: form.type_extension }

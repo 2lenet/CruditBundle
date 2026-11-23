@@ -170,7 +170,6 @@ services:
     Lle\CruditBundle\Twig\RouteFilteredLinkExtension:
         arguments:
             - '@router'
-            - '@doctrine.orm.entity_manager'
         tags: [twig.extension]
 
     Lle\CruditBundle\Twig\SanitizerExtension:
