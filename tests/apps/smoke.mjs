@@ -1271,6 +1271,9 @@ for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
     await page.focus('#client_referrer');
     await page.waitForFunction(() => document.querySelectorAll('#client_referrer_listbox [role="option"]').length === 20, {timeout: 5000}).catch(() => null);
     assert.equal(await page.$$eval('#client_referrer_listbox [role="option"]', (options) => options.length), 20, `the first choices of the server when the list opens at ${width}`);
+    // WebKit scrolls to the field focused later than Chromium, after the list has opened: the list follows it at the
+    // next frame (scroll, then requestAnimationFrame).
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     // The list under its input (above it when there is no room below), inside the screen
     const box = await page.$eval('#client_referrer_listbox', (list) => {
         const rect = list.getBoundingClientRect();
