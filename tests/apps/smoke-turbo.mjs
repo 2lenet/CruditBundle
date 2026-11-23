@@ -290,7 +290,7 @@ try {
     assert.equal((await bar()).shown, false, 'the bar shows without a selection');
     await page.click('tbody tr:nth-child(2) input[type=checkbox]');
     assert.deepEqual([(await bar()).shown, (await bar()).checked], [true, 1], 'the bar does not show for a checked row');
-    await after('turbo:load', () => page.evaluate(() => [...document.querySelectorAll('nav[aria-label=navigation] a[href*="client_offset=10"]')].find((a) => a.offsetParent).click()));
+    await after('turbo:load', () => page.evaluate(() => [...document.querySelectorAll('nav.crudit-ui-pager__nav a[href*="client_offset=10"]')].find((a) => a.offsetParent).click()));
     assert.match(await path(), /client_offset=10/);
     assert.deepEqual([(await bar()).shown, (await bar()).checked, (await bar()).count.startsWith('1 row selected')], [true, 0, true], 'the selection does not follow the pager visited by Turbo');
     await page.click('tbody tr:nth-child(3) input[type=checkbox]');
