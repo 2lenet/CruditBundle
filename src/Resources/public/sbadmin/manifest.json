@@ -1,3 +1,4 @@
 {
-  "bundles/crudit/app.js": "/app.js"
+  "bundles/crudit/app.js": "/app.js",
+  "bundles/crudit/easymde.js": "/easymde.js"
 }
