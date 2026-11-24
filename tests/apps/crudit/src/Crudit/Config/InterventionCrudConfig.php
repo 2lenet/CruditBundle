@@ -9,7 +9,9 @@ use App\Entity\Intervention;
 use App\Security\AllowAllVoter;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
+use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Field\Field;
+use Lle\CruditBundle\Dto\Icon;
 use Lle\CruditBundle\Dto\ShowAlert;
 use Lle\CruditBundle\Field\CurrencyField;
 use Lle\CruditBundle\Field\DateField;
@@ -28,6 +30,26 @@ class InterventionCrudConfig extends AbstractCrudConfig
     public function __construct(InterventionDatasource $datasource)
     {
         $this->datasource = $datasource;
+    }
+
+    /**
+     * A second button of export with its own formats, added the way a project does (numeric key, not `export`): the
+     * controller must accept its format although the action of the bundle does not offer it.
+     */
+    public function getListActions(): array
+    {
+        $actions = parent::getListActions();
+        $actions[] = ListAction::new('Export XML', $this->getPath(CrudConfigInterface::EXPORT), Icon::new('download'))
+            ->setModal('@LleCrudit/modal/_export.html.twig')
+            ->setConfig(['export' => ['xml']])
+            ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EXPORT));
+        // a button for a role that nobody has: its format is not asked by the URL
+        $actions[] = ListAction::new('Export TXT', $this->getPath(CrudConfigInterface::EXPORT), Icon::new('download'))
+            ->setModal('@LleCrudit/modal/_export.html.twig')
+            ->setConfig(['export' => ['txt']])
+            ->setRole(AllowAllVoter::NOBODY);
+
+        return $actions;
     }
 
     /**

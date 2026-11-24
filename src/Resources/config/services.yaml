@@ -118,10 +118,14 @@ services:
 
     Lle\CruditBundle\Builder\PagerViewBuilder: ~
 
+    Lle\CruditBundle\Builder\ExportViewBuilder: ~
+
     # Function declared by #[AsTwigFunction] (autoconfiguration)
     Lle\CruditBundle\Twig\TableExtension: ~
 
     Lle\CruditBundle\Twig\PagerExtension: ~
+
+    Lle\CruditBundle\Twig\ExportExtension: ~
 
     Lle\CruditBundle\Workflow\WorkflowStates:
         arguments:
@@ -197,7 +201,7 @@ services:
             $exporters: !tagged_iterator crudit.exporter
 
     Lle\CruditBundle\Exporter\:
-        exclude: '../../Exporter/{Exporter.php,ExportParams.php}'
+        exclude: '../../Exporter/{Exporter.php,ExportParams.php,DownloadCookie.php}'
         resource: '../../Exporter'
         tags: ['crudit.exporter']
 

@@ -123,8 +123,15 @@ class ExcelExporter extends AbstractExporter
             throw new ExporterException('Unknown EXCEL exporter error');
         }
 
-        $writer = new Xls($spreadsheet);
-        $writer->save($path);
+        try {
+            $writer = new Xls($spreadsheet);
+            $writer->save($path);
+        } catch (\Throwable $e) {
+            // not left in the temporary folder
+            @unlink($path);
+
+            throw $e;
+        }
 
         return $path;
     }

@@ -37,10 +37,27 @@ class CsvExporter extends AbstractExporter
             throw new ExporterException("Unknown CSV exporter error");
         }
 
+        try {
+            $this->write($path, $resources, $params);
+        } catch (\Throwable $e) {
+            // not left in the temporary folder
+            @unlink($path);
+
+            throw $e;
+        }
+
+        return $path;
+    }
+
+    private function write(string $path, iterable $resources, ExportParams $params): void
+    {
         $file = fopen($path, "w");
         $headersAdded = false;
 
         if ($file) {
+            if ($params->getBom()) {
+                fwrite($file, "\xEF\xBB\xBF");
+            }
             /** @var ResourceView $resource */
             foreach ($resources as $resource) {
                 if ($params->getIncludeHeaders() && !$headersAdded) {
@@ -58,9 +75,8 @@ class CsvExporter extends AbstractExporter
 
                 fputcsv($file, $line, $params->getSeparator());
             }
+            fclose($file);
         }
-
-        return $path;
     }
 
     protected function getHeaders(array $fields): array

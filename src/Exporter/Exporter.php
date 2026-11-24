@@ -3,6 +3,8 @@
 namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
+use Lle\CruditBundle\Dto\Action\AbstractAction;
+use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Exception\ExporterException;
 
 class Exporter
@@ -10,6 +12,9 @@ class Exporter
     public const CSV = 'csv';
     public const EXCEL = 'xls';
     public const PDF = 'pdf';
+
+    /** The formats of the bundle: what an action offers when its config does not choose. */
+    public const BUNDLE_FORMATS = [self::CSV, self::EXCEL, self::PDF];
 
     public function __construct(
         protected iterable $exporters,
@@ -19,6 +24,124 @@ class Exporter
     public function export(iterable $resources, string $format, ExportParams $params, array $totals = []): string
     {
         return $this->getExporter($format)->export($resources, $params, $totals);
+    }
+
+    /**
+     * The codes of the formats of all the exporters (those of the bundle and those of the projects), in the order of
+     * the services.
+     *
+     * @return list<string>
+     */
+    public function getFormats(): array
+    {
+        $formats = [];
+        /** @var ExporterInterface $exporter */
+        foreach ($this->exporters as $exporter) {
+            $formats[] = $exporter->getSupportedFormat();
+        }
+
+        return array_values(array_unique($formats));
+    }
+
+    /**
+     * The formats of the bundle that have an exporter. A project exporter is often written for one entity (an XML file of
+     * the invoices): it is offered only where an action chooses it.
+     *
+     * @return list<string>
+     */
+    public function getDefaultFormats(): array
+    {
+        return array_values(array_filter(self::BUNDLE_FORMATS, fn (string $format): bool => $this->supports($format)));
+    }
+
+    /**
+     * The formats an action offers: those of `setConfig(['export' => [...]])`, in that order, without the codes that
+     * no exporter knows (a typo, a removed exporter); the formats of the bundle when it has none (no key, an empty list,
+     * only unknown codes).
+     *
+     * @param array<string, mixed> $config the config of the action
+     *
+     * @return list<string>
+     */
+    public function resolveFormats(array $config): array
+    {
+        $configured = $config['export'] ?? null;
+        $formats = [];
+        if (is_iterable($configured)) {
+            foreach ($configured as $code) {
+                if (is_string($code) && $this->supports($code)) {
+                    $formats[] = $code;
+                }
+            }
+        }
+
+        return $formats !== [] ? array_values(array_unique($formats)) : $this->getDefaultFormats();
+    }
+
+    /**
+     * The formats that a page offers to a user: those of every action of the list that points to the route of the export,
+     * whatever its key (a project adds its actions with a numeric key; a list may have two buttons with different
+     * formats), in groups and dropdowns too, and that the user may use (the role of the button: a format of a button
+     * reserved to ROLE_ADMIN is not asked by the URL by a user who only has the role EXPORT). An action with only an URL
+     * (setUrl()) has no route: it is not looked at. No such action at all: the formats of the bundle. Some, but none that
+     * this user may use: no format.
+     *
+     * @param iterable<mixed> $actions the actions of the list (actions, groups of actions, dropdowns)
+     * @param \Closure(string): bool $isGranted tells whether the user has a role
+     *
+     * @return list<string>
+     */
+    public function resolveActionsFormats(iterable $actions, string $route, \Closure $isGranted): array
+    {
+        $configs = [];
+        $found = false;
+        $collect = function (iterable $actions) use (&$collect, &$configs, &$found, $route, $isGranted): void {
+            foreach ($actions as $action) {
+                if (is_array($action)) {
+                    $collect($action);
+                } elseif ($action instanceof DropdownAction) {
+                    foreach ($action->getActions() as $group) {
+                        $collect(is_iterable($group) ? $group : [$group]);
+                    }
+                } elseif ($action instanceof AbstractAction && $action->hasPath() && $action->getPath()->getRoute() === $route) {
+                    $found = true;
+                    foreach ([$action->getPathRole(), $action->getRole()] as $role) {
+                        if ($role !== null && !$isGranted($role)) {
+                            continue 2;
+                        }
+                    }
+                    $configs[] = $action->getConfig();
+                }
+            }
+        };
+        $collect($actions);
+
+        $formats = [];
+        foreach ($found ? $configs : [[]] as $config) {
+            $formats = [...$formats, ...$this->resolveFormats($config)];
+        }
+
+        return array_values(array_unique($formats));
+    }
+
+    public function supports(string $format): bool
+    {
+        return $this->findExporter($format) !== null;
+    }
+
+    /**
+     * The exporter of a format, to describe it in the dialog of the export (DescribedExporterInterface).
+     */
+    public function findExporter(string $format): ?ExporterInterface
+    {
+        /** @var ExporterInterface $exporter */
+        foreach ($this->exporters as $exporter) {
+            if ($format === $exporter->getSupportedFormat()) {
+                return $exporter;
+            }
+        }
+
+        return null;
     }
 
     public function getContentType(string $format): string
@@ -33,13 +156,7 @@ class Exporter
 
     protected function getExporter(string $format): ExporterInterface
     {
-        /** @var ExporterInterface $exporter */
-        foreach ($this->exporters as $exporter) {
-            if ($format === $exporter->getSupportedFormat()) {
-                return $exporter;
-            }
-        }
-
-        throw new ExporterException("Export action: format '$format' is not supported");
+        return $this->findExporter($format)
+            ?? throw new ExporterException("Export action: format '$format' is not supported");
     }
 }
