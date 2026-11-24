@@ -353,7 +353,7 @@ trait TraitCrudController
      * whatever its key (the skeleton adds the actions of a project with a numeric key; a list may have two buttons with
      * different formats), in a dropdown too, and that the user may use (the role of the button: a format of a button
      * reserved to ROLE_ADMIN is not asked by the URL by a user who only has the role EXPORT). An action with only an
-     * URL (setUrl()) has no route: it is not looked at. No such action: the formats of the bundle.
+     * URL (setUrl()) has no route: it is not looked at. No such action at all: the formats of the bundle. Some, but none that this user may use: no format.
      *
      * @return list<string>
      */
@@ -361,7 +361,8 @@ trait TraitCrudController
     {
         $route = $this->config->getPath(CrudConfigInterface::EXPORT)->getRoute();
         $configs = [];
-        $collect = function (iterable $actions) use (&$collect, &$configs, $route): void {
+        $found = false;
+        $collect = function (iterable $actions) use (&$collect, &$configs, &$found, $route): void {
             foreach ($actions as $action) {
                 if (is_array($action)) {
                     $collect($action);
@@ -370,6 +371,7 @@ trait TraitCrudController
                         $collect(is_iterable($group) ? $group : [$group]);
                     }
                 } elseif ($action instanceof AbstractAction && $action->hasPath() && $action->getPath()->getRoute() === $route) {
+                    $found = true;
                     // the formats of a button reserved to a role (setRole()) are for the users who have that role
                     foreach ([$action->getPathRole(), $action->getRole()] as $role) {
                         if ($role !== null && !$this->isGranted($role)) {
@@ -382,8 +384,13 @@ trait TraitCrudController
         };
         $collect($this->config->getListActions());
 
+        // No action of export at all: the formats of the bundle. Actions that this user may not use: no format.
+        if (!$found) {
+            $configs = [[]];
+        }
+
         $formats = [];
-        foreach ($configs === [] ? [[]] : $configs as $config) {
+        foreach ($configs as $config) {
             $formats = [...$formats, ...$exporter->resolveFormats($config)];
         }
 
