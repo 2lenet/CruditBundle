@@ -1,5 +1,4 @@
 {
-  "bundles/crudit/app.js": "autoapp.js",
-  "bundles/crudit/easymde.js": "autoeasymde.js",
-  "bundles/crudit/712.js": "auto712.js"
+  "bundles/crudit/app.js": "/app.js",
+  "bundles/crudit/easymde.js": "/easymde.js"
 }

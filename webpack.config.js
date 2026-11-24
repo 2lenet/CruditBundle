@@ -26,8 +26,9 @@ basic('sbadmin', Encore)
     .addEntry('app', './assets/sb-admin/js/app.js')
 ;
 const sbadmin = Encore.getWebpackConfig();
-// Lazy chunks (EasyMDE) are served next to app.js, wherever assets:install put it.
-sbadmin.output.publicPath = 'auto';
+// A single, stably named lazy chunk (easymde.js): a numeric vendor id could change between
+// builds and 404 for a browser that still caches the previous app.js.
+sbadmin.optimization.splitChunks = false;
 // The host application's Encore build also registers its chunks in `self.webpackChunk`:
 // sharing that global would let one runtime swallow the other's chunks.
 sbadmin.output.uniqueName = 'lleCrudit';

@@ -1,3 +1,4 @@
+import './public_path';
 import './action';
 import './editinplace';
 import './batch_actions';
