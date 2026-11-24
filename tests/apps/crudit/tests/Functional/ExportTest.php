@@ -99,6 +99,10 @@ class ExportTest extends AppTestCase
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('attachment', (string) $this->client->getResponse()->headers->get('Content-Disposition'));
 
+        // the button of `txt` is reserved to a role that this user does not have
+        $this->client->request('GET', '/intervention/export?format=txt');
+        self::assertResponseRedirects('/intervention/');
+
         // not a format of the bundle, so the lists without such an action do not offer it
         $this->client->request('GET', '/client/export?format=xml');
         self::assertResponseRedirects('/client/');

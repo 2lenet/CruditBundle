@@ -89,6 +89,14 @@ abstract class AbstractAction implements ActionInterface
         return $this;
     }
 
+    /**
+     * An action may have no path (a print action, a link with only an URL): getPath() then fails.
+     */
+    public function hasPath(): bool
+    {
+        return isset($this->path);
+    }
+
     public function getPath(): Path
     {
         return $this->path;

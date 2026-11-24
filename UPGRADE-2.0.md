@@ -1222,7 +1222,7 @@ fed by `crudit_export()`, `ExportViewBuilder`): the format as cards (icon, name,
   for one entity (an XML file of the invoices) and would break on the other lists. **This can break**: a 1.x action
   without the key showed "The export is not configured"; and a project that counted on all its exporters appearing must
   list them (`setConfig(['export' => ['csv', 'xml_sage']])`). The codes that no exporter knows (a typo, a removed
-  exporter) are left out of the dialog, and **the controller refuses a format that the action does not offer** (before,
+  exporter) are left out of the dialog, and **the controller refuses a format that no button of the list offers to this user** (every action that points to the export counts, whatever its key; a button with `setRole()` counts only for the users who have that role) (before,
   any registered format could be asked with the role `EXPORT`). `Exporter::resolveFormats()` gives the list,
   `Exporter::supports()` tells whether a format has an exporter. The name of a format of the bundle is translated (`crudit.export.format.xls|csv|pdf.label|description`). For
   a format of the project, in this order: the exporter describes itself (new `DescribedExporterInterface`: `getLabel()`,

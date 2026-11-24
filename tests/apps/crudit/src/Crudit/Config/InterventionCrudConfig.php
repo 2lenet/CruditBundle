@@ -43,6 +43,11 @@ class InterventionCrudConfig extends AbstractCrudConfig
             ->setModal('@LleCrudit/modal/_export.html.twig')
             ->setConfig(['export' => ['xml']])
             ->setRole(sprintf('ROLE_%s_%s', $this->getName(), CrudConfigInterface::EXPORT));
+        // a button for a role that nobody has: its format is not asked by the URL
+        $actions[] = ListAction::new('Export TXT', $this->getPath(CrudConfigInterface::EXPORT), Icon::new('download'))
+            ->setModal('@LleCrudit/modal/_export.html.twig')
+            ->setConfig(['export' => ['txt']])
+            ->setRole(AllowAllVoter::NOBODY);
 
         return $actions;
     }

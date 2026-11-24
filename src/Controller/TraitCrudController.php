@@ -351,7 +351,9 @@ trait TraitCrudController
     /**
      * The formats that the page offers: those of every action of the list that points to the route of the export,
      * whatever its key (the skeleton adds the actions of a project with a numeric key; a list may have two buttons with
-     * different formats), in a dropdown too. No such action: the formats of the bundle.
+     * different formats), in a dropdown too, and that the user may use (the role of the button: a format of a button
+     * reserved to ROLE_ADMIN is not asked by the URL by a user who only has the role EXPORT). An action with only an
+     * URL (setUrl()) has no route: it is not looked at. No such action: the formats of the bundle.
      *
      * @return list<string>
      */
@@ -367,16 +369,14 @@ trait TraitCrudController
                     foreach ($action->getActions() as $group) {
                         $collect(is_iterable($group) ? $group : [$group]);
                     }
-                } elseif ($action instanceof AbstractAction) {
-                    try {
-                        $actionRoute = $action->getPath()->getRoute();
-                    } catch (\Error) {
-                        // an action without a path (print, a template of its own)
-                        continue;
+                } elseif ($action instanceof AbstractAction && $action->hasPath() && $action->getPath()->getRoute() === $route) {
+                    // the formats of a button reserved to a role (setRole()) are for the users who have that role
+                    foreach ([$action->getPathRole(), $action->getRole()] as $role) {
+                        if ($role !== null && !$this->isGranted($role)) {
+                            continue 2;
+                        }
                     }
-                    if ($actionRoute === $route) {
-                        $configs[] = $action->getConfig();
-                    }
+                    $configs[] = $action->getConfig();
                 }
             }
         };
