@@ -468,8 +468,8 @@ class FormTest extends AppTestCase
         self::assertCount(1, $current);
         self::assertSame('front of the shop.svg', $current->filter('.crudit-ui-file__label')->text(), 'the original name kept by the mapping');
         self::assertSame('1 KB · current file', $current->filter('.crudit-ui-file__size')->text());
-        self::assertSame('Preview of front of the shop.svg', $current->filter('img')->attr('alt'));
-        self::assertSame('/uploads/clients/front-6745a1b2c3d4e.svg', $current->filter('img')->attr('src'));
+        // No preview for a VichFileType: its public uri may not be served (a private mapping, a download_route)
+        self::assertCount(0, $current->filter('img'));
         self::assertSame('/uploads/clients/front-6745a1b2c3d4e.svg', $current->filter('a[download]')->attr('href'));
         self::assertSame('Delete front of the shop.svg', $current->filter('[data-2lenet--crudit-ui-bundle--file-drop-target="delete"] .crudit-ui-visually-hidden')->text());
         self::assertSame('1', $current->filter('input[type="checkbox"][hidden][name="client[attachmentFile][delete]"]')->attr('value'));

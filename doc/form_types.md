@@ -47,9 +47,10 @@ $builder->add('country', CountryType::class, ['combobox' => true]);
 A file of VichUploaderBundle (`VichFileType`, `VichImageType`) or the `Lle\CruditBundle\Form\Type\FileType` is the file
 of CruditUiBundle: a drop zone covered by the true input (a click opens the picker, a file dropped on it is chosen), the
 file chosen listed with its size and a preview for an image. The file already sent shows its name, its size, a preview
-for an image, a link "Download" and, with `allow_delete`, a button "Delete *name*" (it checks the checkbox `delete` of
-Vich, hidden; "Cancel the deletion" puts it back). Its name is the original name and its size the one kept by the
-mapping, when it keeps them:
+for an image (`VichImageType`, the `FileType` of Crudit; not `VichFileType`, whose public uri may not be served), a
+link "Download" and, with `allow_delete`, a button "Delete *name*" (it checks the checkbox `delete` of Vich, hidden;
+"Cancel the deletion" puts it back). Its name is the original name and its size the one kept by the mapping, when it
+keeps them:
 
 ```php
 #[Vich\UploadableField(mapping: 'documents', fileNameProperty: 'documentName', size: 'documentSize', originalName: 'documentOriginalName', mimeType: 'documentMimeType')]

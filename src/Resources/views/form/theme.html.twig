@@ -62,9 +62,10 @@
 {#
  # A file of VichUploaderBundle (VichFileType, VichImageType, the FileType of Crudit): the file of CruditUiBundle (a drop
  # zone covered by the input, the file chosen listed), with the file already sent (VichFileExtension): its name, its
- # size when the mapping keeps it, its preview (an image), a link Download (download_uri) and, with allow_delete, a
- # button Delete that checks the checkbox delete of Vich, hidden. The label points to the input; the help and the
- # error of the field are attached to it.
+ # size when the mapping keeps it, its preview when the type gives an image_uri and the file is an image (VichImageType,
+ # the FileType of Crudit; not VichFileType: its public uri may not be served), a link Download (download_uri) and,
+ # with allow_delete, a button Delete that checks the checkbox delete of Vich, hidden. The label points to the input;
+ # the help and the error of the field are attached to it.
  #}
 {%- block crudit_file_row -%}
     {{- block('crudit_vich_row') -}}
@@ -120,9 +121,11 @@
         {%- set crudit_asset = asset_helper|default(false) is same as(true) -%}
         {%- set crudit_download = download_uri|default(null) -%}
         {%- if crudit_download is not empty and crudit_download is not same as(true) and crudit_asset %}{% set crudit_download = asset(crudit_download) %}{% endif -%}
-        {#- A preview of an image only: the image of VichImageType, else the file when it is an image -#}
+        {#- A preview of an image only, from image_uri (VichImageType, the FileType of Crudit): never the public uri of the
+         # storage, which a private mapping or a download_route does not serve -#}
         {%- set crudit_image = (crudit_file_current.mime_type ?? '') starts with 'image/' or crudit_file_current.uri matches '/\\.(png|jpe?g|gif|svg|webp|avif)$/i' -%}
-        {%- set crudit_preview = image_uri|default(null) is not empty and ('vich_image' in block_prefixes or crudit_image) ? image_uri : (crudit_image ? crudit_file_current.uri : null) -%}
+        {%- set crudit_preview = image_uri|default(null) is not empty and ('vich_image' in block_prefixes or crudit_image)
+            ? image_uri : null -%}
         {%- if crudit_preview is not empty and crudit_asset %}{% set crudit_preview = asset(crudit_preview) %}{% endif -%}
         {%- set crudit_current = {
             name: crudit_file_current.name,
@@ -138,7 +141,6 @@
     {%- endif -%}
     {{- include('@LleCruditUi/form/_file.html.twig', {
         input: crudit_input,
-        multiple: form.file.vars.multiple|default(false),
         invalid: errors|length > 0,
         disabled: disabled,
         current: crudit_current,

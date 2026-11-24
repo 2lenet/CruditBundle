@@ -1020,7 +1020,8 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
   `FileType` of Symfony are rendered by CruditUiBundle (docs/forms.md, "File"): a drop zone covered by the true input (a
   click opens the picker, a file dropped is chosen), the file chosen listed with its size and a preview for an image, a
   button to remove it. The file already sent: its name (the original name when the mapping keeps it, `originalName`),
-  its size (when the mapping keeps it, `size`), a preview for an image, a link "Download", and, with `allow_delete`, a
+  its size (when the mapping keeps it, `size`), a preview for an image (`VichImageType`, the `FileType` of Crudit; not
+  `VichFileType`, whose public uri may not be served), a link "Download", and, with `allow_delete`, a
   button "Delete *name*" that checks the checkbox `delete` of Vich, hidden (a button "Cancel the deletion" puts it
   back). The label of the field points to the input.
   - The theme of Crudit now renders the blocks `vich_file_widget` and `vich_image_widget`: the markup of Vich (`.vich-file`,
@@ -1028,6 +1029,9 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
     `sb-admin/css/components/forms/_input-file.scss` are removed (with the variables `$input-file-image-preview-maxheight`,
     `$input-file-checkbox-margin`).
   - Several files in one field (the mockup) are not done: one file per field, as Vich.
+  - The option `delete_label` of Vich is no longer used: the buttons "Delete *name*" and "Cancel the deletion" come
+    from the translations of CruditUiBundle (`crudit_ui.file.delete`, `crudit_ui.file.cancel_delete`, domain
+    `LleCruditUiBundle`); override these keys instead.
 - **Enable the controllers** `collection` and `file-drop` in `@2lenet/crudit-ui-bundle` of your
   `assets/controllers.json` (`{"enabled": true, "fetch": "lazy"}`). Without them the lines and the file are shown and
   sent, the buttons do nothing.
