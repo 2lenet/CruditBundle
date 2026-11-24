@@ -66,6 +66,9 @@ $builder->add('documentFile', FileType::class, [
 ]);
 ```
 
+For private files (not served by the `uri_prefix` of the mapping), set `image_route` as well as `download_route`:
+without it, the preview of an image comes from the public uri of the storage and is broken (as in 1.x).
+
 One file per field. Enable the controller `file-drop` of CruditUiBundle (`assets/controllers.json`).
 
 ### Markdown
