@@ -11,6 +11,7 @@ use Lle\CruditBundle\Form\Type\GroupType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -21,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
 /**
  * The form of a client (lot 3.2.a): a section on the 4 columns of the form, then one of 2 columns with a description;
@@ -28,8 +30,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * as boxes, a unit; a field with its own autocomplete and a tooltip_html to clean.
  * The base types (lot 3.2.b): a boolean guessed (a switch) and one kept a checkbox, a counter of characters, the format
  * helpers of the 1.x, a telephone, an address, an amount, a colour, a segmented control, a date in lists.
- * The rich types (lot 3.2.c): an entity (a list with search, its choices asked to the route autocomplete) and a
- * choice with several answers (a list with search, its choices in the page).
+ * The rich types (lot 3.2.c): an entity (a list with search, its choices asked to the route autocomplete), a
+ * choice with several answers (a list with search, its choices in the page), a file of VichUploaderBundle (the client
+ * may have one) and collections, not saved: contacts in an order (sortable), languages without.
  */
 class ClientType extends AbstractType
 {
@@ -81,6 +84,42 @@ class ClientType extends AbstractType
                 'group_by' => fn (string $value) => in_array($value, ['n', 's'], true) ? 'North-South' : 'East-West',
                 'preferred_choices' => ['cst'],
                 'data' => ['s'],
+            ])
+            // A file of VichUploaderBundle (lot 3.2.c): the client 1 has one, with its size and original name
+            ->add('attachmentFile', VichFileType::class, [
+                'label' => 'attachment.label',
+                'required' => false,
+                'allow_delete' => true,
+                'help' => 'attachment.help',
+                'translation_domain' => 'client_form',
+                'span' => 2,
+            ])
+            // Collections (lot 3.2.c), not saved: the contacts in an order (sortable), the languages without
+            ->add('contacts', CollectionType::class, [
+                'label' => 'contacts.label',
+                'entry_type' => ContactLineType::class,
+                'entry_options' => ['translation_domain' => 'client_form'],
+                'entry_label' => 'contacts.entry',
+                'sortable' => 'position',
+                'span' => 'full',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'mapped' => false,
+                'required' => false,
+                'translation_domain' => 'client_form',
+                'data' => [
+                    ['name' => 'Léa Martin', 'phone' => '06 12 34 56 78', 'position' => 1],
+                    ['name' => 'Hugo Bernard', 'phone' => null, 'position' => 2],
+                ],
+            ])
+            ->add('languages', CollectionType::class, [
+                'label' => 'languages.label',
+                'entry_type' => TextType::class,
+                'mapped' => false,
+                'required' => false,
+                'translation_domain' => 'client_form',
+                'data' => ['French', 'English'],
+                'span' => 2,
             ]);
     }
 }

@@ -59,9 +59,92 @@
 {% block crudit_group_label %}
 {% endblock %}
 
-{% block crudit_file_widget %}
-    {% include '@LleCrudit/form/_file_widget.html.twig' %}
-{% endblock %}
+{#
+ # A file of VichUploaderBundle (VichFileType, VichImageType, the FileType of Crudit): the file of CruditUiBundle (a drop
+ # zone covered by the input, the file chosen listed), with the file already sent (VichFileExtension): its name, its
+ # size when the mapping keeps it, its preview (an image), a link Download (download_uri) and, with allow_delete, a
+ # button Delete that checks the checkbox delete of Vich, hidden. The label points to the input; the help and the
+ # error of the field are attached to it.
+ #}
+{%- block crudit_file_row -%}
+    {{- block('crudit_vich_row') -}}
+{%- endblock crudit_file_row -%}
+
+{%- block vich_file_row -%}
+    {{- block('crudit_vich_row') -}}
+{%- endblock vich_file_row -%}
+
+{%- block vich_image_row -%}
+    {{- block('crudit_vich_row') -}}
+{%- endblock vich_image_row -%}
+
+{%- block crudit_vich_row -%}
+    {%- set row_class = ('crudit-ui-field' ~ (errors|length > 0 ? ' crudit-ui-field--invalid' : '') ~ ' ' ~ row_attr.class|default(''))|trim -%}
+    <div{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
+        {%- if label is not same as(false) -%}
+            <div class="crudit-ui-field__label-row">
+                {{- form_label(form, null, {compound: false, id: form.file.vars.id}) -}}
+                {{- block('crudit_ui_label_after') -}}
+            </div>
+        {%- endif -%}
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock crudit_vich_row -%}
+
+{%- block crudit_file_widget -%}
+    {{- block('crudit_vich_widget') -}}
+{%- endblock crudit_file_widget -%}
+
+{%- block vich_file_widget -%}
+    {{- block('crudit_vich_widget') -}}
+{%- endblock vich_file_widget -%}
+
+{%- block vich_image_widget -%}
+    {{- block('crudit_vich_widget') -}}
+{%- endblock vich_image_widget -%}
+
+{%- block crudit_vich_widget -%}
+    {%- set crudit_described = (form.file.vars.attr['aria-describedby'] ?? '')|split(' ')|filter(v => v != '') -%}
+    {%- if help is not empty %}{% set crudit_described = crudit_described|merge([id ~ '_help']) %}{% endif -%}
+    {%- set crudit_file_attr = form.file.vars.attr -%}
+    {%- if errors|length > 0 -%}
+        {%- set crudit_described = crudit_described|merge([id ~ '_error']) -%}
+        {%- set crudit_file_attr = crudit_file_attr|merge({'aria-invalid': 'true'}) -%}
+    {%- endif -%}
+    {%- if crudit_described is not empty %}{% set crudit_file_attr = crudit_file_attr|merge({'aria-describedby': crudit_described|join(' ')}) %}{% endif -%}
+    {%- set crudit_input -%}{{ form_widget(form.file, {crudit_ui_file_input_only: true, attr: crudit_file_attr}) }}{%- endset -%}
+    {%- set crudit_current = null -%}
+    {%- if crudit_file_current|default(null) is not null -%}
+        {%- set crudit_asset = asset_helper|default(false) is same as(true) -%}
+        {%- set crudit_download = download_uri|default(null) -%}
+        {%- if crudit_download is not empty and crudit_download is not same as(true) and crudit_asset %}{% set crudit_download = asset(crudit_download) %}{% endif -%}
+        {#- A preview of an image only: the image of VichImageType, else the file when it is an image -#}
+        {%- set crudit_image = (crudit_file_current.mime_type ?? '') starts with 'image/' or crudit_file_current.uri matches '/\\.(png|jpe?g|gif|svg|webp|avif)$/i' -%}
+        {%- set crudit_preview = image_uri|default(null) is not empty and ('vich_image' in block_prefixes or crudit_image) ? image_uri : (crudit_image ? crudit_file_current.uri : null) -%}
+        {%- if crudit_preview is not empty and crudit_asset %}{% set crudit_preview = asset(crudit_preview) %}{% endif -%}
+        {%- set crudit_current = {
+            name: crudit_file_current.name,
+            size: crudit_file_current.size,
+            download: crudit_download is empty or crudit_download is same as(true) ? null : crudit_download,
+            preview: crudit_preview,
+        } -%}
+    {%- endif -%}
+    {%- set crudit_delete = null -%}
+    {%- if form.delete is defined -%}
+        {%- set crudit_delete = form.delete.vars.full_name -%}
+        {%- do form.delete.setRendered -%}
+    {%- endif -%}
+    {{- include('@LleCruditUi/form/_file.html.twig', {
+        input: crudit_input,
+        multiple: form.file.vars.multiple|default(false),
+        invalid: errors|length > 0,
+        disabled: disabled,
+        current: crudit_current,
+        delete: crudit_current is null ? null : crudit_delete,
+    }, with_context: false) -}}
+{%- endblock crudit_vich_widget -%}
 
 {% block crudit_cron_expression_widget %}
     {% include '@LleCrudit/form/_cron_expression_widget.html.twig' %}
@@ -85,80 +168,3 @@
     </div>
 {% endblock %}
 
-{% block collection_widget %}
-    <div>
-        <div class="card">
-            <div class="card-body">
-                {% if prototype is defined and not prototype.rendered %}
-                    {% set prototype_rendered %}
-                        <div class="row crudit-collection-ignore">
-                            {% for column in prototype %}
-                                {%- if column.vars.label is not same as(false) -%}
-                                    <div class="{{ column.vars.row_attr.class|default('col') }}">
-                                    <label {% with { attr: column.vars.label_attr } %}{{ block('attributes') }}{% endwith %}>
-                                            {% with { label: column.vars.label, translation_domain: column.vars.translation_domain} %}
-                                                {{- block('form_label_content') -}}
-                                            {% endwith %}
-                                    </label>
-                                </div>
-                                {%- endif -%}
-                            {% endfor %}
-                        </div>
-                        <div class="row align-items-start">
-                            {% set form_items = [prototype] %}
-                            {% if prototype.children|length %}
-                                {% set form_items = prototype.children %}
-                            {% endif %}
-                            {% for child in form_items|filter(child => not child.rendered) %}
-                                {{- form_row(child, { label: false }) -}}
-                            {% endfor %}
-                        </div>
-                    {% endset %}
-
-                    {% set attr = attr|merge({
-                        'data-prototype': prototype_rendered|e('html_attr'),
-                    }) %}
-                {% endif %}
-                <div
-                    {{ block('widget_container_attributes') }}
-                    data-index="{{ form|length ? (form|last.vars.name + 1) : 0 }}"
-                    data-name="{{ form.vars.prototype.vars.name }}"
-                >
-                    {% for row in form|filter(child => not child.rendered) %}
-                        {% if not loop.first and row|length %}
-                            <hr/>
-                        {% endif %}
-                        <div class="row crudit-collection-ignore">
-                            {% for column in row %}
-                                <div class="{{ column.vars.row_attr.class|default('col') }}">
-                                    <label {% with { attr: column.vars.label_attr } %}{{ block('attributes') }}{% endwith %}>
-                                        {%- if column.vars.label is not same as(false) -%}
-                                            {% with { label: column.vars.label, translation_domain: column.vars.translation_domain} %}
-                                                {{- block('form_label_content') -}}
-                                            {% endwith %}
-                                        {%- endif -%}
-                                    </label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="row align-items-start">
-                            {% set form_items = [row] %}
-                            {% if row.children|length %}
-                                {% set form_items = row.children %}
-                            {% endif %}
-                            {% for child in form_items|filter(child => not child.rendered) %}
-                                {{- form_row(child, { label: false }) -}}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="card-footer text-body-secondary">
-                <button type="button" class="btn btn-sm btn-outline-success crudit-collection-add mx-auto"
-                        data-target="#{{ id }}">
-                    <i class="fa fa-plus pe-none"></i>&nbsp;{{ 'action.add'|trans }}
-                </button>
-            </div>
-        </div>
-    </div>
-{% endblock %}

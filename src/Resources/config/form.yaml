@@ -64,3 +64,10 @@ services:
     Lle\CruditBundle\Form\Extension\ComboboxExtension:
         tags:
             - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\CollectionExtension:
+        tags:
+            - { name: form.type_extension }
+    Lle\CruditBundle\Form\Extension\VichFileExtension:
+        autowire: true
+        tags:
+            - { name: form.type_extension }

@@ -11,12 +11,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Vich\UploaderBundle\Form\Type\VichFileType;
 
 /**
  * The form to edit a client: the one of ClientType, under a title (ClientCrudConfig), plus a section in the
  * translation domain "client_form" with the widgets of other bundles in the bricks (the global themes of the project: the
- * editor of FOSCKEditorBundle, a file of VichUploaderBundle) and a sub-form laid out field by field whose own error (a
+ * editor of FOSCKEditorBundle) and a sub-form laid out field by field whose own error (a
  * constraint on the object, error_bubbling: false) is shown. On the edit page only: the editor would load its script in the smoke test.
  */
 class ClientEditType extends ClientType
@@ -38,12 +37,6 @@ class ClientEditType extends ClientType
                 'label' => 'presentation.label',
                 'tooltip' => 'presentation.tooltip',
                 'translation_domain' => 'client_form',
-            ])
-            ->add('attachment', VichFileType::class, [
-                'mapped' => false,
-                'required' => false,
-                'allow_delete' => false,
-                'download_uri' => false,
             ])
             ->add($builder->create('address', FormType::class, [
                 'mapped' => false,

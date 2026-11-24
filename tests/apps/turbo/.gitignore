@@ -2,6 +2,7 @@
 /vendor/
 /public/assets/
 /public/bundles/
+/public/uploads/
 /composer.lock
 /.env.local
 /composer.local.json
