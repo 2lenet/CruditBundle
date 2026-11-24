@@ -1,7 +1,7 @@
 'use strict';
 
 // EasyMDE (and CodeMirror) is only downloaded when the page has a markdown field.
-window.addEventListener('load', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const textareas = document.querySelectorAll('textarea.markdown-editor');
     if (textareas.length === 0) {
         return;
@@ -17,5 +17,5 @@ window.addEventListener('load', function () {
                 nativeSpellcheck: true,
             });
         });
-    });
+    }).catch(error => console.error('EasyMDE could not be loaded', error));
 });
