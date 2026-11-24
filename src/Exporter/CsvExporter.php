@@ -37,6 +37,20 @@ class CsvExporter extends AbstractExporter
             throw new ExporterException("Unknown CSV exporter error");
         }
 
+        try {
+            $this->write($path, $resources, $params);
+        } catch (\Throwable $e) {
+            // not left in the temporary folder
+            @unlink($path);
+
+            throw $e;
+        }
+
+        return $path;
+    }
+
+    private function write(string $path, iterable $resources, ExportParams $params): void
+    {
         $file = fopen($path, "w");
         $headersAdded = false;
 
@@ -63,8 +77,6 @@ class CsvExporter extends AbstractExporter
             }
             fclose($file);
         }
-
-        return $path;
     }
 
     protected function getHeaders(array $fields): array

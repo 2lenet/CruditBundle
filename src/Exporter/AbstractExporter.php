@@ -52,13 +52,16 @@ abstract class AbstractExporter implements ExporterInterface
     }
 
     /**
-     * The text of a value: a list (tags, channels) is its values joined by a comma, an enumeration its value, an object
-     * that has no text is empty.
+     * The text of a value: a list (an array, a Doctrine collection) is its values joined by a comma, an enumeration its
+     * value, a date the format of the exports (with the time when it has one), an object that has no text is empty.
      */
     private function toString(mixed $value): string
     {
-        if (is_array($value)) {
-            return implode(', ', array_map(fn ($item): string => $this->toString($item), $value));
+        if (is_iterable($value)) {
+            return implode(', ', array_map(fn ($item): string => $this->toString($item), [...$value]));
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format($value->format('H:i:s') === '00:00:00' ? DateField::EXPORT_FORMAT : DateTimeField::EXPORT_FORMAT);
         }
         if ($value instanceof \BackedEnum) {
             return (string) $value->value;

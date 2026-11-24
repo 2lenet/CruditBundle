@@ -115,7 +115,7 @@ crudit:
                 description: "Un classeur pour retravailler les données"
             csv:
                 label: "CSV"
-                description: "Un fichier texte, séparé par des points-virgules"
+                description: "Un fichier texte, lisible dans un tableur ou par un programme"
             pdf:
                 label: "PDF"
                 description: "Un document prêt à imprimer"

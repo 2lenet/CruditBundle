@@ -115,7 +115,7 @@ crudit:
                 description: "A workbook to rework the data"
             csv:
                 label: "CSV"
-                description: "A text file, separated by semicolons"
+                description: "A text file, readable in a spreadsheet or by a program"
             pdf:
                 label: "PDF"
                 description: "A document ready to print"

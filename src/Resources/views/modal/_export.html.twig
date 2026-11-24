@@ -2,7 +2,7 @@
  # The dialog of the export of a list (lot 3.1.g): the ExportDialog of CruditUiBundle. The path of the template and the
  # variables are those of 1.x (`id`, `action`, `view`); the blocks of `_base_modal.html.twig` are gone (header, body,
  # footer): a project that extended this template extends the ExportDialog's own.
- # The formats: `setConfig(['export' => ['csv', 'xls']])` of the action, else all the exporters (tag crudit.exporter).
+ # The formats: `setConfig(['export' => ['csv', 'xls']])` of the action, else the formats of the bundle (csv, xls, pdf). A project exporter (tag crudit.exporter) is offered only where the action chooses it.
  # The file is made on the server with the filters and the sort of the list, **all the results** (not the page shown).
  #}
 {% set export = crudit_export(action.config, view.config.translation_domain ?? null) %}

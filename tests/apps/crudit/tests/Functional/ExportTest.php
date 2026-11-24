@@ -63,7 +63,13 @@ class ExportTest extends AppTestCase
         $cookie = $this->client->getCookieJar()->get('crudit_export');
         self::assertNotNull($cookie);
         self::assertSame('0a1b2c3d-4e5f', $cookie->getValue());
-        $header = $this->client->getResponse()->headers->getCookies()[0];
+        $header = null;
+        foreach ($this->client->getResponse()->headers->getCookies() as $candidate) {
+            if ($candidate->getName() === 'crudit_export') {
+                $header = $candidate;
+            }
+        }
+        self::assertNotNull($header);
         self::assertFalse($header->isHttpOnly(), 'the script of the dialog reads it');
         self::assertSame('lax', $header->getSameSite());
     }
@@ -84,5 +90,16 @@ class ExportTest extends AppTestCase
         self::assertResponseRedirects('/client/');
         $crawler = $this->client->followRedirect();
         self::assertStringContainsString('The export could not be generated.', $crawler->filter('.crudit-ui-toasts')->text());
+    }
+
+    public function testFromTheDialogAnErrorIsALightPageNotTheList(): void
+    {
+        $this->client->request('GET', '/client/export?format=doc&download_token=0a1b2c3d-4e5f');
+
+        self::assertResponseStatusCodeSame(422);
+        $crawler = $this->client->getCrawler();
+        self::assertSame('The export could not be generated.', $crawler->filter('[data-crudit-export-error]')->text());
+        self::assertCount(0, $crawler->filter('table'), 'the list is not rendered in the frame');
+        self::assertNull($this->client->getCookieJar()->get('crudit_export'), 'no file, no cookie');
     }
 }

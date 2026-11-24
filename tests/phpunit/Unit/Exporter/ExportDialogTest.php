@@ -72,7 +72,30 @@ class ExportDialogTest extends TestCase
             }
         };
 
-        return new Exporter([new CsvExporter($translator), new ExcelExporter($translator), $project]);
+        // an exporter of a project that does not describe itself
+        $xml = new class () implements \Lle\CruditBundle\Contracts\ExporterInterface {
+            public function getSupportedFormat(): string
+            {
+                return 'xml';
+            }
+
+            public function getFileExtension(): string
+            {
+                return '.xml';
+            }
+
+            public function export(iterable $resources, ExportParams $params, array $totals = []): string
+            {
+                return '';
+            }
+
+            public function getContentType(): string
+            {
+                return 'application/xml';
+            }
+        };
+
+        return new Exporter([new CsvExporter($translator), new ExcelExporter($translator), $project, $xml]);
     }
 
     private function builder(array $messages = []): ExportViewBuilder
@@ -82,15 +105,36 @@ class ExportDialogTest extends TestCase
 
     public function testExporterListsTheFormatsOfAllTheExporters(): void
     {
-        self::assertSame(['csv', 'xls', 'json'], $this->exporters()->getFormats());
+        self::assertSame(['csv', 'xls', 'json', 'xml'], $this->exporters()->getFormats());
         self::assertNull($this->exporters()->findExporter('doc'));
     }
 
-    public function testWithoutConfigAllTheExportersAreOffered(): void
+    public function testWithoutConfigOnlyTheFormatsOfTheBundleAreOffered(): void
     {
+        // the exporter of a project is often written for one entity: it is offered where an action chooses it
         $result = $this->builder()->build([], null);
 
-        self::assertSame(['csv', 'xls', 'json'], array_column($result['formats'], 'value'));
+        self::assertSame(['csv', 'xls'], array_column($result['formats'], 'value'));
+        self::assertSame(['csv', 'xls'], $this->exporters()->getDefaultFormats());
+    }
+
+    public function testAnEmptyListOrOnlyUnknownCodesGiveTheFormatsOfTheBundle(): void
+    {
+        self::assertSame(['csv', 'xls'], array_column($this->builder()->build(['export' => []], null)['formats'], 'value'));
+        self::assertSame(['csv', 'xls'], array_column($this->builder()->build(['export' => ['cvs']], null)['formats'], 'value'));
+    }
+
+    public function testAnUnknownCodeOfTheConfigIsLeftOut(): void
+    {
+        $result = $this->builder()->build(['export' => ['xls', 'cvs', 'json']], null);
+
+        self::assertSame(['xls', 'json'], array_column($result['formats'], 'value'));
+    }
+
+    public function testExporterSaysWhichFormatsItSupports(): void
+    {
+        self::assertTrue($this->exporters()->supports('json'));
+        self::assertFalse($this->exporters()->supports('doc'));
     }
 
     public function testTheConfigOfTheActionChoosesTheFormatsAndTheirOrder(): void
@@ -146,6 +190,22 @@ class ExportDialogTest extends TestCase
 
         self::assertSame('', file_get_contents($path));
         unlink($path);
+    }
+
+    public function testAnExportedValueThatIsNotTextIsReadable(): void
+    {
+        $exporter = new class ($this->translator()) extends \Lle\CruditBundle\Exporter\CsvExporter {
+            public function text(mixed $value): string
+            {
+                $method = new \ReflectionMethod(\Lle\CruditBundle\Exporter\AbstractExporter::class, 'toString');
+
+                return $method->invoke($this, $value);
+            }
+        };
+
+        self::assertSame('a, b', $exporter->text(new \Doctrine\Common\Collections\ArrayCollection(['a', 'b'])));
+        self::assertSame('14/03/2026', $exporter->text(new \DateTimeImmutable('2026-03-14')));
+        self::assertSame('14/03/2026 09:30', $exporter->text(new \DateTimeImmutable('2026-03-14 09:30')));
     }
 
     public function testTheDownloadCookieIsReadableByTheScriptAtTheRoot(): void

@@ -7,8 +7,9 @@ namespace Lle\CruditBundle\Controller;
 use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Exception\ExporterException;
+use Lle\CruditBundle\Dto\Action\AbstractAction;
 use Lle\CruditBundle\Dto\FieldView;
+use Lle\CruditBundle\Exception\ExporterException;
 use Lle\CruditBundle\Exporter\DownloadCookie;
 use Lle\CruditBundle\Exporter\Exporter;
 use Lle\CruditBundle\Filter\FilterState;
@@ -262,17 +263,16 @@ trait TraitCrudController
         FilterState $filterState,
         Exporter $exporter,
         ResourceResolver $resolver,
+        TranslatorInterface $translator,
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_' . $this->config->getName() . '_EXPORT');
 
-        // an unknown format (an old link) is a message on the list, not an error page
+        // only the formats the action offers (an old link, a format of a project that this list does not choose)
         $format = (string) $request->query->get("format", "csv");
-        try {
-            $exporter->getFileExtension($format);
-        } catch (ExporterException) {
-            $this->addFlash('danger', 'crudit.flash.error.export');
-
-            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        $action = $this->config->getListActions()[CrudConfigInterface::ACTION_EXPORT] ?? null;
+        $formats = $exporter->resolveFormats($action instanceof AbstractAction ? $action->getConfig() : []);
+        if (!in_array($format, $formats, true)) {
+            return $this->exportFailed($request, $translator);
         }
 
         $datasource = $this->config->getDatasource();
@@ -327,9 +327,7 @@ trait TraitCrudController
                 $totals,
             );
         } catch (ExporterException) {
-            $this->addFlash('danger', 'crudit.flash.error.export');
-
-            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+            return $this->exportFailed($request, $translator);
         }
 
         $response = new BinaryFileResponse($path);
@@ -347,6 +345,32 @@ trait TraitCrudController
 
         // The dialog of the export waits for this cookie: the file is made, the download begins
         DownloadCookie::attach($request, $response);
+
+        return $response;
+    }
+
+    /**
+     * An export that could not be made. From the dialog (the request has a `download_token`) the answer goes into a hidden
+     * frame: a small page, status 422, whose element `data-crudit-export-error` holds the message that the dialog shows.
+     * A redirection with a flash would load the whole list in the frame, and that render would use the flash up. From a
+     * link: the flash message on the list.
+     */
+    private function exportFailed(Request $request, TranslatorInterface $translator): Response
+    {
+        if (DownloadCookie::token($request) === null) {
+            $this->addFlash('danger', 'crudit.flash.error.export');
+
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
+
+        $message = htmlspecialchars($translator->trans('crudit.flash.error.export', [], 'LleCruditBundle'), ENT_QUOTES);
+        $response = new Response(
+            '<!DOCTYPE html><html lang="' . htmlspecialchars($request->getLocale(), ENT_QUOTES) . '"><head><meta charset="utf-8">'
+            . '<title>' . $message . '</title></head><body><p data-crudit-export-error>' . $message . '</p></body></html>',
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+            ['Content-Type' => 'text/html; charset=UTF-8'],
+        );
+        $response->headers->addCacheControlDirective('no-store');
 
         return $response;
     }

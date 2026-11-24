@@ -64,7 +64,7 @@ public function getExportParams(string $format): ExportParams
 
 The action opens the dialog `LleCruditUi:ExportDialog`: the format as cards, and a sentence that says the file holds
 **all the results** of the list with the current filters and sort order. The formats are those of the `export` key of the
-action (in this order); without that key, all the exporters are offered. The download is followed by the controller
+action (in this order); without that key, the formats of the bundle (csv, xls, pdf) are offered: an exporter of your project appears only where the action lists it, and the controller refuses a format the action does not offer. The download is followed by the controller
 `export` of CruditUiBundle (enable it in `assets/controllers.json`): the dialog closes and a toast says it is done; a page
 answered in place of the file (an error, the login) is an error shown in the dialog. A route of your own behind the dialog
 puts the cookie of the download with `DownloadCookie::attach($request, $response)` (do not write it by hand: it must be

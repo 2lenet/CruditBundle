@@ -1217,8 +1217,14 @@ fed by `crudit_export()`, `ExportViewBuilder`): the format as cards (icon, name,
   page shown (it did already; the dialog now says so). **The export of a selection is not offered**: a project that wants
   it makes a batch action of its own.
 - **The formats**: `setConfig(['export' => ['csv', 'xls']])` of the action still chooses them, **and their order**. Without
-  that key, the dialog offers **all the exporters** (tag `crudit.exporter`, the ones of the bundle and those of the
-  project). The name of a format of the bundle is translated (`crudit.export.format.xls|csv|pdf.label|description`). For
+  that key (or with an empty list, or only unknown codes), the dialog offers **the formats of the bundle** (csv, xls, pdf),
+  not every exporter: **a project exporter is offered only where the action chooses it**, because it is often written
+  for one entity (an XML file of the invoices) and would break on the other lists. **This can break**: a 1.x action
+  without the key showed "The export is not configured"; and a project that counted on all its exporters appearing must
+  list them (`setConfig(['export' => ['csv', 'xml_sage']])`). The codes that no exporter knows (a typo, a removed
+  exporter) are left out of the dialog, and **the controller refuses a format that the action does not offer** (before,
+  any registered format could be asked with the role `EXPORT`). `Exporter::resolveFormats()` gives the list,
+  `Exporter::supports()` tells whether a format has an exporter. The name of a format of the bundle is translated (`crudit.export.format.xls|csv|pdf.label|description`). For
   a format of the project, in this order: the exporter describes itself (new `DescribedExporterInterface`: `getLabel()`,
   `getDescription()`, `getIcon()`; `ExporterInterface` is unchanged), else the translation `export.<format>` of the domain
   of the list (as in 1.x), else the code in capitals.
@@ -1226,8 +1232,14 @@ fed by `crudit_export()`, `ExportViewBuilder`): the format as cards (icon, name,
   `getExportParams()` leaves it out (for a program that reads the file).
 - **A list or an enumeration is text** in the CSV and Excel files (`vip, north`, the value of the enumeration), no
   longer "Array" with a PHP warning.
-- **A message, not an error page**: an unknown format or an exporter that fails with an `ExporterException` puts the
-  flash message `crudit.flash.error.export` and goes back to the list.
+- **A message, not an error page**: an unknown format (or one the action does not offer) or an exporter that fails with
+  an `ExporterException`. From a link: the flash message `crudit.flash.error.export` on the list. **From the dialog** (the
+  request has a `download_token`): a light page with the status 422, whose element `data-crudit-export-error` holds the
+  message, shown in the dialog (a redirection would have rendered the whole list in the hidden frame, which also used up
+  the flash). The temporary file of an export that fails is deleted.
+- **Values that are not text** in the CSV and Excel files: a Doctrine collection is joined like a list, a date is
+  formatted like the dates of the exports (`d/m/Y`, with the time `d/m/Y H:i` when it has one). A boolean is still `1`
+  or empty.
 - **The download is followed**: the dialog sends a token (`download_token`) and the form goes into a hidden frame, so
   the page never moves. The server answers the file with the cookie `crudit_export=<token>`, and the controller `export` of
   `@2lenet/crudit-ui-bundle` closes the dialog and says "Export done." in a toast. **A page in place of a file** (a 500, a

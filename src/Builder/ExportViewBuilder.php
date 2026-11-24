@@ -11,7 +11,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * The props of the ExportDialog of CruditUiBundle for the action "Export" of a list (lot 3.1.g): the formats with their
  * name, sentence and icon. The formats are those of `setConfig(['export' => [...]])` of the action when it has some (the
- * choice of the project), else all the exporters. The name of a format of the bundle is translated
+ * choice of the project, the codes that no exporter knows left out), else those of the bundle (csv, xls, pdf): a
+ * project exporter is offered only where an action chooses it (Exporter::resolveFormats()). The name of a format of the bundle is translated
  * (`crudit.export.format.<format>`); a format of a project describes itself (DescribedExporterInterface), else it is the
  * translation `export.<format>` of the domain of the list (1.x), else its code in capitals.
  */
@@ -32,12 +33,9 @@ class ExportViewBuilder
      */
     public function build(array $config, ?string $domain): array
     {
-        $configured = $config['export'] ?? null;
-        $codes = is_iterable($configured) ? array_values(array_unique([...$configured])) : $this->exporter->getFormats();
-
         $formats = [];
-        foreach ($codes as $code) {
-            $formats[] = $this->format((string) $code, $domain);
+        foreach ($this->exporter->resolveFormats($config) as $code) {
+            $formats[] = $this->format($code, $domain);
         }
 
         return [

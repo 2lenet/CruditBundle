@@ -30,11 +30,22 @@ final class DownloadCookie
      */
     public static function attach(Request $request, Response $response): void
     {
-        $token = $request->query->all()[self::PARAMETER] ?? null;
-        if (!is_string($token) || preg_match(self::TOKEN, $token) !== 1) {
+        $token = self::token($request);
+        if ($token === null) {
             return;
         }
 
         $response->headers->setCookie(Cookie::create(self::NAME, $token, 0, '/', null, $request->isSecure(), false, false, Cookie::SAMESITE_LAX));
+    }
+
+    /**
+     * The token of the request, when it is a plain identifier: the export comes from the dialog (a hidden frame), not
+     * from a link.
+     */
+    public static function token(Request $request): ?string
+    {
+        $token = $request->query->all()[self::PARAMETER] ?? null;
+
+        return is_string($token) && preg_match(self::TOKEN, $token) === 1 ? $token : null;
     }
 }
