@@ -2,7 +2,7 @@
   "entrypoints": {
     "app": {
       "js": [
-        "/app.js"
+        "auto/app.js"
       ]
     }
   }

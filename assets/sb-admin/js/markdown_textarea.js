@@ -1,16 +1,21 @@
 'use strict';
-import * as EasyMDE from 'easymde';
 
+// EasyMDE (and CodeMirror) is only downloaded when the page has a markdown field.
 window.addEventListener('load', function () {
+    const textareas = document.querySelectorAll('textarea.markdown-editor');
+    if (textareas.length === 0) {
+        return;
+    }
 
-    document.querySelectorAll('textarea.markdown-editor').forEach(textarea => {
-        new EasyMDE({
-            element: textarea,
-            toolbar: ['bold', 'italic', '|', 'heading-smaller', 'heading-bigger', '|', 'unordered-list', 'ordered-list', '|', 'link', 'quote', 'code', '|', 'preview'],
-            inputStyle: 'contenteditable',
-            spellChecker: false,
-            nativeSpellcheck: true,
+    import(/* webpackChunkName: "easymde" */ 'easymde').then(({ default: EasyMDE }) => {
+        textareas.forEach(textarea => {
+            new EasyMDE({
+                element: textarea,
+                toolbar: ['bold', 'italic', '|', 'heading-smaller', 'heading-bigger', '|', 'unordered-list', 'ordered-list', '|', 'link', 'quote', 'code', '|', 'preview'],
+                inputStyle: 'contenteditable',
+                spellChecker: false,
+                nativeSpellcheck: true,
+            });
         });
     });
-
 });
