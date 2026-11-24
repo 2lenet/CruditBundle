@@ -1555,6 +1555,113 @@ for (const [dark, rtl] of [[true, false], [false, true]]) {
 }
 ok('filters: a phone, dark, right to left');
 
+// ---------- Export of the list (lot 3.1.g): the dialog (formats as cards, what the file holds), then the controller `export` of
+// CruditUiBundle: the form stays a GET that Turbo leaves alone, the token, the cookie of the server tells the download
+// began (the dialog closes, a toast), without it an error and a second try. The download itself is not made here (the
+// submit is stopped; the cookie is the one the server sets, tested by PHPUnit): the browser would leave the page.
+page = await open(1440, '/client/');
+const exportButton = await page.evaluateHandle(() => [...document.querySelectorAll('.crudit-page-actions button[command="show-modal"]')].find((b) => b.textContent.trim() === 'Export'));
+await exportButton.click();
+await settle(page);
+assert.equal(await page.evaluate(() => document.querySelector('dialog[open]')?.querySelector('h2')?.textContent.trim()), 'Export the list', 'export: the dialog opens');
+assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), 'Cancel', 'export: focus on Cancel');
+assert.deepEqual(await page.$$eval('dialog[open] .crudit-ui-export__title', (e) => e.map((n) => n.textContent.trim())), ['Excel', 'CSV', 'PDF']);
+assert.equal(await page.$eval('dialog[open] input[name=format]:checked', (e) => e.value), 'xls', 'export: the first format is checked');
+// the keyboard: arrows change the format
+await page.focus('dialog[open] input[name=format]:checked');
+await page.keyboard.press('ArrowDown');
+assert.equal(await page.$eval('dialog[open] input[name=format]:checked', (e) => e.value), 'csv', 'export: the arrows choose the format');
+await axeOn(page, 'dialog[open]', 'export dialog');
+await shot(page, 'export-dialog');
+await page.evaluate(() => document.querySelector('dialog[open] form').addEventListener('submit', (event) => event.preventDefault()));
+await page.click('dialog[open] button[type=submit]');
+assert.equal(await page.$eval('dialog[open] [role=status]', (e) => e.textContent.trim()), 'Export in progress…', 'export: the status');
+assert.equal(await page.$eval('dialog[open] button[type=submit]', (e) => e.getAttribute('aria-busy')), 'true', 'export: the button is busy');
+const token = await page.$eval('dialog[open] input[name=download_token]', (e) => e.value);
+assert.match(token, /^[A-Za-z0-9-]{8,64}$/, 'export: the token');
+await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path=/`; }, token);
+await page.waitForFunction(() => !document.querySelector('dialog[open]'), {timeout: 3000});
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Export done.'), {timeout: 3000});
+assert.equal(await page.evaluate(() => document.cookie.includes('crudit_export')), false, 'export: the cookie is deleted');
+// no cookie: the error is shown and the form can be sent again; the token is still watched, a late file closes the dialog
+await exportButton.click();
+await settle(page);
+await page.evaluate(() => {
+    const form = document.querySelector('dialog[open] form');
+    form.setAttribute('data-2lenet--crudit-ui-bundle--export-timeout-value', '800');
+    form.addEventListener('submit', (event) => event.preventDefault());
+});
+await page.click('dialog[open] button[type=submit]');
+assert.equal(await page.$$eval('dialog[open] button[type=submit] .crudit-ui-icon--spin', (e) => e.length), 1, 'export: the spinner shows in the button while it works');
+await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 4000});
+assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export did not start. Try again, or reload the page if your session has expired.');
+assert.equal(await page.$eval('dialog[open] button[type=submit]', (e) => e.getAttribute('aria-busy')), null, 'export: the button is free again');
+assert.equal(await page.$$eval('dialog[open] button[type=submit] .crudit-ui-icon--spin', (e) => e.length), 0, 'export: the spinner is gone');
+assert.equal(await page.$eval('dialog[open]', (e) => e.open), true, 'export: the dialog stays open on an error');
+await axeOn(page, 'dialog[open]', 'export dialog, error');
+const lateToken = await page.$eval('dialog[open] input[name=download_token]', (e) => e.value);
+await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path=/`; }, lateToken);
+await page.waitForFunction(() => !document.querySelector('dialog[open]'), {timeout: 3000});
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Export done.'), {timeout: 3000});
+ok('export: a file that comes after the delay still closes the dialog');
+// A times out, the user sends B, the file of A arrives: the toast only, B goes on; then B closes the dialog
+await exportButton.click();
+await settle(page);
+const sendAttempt = async () => {
+    await page.click('dialog[open] button[type=submit]');
+    return page.$eval('dialog[open] input[name=download_token]', (e) => e.value);
+};
+await page.evaluate(() => {
+    const form = document.querySelector('dialog[open] form');
+    form.setAttribute('data-2lenet--crudit-ui-bundle--export-timeout-value', '800');
+    form.addEventListener('submit', (event) => event.preventDefault());
+});
+const tokenA = await sendAttempt();
+await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 4000});
+await page.evaluate(() => document.querySelector('dialog[open] form').setAttribute('data-2lenet--crudit-ui-bundle--export-timeout-value', '8000'));
+const tokenB = await sendAttempt();
+assert.notEqual(tokenA, tokenB, 'export: each attempt has its own token');
+await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path=/`; }, tokenA);
+await page.waitForFunction(() => document.querySelector('#crudit-ui-toasts').textContent.includes('Export done.'), {timeout: 3000});
+assert.equal(await page.$eval('dialog[open] button[type=submit]', (e) => e.getAttribute('aria-busy')), 'true', 'export: the older file does not stop the attempt in progress');
+await page.evaluate((token) => { document.cookie = `crudit_export=${token}; path=/`; }, tokenB);
+await page.waitForFunction(() => !document.querySelector('dialog[open]'), {timeout: 3000});
+ok('export: the late file of an older attempt does not stop the attempt in progress');
+// the server answers a page, not a file (an unknown format: a message and a redirect to the list): the error at once, the page does not move.
+// A page of its own: the submits of the steps above were stopped, and the delay (60 s) is not the one that ends this wait.
+page = await open(1440, '/client/');
+const exportButton2 = await page.evaluateHandle(() => [...document.querySelectorAll('.crudit-page-actions button[command="show-modal"]')].find((b) => b.textContent.trim() === 'Export'));
+await exportButton2.click();
+await settle(page);
+const before = page.url();
+await page.evaluate(() => {
+    const radio = document.querySelector('dialog[open] input[name=format]');
+    radio.value = 'doc';
+    radio.checked = true;
+});
+await page.click('dialog[open] button[type=submit]');
+await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 8000});
+assert.equal(page.url(), before, 'export: an error page does not take the user away');
+// the 422 page of Crudit carries the reason (data-crudit-export-error): the dialog shows it, not the generic message
+assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export could not be generated.');
+// the browser logs the 422 of that page: it is the answer that this step asks for
+errors.splice(0, errors.length, ...errors.filter((error) => !error.includes('status of 422')));
+assert.equal(await page.$eval('dialog[open] form', (e) => e.getAttribute('target')), null, 'export: the form goes back to its own page');
+// the error is gone when the dialog opens again
+await page.keyboard.press('Escape');
+await settle(page);
+await exportButton2.click();
+await settle(page);
+assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.hidden), true, 'export: the error of the last try is gone');
+ok('export: a page in place of a file is an error at once, and it goes when the dialog opens again');
+// a phone, right to left
+page = await open(360, '/client/', {rtl: true});
+await page.evaluate(() => [...document.querySelectorAll('button[command="show-modal"]')].find((b) => b.textContent.trim().includes('Export') || b.getAttribute('commandfor')?.startsWith('modal_')).click());
+await settle(page);
+assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'export: the page scrolls sideways on a phone');
+await page.close();
+ok('export: dialog, formats by keyboard, busy, cookie, error, phone');
+
 // ---------- Turbo cache hook / reduced motion: no errors
 console.log(errors.length ? 'ERRORS:\n' + errors.join('\n') : 'no console errors');
 console.log(`${passed} checks passed`);

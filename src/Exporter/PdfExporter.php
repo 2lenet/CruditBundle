@@ -176,12 +176,19 @@ class PdfExporter extends AbstractExporter
             throw new ExporterException('Unknown PDF exporter error');
         }
 
-        $writer = new Mpdf($spreadsheet);
-        $pdfParams = $params->getPdfParams();
-        if ($pdfParams['header-footer']) {
-            $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParams['header-footer']));
+        try {
+            $writer = new Mpdf($spreadsheet);
+            $pdfParams = $params->getPdfParams();
+            if ($pdfParams['header-footer']) {
+                $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParams['header-footer']));
+            }
+            $writer->save($path);
+        } catch (\Throwable $e) {
+            // not left in the temporary folder
+            @unlink($path);
+
+            throw $e;
         }
-        $writer->save($path);
 
         return $path;
     }

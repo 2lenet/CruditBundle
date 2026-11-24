@@ -1249,6 +1249,59 @@ previous, the numbers (`1 … 5 6 7 … 12`), next, last, and the rows per page.
 - **The selection of the table follows the pager** (lot 3.1.c) because the parameter ends with `_offset`.
 - **Not in this lot**: the sublist (3.3.c); it keeps its pager, with the old markup.
 
+### The export *(lot 3.1.g)*
+
+The action "Export" of the list opens a dialog that is the component `LleCruditUi:ExportDialog` (`modal/_export.html.twig`,
+fed by `crudit_export()`, `ExportViewBuilder`): the format as cards (icon, name, a sentence), and what the file holds.
+
+- **All the results**: the file holds every result of the list with the current filters and sort order, not only the
+  page shown (it did already; the dialog now says so). **The export of a selection is not offered**: a project that wants
+  it makes a batch action of its own.
+- **The formats**: `setConfig(['export' => ['csv', 'xls']])` of the action still chooses them, **and their order**. Without
+  that key (or with an empty list, or only unknown codes), the dialog offers **the formats of the bundle** (csv, xls, pdf),
+  not every exporter: **a project exporter is offered only where the action chooses it**, because it is often written
+  for one entity (an XML file of the invoices) and would break on the other lists. **This can break**: a 1.x action
+  without the key showed "The export is not configured"; and a project that counted on all its exporters appearing must
+  list them (`setConfig(['export' => ['csv', 'xml_sage']])`). The codes that no exporter knows (a typo, a removed
+  exporter) are left out of the dialog, and **the controller refuses a format that no button of the list offers to this user** (every action that points to the export counts, whatever its key; a button with `setRole()` counts only for the users who have that role) (before,
+  any registered format could be asked with the role `EXPORT`). `Exporter::resolveFormats()` gives the list,
+  `Exporter::supports()` tells whether a format has an exporter. The name of a format of the bundle is translated (`crudit.export.format.xls|csv|pdf.label|description`). For
+  a format of the project, in this order: the exporter describes itself (new `DescribedExporterInterface`: `getLabel()`,
+  `getDescription()`, `getIcon()`; `ExporterInterface` is unchanged), else the translation `export.<format>` of the domain
+  of the list (as in 1.x), else the code in capitals.
+- **The CSV starts with a UTF-8 byte order mark**, so that Excel reads the accents. `ExportParams::setBom(false)` in
+  `getExportParams()` leaves it out (for a program that reads the file).
+- **A list or an enumeration is text** in the CSV and Excel files (`vip, north`, the value of the enumeration), no
+  longer "Array" with a PHP warning.
+- **A message, not an error page**: an unknown format (or one the action does not offer) or an exporter that fails with
+  an `ExporterException`. From a link: the flash message `crudit.flash.error.export` on the list. **From the dialog** (the
+  request has a `download_token`): a light page with the status 422, whose element `data-crudit-export-error` holds the
+  message, shown in the dialog (a redirection would have rendered the whole list in the hidden frame, which also used up
+  the flash). The temporary file of an export that fails is deleted.
+- **Values that are not text** in the CSV and Excel files: a Doctrine collection is joined like a list, a date is
+  formatted like the dates of the exports (`d/m/Y`, with the time `d/m/Y H:i` when it has one). A boolean is still `1`
+  or empty.
+- **The download is followed**: the dialog sends a token (`download_token`) and the form goes into a hidden frame, so
+  the page never moves. The server answers the file with the cookie `crudit_export=<token>`, and the controller `export` of
+  `@2lenet/crudit-ui-bundle` closes the dialog and says "Export done." in a toast. **A page in place of a file** (a 500, a
+  403, the login after the session ended, a redirect) is an error shown at once in the dialog, with a second try; a server
+  that hangs gives the same error after a minute, and a file that comes late still closes the dialog. **Enable the controller**
+  `export` in your `assets/controllers.json` (`"export": {"enabled": true, "fetch": "eager"}`); without it, the form
+  still downloads the file (in the page), and nothing else happens.
+- **Two things the hidden frame asks of the application.** The file must come with `Content-Disposition: attachment` (the
+  export of Crudit does): shown inline, the frame displays it and the dialog says nothing was downloaded. And the page must
+  allow `frame-src 'self'` in its Content Security Policy: with `frame-src 'none'` (or a `default-src` without `'self'`)
+  every export fails although the server answers well.
+- **A project that sends its own file** (its own route behind the dialog) puts the cookie with
+  `DownloadCookie::attach($request, $response)`. Do not write it by hand: `Cookie::create()` is **HttpOnly** by default, the
+  script then never sees it and every export ends in an error after a minute, the file being downloaded all the same;
+  and the script deletes it at the path `/`. The helper checks the token (`[A-Za-z0-9-]{8,64}`, it comes from the
+  client and ends in a header).
+- **Removed**: the blocks `header`, `body` and `footer` of `modal/_export.html.twig` (it no longer extends
+  `_base_modal.html.twig`), the `<select>` and the keys `crudit.modal.export.*` (they stay, unused). A project that overrode
+  the template builds its dialog on `LleCruditUi:ExportDialog` (props `id`, `title`, `description`, `action`, `formats`).
+  Its path and its variables (`id`, `action`, `view`) are those of 1.x.
+
 ### The record *(lot 3.3.a)*
 
 The record (`brick/show_item/index.html.twig`) is rebuilt on the components of CruditUiBundle: no more Bootstrap

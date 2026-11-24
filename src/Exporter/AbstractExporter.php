@@ -48,7 +48,33 @@ abstract class AbstractExporter implements ExporterInterface
             }
         }
 
-        return trim((string)$result);
+        return trim($this->toString($result));
+    }
+
+    /**
+     * The text of a value: a list (an array, a Doctrine collection) is its values joined by a comma, an enumeration its
+     * value, a date the format of the exports (`d/m/Y H:i`, or `d/m/Y` when the time is exactly 00:00:00: a datetime at
+     * midnight comes out without its time), an object that has no text is empty.
+     */
+    private function toString(mixed $value): string
+    {
+        if (is_iterable($value)) {
+            return implode(', ', array_map(fn ($item): string => $this->toString($item), [...$value]));
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format($value->format('H:i:s') === '00:00:00' ? DateField::EXPORT_FORMAT : DateTimeField::EXPORT_FORMAT);
+        }
+        if ($value instanceof \BackedEnum) {
+            return (string) $value->value;
+        }
+        if ($value instanceof \UnitEnum) {
+            return $value->name;
+        }
+        if (is_object($value) && !$value instanceof \Stringable) {
+            return '';
+        }
+
+        return (string) $value;
     }
 
     /**

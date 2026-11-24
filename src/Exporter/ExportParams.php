@@ -9,6 +9,7 @@ class ExportParams
     protected ?string $filename = null;
     protected string $separator = ";";
     protected bool $includeHeaders = true;
+    protected bool $bom = true;
     protected array $pdfParams = [
         'title' => 'Export',
         'paper_size' => PageSetup::PAPERSIZE_A4,
@@ -69,6 +70,21 @@ class ExportParams
     public function setIncludeHeaders(bool $includeHeaders): self
     {
         $this->includeHeaders = $includeHeaders;
+
+        return $this;
+    }
+
+    /**
+     * A byte order mark (UTF-8) at the start of the file, so that Excel reads the accents. Supported by: CSV
+     */
+    public function getBom(): bool
+    {
+        return $this->bom;
+    }
+
+    public function setBom(bool $bom): self
+    {
+        $this->bom = $bom;
 
         return $this;
     }
