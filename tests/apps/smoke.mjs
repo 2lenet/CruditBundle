@@ -1602,6 +1602,8 @@ await page.waitForFunction(() => !document.querySelector('dialog[open] [role=ale
 assert.equal(page.url(), before, 'export: an error page does not take the user away');
 // the 422 page of Crudit carries the reason (data-crudit-export-error): the dialog shows it, not the generic message
 assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export could not be generated.');
+// the browser logs the 422 of that page: it is the answer that this step asks for
+errors.splice(0, errors.length, ...errors.filter((error) => !error.includes('status of 422')));
 assert.equal(await page.$eval('dialog[open] form', (e) => e.getAttribute('target')), null, 'export: the form goes back to its own page');
 // the error is gone when the dialog opens again
 await page.keyboard.press('Escape');
