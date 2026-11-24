@@ -61,7 +61,7 @@ class ExportDialogTest extends TestCase
                 return 'JSON';
             }
 
-            public function getDescription(): ?string
+            public function getDescription(): string
             {
                 return 'For other programs';
             }

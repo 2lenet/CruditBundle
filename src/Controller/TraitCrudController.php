@@ -7,8 +7,6 @@ namespace Lle\CruditBundle\Controller;
 use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
-use Lle\CruditBundle\Dto\Action\AbstractAction;
-use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exception\ExporterException;
 use Lle\CruditBundle\Exporter\DownloadCookie;
@@ -359,42 +357,11 @@ trait TraitCrudController
      */
     private function exportFormats(Exporter $exporter): array
     {
-        $route = $this->config->getPath(CrudConfigInterface::EXPORT)->getRoute();
-        $configs = [];
-        $found = false;
-        $collect = function (iterable $actions) use (&$collect, &$configs, &$found, $route): void {
-            foreach ($actions as $action) {
-                if (is_array($action)) {
-                    $collect($action);
-                } elseif ($action instanceof DropdownAction) {
-                    foreach ($action->getActions() as $group) {
-                        $collect(is_iterable($group) ? $group : [$group]);
-                    }
-                } elseif ($action instanceof AbstractAction && $action->hasPath() && $action->getPath()->getRoute() === $route) {
-                    $found = true;
-                    // the formats of a button reserved to a role (setRole()) are for the users who have that role
-                    foreach ([$action->getPathRole(), $action->getRole()] as $role) {
-                        if ($role !== null && !$this->isGranted($role)) {
-                            continue 2;
-                        }
-                    }
-                    $configs[] = $action->getConfig();
-                }
-            }
-        };
-        $collect($this->config->getListActions());
-
-        // No action of export at all: the formats of the bundle. Actions that this user may not use: no format.
-        if (!$found) {
-            $configs = [[]];
-        }
-
-        $formats = [];
-        foreach ($configs as $config) {
-            $formats = [...$formats, ...$exporter->resolveFormats($config)];
-        }
-
-        return array_values(array_unique($formats));
+        return $exporter->resolveActionsFormats(
+            $this->config->getListActions(),
+            $this->config->getPath(CrudConfigInterface::EXPORT)->getRoute(),
+            fn (string $role): bool => $this->isGranted($role),
+        );
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace Lle\CruditBundle\Exporter;
 
 use Lle\CruditBundle\Contracts\ExporterInterface;
+use Lle\CruditBundle\Dto\Action\AbstractAction;
+use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Exception\ExporterException;
 
 class Exporter
@@ -74,6 +76,52 @@ class Exporter
         }
 
         return $formats !== [] ? array_values(array_unique($formats)) : $this->getDefaultFormats();
+    }
+
+    /**
+     * The formats that a page offers to a user: those of every action of the list that points to the route of the export,
+     * whatever its key (a project adds its actions with a numeric key; a list may have two buttons with different
+     * formats), in groups and dropdowns too, and that the user may use (the role of the button: a format of a button
+     * reserved to ROLE_ADMIN is not asked by the URL by a user who only has the role EXPORT). An action with only an URL
+     * (setUrl()) has no route: it is not looked at. No such action at all: the formats of the bundle. Some, but none that
+     * this user may use: no format.
+     *
+     * @param iterable<mixed> $actions the actions of the list (actions, groups of actions, dropdowns)
+     * @param \Closure(string): bool $isGranted tells whether the user has a role
+     *
+     * @return list<string>
+     */
+    public function resolveActionsFormats(iterable $actions, string $route, \Closure $isGranted): array
+    {
+        $configs = [];
+        $found = false;
+        $collect = function (iterable $actions) use (&$collect, &$configs, &$found, $route, $isGranted): void {
+            foreach ($actions as $action) {
+                if (is_array($action)) {
+                    $collect($action);
+                } elseif ($action instanceof DropdownAction) {
+                    foreach ($action->getActions() as $group) {
+                        $collect(is_iterable($group) ? $group : [$group]);
+                    }
+                } elseif ($action instanceof AbstractAction && $action->hasPath() && $action->getPath()->getRoute() === $route) {
+                    $found = true;
+                    foreach ([$action->getPathRole(), $action->getRole()] as $role) {
+                        if ($role !== null && !$isGranted($role)) {
+                            continue 2;
+                        }
+                    }
+                    $configs[] = $action->getConfig();
+                }
+            }
+        };
+        $collect($actions);
+
+        $formats = [];
+        foreach ($found ? $configs : [[]] as $config) {
+            $formats = [...$formats, ...$this->resolveFormats($config)];
+        }
+
+        return array_values(array_unique($formats));
     }
 
     public function supports(string $format): bool

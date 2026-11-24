@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace phpunit\Unit\Controller;
+namespace phpunit\Unit\Exporter;
 
-use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Contracts\ExporterInterface;
-use Lle\CruditBundle\Controller\AbstractCrudController;
-use Lle\CruditBundle\Controller\TraitCrudController;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\Action\ListAction;
 use Lle\CruditBundle\Dto\Path;
@@ -19,9 +16,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * The formats that the controller of the export accepts: those of the buttons of the list that the user may use.
+ * The formats that a page offers for the export (Exporter::resolveActionsFormats(), what the controller accepts): those of the buttons of the list that the user may use.
  */
-class ExportFormatsTest extends TestCase
+class ExportActionsFormatsTest extends TestCase
 {
     private function exporter(): Exporter
     {
@@ -52,37 +49,14 @@ class ExportFormatsTest extends TestCase
     }
 
     /**
-     * @param list<mixed> $actions the list actions of the config
+     * @param array<int|string, mixed> $actions the list actions of the config
      * @param list<string> $roles the roles the user has
      *
      * @return list<string>
      */
     private function formats(array $actions, array $roles = []): array
     {
-        $config = $this->createStub(CrudConfigInterface::class);
-        $config->method('getPath')->willReturn(Path::new('app_client_EXPORT'));
-        $config->method('getListActions')->willReturn($actions);
-
-        $controller = new class ($config, $roles) extends AbstractCrudController {
-            use TraitCrudController;
-
-            public function __construct(CrudConfigInterface $config, private array $roles)
-            {
-                $this->config = $config;
-            }
-
-            protected function isGranted(mixed $attribute, mixed $subject = null): bool
-            {
-                return in_array($attribute, $this->roles, true);
-            }
-
-            public function formats(Exporter $exporter): array
-            {
-                return $this->exportFormats($exporter);
-            }
-        };
-
-        return $controller->formats($this->exporter());
+        return $this->exporter()->resolveActionsFormats($actions, Path::new('app_client_EXPORT')->getRoute(), fn (string $role): bool => in_array($role, $roles, true));
     }
 
     private function button(string $label, array $formats, ?string $role = null): ListAction
