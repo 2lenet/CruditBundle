@@ -31,13 +31,13 @@
                             {% else %}
                                 href="{{ action.url ?? path(action.path.route, params) }}"
                             {% endif %}
-                            title="{{ action.label|trans }}"
+                            title="{{ action.label|trans(domain=view.config.translation_domain) }}"
                             {% if action.target is defined and action.target %}
                                 target="{{ action.target }}"
                             {% endif %}
                         >
                             {% if action.icon %}<i class="{{ action.icon.cssClass }}"></i>{% endif %}
-                            {% if not action.hideLabel %}{{ action.label|trans }}{% endif %}
+                            {% if not action.hideLabel %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endif %}
                         </a>
                     {% endif %}
                 {% endfor %}
@@ -88,7 +88,7 @@
                         <button type="submit" class="btn btn-sm btn-primary">
                             <i class="fas fa-check"></i>&nbsp;
                             {{ 'crudit.action.validate'|trans({}, 'LleCruditBundle') }}
-                            {% if action and action.label is defined and action.label is not null %}&nbsp;"{{ action.label|trans }}"{% endif %}
+                            {% if action and action.label is defined and action.label is not null %}&nbsp;"{{ action.label|trans(domain=view.config.translation_domain) }}"{% endif %}
                         </button>
                     </div>
                 </div>

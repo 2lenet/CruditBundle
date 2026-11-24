@@ -14,7 +14,7 @@
             {% else %}
                 href="{{ action.url ?? path(action.path.route, params) }}"
             {% endif %}
-            title="{{ action.label|trans }}"
+            title="{{ action.label|trans(domain=view.config.translation_domain) }}"
             {% if action.target is defined and action.target %}
                 target="{{ action.target }}"
             {% endif %}
@@ -24,7 +24,7 @@
             {% block icon %}<i class="{{ action.icon.cssClass }}"></i>{% endblock %}
         {% endif %}
         {% if not action.hideLabel %}
-            {% block label %}{{ action.label|trans }}{% endblock %}
+            {% block label %}{{ action.label|trans(domain=view.config.translation_domain) }}{% endblock %}
         {% endif %}
     </a>
 {% endblock %}

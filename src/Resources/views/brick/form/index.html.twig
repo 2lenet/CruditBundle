@@ -41,7 +41,7 @@
             {% set currentGroup = field.vars.id %}
             <div class="p-1 {{ field.vars.fieldset_class }}">
             <fieldset id="{{ field.vars.id }}" class="border p-2 crudit-group">
-            <legend class="w-auto crudit-group">{{ field.vars.label|trans }}</legend>
+            <legend class="w-auto crudit-group">{{ field.vars.translation_domain is same as(false) ? field.vars.label : field.vars.label|trans({}, field.vars.translation_domain) }}</legend>
             <div class="row">
         {% else %}
             {% if field.vars.name != '_token' %}

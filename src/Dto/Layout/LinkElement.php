@@ -29,6 +29,9 @@ class LinkElement extends AbstractLayoutElement
 
     protected ?string $target = null;
 
+    /** Domain used to translate the libelle; null for the default domain of the application. */
+    protected ?string $translationDomain = null;
+
     public static function new(string $libelle, ?Path $path, ?Icon $icon = null, ?string $role = null): self
     {
         $item = new self($libelle, $path, $icon, $role);
@@ -50,6 +53,18 @@ class LinkElement extends AbstractLayoutElement
         $this->role = $role;
         $this->badges = [];
         $this->children = [];
+    }
+
+    public function getTranslationDomain(): ?string
+    {
+        return $this->translationDomain;
+    }
+
+    public function setTranslationDomain(?string $translationDomain): self
+    {
+        $this->translationDomain = $translationDomain;
+
+        return $this;
     }
 
     public function getType(): ?string

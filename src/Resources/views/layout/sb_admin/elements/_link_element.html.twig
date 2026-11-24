@@ -11,12 +11,12 @@
             {% if element.target is defined and element.target %}target="{{ element.target }}" {% endif %}
         >
             {% if element.icon and element.icon.img %}
-                <img src="{{ element.icon.icon }}" class="img-thumbnail" alt="{{ element.libelle|trans }}">
+                <img src="{{ element.icon.icon }}" class="img-thumbnail" alt="{{ element.libelle|trans({}, element.translationDomain) }}">
             {% elseif element.icon %}
                 <i class="nav-icon {{ element.icon.cssClass }}"></i>
             {% endif %}
             <span>
-                {{- element.libelle|trans -}}
+                {{- element.libelle|trans({}, element.translationDomain) -}}
                 {% for badge in element.badges %}
                     <span class="right badge {{ badge.cssClass }}">{{ badge.libelle|trans }}</span>
                 {% endfor %}
