@@ -1600,7 +1600,8 @@ await page.evaluate(() => {
 await page.click('dialog[open] button[type=submit]');
 await page.waitForFunction(() => !document.querySelector('dialog[open] [role=alert]').hidden, {timeout: 8000});
 assert.equal(page.url(), before, 'export: an error page does not take the user away');
-assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export did not start. Try again, or reload the page if your session has expired.');
+// the 422 page of Crudit carries the reason (data-crudit-export-error): the dialog shows it, not the generic message
+assert.equal(await page.$eval('dialog[open] [role=alert]', (e) => e.textContent.trim()), 'The export could not be generated.');
 assert.equal(await page.$eval('dialog[open] form', (e) => e.getAttribute('target')), null, 'export: the form goes back to its own page');
 // the error is gone when the dialog opens again
 await page.keyboard.press('Escape');

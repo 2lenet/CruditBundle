@@ -53,7 +53,8 @@ abstract class AbstractExporter implements ExporterInterface
 
     /**
      * The text of a value: a list (an array, a Doctrine collection) is its values joined by a comma, an enumeration its
-     * value, a date the format of the exports (with the time when it has one), an object that has no text is empty.
+     * value, a date the format of the exports (`d/m/Y H:i`, or `d/m/Y` when the time is exactly 00:00:00: a datetime at
+     * midnight comes out without its time), an object that has no text is empty.
      */
     private function toString(mixed $value): string
     {

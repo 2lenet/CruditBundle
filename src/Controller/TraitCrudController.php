@@ -8,6 +8,7 @@ use Lle\CruditBundle\Action\ActionView;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Datasource\DatasourceParams;
 use Lle\CruditBundle\Dto\Action\AbstractAction;
+use Lle\CruditBundle\Dto\Action\DropdownAction;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Exception\ExporterException;
 use Lle\CruditBundle\Exporter\DownloadCookie;
@@ -269,9 +270,7 @@ trait TraitCrudController
 
         // only the formats the action offers (an old link, a format of a project that this list does not choose)
         $format = (string) $request->query->get("format", "csv");
-        $action = $this->config->getListActions()[CrudConfigInterface::ACTION_EXPORT] ?? null;
-        $formats = $exporter->resolveFormats($action instanceof AbstractAction ? $action->getConfig() : []);
-        if (!in_array($format, $formats, true)) {
+        if (!in_array($format, $this->exportFormats($exporter), true)) {
             return $this->exportFailed($request, $translator);
         }
 
@@ -347,6 +346,48 @@ trait TraitCrudController
         DownloadCookie::attach($request, $response);
 
         return $response;
+    }
+
+    /**
+     * The formats that the page offers: those of every action of the list that points to the route of the export,
+     * whatever its key (the skeleton adds the actions of a project with a numeric key; a list may have two buttons with
+     * different formats), in a dropdown too. No such action: the formats of the bundle.
+     *
+     * @return list<string>
+     */
+    private function exportFormats(Exporter $exporter): array
+    {
+        $route = $this->config->getPath(CrudConfigInterface::EXPORT)->getRoute();
+        $configs = [];
+        $collect = function (iterable $actions) use (&$collect, &$configs, $route): void {
+            foreach ($actions as $action) {
+                if (is_array($action)) {
+                    $collect($action);
+                } elseif ($action instanceof DropdownAction) {
+                    foreach ($action->getActions() as $group) {
+                        $collect(is_iterable($group) ? $group : [$group]);
+                    }
+                } elseif ($action instanceof AbstractAction) {
+                    try {
+                        $actionRoute = $action->getPath()->getRoute();
+                    } catch (\Error) {
+                        // an action without a path (print, a template of its own)
+                        continue;
+                    }
+                    if ($actionRoute === $route) {
+                        $configs[] = $action->getConfig();
+                    }
+                }
+            }
+        };
+        $collect($this->config->getListActions());
+
+        $formats = [];
+        foreach ($configs === [] ? [[]] : $configs as $config) {
+            $formats = [...$formats, ...$exporter->resolveFormats($config)];
+        }
+
+        return array_values(array_unique($formats));
     }
 
     /**

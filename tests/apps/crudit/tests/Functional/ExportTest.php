@@ -92,6 +92,18 @@ class ExportTest extends AppTestCase
         self::assertStringContainsString('The export could not be generated.', $crawler->filter('.crudit-ui-toasts')->text());
     }
 
+    public function testAFormatOfAProjectIsAcceptedWhereAnActionChoosesIt(): void
+    {
+        // the interventions have a second button, added with a numeric key, that offers `xml`: a project exporter
+        $this->client->request('GET', '/intervention/export?format=xml');
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('attachment', (string) $this->client->getResponse()->headers->get('Content-Disposition'));
+
+        // not a format of the bundle, so the lists without such an action do not offer it
+        $this->client->request('GET', '/client/export?format=xml');
+        self::assertResponseRedirects('/client/');
+    }
+
     public function testFromTheDialogAnErrorIsALightPageNotTheList(): void
     {
         $this->client->request('GET', '/client/export?format=doc&download_token=0a1b2c3d-4e5f');
