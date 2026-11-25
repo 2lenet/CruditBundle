@@ -23,6 +23,11 @@ use Symfony\Component\Security\Http\AccessMapInterface;
  */
 trait RouteSecurityTestHelperTrait
 {
+    private const array OUTCOMES_NOT_REACHING_THE_ROUTE = [
+        RouteSecurityAnalyzer::OUTCOME_DENIED,
+        RouteSecurityAnalyzer::OUTCOME_SHADOWED,
+    ];
+
     public function testEveryRouteIsProtected(): void
     {
         $violations = $this->buildRouteSecurityAnalyzer()->analyze(
@@ -86,7 +91,7 @@ trait RouteSecurityTestHelperTrait
                     $this->readRouteSecurityConstant('ANONYMOUS_LOGIN_PATTERN')[0] ?? null,
                 );
 
-                if ($outcome === RouteSecurityAnalyzer::OUTCOME_DENIED) {
+                if (in_array($outcome, self::OUTCOMES_NOT_REACHING_THE_ROUTE, true)) {
                     continue;
                 }
 
@@ -99,7 +104,7 @@ trait RouteSecurityTestHelperTrait
                     continue 2;
                 }
 
-                if ($outcome === RouteSecurityAnalyzer::OUTCOME_REACHED && $anonymousPatterns === []) {
+                if ($anonymousPatterns === []) {
                     $reached[] = sprintf(
                         '- %s  %s %s  [%s]  anonymous → %d',
                         $entry['route'],
