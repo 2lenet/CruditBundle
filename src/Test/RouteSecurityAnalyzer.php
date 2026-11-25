@@ -6,6 +6,7 @@ use Closure;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
+use Stringable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -21,21 +22,33 @@ class RouteSecurityAnalyzer
     private const array PUBLIC_REASONS = [self::REASON_PUBLIC, self::REASON_NO_FIREWALL];
     private const array PUBLIC_ATTRIBUTES = ['PUBLIC_ACCESS', 'IS_AUTHENTICATED_ANONYMOUSLY'];
     private const array ALL_HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+    private const array DENY_CALLS = ['denyAccessUnlessGranted', 'denyUnlessAccessGranted'];
+    private const array TRANSPARENT_TOKENS = [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
+    private const array CHAIN_TOKENS = [
+        T_WHITESPACE,
+        T_OBJECT_OPERATOR,
+        T_NULLSAFE_OBJECT_OPERATOR,
+        T_VARIABLE,
+        T_STRING,
+    ];
+    private const array OPENING_BRACE_TOKENS = [T_CURLY_OPEN, T_DOLLAR_OPEN_CURLY_BRACES];
+    private const string IS_GRANTED_CALL = 'isGranted';
+    private const string THIS_VARIABLE = '$this';
     private const string ROLE_USER = 'ROLE_USER';
     private const string AUTHENTICATED_PREFIX = 'IS_AUTHENTICATED';
-    private const string DENY_CALL_PATTERN = '/\b(?:denyAccessUnlessGranted|denyUnlessAccessGranted)\(/';
-    private const string IS_GRANTED_CALL_PATTERN = '/\bisGranted\(/';
-    private const string DENIAL_PATTERN = '/\b(?:throw|createAccessDeniedException|AccessDenied\w*'
-        . '|HTTP_FORBIDDEN|403)\b/';
-    private const string TRIVIAL_CHECK_PATTERN = '/\b(?:denyAccessUnlessGranted|denyUnlessAccessGranted|isGranted)\('
-        . '\s*[\'"](?:ROLE_USER|PUBLIC_ACCESS|IS_AUTHENTICATED\w*)[\'"]/';
-    private const string HELPER_CALL_PATTERN = '/\$this->(\w+)\(/';
+    private const string TRIVIAL_CALL_PATTERN = '/^\w+\(\s*[\'"](?:ROLE_USER|PUBLIC_ACCESS|IS_AUTHENTICATED\w*)[\'"]/';
+    private const string TRIVIAL_EXPRESSION_PATTERN = '/^\s*is_granted\(\s*'
+        . '[\'"](?:ROLE_USER|PUBLIC_ACCESS|IS_AUTHENTICATED\w*)[\'"]\s*\)\s*$/';
+    private const string NEGATED_GUARD_PATTERN = '/^isGranted\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)\s*\)\s*\{?'
+        . '[^;}]*?(?:\bthrow\b|createAccessDeniedException|AccessDenied\w*|HTTP_FORBIDDEN|\b403\b)/s';
     private const string PLACEHOLDER_PATTERN = '/\{!?(\w+)\}/';
     private const string ALTERNATIVES_PATTERN = '/^[\w-]+(?:\|[\w-]+)*$/';
+    private const string LEGACY_CONTROLLER_PATTERN = '/^([^:]+):(\w+)$/';
     private const string DEFAULT_PLACEHOLDER_VALUE = '1';
     private const string INTERNAL_ROUTE_PREFIX = '_';
     private const string FRAMEWORK_NAMESPACE = 'Symfony\\';
     private const string INVOKE = '__invoke';
+    private const int METHOD_BODY_DEPTH = 1;
 
     /**
      * @param Closure(Request): bool|null $hasFirewall tells whether a firewall covers the request
@@ -54,7 +67,7 @@ class RouteSecurityAnalyzer
      *     samplePath: string,
      *     httpMethods: list<string>,
      *     controller: string,
-     *     class: class-string,
+     *     class: class-string|null,
      *     reason: string|null,
      *     httpMethod: string|null
      * }>
@@ -64,22 +77,24 @@ class RouteSecurityAnalyzer
         $entries = [];
 
         foreach ($this->routes as $name => $route) {
-            $target = $this->resolveController($route);
-            if ($target === null || str_starts_with($name, self::INTERNAL_ROUTE_PREFIX)) {
+            $controller = $route->getDefault('_controller');
+            if ($controller === null || str_starts_with($name, self::INTERNAL_ROUTE_PREFIX)) {
                 continue;
             }
 
-            [$class, $method] = $target;
+            $target = $this->resolveController($route);
             $httpMethods = $this->listHttpMethods($route);
-            [$reason, $httpMethod] = $this->findViolation($route, $httpMethods, new ReflectionMethod($class, $method));
+            [$reason, $httpMethod] = $this->findViolation($route, $httpMethods, $target);
 
             $entries[] = [
                 'route' => $name,
                 'path' => $route->getPath(),
                 'samplePath' => $this->buildSamplePath($route),
                 'httpMethods' => $httpMethods,
-                'controller' => $class . ($method === self::INVOKE ? '' : '::' . $method),
-                'class' => $class,
+                'controller' => $target === null
+                    ? $this->describeUnresolvedController($controller)
+                    : $target[0] . ($target[1] === self::INVOKE ? '' : '::' . $target[1]),
+                'class' => $target[0] ?? null,
                 'reason' => $reason,
                 'httpMethod' => $httpMethod,
             ];
@@ -124,6 +139,9 @@ class RouteSecurityAnalyzer
     }
 
     /**
+     * An exclusion is unused when it excuses nothing: no route is left to excuse
+     * (a route that got protected no longer needs it).
+     *
      * @param string[] $excludedRoutes
      * @param string[] $excludedControllers
      * @param string[] $publicRoutes
@@ -136,26 +154,26 @@ class RouteSecurityAnalyzer
         array $publicRoutes = [],
         array $roleUserRoutes = [],
     ): array {
-        $entries = $this->inspect();
+        $exposed = array_values(array_filter($this->inspect(), fn (array $entry) => $entry['reason'] !== null));
         $publicEntries = array_values(array_filter(
-            $entries,
+            $exposed,
             fn (array $entry) => in_array($entry['reason'], self::PUBLIC_REASONS, true),
         ));
         $roleUserEntries = array_values(array_filter(
-            $entries,
+            $exposed,
             fn (array $entry) => $entry['reason'] === self::REASON_ROLE_USER,
         ));
 
         return array_values(array_merge(
-            $this->filterUnused($excludedRoutes, $entries, 'route'),
-            $this->filterUnused($excludedControllers, $entries, 'class'),
+            $this->filterUnused($excludedRoutes, $exposed, 'route'),
+            $this->filterUnused($excludedControllers, $exposed, 'class'),
             $this->filterUnused($publicRoutes, $publicEntries, 'route'),
             $this->filterUnused($roleUserRoutes, $roleUserEntries, 'route'),
         ));
     }
 
     /**
-     * @param array{route: string, class: class-string, reason: string|null} $entry
+     * @param array{route: string, class: class-string|null, reason: string|null} $entry
      * @param string[] $excludedRoutes
      * @param string[] $excludedControllers
      * @param string[] $publicRoutes
@@ -168,13 +186,28 @@ class RouteSecurityAnalyzer
         array $publicRoutes,
         array $roleUserRoutes,
     ): bool {
-        return $this->matchesAny($entry['route'], $excludedRoutes)
-            || $this->matchesAny($entry['class'], $excludedControllers)
+        return $this->findMatchingPatterns($entry['route'], $excludedRoutes) !== []
+            || ($entry['class'] !== null && $this->findMatchingPatterns($entry['class'], $excludedControllers) !== [])
             || (
                 in_array($entry['reason'], self::PUBLIC_REASONS, true)
-                && $this->matchesAny($entry['route'], $publicRoutes)
+                && $this->findMatchingPatterns($entry['route'], $publicRoutes) !== []
             )
-            || ($entry['reason'] === self::REASON_ROLE_USER && $this->matchesAny($entry['route'], $roleUserRoutes));
+            || (
+                $entry['reason'] === self::REASON_ROLE_USER
+                && $this->findMatchingPatterns($entry['route'], $roleUserRoutes) !== []
+            );
+    }
+
+    /**
+     * @param string[] $patterns fnmatch globs
+     * @return string[] the patterns matching the subject
+     */
+    public function findMatchingPatterns(string $subject, array $patterns): array
+    {
+        return array_values(array_filter(
+            $patterns,
+            fn (string $pattern) => fnmatch($pattern, $subject, FNM_NOESCAPE),
+        ));
     }
 
     /**
@@ -184,24 +217,20 @@ class RouteSecurityAnalyzer
      */
     private function filterUnused(array $patterns, array $entries, string $key): array
     {
-        $subjects = array_column($entries, $key);
+        $subjects = array_filter(array_column($entries, $key), 'is_string');
 
-        return array_filter($patterns, fn (string $pattern) => !$this->matchesAny($pattern, $subjects, true));
-    }
+        return array_filter(
+            $patterns,
+            function (string $pattern) use ($subjects) {
+                foreach ($subjects as $subject) {
+                    if (fnmatch($pattern, $subject, FNM_NOESCAPE)) {
+                        return false;
+                    }
+                }
 
-    /**
-     * @param string[] $patterns
-     */
-    private function matchesAny(string $subject, array $patterns, bool $subjectIsPattern = false): bool
-    {
-        foreach ($patterns as $pattern) {
-            [$glob, $candidate] = $subjectIsPattern ? [$subject, $pattern] : [$pattern, $subject];
-            if (fnmatch($glob, $candidate, FNM_NOESCAPE)) {
                 return true;
-            }
-        }
-
-        return false;
+            },
+        );
     }
 
     /**
@@ -210,16 +239,41 @@ class RouteSecurityAnalyzer
     private function resolveController(Route $route): ?array
     {
         $controller = $route->getDefault('_controller');
-        if (!is_string($controller)) {
+
+        if ($this->isCallableArray($controller)) {
+            [$class, $method] = $controller;
+        } elseif (is_string($controller) && str_contains($controller, '::')) {
+            [$class, $method] = explode('::', $controller, 2);
+        } elseif (is_string($controller) && preg_match(self::LEGACY_CONTROLLER_PATTERN, $controller, $matches) === 1) {
+            [, $class, $method] = $matches;
+        } elseif (is_string($controller)) {
+            [$class, $method] = [$controller, self::INVOKE];
+        } else {
             return null;
         }
 
-        [$class, $method] = str_contains($controller, '::') ? explode('::', $controller) : [$controller, self::INVOKE];
         if (!class_exists($class) || !method_exists($class, $method)) {
             return null;
         }
 
         return [$class, $method];
+    }
+
+    private function isCallableArray(mixed $controller): bool
+    {
+        return is_array($controller)
+            && count($controller) === 2
+            && is_string($controller[0] ?? null)
+            && is_string($controller[1] ?? null);
+    }
+
+    private function describeUnresolvedController(mixed $controller): string
+    {
+        return match (true) {
+            is_string($controller) => $controller,
+            is_array($controller) => 'array callable',
+            default => 'unresolvable controller (' . get_debug_type($controller) . ')',
+        };
     }
 
     /**
@@ -256,11 +310,12 @@ class RouteSecurityAnalyzer
 
     /**
      * @param list<string> $httpMethods
+     * @param array{0: class-string, 1: string}|null $target
      * @return array{0: string|null, 1: string|null} the reason and the HTTP method concerned
      */
-    private function findViolation(Route $route, array $httpMethods, ReflectionMethod $method): array
+    private function findViolation(Route $route, array $httpMethods, ?array $target): array
     {
-        if ($this->hasRealCheck($method)) {
+        if ($target !== null && $this->hasRealCheck(new ReflectionClass($target[0]), $target[1])) {
             return [null, null];
         }
 
@@ -291,11 +346,17 @@ class RouteSecurityAnalyzer
             return null;
         }
 
-        return array_diff($attributes, self::PUBLIC_ATTRIBUTES) === [] ? self::REASON_PUBLIC : self::REASON_ROLE_USER;
+        $labels = array_map(fn (mixed $attribute) => (string) $attribute, $attributes);
+
+        return array_diff($labels, self::PUBLIC_ATTRIBUTES) === [] ? self::REASON_PUBLIC : self::REASON_ROLE_USER;
     }
 
     private function isTrivialAttribute(mixed $attribute): bool
     {
+        if ($attribute instanceof Stringable) {
+            return preg_match(self::TRIVIAL_EXPRESSION_PATTERN, (string) $attribute) === 1;
+        }
+
         return is_string($attribute)
             && (
                 $attribute === self::ROLE_USER
@@ -304,22 +365,16 @@ class RouteSecurityAnalyzer
             );
     }
 
-    private function hasRealCheck(ReflectionMethod $method): bool
+    /**
+     * Symfony reads #[IsGranted] on the concrete controller class only: attributes are not inherited.
+     */
+    private function hasRealCheck(ReflectionClass $controller, string $methodName): bool
     {
+        $method = $controller->getMethod($methodName);
+
         return $this->hasRealIsGranted($method->getAttributes(IsGranted::class))
-            || $this->hasRealClassIsGranted($method->getDeclaringClass())
-            || $this->hasRealCheckInCode($method, []);
-    }
-
-    private function hasRealClassIsGranted(ReflectionClass $class): bool
-    {
-        for ($current = $class; $current !== false; $current = $current->getParentClass()) {
-            if ($this->hasRealIsGranted($current->getAttributes(IsGranted::class))) {
-                return true;
-            }
-        }
-
-        return false;
+            || $this->hasRealIsGranted($controller->getAttributes(IsGranted::class))
+            || $this->hasUnconditionalCheck($method, $controller, []);
     }
 
     /**
@@ -339,9 +394,12 @@ class RouteSecurityAnalyzer
     }
 
     /**
+     * Only statements of the method body itself count: a check nested in a block (if, foreach...) may not run.
+     * A try block always runs, so it does not count as nesting.
+     *
      * @param string[] $visited
      */
-    private function hasRealCheckInCode(ReflectionMethod $method, array $visited): bool
+    private function hasUnconditionalCheck(ReflectionMethod $method, ReflectionClass $controller, array $visited): bool
     {
         $key = $method->getDeclaringClass()->getName() . '::' . $method->getName();
         $file = $method->getFileName();
@@ -351,17 +409,40 @@ class RouteSecurityAnalyzer
         $visited[] = $key;
 
         $length = $method->getEndLine() - $method->getStartLine() + 1;
-        $lines = array_slice(file($file) ?: [], $method->getStartLine() - 1, $length);
-        $source = $this->stripComments(implode('', $lines));
-        $withoutTrivial = preg_replace(self::TRIVIAL_CHECK_PATTERN, '', $source) ?? $source;
+        $source = implode('', array_slice(file($file) ?: [], $method->getStartLine() - 1, $length));
+        $tokens = token_get_all('<?php ' . $source);
+        $helpers = [];
+        $depth = 0;
+        $openBlocks = [];
+        $tryPending = false;
 
-        if ($this->containsGate($withoutTrivial)) {
-            return true;
+        foreach ($tokens as $index => $token) {
+            $tryPending = $tryPending || (is_array($token) && $token[0] === T_TRY);
+            $change = $this->getDepthChange($token);
+            if ($change > 0) {
+                $openBlocks[] = $tryPending;
+                $depth += $tryPending ? 0 : 1;
+                $tryPending = false;
+            } elseif ($change < 0) {
+                $depth -= array_pop($openBlocks) === true ? 0 : 1;
+            }
+
+            if ($depth !== self::METHOD_BODY_DEPTH || !$this->isCall($tokens, $index)) {
+                continue;
+            }
+
+            $name = $token[1];
+            $call = $this->rebuildFrom($tokens, $index);
+            if ($this->isGate($name, $call, $tokens, $index)) {
+                return true;
+            }
+            if ($this->isCalledOnThis($tokens, $index)) {
+                $helpers[] = $name;
+            }
         }
 
-        preg_match_all(self::HELPER_CALL_PATTERN, $source, $helperCalls);
-        foreach (array_unique($helperCalls[1]) as $helperName) {
-            if ($this->helperChecks($method->getDeclaringClass(), $helperName, $visited)) {
+        foreach (array_unique($helpers) as $helperName) {
+            if ($this->helperChecks($controller, $helperName, $visited)) {
                 return true;
             }
         }
@@ -369,20 +450,103 @@ class RouteSecurityAnalyzer
         return false;
     }
 
-    private function containsGate(string $source): bool
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function isGate(string $name, string $call, array $tokens, int $index): bool
     {
-        if (preg_match(self::DENY_CALL_PATTERN, $source) === 1) {
+        if (preg_match(self::TRIVIAL_CALL_PATTERN, $call) === 1) {
+            return false;
+        }
+
+        if (in_array($name, self::DENY_CALLS, true)) {
             return true;
         }
 
-        return preg_match(self::IS_GRANTED_CALL_PATTERN, $source) === 1
-            && preg_match(self::DENIAL_PATTERN, $source) === 1;
+        return $name === self::IS_GRANTED_CALL
+            && $this->isNegated($tokens, $index)
+            && preg_match(self::NEGATED_GUARD_PATTERN, $call) === 1;
     }
 
-    private function stripComments(string $source): string
+    private function getDepthChange(mixed $token): int
+    {
+        if ($token === '{' || (is_array($token) && in_array($token[0], self::OPENING_BRACE_TOKENS, true))) {
+            return 1;
+        }
+
+        return $token === '}' ? -1 : 0;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function isCall(array $tokens, int $index): bool
+    {
+        if (!is_array($tokens[$index]) || $tokens[$index][0] !== T_STRING) {
+            return false;
+        }
+
+        for ($next = $index + 1; isset($tokens[$next]); $next++) {
+            if (!is_array($tokens[$next]) || !in_array($tokens[$next][0], self::TRANSPARENT_TOKENS, true)) {
+                return $tokens[$next] === '(';
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function isCalledOnThis(array $tokens, int $index): bool
+    {
+        $operator = $this->findPreviousSignificant($tokens, $index);
+        if ($operator === null || !is_array($tokens[$operator]) || $tokens[$operator][0] !== T_OBJECT_OPERATOR) {
+            return false;
+        }
+
+        $owner = $this->findPreviousSignificant($tokens, $operator);
+
+        return $owner !== null && is_array($tokens[$owner]) && $tokens[$owner][1] === self::THIS_VARIABLE;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function isNegated(array $tokens, int $index): bool
+    {
+        for ($previous = $index - 1; $previous >= 0; $previous--) {
+            $token = $tokens[$previous];
+            if (!is_array($token) || !in_array($token[0], self::CHAIN_TOKENS, true)) {
+                return $token === '!';
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function findPreviousSignificant(array $tokens, int $index): ?int
+    {
+        for ($previous = $index - 1; $previous >= 0; $previous--) {
+            if (!is_array($tokens[$previous]) || !in_array($tokens[$previous][0], self::TRANSPARENT_TOKENS, true)) {
+                return $previous;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function rebuildFrom(array $tokens, int $index): string
     {
         $code = '';
-        foreach (token_get_all('<?php ' . $source) as $token) {
+        for ($position = $index; isset($tokens[$position]); $position++) {
+            $token = $tokens[$position];
             if (!is_array($token)) {
                 $code .= $token;
             } elseif (!in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
@@ -396,15 +560,15 @@ class RouteSecurityAnalyzer
     /**
      * @param string[] $visited
      */
-    private function helperChecks(ReflectionClass $class, string $helperName, array $visited): bool
+    private function helperChecks(ReflectionClass $controller, string $helperName, array $visited): bool
     {
-        if (!$class->hasMethod($helperName)) {
+        if (!$controller->hasMethod($helperName)) {
             return false;
         }
 
-        $helper = $class->getMethod($helperName);
+        $helper = $controller->getMethod($helperName);
 
         return !str_starts_with($helper->getDeclaringClass()->getName(), self::FRAMEWORK_NAMESPACE)
-            && $this->hasRealCheckInCode($helper, $visited);
+            && $this->hasUnconditionalCheck($helper, $controller, $visited);
     }
 }

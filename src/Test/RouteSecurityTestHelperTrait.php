@@ -14,13 +14,13 @@ use Symfony\Component\Security\Http\AccessMapInterface;
  *  - ROLE_USER_ROUTES : open to any logged in user, only excuse a route that really is ROLE_USER only;
  *  - ANONYMOUS_EXCLUDED_ROUTES : skipped by the anonymous test only (public in access_control, guarded in code);
  *  - ANONYMOUS_LOGIN_PATTERN : regex a redirect Location must match to count as a login redirect
- *    (default login|connect|oauth|sso|auth).
+ *    (default: a path segment starting with login, connect, oauth, sso or auth).
  *
  * The class using it must extend WebTestCase.
  */
 trait RouteSecurityTestHelperTrait
 {
-    private const string DEFAULT_LOGIN_PATTERN = '#/(login|connect|oauth|sso|auth)#i';
+    private const string DEFAULT_LOGIN_PATTERN = '#/(?:login|connect|oauth|sso|auth)(?:[/?_-]|$)#i';
     private const array DENIED_STATUS_CODES = [401, 403];
 
     public function testEveryRouteIsProtected(): void
@@ -54,28 +54,44 @@ trait RouteSecurityTestHelperTrait
     public function testAnonymousIsDeniedEverywhere(): void
     {
         $analyzer = $this->buildRouteSecurityAnalyzer();
+        $entries = $analyzer->inspect();
         $excludedRoutes = array_merge(
             $this->readRouteSecurityConstant('EXCLUDED_ROUTES'),
             $this->readRouteSecurityConstant('PUBLIC_ROUTES'),
-            $this->readRouteSecurityConstant('ANONYMOUS_EXCLUDED_ROUTES'),
         );
         $excludedControllers = $this->readRouteSecurityConstant('EXCLUDED_CONTROLLERS');
+        $anonymousExcluded = $this->readRouteSecurityConstant('ANONYMOUS_EXCLUDED_ROUTES');
 
         self::ensureKernelShutdown();
         $client = static::createClient();
         $client->disableReboot();
 
         $reached = [];
-        foreach ($analyzer->inspect() as $entry) {
+        $untestable = [];
+        $usedAnonymousExclusions = [];
+        foreach ($entries as $entry) {
             if ($analyzer->isExcused($entry, $excludedRoutes, $excludedControllers, [], [])) {
                 continue;
             }
+            $anonymousPatterns = $analyzer->findMatchingPatterns($entry['route'], $anonymousExcluded);
 
             foreach ($entry['httpMethods'] as $httpMethod) {
                 $client->request($httpMethod, $entry['samplePath']);
                 $response = $client->getResponse();
 
-                if (!$this->isAnonymousDenial($response->getStatusCode(), $response->headers->get('Location'))) {
+                if ($client->getRequest()->attributes->get('_route') !== $entry['route']) {
+                    $untestable[$entry['route']] = $entry['samplePath'];
+                    $usedAnonymousExclusions = array_merge($usedAnonymousExclusions, $anonymousPatterns);
+
+                    continue 2;
+                }
+
+                if ($this->isAnonymousDenial($response->getStatusCode(), $response->headers->get('Location'))) {
+                    continue;
+                }
+
+                $usedAnonymousExclusions = array_merge($usedAnonymousExclusions, $anonymousPatterns);
+                if ($anonymousPatterns === []) {
                     $reached[] = sprintf(
                         '- %s  %s %s  [%s]  anonymous → %d',
                         $entry['route'],
@@ -88,11 +104,45 @@ trait RouteSecurityTestHelperTrait
             }
         }
 
+        $untestableReport = $this->formatUntestableRoutes($untestable);
         self::assertSame(
             [],
             $reached,
             sprintf("%d anonymous request(s) neither denied nor redirected to the login page:\n", count($reached))
-            . implode("\n", $reached),
+            . implode("\n", $reached) . $untestableReport,
+        );
+
+        $unusedAnonymousExclusions = array_values(array_diff($anonymousExcluded, $usedAnonymousExclusions));
+        self::assertSame(
+            [],
+            $unusedAnonymousExclusions,
+            "ANONYMOUS_EXCLUDED_ROUTES entries that no anonymous request reaches any more:\n- "
+            . implode("\n- ", $unusedAnonymousExclusions) . $untestableReport,
+        );
+
+        if ($untestable !== []) {
+            self::markTestIncomplete(ltrim($untestableReport));
+        }
+    }
+
+    /**
+     * @param array<string, string> $untestable sample path by route name
+     */
+    private function formatUntestableRoutes(array $untestable): string
+    {
+        if ($untestable === []) {
+            return '';
+        }
+
+        $lines = [];
+        foreach ($untestable as $route => $path) {
+            $lines[] = '- ' . $route . '  ' . $path;
+        }
+
+        return sprintf(
+            "\n\n%d route(s) could not be tested anonymously (the sample path does not resolve to the route):\n%s",
+            count($untestable),
+            implode("\n", $lines),
         );
     }
 

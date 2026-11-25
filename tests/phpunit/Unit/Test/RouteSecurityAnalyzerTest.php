@@ -3,25 +3,39 @@
 namespace phpunit\Unit\Test;
 
 use Lle\CruditBundle\Test\RouteSecurityAnalyzer;
+use phpunit\Unit\Test\Fixtures\ChildOfGuardedController;
+use phpunit\Unit\Test\Fixtures\GuardedChildController;
 use phpunit\Unit\Test\Fixtures\GuardedClassController;
 use phpunit\Unit\Test\Fixtures\OpenInvokableController;
 use phpunit\Unit\Test\Fixtures\SampleController;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestMatcher\MethodRequestMatcher;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\HttpFoundation\RequestMatcher\MethodRequestMatcher;
 use Symfony\Component\Security\Http\AccessMap;
 use Symfony\Component\Security\Http\AccessMapInterface;
-
-require_once __DIR__ . '/Fixtures/RouteSecurityControllers.php';
 
 class RouteSecurityAnalyzerTest extends TestCase
 {
     private function buildAccessMap(): AccessMapInterface
     {
         return new class implements AccessMapInterface {
+            public function expression(string $expression): \Stringable
+            {
+                return new class ($expression) implements \Stringable {
+                    public function __construct(private readonly string $expression)
+                    {
+                    }
+
+                    public function __toString(): string
+                    {
+                        return $this->expression;
+                    }
+                };
+            }
+
             public function getPatterns(Request $request): array
             {
                 $path = $request->getPathInfo();
@@ -34,6 +48,8 @@ class RouteSecurityAnalyzerTest extends TestCase
                     str_starts_with($path, '/images') => [['ROLE_ADMIN'], null],
                     str_starts_with($path, '/postopen') && $request->isMethod('POST') => [['PUBLIC_ACCESS'], null],
                     str_starts_with($path, '/postopen') => [['ROLE_ADMIN'], null],
+                    str_starts_with($path, '/expr-trivial') => [[$this->expression("is_granted('ROLE_USER')")], null],
+                    str_starts_with($path, '/expr-admin') => [[$this->expression("is_granted('ROLE_ADMIN')")], null],
                     str_starts_with($path, '/nofirewall') => [null, null],
                     default => [['ROLE_USER'], null],
                 };
@@ -91,6 +107,39 @@ class RouteSecurityAnalyzerTest extends TestCase
         yield 'IsGranted on the class' => [GuardedClassController::class, null];
         yield 'IsGranted ROLE_USER' => [$sample . 'trivialAttribute', RouteSecurityAnalyzer::REASON_ROLE_USER];
         yield 'denyAccessUnlessGranted ROLE_USER' => [$sample . 'trivialCall', RouteSecurityAnalyzer::REASON_ROLE_USER];
+        yield 'IsGranted only on the parent class' => [
+            ChildOfGuardedController::class . '::inherited',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'IsGranted on the concrete class, inherited method' => [
+            GuardedChildController::class . '::inherited',
+            null,
+        ];
+        yield 'isGranted that throws when granted' => [
+            $sample . 'throwsWhenGranted',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'negated isGranted without denial' => [
+            $sample . 'negatedWithoutDenial',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check at the top of a try block' => [$sample . 'guardedInsideTry', null];
+        yield 'conditional check inside a try block' => [
+            $sample . 'conditionalCheckInsideTry',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'conditional denyAccessUnlessGranted' => [
+            $sample . 'conditionalCheck',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'conditional call to a checking method' => [
+            $sample . 'conditionalHelper',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'display isGranted and an unrelated throw' => [
+            $sample . 'displayIsGrantedWithUnrelatedThrow',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
         yield 'no check' => [$sample . 'unguarded', RouteSecurityAnalyzer::REASON_ROLE_USER];
         yield 'methods calling each other' => [
             $sample . 'unguardedWithLoopingHelper',
@@ -150,14 +199,55 @@ class RouteSecurityAnalyzerTest extends TestCase
         self::assertSame([], $this->buildAnalyzer($routes)->analyze());
     }
 
-    public function testInternalAndClosureRoutesAreIgnored(): void
+    public function testInternalRoutesAndRoutesWithoutControllerAreIgnored(): void
     {
         $routes = new RouteCollection();
         $routes->add('_wdt', $this->routeTo('/_wdt/{token}', $this->sample('unguarded')));
-        $routes->add('closure', new Route('/closure', ['_controller' => static fn () => null]));
-        $routes->add('service', $this->routeTo('/service', 'some.service:action'));
+        $routes->add('no_controller', new Route('/logout'));
 
         self::assertSame([], $this->buildAnalyzer($routes)->analyze());
+    }
+
+    public function testUnresolvedControllersAreReportedUnlessAccessControlProtectsThem(): void
+    {
+        $routes = new RouteCollection();
+        $routes->add('closure', new Route('/closure', ['_controller' => static fn () => null]));
+        $routes->add('service', $this->routeTo('/service', 'some.service:action'));
+        $routes->add('missing_method', $this->routeTo('/missing', SampleController::class . '::nothing'));
+        $routes->add('admin_service', $this->routeTo('/admin/service', 'some.service:action'));
+
+        $violations = $this->buildAnalyzer($routes)->analyze();
+
+        self::assertSame(['closure', 'service', 'missing_method'], array_column($violations, 'route'));
+        self::assertSame(
+            [RouteSecurityAnalyzer::REASON_ROLE_USER],
+            array_unique(array_column($violations, 'reason')),
+        );
+        self::assertSame('some.service:action', $violations[1]['controller']);
+    }
+
+    public function testLegacyAndArrayControllerNotationsAreResolved(): void
+    {
+        $routes = new RouteCollection();
+        $routes->add('legacy', $this->routeTo('/legacy', SampleController::class . ':guardedByAttribute'));
+        $routes->add('array', new Route('/array', ['_controller' => [SampleController::class, 'unguarded']]));
+
+        $violations = $this->buildAnalyzer($routes)->analyze();
+
+        self::assertSame(['array'], array_column($violations, 'route'));
+        self::assertSame($this->sample('unguarded'), $violations[0]['controller']);
+    }
+
+    public function testAllowIfExpressionsAreOnlyTrustedWhenTheyDoMoreThanRoleUser(): void
+    {
+        $routes = new RouteCollection();
+        $routes->add('trivial', $this->routeTo('/expr-trivial/a', $this->sample('unguarded')));
+        $routes->add('real', $this->routeTo('/expr-admin/a', $this->sample('unguarded')));
+
+        $violations = $this->buildAnalyzer($routes)->analyze();
+
+        self::assertSame(['trivial'], array_column($violations, 'route'));
+        self::assertSame(RouteSecurityAnalyzer::REASON_ROLE_USER, $violations[0]['reason']);
     }
 
     public function testExcludedRoutesByGlob(): void
@@ -335,5 +425,29 @@ class RouteSecurityAnalyzerTest extends TestCase
         self::assertSame('/admin/1', $entries[0]['samplePath']);
         self::assertSame(['PUT'], $entries[0]['httpMethods']);
         self::assertNull($entries[0]['reason']);
+    }
+
+    public function testExclusionOfARouteThatGotProtectedIsStale(): void
+    {
+        $routes = new RouteCollection();
+        $routes->add('fixed', $this->routeTo('/other', $this->sample('guardedByAttribute')));
+        $routes->add('still_open', $this->routeTo('/other2', $this->sample('unguarded')));
+
+        $stale = $this->buildAnalyzer($routes)->findUnusedExclusions(
+            ['fixed', 'still_open'],
+            [SampleController::class],
+        );
+
+        self::assertSame(['fixed'], $stale);
+    }
+
+    public function testFindMatchingPatterns(): void
+    {
+        $analyzer = $this->buildAnalyzer(new RouteCollection());
+
+        $patterns = ['app_*', 'x', 'app_api_a'];
+
+        self::assertSame(['app_*', 'app_api_a'], $analyzer->findMatchingPatterns('app_api_a', $patterns));
+        self::assertSame([], $analyzer->findMatchingPatterns('other', ['app_*']));
     }
 }
