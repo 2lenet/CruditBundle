@@ -67,6 +67,10 @@
                 "enabled": true,
                 "fetch": "eager"
             },
+            "cron": {
+                "enabled": true,
+                "fetch": "lazy"
+            },
             "dialog": {
                 "enabled": true,
                 "fetch": "eager"
@@ -134,6 +138,10 @@
             "tooltip": {
                 "enabled": true,
                 "fetch": "eager"
+            },
+            "translatable": {
+                "enabled": true,
+                "fetch": "lazy"
             }
         }
     },

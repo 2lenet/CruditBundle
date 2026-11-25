@@ -47,14 +47,17 @@ abstract class AppTestCase extends WebTestCase
             ->setTags(['vip', 'north'])
             ->setReferrer($clients['Bob'])
             ->setPriority(Priority::High)
-            ->setChannels(['email', 'phone']);
+            ->setChannels(['email', 'phone'])
+            ->setDescription('Sells bicycles.')
+            ->setCron('30 8 * * 1,4');
         $clients['Bob']
             ->setWebsite('javascript:alert(1)')
             ->setAmount('20')
             ->setProgress(100)
             ->setStatus('prospect')
             ->setBlocked(false)
-            ->setTags(['since' => 2024, 'source' => 'fair', 'visits' => []]);
+            ->setTags(['since' => 2024, 'source' => 'fair', 'visits' => []])
+            ->setDescription('Repairs boats.');
         $em->flush();
     }
 }

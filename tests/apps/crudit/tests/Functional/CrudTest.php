@@ -105,7 +105,7 @@ class CrudTest extends AppTestCase
     {
         $crawler = $this->client->request('GET', '/client/new');
         $form = $crawler->filter('main form')->form();
-        $form->setValues(['client[name]' => 'Dora', 'client[email]' => 'dora@example.org']);
+        $form->setValues(['client[name]' => 'Dora', 'client[email]' => 'dora@example.org', 'client[description][en]' => 'Builds houses.']);
         $this->client->submit($form);
 
         self::assertResponseRedirects();

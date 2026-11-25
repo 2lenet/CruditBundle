@@ -1,6 +1,10 @@
 crudit:
     autocomplete:
         not_found: "Un elemento scelto non esiste più o non è più accessibile (n. {{ ids }}): rimuovilo per salvare."
+    cron:
+        invalid: "Questa espressione cron non è valida, ad esempio «30 8 * * 1,4» per ogni lunedì e giovedì alle 8:30."
+    gedmo_translatable:
+        required: "Inserisci un valore in %language%: è la lingua predefinita."
     telephone:
         invalid: "Questo numero di telefono non è valido."
         invalid_characters: "Il numero può contenere solo cifre (spazi, punti, trattini, barre e parentesi sono ammessi)."

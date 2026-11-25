@@ -47,7 +47,11 @@ class SeedCommand extends Command
                     ->setNotes(sprintf("**Client %02d**: a note long enough to be clamped on two lines in the table, and shown whole in its card and on its record.", $i))
                     ->setStatus($statuses[$i % 3])
                     ->setBlocked(0 === $i % 3)
-                    ->setTags(['vip', sprintf('zone %d', $i % 4)]);
+                    ->setTags(['vip', sprintf('zone %d', $i % 4)])
+                    // Lot 3.2.c: a description in the default locale (English), the other locales empty; a recurrence
+                    // of each form of the widget, and one it cannot show (typed as a text)
+                    ->setDescription(sprintf('Maintenance of the equipment of client %02d.', $i))
+                    ->setCron(['30 8 * * 1,4', '0 18 15 * *', '0 7 * * *', '*/15 6-20 * * 1-5'][$i % 4]);
             }
             $this->em->persist($client);
         }

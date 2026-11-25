@@ -1290,8 +1290,8 @@ for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
 ok('form: base types (telephone, counter, format helpers, segmented control, colour, date in lists)');
 
 // ---------- Rich types (lot 3.2.c): an entity in a list with search, its choices asked to the route autocomplete
-// (20 at a time, the next ones at the end of the list), a choice with several answers filtered in the page; the
-// choices are sent with the form.
+// (20 at a time, the next ones at the end of the list), a choice with several answers filtered in the page, a field
+// translated in tabs and a cron expression; the choices are sent with the form.
 for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
     page = await open(width, '/client/new', {rtl});
     await page.focus('#client_referrer');
@@ -1334,6 +1334,32 @@ for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
         assert.deepEqual(await page.$eval('select[name="client[zones][]"]', (select) => [...select.selectedOptions].map((option) => option.value)), ['n', 's'], 'Enter adds the choice to the others');
         assert.deepEqual(await page.$$eval('.crudit-ui-combobox:has(#client_zones) .crudit-ui-combobox__token-label', (labels) => labels.map((label) => label.textContent)), ['South', 'North'], 'the tokens in the order of the choices');
         await shot(page, 'form-rich-types');
+
+        // Translated field (lot 3.2.c): the default locale first and required, " · empty" follows what is typed, the
+        // arrows go to the next locale
+        assert.equal(await page.$eval('#client_description [aria-selected="true"]', (tab) => tab.id), 'client_description-tab-en', 'the tab of the default locale is shown first');
+        await page.click('#client_description_en');
+        await page.keyboard.type('Created by the smoke test');
+        assert.equal(await page.$eval('#client_description-tab-en .crudit-ui-translatable__state', (state) => state.hidden), true, '" · empty" stays once the default locale is typed');
+        await page.focus('#client_description-tab-en');
+        await page.keyboard.press('ArrowRight');
+        assert.equal(await page.$eval('#client_description_fr', (input) => input.closest('[role="tabpanel"]').hidden), false, 'the arrows do not show the next locale');
+        await page.keyboard.press('Tab');
+        await page.keyboard.type('Créé par le test');
+
+        // Cron expression (lot 3.2.c): the widget writes the expression in the text input sent
+        const cron = '.crudit-ui-cron:has(#client_cron)';
+        assert.equal(await page.$eval(`${cron} .crudit-ui-cron__custom`, (custom) => custom.hidden), true, 'the text input of a cron is shown with the widget');
+        await page.click(`${cron} .crudit-ui-segmented__option:has(input[value="weekly"])`);
+        await page.click(`${cron} .crudit-ui-cron__day:has(input[value="1"])`);
+        await page.$eval(`${cron} input[type="time"]`, (input) => {
+            input.value = '09:15';
+            input.dispatchEvent(new Event('input', {bubbles: true}));
+        });
+        assert.equal(await page.$eval('#client_cron', (input) => input.value), '15 9 * * 1', 'the widget does not write the expression');
+        // The time in the format of the language (Intl puts a narrow no-break space before AM/PM)
+        assert.equal(await page.$eval(`${cron} .crudit-ui-cron__summary span`, (sentence) => sentence.textContent.replace(/[\u202f\u00a0]/g, ' ')), 'Every Monday at 9:15 AM');
+        await axeOn(page, 'main form', 'translated field and cron expression filled');
 
         await page.click('#client_name', {clickCount: 3});
         await page.keyboard.type('Client of the smoke test');
