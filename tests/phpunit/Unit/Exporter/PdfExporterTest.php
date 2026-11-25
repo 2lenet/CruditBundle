@@ -123,7 +123,7 @@ class PdfExporterTest extends TestCase
             $text .= (string)@gzuncompress($stream);
         }
 
-        return preg_replace('/\)\s*-?\d+(\.\d+)?\s*\(|\[\(|\)\]\s*TJ|\) Tj/', '', $text);
+        return (string)preg_replace('/\)\s*-?\d+(\.\d+)?\s*\(|\[\(|\)\]\s*TJ|\) Tj/', '', $text);
     }
 
     public function testWriterLeavesADocumentWithoutPlaceholderAlone(): void

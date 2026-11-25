@@ -21,14 +21,14 @@ class PageCountDompdf extends Dompdf
         parent::__construct(self::OPTIONS);
     }
 
-    public function loadHtml($str, $encoding = null)
+    public function loadHtml($str, $encoding = null): void
     {
         $this->rawHtml = (string)$str;
 
         parent::loadHtml($str, $encoding);
     }
 
-    public function render()
+    public function render(): void
     {
         if (str_contains($this->rawHtml, self::PAGE_COUNT_PLACEHOLDER)) {
             parent::loadHtml(str_replace(self::PAGE_COUNT_PLACEHOLDER, (string)$this->countPages(), $this->rawHtml));
