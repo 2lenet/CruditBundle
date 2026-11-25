@@ -61,7 +61,74 @@ The [Lle\CruditBundle\Form\Type\MarkdownType](markdown.md#markdowntype) allows y
 
 ### Cron expression
 
-The `Lle\CruditBundle\Form\Type\CronExpressionType` allows you to create a cron input with a interface to select value.
+The `Lle\CruditBundle\Form\Type\CronExpressionType` stores a recurrence as a cron expression, in a string property
+(`30 8 * * 1,4`). It is guessed for a property `cron` or `cronExpression`.
+
+```php
+$builder->add('reminder', CronExpressionType::class, ['required' => false]);
+```
+
+It is the widget of CruditUiBundle (`docs/forms.md` of CruditUiBundle), in a fieldset named by the label of the field:
+a frequency (None, Every day, Every week, Every month, Custom; no None on a required field), the days of the week, the
+day of the month (1 to 28) and the time, then a sentence ("Every Monday and Thursday at 8:30 AM") and the expression. The widget
+writes the expression in the text input, which is what the form sends:
+
+| Frequency | Expression |
+|---|---|
+| None | an empty value |
+| Every day | `m h * * *` |
+| Every week | `m h * * 1,4` (0 is Sunday) |
+| Every month | `m h D * *` (D from 1 to 28) |
+
+The state of the widget is read from the value by `CronExpressionType::widgetState()`; any other expression
+(`*/15 6-20 * * 1-5`, `@daily`, `0 18 L * *`: the last day of the month is not standard cron, the widget does not offer
+it) is opened in Custom, a text input, and kept as it is. Without JavaScript, the text
+input alone.
+
+The expression is checked by the server: the type always adds the constraint `Lle\CruditBundle\Validator\CronExpression`
+(`dragonmantank/cron-expression`), which refuses an invalid expression and lets an empty value pass. Put it on the
+property of an entity to check it outside the form:
+
+```php
+use Lle\CruditBundle\Validator\CronExpression;
+
+#[CronExpression]
+#[ORM\Column(length: 100, nullable: true)]
+private ?string $reminder = null;
+```
+
+The controller `cron` of CruditUiBundle must be enabled (`assets/controllers.json`, `fetch: lazy`).
+
+### Translated field
+
+The `Lle\CruditBundle\Form\Type\GedmoTranslatableType` edits a property translated with Gedmo (the table
+`ext_translations`, or personal translations: `getTranslations()` / `addTranslation()`) in every enabled locale
+(`framework.enabled_locales`). The value of the default locale (`kernel.default_locale`) is stored in the entity, the
+others as translations. The field is not mapped (`mapped: false`): the translations are saved when the form is sent.
+
+```php
+$builder->add('description', GedmoTranslatableType::class, [
+    'required' => true,
+    'fields_class' => TextareaType::class,
+    'fields_options' => ['attr' => ['maxlength' => 255], 'constraints' => [new Length(max: 255)]],
+]);
+```
+
+| Name           | Default    | Description                                                           |
+|----------------|------------|-----------------------------------------------------------------------|
+| fields_class   | `TextType` | the type of the input of each locale                                  |
+| fields_options | `[]`       | the options of the input of each locale (`attr`, `constraints`…)      |
+| required       | false      | the default locale must be filled, checked by the server (`NotBlank`) |
+
+The tabs of CruditUiBundle, one per locale, the default one first and shown first (the first one in error after a form
+sent). A tab says the state of its locale ("English · empty", "Deutsch · error"); a star marks the default locale of a
+required field. The label of the field points to the input of the default locale, each input has its `lang` and a
+hidden label "*Label* (*locale*)"; the help of the field (by default on a required field, which locale is required)
+and its error are attached to every input, the errors of a locale stay in its panel. The other locales are optional.
+
+The controllers `tabs` and `translatable` of CruditUiBundle must be enabled (`assets/controllers.json`,
+`translatable` in `fetch: lazy`). The project installs and configures the translatable extension of Gedmo
+(`stof/doctrine-extensions-bundle`, `orm.default.translatable: true`, and the mapping of `Gedmo\Translatable\Entity`).
 
 ### Telephone
 

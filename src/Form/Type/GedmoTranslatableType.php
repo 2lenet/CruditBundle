@@ -21,14 +21,22 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * A field translated with Gedmo: one input per enabled locale, the default locale first, rendered as tabs by the
+ * template of CruditUiBundle (form/_translatable.html.twig). A required field must be filled in the default locale
+ * (NotBlank, checked by the server); the other locales are optional. fields_options: options given to each input
+ * (attr.maxlength, constraints…).
+ */
 class GedmoTranslatableType extends AbstractType
 {
     protected GedmoTranslatableFieldManager $translatablefieldmanager;
+    /** @var string[] */
     private array $locales;
     private string $defaultLocale;
-    private string $currentLocale;
+    private TranslatorInterface $translator;
 
     //the 2eme argument is best if $locales
     public function __construct(
@@ -38,9 +46,11 @@ class GedmoTranslatableType extends AbstractType
         TranslatorInterface $translator,
     ) {
         $this->defaultLocale = $defaultLocale;
-        $this->locales = (\count($locales) < 1) ? ['fr', 'en', 'de'] : $locales;
+        $locales = (\count($locales) < 1) ? ['fr', 'en', 'de'] : $locales;
+        // The default locale first: its tab is the one shown, its input the one pointed by the label of the field
+        $this->locales = array_values(array_unique([$defaultLocale, ...$locales]));
         $this->translatablefieldmanager = $translatableFieldManager;
-        $this->currentLocale = $translator->getLocale();
+        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -53,10 +63,23 @@ class GedmoTranslatableType extends AbstractType
             function (FormEvent $event) use ($locales, $options, $defaultLocale) {
                 $form = $event->getForm();
                 foreach ($locales as $locale) {
-                    $form->add($locale, $options['fields_class'], [
-                        'label' => false,
-                        'required' => ($defaultLocale == $locale && $options['required']),
-                    ]);
+                    $required = $defaultLocale === $locale && $options['required'];
+                    $fieldOptions = $options['fields_options'];
+                    $fieldOptions['label'] = false;
+                    $fieldOptions['required'] = $required;
+                    $fieldOptions['attr'] = ['lang' => str_replace('_', '-', $locale)] + ($fieldOptions['attr'] ?? []);
+                    if ($required) {
+                        $fieldOptions['constraints'] = [
+                            ...(array) ($fieldOptions['constraints'] ?? []),
+                            new NotBlank(message: $this->translator->trans(
+                                'crudit.gedmo_translatable.required',
+                                // As written in a sentence: "français", "English"
+                                ['%language%' => \Locale::getDisplayLanguage($locale, $this->translator->getLocale())],
+                                'validators'
+                            )),
+                        ];
+                    }
+                    $form->add($locale, $options['fields_class'], $fieldOptions);
                 }
             }
         );
@@ -84,9 +107,8 @@ class GedmoTranslatableType extends AbstractType
                 $form->get($locale)->setData($translatedFieldValues[$locale]);
             }
         }
-        // template vars
+        // template vars: the locales (the default one first) and the name of each in the language of the page
         $view->vars['locales'] = $this->locales;
-        $view->vars['currentlocale'] = $this->currentLocale;
         $view->vars['defaultlocale'] = $this->defaultLocale;
         $view->vars['tablabels'] = $this->getTabLabels();
     }
@@ -106,14 +128,24 @@ class GedmoTranslatableType extends AbstractType
         return 'crudit_gedmo_translatable';
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getTabLabels(): array
     {
         $tabLabels = [];
         foreach ($this->locales as $locale) {
-            $tabLabels[$locale] = ucfirst(\Locale::getDisplayLanguage($locale, $this->currentLocale));
+            $tabLabels[$locale] = $this->languageName($locale);
         }
 
         return $tabLabels;
+    }
+
+    private function languageName(string $locale): string
+    {
+        $name = \Locale::getDisplayLanguage($locale, $this->translator->getLocale());
+
+        return '' === $name ? $locale : mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -124,7 +156,8 @@ class GedmoTranslatableType extends AbstractType
             'required' => false,
             'by_reference' => false,
             'fields_class' => TextType::class,
-            'attr' => ['class' => 'gedmo-translatable'],
+            'fields_options' => [],
         ]);
+        $resolver->setAllowedTypes('fields_options', 'array');
     }
 }

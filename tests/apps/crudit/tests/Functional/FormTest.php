@@ -6,7 +6,10 @@ namespace App\Tests\Functional;
 
 use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Translatable\Entity\Repository\TranslationRepository;
+use Gedmo\Translatable\Entity\Translation;
 use Lle\CruditBundle\Form\Type\AutocompleteType;
+use Lle\CruditBundle\Form\Type\CronExpressionType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -23,7 +26,8 @@ use Twig\Environment;
  * domain, the error of a sub-form laid out field by field. The base types (lot 3.2.b): keyboards of a phone, autofill
  * kept away from the inputs typed in only, counter of characters, format helpers, telephone, colour, segmented
  * control, date in lists, a boolean guessed as a switch. The rich types (lot 3.2.c): an entity and a choice with
- * several answers in a list with search.
+ * several answers in a list with search, a field translated with Gedmo (a tab per locale, the default one required by
+ * the server) and a cron expression (a widget, checked by the server).
  */
 class FormTest extends AppTestCase
 {
@@ -351,7 +355,7 @@ class FormTest extends AppTestCase
         $bob = $this->idOf('Bob');
         $crawler = $this->client->request('GET', '/client/new');
         $form = $crawler->filter('main form')->form();
-        $form->setValues(['client[name]' => 'Dan', 'client[referrer]' => (string) $bob]);
+        $form->setValues(['client[name]' => 'Dan', 'client[referrer]' => (string) $bob, 'client[description][en]' => 'Sells bread.']);
         $form['client[zones]']->select(['n', 'cst']);
         $this->client->submit($form);
         self::assertResponseRedirects();
@@ -408,6 +412,139 @@ class FormTest extends AppTestCase
         self::assertSame([['id' => $this->idOf('Bob'), 'text' => 'Bob']], $data['items']);
         self::assertSame(1, $data['total_count']);
         self::assertSame(20, $data['next_offset']);
+    }
+
+    public function testATranslatedFieldIsATabPerLocaleTheDefaultOneFirst(): void
+    {
+        $form = $this->form();
+
+        // The label points to the input of the default locale (English), the tabs follow the enabled locales
+        self::assertCount(1, $form->filter('label.crudit-ui-label[for="client_description_en"]'));
+        $root = $form->filter('#client_description.crudit-ui-translatable');
+        self::assertSame('2lenet--crudit-ui-bundle--tabs 2lenet--crudit-ui-bundle--translatable', $root->attr('data-controller'));
+        self::assertSame(['en', 'fr', 'de', 'it'], $root->filter('[role="tab"]')->each(fn (Crawler $tab) => (string) $tab->attr('data-2lenet--crudit-ui-bundle--tabs-id-param')));
+        self::assertSame(['true', 'false', 'false', 'false'], $root->filter('[role="tab"]')->each(fn (Crawler $tab) => (string) $tab->attr('aria-selected')));
+        self::assertStringStartsWith('English', trim($root->filter('#client_description-tab-en')->text()));
+        self::assertCount(1, $root->filter('#client_description-tab-en .crudit-ui-required'), 'the default locale is required: a star on its tab');
+        self::assertCount(0, $root->filter('#client_description-tab-fr .crudit-ui-required'));
+
+        // Each input: its lang, its hidden label, the help of the field (which locale is required) attached
+        $en = $root->filter('input#client_description_en');
+        self::assertSame('client[description][en]', $en->attr('name'));
+        self::assertSame('en', $en->attr('lang'));
+        self::assertSame('255', $en->attr('maxlength'));
+        self::assertNotNull($en->attr('required'));
+        self::assertSame('client_description_en_label', $en->attr('aria-labelledby'));
+        self::assertSame('client_description_help', $en->attr('aria-describedby'));
+        self::assertSame('Data is always required for the following language: English', trim($form->filter('#client_description_help')->text()));
+        $fr = $root->filter('input#client_description_fr');
+        self::assertSame('fr', $fr->attr('lang'));
+        self::assertNull($fr->attr('required'));
+        self::assertNull($fr->attr('aria-labelledby'));
+        self::assertSame('client_description_fr', $root->filter('#client_description_fr_label')->attr('for'));
+        // A new client: every locale empty
+        self::assertCount(4, $root->filter('.crudit-ui-translatable__state:not([hidden])'));
+    }
+
+    public function testATranslationIsSaved(): void
+    {
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Eve', 'client[description][en]' => 'Grows apples.', 'client[description][fr]' => 'Cultive des pommes.']);
+        $this->client->submit($form);
+        self::assertResponseRedirects();
+
+        $client = $this->entity('Eve');
+        self::assertSame('Grows apples.', $client->getDescription(), 'the default locale is stored in the entity');
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        /** @var TranslationRepository $translations */
+        $translations = $em->getRepository(Translation::class);
+        self::assertSame('Cultive des pommes.', $translations->findTranslations($client)['fr']['description'] ?? null);
+    }
+
+    public function testTheDefaultLocaleIsRequiredByTheServer(): void
+    {
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Fay', 'client[description][en]' => '  ', 'client[description][fr]' => 'Vend des fleurs.']);
+        $crawler = $this->client->submit($form);
+
+        self::assertResponseStatusCodeSame(422);
+        $root = $crawler->filter('#client_description');
+        // The tab of the default locale says the error and is shown; the error stays in its panel
+        self::assertSame('true', $root->filter('#client_description-tab-en')->attr('aria-selected'));
+        self::assertCount(1, $root->filter('#client_description-tab-en .crudit-ui-translatable__state--invalid'));
+        $input = $root->filter('#client_description_en');
+        self::assertSame('true', $input->attr('aria-invalid'));
+        self::assertSame('client_description_help client_description_en_error', $input->attr('aria-describedby'));
+        self::assertSame('Enter a value in English: it is the default language.', trim($root->filter('#client_description-panel-en #client_description_en_error')->text()));
+        self::assertStringContainsString('crudit-ui-field--invalid', (string) $root->closest('.crudit-ui-field')?->attr('class'));
+        // The French value typed is kept
+        self::assertSame('Vend des fleurs.', $root->filter('#client_description_fr')->attr('value'));
+        self::assertCount(1, $root->filter('#client_description-tab-fr .crudit-ui-translatable__state[hidden]'));
+    }
+
+    public function testACronExpressionIsAWidgetInTheStateOfItsValue(): void
+    {
+        $form = $this->form();
+
+        $fieldset = $form->filter('fieldset.crudit-ui-field:has(#client_cron)');
+        self::assertSame('Cron', trim($fieldset->filter('legend')->text()));
+        $root = $fieldset->filter('.crudit-ui-cron');
+        self::assertSame('none', $root->attr('data-2lenet--crudit-ui-bundle--cron-frequency-value'));
+        $input = $root->filter('input#client_cron');
+        self::assertSame('client[cron]', $input->attr('name'));
+        self::assertSame('client_cron_help', $input->attr('aria-describedby'));
+        self::assertSame('false', $input->attr('spellcheck'));
+        self::assertSame('client_cron_help', $root->filter('input[type="radio"]')->first()->attr('aria-describedby'));
+        self::assertSame('client_cron_cron__frequency', $root->filter('input[type="radio"]')->first()->attr('name'));
+        self::assertSame('none', $root->filter('input[type="radio"]')->first()->attr('value'), 'not required: the choice None');
+        self::assertNotNull($root->filter('.crudit-ui-cron__frequency')->attr('hidden'), 'without JavaScript, only the text input');
+
+        // A client with a weekly recurrence (Alice, edited with the same type in a form of its own)
+        $view = $this->formFactory()->createNamed('alice', FormType::class, $this->entity('Alice'), ['csrf_protection' => false])->add('cron', CronExpressionType::class)->createView();
+        $html = new Crawler($this->renderWidget($view, '{{ form_row(form.cron) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertSame('weekly', $html->filter('.crudit-ui-cron')->attr('data-2lenet--crudit-ui-bundle--cron-frequency-value'));
+        self::assertSame(['1', '4'], $html->filter('.crudit-ui-cron__day-input[checked]')->each(fn (Crawler $box) => (string) $box->attr('value')));
+        self::assertSame('08:30', $html->filter('input[type="time"]')->attr('value'));
+
+        // Required: no choice None; the last day of the month opened as a text (Custom)
+        $view = $this->formFactory()->createNamed('dora', FormType::class, null, ['csrf_protection' => false])->add('cron', CronExpressionType::class, ['required' => true, 'data' => '0 18 L * *'])->createView();
+        $html = new Crawler($this->renderWidget($view, '{{ form_row(form.cron) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertSame(['daily', 'weekly', 'monthly', 'custom'], $html->filter('.crudit-ui-cron__frequency input')->each(fn (Crawler $radio) => (string) $radio->attr('value')));
+        self::assertSame('custom', $html->filter('.crudit-ui-cron')->attr('data-2lenet--crudit-ui-bundle--cron-frequency-value'));
+    }
+
+    public function testACronExpressionIsSavedAndCheckedByTheServer(): void
+    {
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Gus', 'client[description][en]' => 'Fixes roofs.', 'client[cron]' => '0 18 L * *']);
+        $this->client->submit($form);
+        // The last day of the month: accepted by the server (dragonmantank), not offered by the widget (not standard cron)
+        self::assertResponseRedirects();
+        self::assertSame('0 18 L * *', $this->entity('Gus')->getCron());
+
+        // An expression of four fields (a week without a day in the widget): refused, opened as a text
+        $crawler = $this->client->request('GET', '/client/new');
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[name]' => 'Hal', 'client[description][en]' => 'Paints walls.', 'client[cron]' => '30 8 * *']);
+        $crawler = $this->client->submit($form);
+        self::assertResponseStatusCodeSame(422);
+        $input = $crawler->filter('#client_cron');
+        self::assertSame('true', $input->attr('aria-invalid'));
+        self::assertSame('client_cron_help client_cron_error', $input->attr('aria-describedby'));
+        self::assertStringStartsWith('This cron expression is not valid', trim($crawler->filter('#client_cron_error')->text()));
+        self::assertSame('custom', $crawler->filter('.crudit-ui-cron')->attr('data-2lenet--crudit-ui-bundle--cron-frequency-value'));
+        self::assertSame('true', $crawler->filter('.crudit-ui-cron input[type="radio"]')->first()->attr('aria-invalid'));
+
+        // An expression the widget cannot show is kept as it is
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[cron]' => '*/15 6-20 * * 1-5']);
+        $this->client->submit($form);
+        self::assertResponseRedirects();
+        self::assertSame('*/15 6-20 * * 1-5', $this->entity('Hal')->getCron());
     }
 
     private function entity(string $name): Client

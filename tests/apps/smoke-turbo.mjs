@@ -394,6 +394,8 @@ try {
     assert.equal(await path(), '/client/new', 'the form with errors changes the address');
     await sameWindow('form with errors');
     await page.type('#client_name', 'Client Turbo');
+    // Required in the default locale (lot 3.2.c): its tab, in error, is the one shown
+    await page.type('#client_description_en', 'Created by Turbo');
     await visit('form [type=submit]');
     assert.equal(await path(), '/client/', 'the form sent does not lead to the list');
     assert.ok((await toasts()).some((message) => message.includes('Success')), 'the flash message is not shown after the redirect of the form');

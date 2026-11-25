@@ -1,6 +1,10 @@
 crudit:
     autocomplete:
         not_found: "A chosen item no longer exists or is no longer available to you (no. {{ ids }}): remove it to save."
+    cron:
+        invalid: "This cron expression is not valid, for example \"30 8 * * 1,4\" for every Monday and Thursday at 8:30."
+    gedmo_translatable:
+        required: "Enter a value in %language%: it is the default language."
     telephone:
         invalid: "This phone number is not valid."
         invalid_characters: "The number may only contain digits (spaces, dots, dashes, slashes and parentheses are allowed)."

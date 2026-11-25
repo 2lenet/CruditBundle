@@ -1,0 +1,8 @@
+# The translations of Gedmo, for GedmoTranslatableType (lot 3.2.c): the locale of the request is the one read and
+# written; the default locale is stored in the entity, the others in ext_translations.
+stof_doctrine_extensions:
+    default_locale: '%kernel.default_locale%'
+    translation_fallback: true
+    orm:
+        default:
+            translatable: true

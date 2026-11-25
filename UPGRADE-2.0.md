@@ -989,8 +989,44 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
     (`{"enabled": true, "fetch": "lazy"}`: loaded on the pages that have one). JavaScript is needed to change a choice.
   - Your styles of `.ts-control`, `.ts-dropdown`, `.entity-select` or `.choice-tom-select` no longer apply: the classes
     are `crudit-ui-combobox__*`.
-- Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`), the file, the translated
-  field and the cron expression *(lot 3.2.c)*.
+- **Translated field** (`GedmoTranslatableType`) *(lot 3.2.c)*: the tabs of CruditUiBundle (ARIA tabs pattern, arrows,
+  Home, End), one per enabled locale, **the default locale first and shown first** (it was the locale of the page);
+  the tab of a locale in error is shown first after a form sent. The tab says the state of its locale: "English ·
+  empty", "Deutsch · error". The label of the field points to the input of the default locale; each input has its
+  `lang` and a hidden label "*Label* (*locale*)"; the help (by default on a required field, "Data is always required
+  for the following language: …", once instead of in each tab) and the error of the field are attached to every input;
+  the errors of a locale stay in its panel. The saving (`GedmoTranslatableFieldManager`) is unchanged.
+  - **A required field must be filled in the default locale, checked by the server** (`NotBlank` on its input,
+    "Enter a value in English: it is the default language."). In the 1.x, `required` only set the attribute of the
+    input, and the forms of Crudit are sent with `novalidate`: an empty value was saved. Set `required: false` on a
+    field that may stay empty.
+  - New option **`fields_options`**: options given to the input of each locale (`attr.maxlength`, `constraints`…).
+  - The class `gedmo-translatable` (its default `attr`), the variable `currentlocale` and the template
+    `@LleCrudit/form/_gedmo_translatable_widget.html.twig` (Bootstrap tabs, `nav-tabs`, `form-floating`) are removed:
+    the blocks are `crudit_gedmo_translatable_row` and `crudit_gedmo_translatable_widget` of the theme, which include
+    `@LleCruditUi/form/_translatable.html.twig`.
+  - Enable the controller **`translatable`** in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`
+    (`{"enabled": true, "fetch": "lazy"}`): it updates " · empty" while typing. The tabs need the controller `tabs`.
+- **Cron expression** (`CronExpressionType`) *(lot 3.2.c)*: **its value is sent at last**. The 1.x showed a web
+  component loaded from unpkg.com, without a name nor the value: the field sent nothing, the value of the entity was
+  never shown nor changed. It is now the widget of CruditUiBundle (as the mockup): a frequency (None, Every day, Every
+  week, Every month, Custom; no None on a required field), the days, the day of the month (1 to 28), the time, then a
+  sentence ("Every Monday and Thursday at 8:30 AM") and the expression, written in the text input, which is what is
+  sent. An expression the widget cannot show (`*/15 6-20 * * 1-5`, `@daily`, `0 18 L * *`: the last day of the month
+  is not standard cron, the widget does not offer it) is opened in Custom, a text input, and kept as it is. Without
+  JavaScript, the text input alone.
+  - **The expression is checked by the server** (new constraint `Lle\CruditBundle\Validator\CronExpression`, with the
+    new dependency **`dragonmantank/cron-expression`**; `symfony/validator` is now required too): an invalid
+    expression is refused with "This cron expression is not valid…". An empty value passes (`required` or `NotBlank` to
+    require one). The type always adds the constraint; put it on the property of an entity to check it elsewhere.
+  - The field has **a label of its own**, in a fieldset named by its legend (`label: false` by default in the 1.x, and
+    from the guesser of a property `cron` or `cronExpression`): give `label: false` to keep none.
+  - The template `@LleCrudit/form/_cron_expression_widget.html.twig`, the script and stylesheet of unpkg.com and
+    `sb-admin/css/components/_cron-expression-input.scss` are removed: the blocks are `crudit_cron_expression_row` and
+    `crudit_cron_expression_widget` of the theme, which include `@LleCruditUi/form/_cron.html.twig`.
+  - Enable the controller **`cron`** in `@2lenet/crudit-ui-bundle` of your `assets/controllers.json`
+    (`{"enabled": true, "fetch": "lazy"}`).
+- Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`) and the file *(lot 3.2.c)*.
 
 ### Batch actions *(lot 3.1.c)*
 

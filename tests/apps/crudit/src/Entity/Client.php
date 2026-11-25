@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Enum\Priority;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity]
 class Client
@@ -68,6 +69,15 @@ class Client
     /** @var list<string>|null the channels of contact: a ChoiceField of several values */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $channels = null;
+
+    /** Translated with Gedmo (the table ext_translations): a GedmoTranslatableType, one tab per locale (lot 3.2.c) */
+    #[Gedmo\Translatable]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    /** A recurrence, as a cron expression: a CronExpressionType (lot 3.2.c) */
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $cron = null;
 
     public function __construct()
     {
@@ -283,6 +293,30 @@ class Client
     public function setChannels(?array $channels): self
     {
         $this->channels = $channels;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCron(): ?string
+    {
+        return $this->cron;
+    }
+
+    public function setCron(?string $cron): self
+    {
+        $this->cron = $cron;
 
         return $this;
     }

@@ -49,9 +49,62 @@
     {{- block('crudit_ui_combobox_widget') -}}
 {%- endblock autocomplete_widget -%}
 
-{% block crudit_gedmo_translatable_widget %}
-    {% include '@LleCrudit/form/_gedmo_translatable_widget.html.twig' %}
-{% endblock %}
+{#
+ # A translated field (GedmoTranslatableType): the tabs of CruditUiBundle, one per locale, the default one first. The
+ # label points to the input of the default locale; the help (by default on a required field, which locale is required)
+ # and the error of the field are attached to every input, the errors of a locale stay in its panel and mark its tab.
+ #}
+{%- block crudit_gedmo_translatable_row -%}
+    {%- set crudit_invalid = errors|length > 0 or form|filter(child => child.vars.errors|length > 0)|length > 0 -%}
+    {%- set row_class = ('crudit-ui-field' ~ (crudit_invalid ? ' crudit-ui-field--invalid' : '') ~ ' ' ~ row_attr.class|default(''))|trim -%}
+    <div{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
+        {%- if label is not same as(false) -%}
+            <div class="crudit-ui-field__label-row">
+                {{- form_label(form, null, {compound: false, id: form[defaultlocale].vars.id}) -}}
+                {{- block('crudit_ui_label_after') -}}
+            </div>
+        {%- endif -%}
+        {{- form_widget(form) -}}
+        {#- Without a help of its own, a required field says which locale is required (as the 1.x) -#}
+        {{- form_help(form, help is empty and required ? {help: crudit_gedmo_default_locale_helper(), translation_domain: false} : {}) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock crudit_gedmo_translatable_row -%}
+
+{%- block crudit_gedmo_translatable_widget -%}
+    {%- if label is same as(false) or label is empty -%}
+        {%- set crudit_name = attr['aria-label'] ?? name|humanize -%}
+    {%- else -%}
+        {%- set crudit_name = translation_domain is same as(false) ? label : label|trans(label_translation_parameters, translation_domain) -%}
+    {%- endif -%}
+    {#- The help shown by the row: its own, or crudit_gedmo_default_locale_helper() on a required field -#}
+    {%- set crudit_described = (help is not empty or required ? [id ~ '_help'] : [])|merge(errors|length > 0 ? [id ~ '_error'] : []) -%}
+    {%- set crudit_languages = [] -%}
+    {%- for locale in locales -%}
+        {%- set child = form[locale] -%}
+        {%- set child_attr = child.vars.attr|merge({'aria-describedby': ((child.vars.attr['aria-describedby'] ?? '') ~ ' ' ~ crudit_described|join(' '))|trim}) -%}
+        {%- if locale == defaultlocale -%}
+            {#- Also pointed by the label of the field: named by its own label only, "Description (Français)" -#}
+            {%- set child_attr = child_attr|merge({'aria-labelledby': child.vars.id ~ '_label'}) -%}
+        {%- endif -%}
+        {%- set crudit_languages = crudit_languages|merge([{
+            code: locale,
+            label: tablabels[locale],
+            input_id: child.vars.id,
+            input: form_widget(child, {attr: child_attr}),
+            errors: form_errors(child),
+            required: child.vars.required,
+            empty: (child.vars.value is iterable ? '' : child.vars.value|default(''))|trim is empty,
+            invalid: child.vars.errors|length > 0,
+        }]) -%}
+    {%- endfor -%}
+    {{- include('@LleCruditUi/form/_translatable.html.twig', {
+        id: id,
+        label: crudit_name,
+        languages: crudit_languages,
+        class: attr.class|default(''),
+    }, with_context: false) -}}
+{%- endblock crudit_gedmo_translatable_widget -%}
 
 {% block crudit_group_row %}
 {% endblock %}
@@ -63,9 +116,39 @@
     {% include '@LleCrudit/form/_file_widget.html.twig' %}
 {% endblock %}
 
-{% block crudit_cron_expression_widget %}
-    {% include '@LleCrudit/form/_cron_expression_widget.html.twig' %}
-{% endblock %}
+{#
+ # A cron expression (CronExpressionType): a fieldset named by its legend, the widget of CruditUiBundle in the state read
+ # from the value (crudit_cron_state); the text input is what is sent, the controls of the widget have no name.
+ #}
+{%- block crudit_cron_expression_row -%}
+    {%- set row_class = ('crudit-ui-field crudit-ui-field__group' ~ (errors|length > 0 ? ' crudit-ui-field--invalid' : '') ~ ' ' ~ row_attr.class|default(''))|trim -%}
+    <fieldset{% with {attr: row_attr|merge({class: row_class})} %}{{ block('attributes') }}{% endwith %}>
+        {%- if label is not same as(false) -%}
+            <legend{% with {attr: label_attr|merge({class: ('crudit-ui-label ' ~ label_attr.class|default(''))|trim})} %}{{ block('attributes') }}{% endwith %}>
+                {{- block('form_label_content') -}}
+                {{- block('crudit_ui_required') -}}
+            </legend>
+        {%- endif -%}
+        {{- block('crudit_ui_label_after') -}}
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </fieldset>
+{%- endblock crudit_cron_expression_row -%}
+
+{%- block crudit_cron_expression_widget -%}
+    {%- set crudit_described = (help is not empty ? [id ~ '_help'] : [])|merge(errors|length > 0 ? [id ~ '_error'] : []) -%}
+    {{- include('@LleCruditUi/form/_cron.html.twig', {
+        id: id ~ '_cron',
+        input_id: id,
+        input: block('form_widget_simple'),
+        state: crudit_cron_state,
+        describedby: crudit_described|join(' '),
+        required: required,
+        disabled: disabled,
+        invalid: errors|length > 0,
+    }, with_context: false) -}}
+{%- endblock crudit_cron_expression_widget -%}
 
 {% block crudit_telephone_widget %}
     {% include '@LleCrudit/form/_telephone_widget.html.twig' %}

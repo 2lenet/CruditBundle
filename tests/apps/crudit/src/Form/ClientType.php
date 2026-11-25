@@ -7,6 +7,8 @@ namespace App\Form;
 use App\Entity\Client;
 use App\Enum\Priority;
 use Lle\CruditBundle\Form\Type\AutocompleteType;
+use Lle\CruditBundle\Form\Type\CronExpressionType;
+use Lle\CruditBundle\Form\Type\GedmoTranslatableType;
 use Lle\CruditBundle\Form\Type\GroupType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\Form\AbstractType;
@@ -20,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -29,7 +32,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * The base types (lot 3.2.b): a boolean guessed (a switch) and one kept a checkbox, a counter of characters, the format
  * helpers of the 1.x, a telephone, an address, an amount, a colour, a segmented control, a date in lists.
  * The rich types (lot 3.2.c): an entity (a list with search, its choices asked to the route autocomplete) and a
- * choice with several answers (a list with search, its choices in the page).
+ * choice with several answers (a list with search, its choices in the page); a field translated with Gedmo (one tab per
+ * locale, required in the default one, at most 255 characters in each) and a cron expression.
  */
 class ClientType extends AbstractType
 {
@@ -81,6 +85,12 @@ class ClientType extends AbstractType
                 'group_by' => fn (string $value) => in_array($value, ['n', 's'], true) ? 'North-South' : 'East-West',
                 'preferred_choices' => ['cst'],
                 'data' => ['s'],
-            ]);
+            ])
+            ->add('description', GedmoTranslatableType::class, [
+                'required' => true,
+                'span' => 'full',
+                'fields_options' => ['attr' => ['maxlength' => 255], 'constraints' => [new Length(max: 255)]],
+            ])
+            ->add('cron', CronExpressionType::class, ['required' => false, 'span' => 'full', 'help' => 'When the client is reminded']);
     }
 }
