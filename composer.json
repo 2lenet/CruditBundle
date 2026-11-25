@@ -76,6 +76,11 @@
             "Lle\\CruditBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "phpunit\\": "tests/phpunit/"
+        }
+    },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
