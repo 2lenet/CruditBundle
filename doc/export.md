@@ -148,4 +148,7 @@ The default values are:
 ];
 ```
 
+The PDF is rendered with [Dompdf](https://github.com/dompdf/dompdf). In the header and footer values,
+`{PAGENO}` is replaced by the current page number and `{nbpg}` by the total number of pages.
+
 To customize the values, check the [PhpSpreadsheet documentation](https://phpspreadsheet.readthedocs.io/en/latest/),

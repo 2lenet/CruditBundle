@@ -10,28 +10,22 @@ use Lle\CruditBundle\Field\CurrencyField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
 use Lle\CruditBundle\Exception\ExporterException;
+use Lle\CruditBundle\Exporter\Pdf\PdfWriter;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporter extends AbstractExporter
 {
-    /**
-     * Marker Mpdf::save() looks for to know where the document body starts. Kept as a literal
-     * instead of Mpdf::SIMULATED_BODY_START because that constant only exists since
-     * PhpSpreadsheet 2.0, while this bundle also supports 1.30. On 1.30 the marker is an inert
-     * HTML comment: the writer still falls back to sending the HTML in chunks of 1000 lines,
-     * which keeps the <style> block inside a single WriteHTML() call.
-     */
-    public const SIMULATED_BODY_START = '<!-- simulated body start -->';
-
     /** Needles rewritten in the HTML produced by the spreadsheet writer. */
     private const PAGE_DECLARATION = '@page page0 {';
     private const BODY_TAG = '<body>';
+    private const MARGIN_REGEX = '/margin-%s:\s*([\d.]+)in/';
+    private const PAGE_NUMBER_PLACEHOLDER = '{PAGENO}';
+    private const PAGE_NUMBER_MARKUP = '<span class="crudit-pdf-page-number"></span>';
 
     public function __construct(
         protected TranslatorInterface $translator,
@@ -176,7 +170,7 @@ class PdfExporter extends AbstractExporter
             throw new ExporterException('Unknown PDF exporter error');
         }
 
-        $writer = new Mpdf($spreadsheet);
+        $writer = new PdfWriter($spreadsheet);
         $pdfParams = $params->getPdfParams();
         if ($pdfParams['header-footer']) {
             $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParams['header-footer']));
@@ -241,66 +235,54 @@ class PdfExporter extends AbstractExporter
     public function getHeaderAndFooter(array $params): callable
     {
         return function (string $html) use ($params): string {
-            $pagerepl = <<<EOF
-                    @page page0 {
-                    odd-header-name: html_myHeader1;
-                    even-header-name: html_myHeader1;
-                    odd-footer-name: html_myFooter2;
-                    even-footer-name: html_myFooter2;                   
-                EOF;
-            // str_replace, not preg_replace: both needles are literals, and the injected header
-            // and footer values are free text from the crud config. As a replacement string,
-            // preg_replace() would read $1, \1 and \\ in them as backreferences and silently
-            // drop part of the value.
-            $html = str_replace(self::PAGE_DECLARATION, $pagerepl, $html);
-            $bodystring = self::BODY_TAG;
-            $topLeft = $params['header-left'] ?? '';
-            $topCenter = $params['header-center'] ?? '';
-            $topRight = $params['header-right'] ?? '';
-            $bottomLeft = $params['footer-left'] ?? '';
-            $bottomCenter = $params['footer-center'] ?? '';
-            $bottomRight = $params['footer-right'] ?? '';
-            $sizeTL = $params['size-header-left'] ?? 'medium';
-            $sizeTC = $params['size-header-center'] ?? 'medium';
-            $sizeTR = $params['size-header-right'] ?? 'medium';
-            $sizeBL = $params['size-footer-left'] ?? 'medium';
-            $sizeBC = $params['size-footer-center'] ?? 'medium';
-            $sizeBR = $params['size-footer-right'] ?? 'medium';
+            // Dompdf ignores named pages: a plain @page makes it apply the sheet margins.
+            $html = str_replace(self::PAGE_DECLARATION, '@page {', $html);
 
-            // Rewriting the <body> tag removes the marker Mpdf::save() looks for to locate the
-            // start of the document body. Without it the whole HTML - <head> and <style>
-            // included - is pushed to mPDF one line at a time (PhpSpreadsheet >= 2.0), which
-            // prints the stylesheet as plain text instead of applying it. Closing the injected
-            // block with the marker gives the writer back a split point, so the head and the
-            // page header/footer tags are written in a single WriteHTML() call.
-            $simulatedBodyStart = self::SIMULATED_BODY_START;
+            $marginTop = $this->getMargin($html, 'top');
+            $marginBottom = $this->getMargin($html, 'bottom');
 
-            $bodyrepl = <<<EOF
-                    <body style="font-family: 'Arial';">
-                        <htmlpageheader name="myHeader1">
-                            <table width="100%">
-                                <tr>
-                                    <td width="33%" style="font-size: $sizeTL;">$topLeft</td>
-                                    <td width="33%" style="font-size: $sizeTC;" align="center">$topCenter</td>
-                                    <td width="33%" style="text-align: right; font-size: $sizeTR;">$topRight</td>
-                                </tr>
-                            </table>
-                        </htmlpageheader>
-                    
-                        <htmlpagefooter name="myFooter2">
-                            <table width="100%">
-                                <tr>
-                                    <td width="33%" style="font-size: $sizeBL;">$bottomLeft</td>
-                                    <td width="33%" style="font-size: $sizeBC;" align="center">$bottomCenter</td>
-                                    <td width="33%" style="text-align: right; font-size: $sizeBR;">$bottomRight</td>
-                                </tr>
-                            </table>
-                        </htmlpagefooter>
-                        $simulatedBodyStart
-                    EOF;
+            $header = $this->getBand('header', $params, 'top: -' . $marginTop . 'in;');
+            $footer = $this->getBand('footer', $params, 'bottom: -' . $marginBottom . 'in;');
 
-            return str_replace($bodystring, $bodyrepl, $html);
+            $style = '<style>.crudit-pdf-page-number:before { content: counter(page); }</style>';
+
+            // str_replace, not preg_replace: the injected values are free text from the crud
+            // config, and a replacement string would read $1, \1 and \\ in them as backreferences.
+            return str_replace(
+                self::BODY_TAG,
+                $style . '<body style="font-family: \'DejaVu Sans\';">' . $header . $footer,
+                $html
+            );
         };
+    }
+
+    private function getMargin(string $html, string $side): string
+    {
+        return preg_match(sprintf(self::MARGIN_REGEX, $side), $html, $matches) === 1 ? $matches[1] : '0.8';
+    }
+
+    // <header>/<footer>, not <div>: PhpSpreadsheet page-breaks every `div + div`, which would
+    // leave a blank first page.
+    private function getBand(string $name, array $params, string $position): string
+    {
+        $cells = [];
+        foreach (['left' => 'left', 'center' => 'center', 'right' => 'right'] as $side => $align) {
+            $content = str_replace(
+                self::PAGE_NUMBER_PLACEHOLDER,
+                self::PAGE_NUMBER_MARKUP,
+                $params[$name . '-' . $side] ?? ''
+            );
+            $size = $params['size-' . $name . '-' . $side] ?? 'medium';
+            $cells[] = sprintf('<td width="33%%" style="font-size: %s; text-align: %s;">%s</td>', $size, $align, $content);
+        }
+
+        return sprintf(
+            '<%1$s id="crudit-pdf-%1$s" style="position: fixed; %2$s left: 0; right: 0;">'
+            . '<table width="100%%"><tr>%3$s</tr></table></%1$s>',
+            $name,
+            $position,
+            implode('', $cells)
+        );
     }
 
     public function getNumberDecimalFormat(Field $field): string
