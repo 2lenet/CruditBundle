@@ -1000,7 +1000,10 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
     "Enter a value in English: it is the default language."). In the 1.x, `required` only set the attribute of the
     input, and the forms of Crudit are sent with `novalidate`: an empty value was saved. Set `required: false` on a
     field that may stay empty.
-  - New option **`fields_options`**: options given to the input of each locale (`attr.maxlength`, `constraints`…).
+  - New option **`fields_options`**: options given to the input of each locale (`attr.maxlength`, `constraints`…);
+    `label`, `required` and `attr.lang` are set by the type.
+  - **An error of the field itself is shown under it** (`error_bubbling: false`), no more at the top of the form: a
+    constraint given in `constraints` of the field (not of a locale), as for any field of the theme.
   - The class `gedmo-translatable` (its default `attr`), the variable `currentlocale` and the template
     `@LleCrudit/form/_gedmo_translatable_widget.html.twig` (Bootstrap tabs, `nav-tabs`, `form-floating`) are removed:
     the blocks are `crudit_gedmo_translatable_row` and `crudit_gedmo_translatable_widget` of the theme, which include
@@ -1017,8 +1020,11 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
   JavaScript, the text input alone.
   - **The expression is checked by the server** (new constraint `Lle\CruditBundle\Validator\CronExpression`, with the
     new dependency **`dragonmantank/cron-expression`**; `symfony/validator` is now required too): an invalid
-    expression is refused with "This cron expression is not valid…". An empty value passes (`required` or `NotBlank` to
-    require one). The type always adds the constraint; put it on the property of an entity to check it elsewhere.
+    expression is refused with "This cron expression is not valid…". An empty value passes. The type always adds the
+    constraint; put it on the property of an entity to check it elsewhere.
+  - **Not required by default** (`required: false`, as `GedmoTranslatableType`; it was `true`, from `TextType`, without
+    any effect since the field sent nothing). **With `required: true`, the server refuses an empty value** (`NotBlank`
+    added) and the widget has no None. Set `required: true` on a field that must have a recurrence.
   - The field has **a label of its own**, in a fieldset named by its legend (`label: false` by default in the 1.x, and
     from the guesser of a property `cron` or `cronExpression`): give `label: false` to keep none.
   - The template `@LleCrudit/form/_cron_expression_widget.html.twig`, the script and stylesheet of unpkg.com and

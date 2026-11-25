@@ -10,12 +10,16 @@ use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Gedmo\Translatable\Entity\Translation;
 use Lle\CruditBundle\Form\Type\AutocompleteType;
 use Lle\CruditBundle\Form\Type\CronExpressionType;
+use Lle\CruditBundle\Form\Type\GedmoTranslatableType;
 use Lle\CruditBundle\Form\Type\TelephoneType;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Twig\Environment;
 
 /**
@@ -485,6 +489,42 @@ class FormTest extends AppTestCase
         self::assertCount(1, $root->filter('#client_description-tab-fr .crudit-ui-translatable__state[hidden]'));
     }
 
+    public function testATranslatedFieldAloneAndItsOptions(): void
+    {
+        $build = fn () => $this->formFactory()->createNamed('alice', FormType::class, $this->entity('Alice'), ['csrf_protection' => false, 'label_format' => 'client.%name%'])
+            ->add('description', GedmoTranslatableType::class, [
+                'required' => true,
+                'help' => 'In each language',
+                // A single constraint, as Symfony allows it
+                'fields_options' => ['constraints' => new Length(max: 5)],
+                'constraints' => [new Callback(fn (mixed $value, ExecutionContextInterface $context) => $context->addViolation('The whole field.'))],
+            ]);
+
+        // Without a label: the tablist named as the label is written (label_format, translated)
+        $view = $build()->createView();
+        $row = new Crawler($this->renderWidget($view, '{{ form_row(form.description) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertSame('Languages: client.description', $row->filter('[role="tablist"]')->attr('aria-label'));
+        self::assertSame('alice_description_help', $row->filter('#alice_description_en')->attr('aria-describedby'));
+        // form_widget() alone: the help is not rendered, nothing points to it
+        $alone = new Crawler($this->renderWidget($build()->createView(), '{{ form_widget(form.description) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertNull($alone->filter('#alice_description_en')->attr('aria-describedby'));
+
+        $form = $build();
+        $form->submit(['description' => ['en' => 'Too long', 'fr' => '', 'de' => '', 'it' => '']]);
+        // The single constraint of fields_options kept with NotBlank; the error of the field under it, not at the top
+        self::assertSame('This value is too long. It should have 5 characters or less.', $form->get('description')->get('en')->getErrors()[0]?->getMessage());
+        self::assertSame(['The whole field.'], array_map(fn ($error) => $error->getMessage(), iterator_to_array($form->get('description')->getErrors())));
+        self::assertCount(0, $form->getErrors());
+    }
+
+    public function testACronExpressionAloneHasNoDescriptionToAMissingElement(): void
+    {
+        $view = $this->formFactory()->createNamed('bob', FormType::class, null, ['csrf_protection' => false])->add('cron', CronExpressionType::class, ['help' => 'When'])->createView();
+        $alone = new Crawler($this->renderWidget($view, '{{ form_widget(form.cron) }}', '@LleCrudit/form/theme.html.twig'));
+        self::assertNull($alone->filter('.crudit-ui-cron input[type="radio"]')->first()->attr('aria-describedby'));
+        self::assertSame('bob_cron_cron_summary', $alone->filter('input[type="time"]')->attr('aria-describedby'));
+    }
+
     public function testACronExpressionIsAWidgetInTheStateOfItsValue(): void
     {
         $form = $this->form();
@@ -508,6 +548,9 @@ class FormTest extends AppTestCase
         self::assertSame('weekly', $html->filter('.crudit-ui-cron')->attr('data-2lenet--crudit-ui-bundle--cron-frequency-value'));
         self::assertSame(['1', '4'], $html->filter('.crudit-ui-cron__day-input[checked]')->each(fn (Crawler $box) => (string) $box->attr('value')));
         self::assertSame('08:30', $html->filter('input[type="time"]')->attr('value'));
+
+        // Not required by default (a child of a form): the choice None
+        self::assertSame('none', $html->filter('.crudit-ui-cron__frequency input')->first()->attr('value'));
 
         // Required: no choice None; the last day of the month opened as a text (Custom)
         $view = $this->formFactory()->createNamed('dora', FormType::class, null, ['csrf_protection' => false])->add('cron', CronExpressionType::class, ['required' => true, 'data' => '0 18 L * *'])->createView();

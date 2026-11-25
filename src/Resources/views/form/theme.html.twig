@@ -64,7 +64,8 @@
                 {{- block('crudit_ui_label_after') -}}
             </div>
         {%- endif -%}
-        {{- form_widget(form) -}}
+        {#- The help and the error attached to the inputs, given by the row: form_widget() alone has none to point to -#}
+        {{- form_widget(form, {crudit_described: (help is not empty or required ? [id ~ '_help'] : [])|merge(errors|length > 0 ? [id ~ '_error'] : [])}) -}}
         {#- Without a help of its own, a required field says which locale is required (as the 1.x) -#}
         {{- form_help(form, help is empty and required ? {help: crudit_gedmo_default_locale_helper(), translation_domain: false} : {}) -}}
         {{- form_errors(form) -}}
@@ -72,17 +73,20 @@
 {%- endblock crudit_gedmo_translatable_row -%}
 
 {%- block crudit_gedmo_translatable_widget -%}
-    {%- if label is same as(false) or label is empty -%}
-        {%- set crudit_name = attr['aria-label'] ?? name|humanize -%}
+    {#- The name of the tablist: the label as form_label_content writes it (label_format, translated) -#}
+    {%- if label is same as(false) and attr['aria-label'] is defined -%}
+        {%- set crudit_name = attr['aria-label'] -%}
     {%- else -%}
-        {%- set crudit_name = translation_domain is same as(false) ? label : label|trans(label_translation_parameters, translation_domain) -%}
+        {%- set crudit_name = label is empty or label is same as(false) ? (label_format is not empty ? label_format|replace({'%name%': name, '%id%': id}) : name|humanize) : label -%}
+        {%- set crudit_name = translation_domain is same as(false) ? crudit_name : crudit_name|trans(label_translation_parameters, translation_domain) -%}
     {%- endif -%}
-    {#- The help shown by the row: its own, or crudit_gedmo_default_locale_helper() on a required field -#}
-    {%- set crudit_described = (help is not empty or required ? [id ~ '_help'] : [])|merge(errors|length > 0 ? [id ~ '_error'] : []) -%}
+    {#- Given by the row: the help (its own, or crudit_gedmo_default_locale_helper() on a required field), the error -#}
+    {%- set crudit_described = crudit_described ?? [] -%}
     {%- set crudit_languages = [] -%}
     {%- for locale in locales -%}
         {%- set child = form[locale] -%}
-        {%- set child_attr = child.vars.attr|merge({'aria-describedby': ((child.vars.attr['aria-describedby'] ?? '') ~ ' ' ~ crudit_described|join(' '))|trim}) -%}
+        {%- set child_described = ((child.vars.attr['aria-describedby'] ?? '') ~ ' ' ~ crudit_described|join(' '))|trim -%}
+        {%- set child_attr = child_described is empty ? child.vars.attr : child.vars.attr|merge({'aria-describedby': child_described}) -%}
         {%- if locale == defaultlocale -%}
             {#- Also pointed by the label of the field: named by its own label only, "Description (Français)" -#}
             {%- set child_attr = child_attr|merge({'aria-labelledby': child.vars.id ~ '_label'}) -%}
@@ -130,14 +134,15 @@
             </legend>
         {%- endif -%}
         {{- block('crudit_ui_label_after') -}}
-        {{- form_widget(form) -}}
+        {#- The help and the error attached to the controls, given by the row: form_widget() alone has none to point to -#}
+        {{- form_widget(form, {crudit_described: (help is not empty ? [id ~ '_help'] : [])|merge(errors|length > 0 ? [id ~ '_error'] : [])}) -}}
         {{- form_help(form) -}}
         {{- form_errors(form) -}}
     </fieldset>
 {%- endblock crudit_cron_expression_row -%}
 
 {%- block crudit_cron_expression_widget -%}
-    {%- set crudit_described = (help is not empty ? [id ~ '_help'] : [])|merge(errors|length > 0 ? [id ~ '_error'] : []) -%}
+    {%- set crudit_described = crudit_described ?? [] -%}
     {{- include('@LleCruditUi/form/_cron.html.twig', {
         id: id ~ '_cron',
         input_id: id,

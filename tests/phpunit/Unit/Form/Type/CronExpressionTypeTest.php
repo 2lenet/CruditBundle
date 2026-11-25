@@ -74,6 +74,30 @@ class CronExpressionTypeTest extends TypeTestCase
         self::assertSame([$own], $this->factory->create(CronExpressionType::class, null, ['constraints' => $own])->getConfig()->getOption('constraints'));
     }
 
+    public function testNotRequiredByDefault(): void
+    {
+        $form = $this->factory->create(CronExpressionType::class);
+        self::assertFalse($form->getConfig()->getOption('required'));
+        self::assertSame([CronExpression::class], array_map(fn (object $c) => $c::class, $form->getConfig()->getOption('constraints')));
+        $form->submit('');
+        self::assertTrue($form->isValid(), 'an empty value passes when not required');
+    }
+
+    public function testRequiredRefusesAnEmptyValue(): void
+    {
+        $form = $this->factory->create(CronExpressionType::class, null, ['required' => true]);
+        $form->submit('');
+
+        self::assertFalse($form->isValid());
+        self::assertInstanceOf(NotBlank::class, $form->getErrors()[0]->getCause()?->getConstraint());
+
+        // Its own NotBlank is not doubled
+        $own = new NotBlank(message: 'A recurrence, please.');
+        $constraints = $this->factory->create(CronExpressionType::class, null, ['required' => true, 'constraints' => $own])->getConfig()->getOption('constraints');
+        self::assertSame([$own], array_slice($constraints, 0, 1));
+        self::assertCount(2, $constraints);
+    }
+
     public function testAnInvalidExpressionIsRefused(): void
     {
         $form = $this->factory->create(CronExpressionType::class);

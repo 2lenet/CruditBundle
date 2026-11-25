@@ -28,7 +28,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * A field translated with Gedmo: one input per enabled locale, the default locale first, rendered as tabs by the
  * template of CruditUiBundle (form/_translatable.html.twig). A required field must be filled in the default locale
  * (NotBlank, checked by the server); the other locales are optional. fields_options: options given to each input
- * (attr.maxlength, constraints…).
+ * (attr.maxlength, constraints…), except label, required and lang, set by the type. Errors of the field itself are shown
+ * under it (error_bubbling false).
  */
 class GedmoTranslatableType extends AbstractType
 {
@@ -69,8 +70,12 @@ class GedmoTranslatableType extends AbstractType
                     $fieldOptions['required'] = $required;
                     $fieldOptions['attr'] = ['lang' => str_replace('_', '-', $locale)] + ($fieldOptions['attr'] ?? []);
                     if ($required) {
+                        // A single constraint is allowed by Symfony: a list of it, not its properties
+                        $constraints = $fieldOptions['constraints'] ?? [];
                         $fieldOptions['constraints'] = [
-                            ...(array) ($fieldOptions['constraints'] ?? []),
+                            ...(\is_array($constraints) ? $constraints : [$constraints]),
+                            // Translated here, in the locale of the request when the form is built: NotBlank gives no
+                            // parameter %language% to the translator of the validator (translating it again does nothing)
                             new NotBlank(message: $this->translator->trans(
                                 'crudit.gedmo_translatable.required',
                                 // As written in a sentence: "français", "English"
@@ -155,6 +160,8 @@ class GedmoTranslatableType extends AbstractType
             'mapped' => false,
             'required' => false,
             'by_reference' => false,
+            // Its errors under the field (the row shows form_errors(form)), not at the top of the form
+            'error_bubbling' => false,
             'fields_class' => TextType::class,
             'fields_options' => [],
         ]);

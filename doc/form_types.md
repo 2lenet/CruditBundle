@@ -65,7 +65,7 @@ The `Lle\CruditBundle\Form\Type\CronExpressionType` stores a recurrence as a cro
 (`30 8 * * 1,4`). It is guessed for a property `cron` or `cronExpression`.
 
 ```php
-$builder->add('reminder', CronExpressionType::class, ['required' => false]);
+$builder->add('reminder', CronExpressionType::class); // not required by default; ['required' => true] to require one
 ```
 
 It is the widget of CruditUiBundle (`docs/forms.md` of CruditUiBundle), in a fieldset named by the label of the field:
@@ -86,8 +86,12 @@ it) is opened in Custom, a text input, and kept as it is. Without JavaScript, th
 input alone.
 
 The expression is checked by the server: the type always adds the constraint `Lle\CruditBundle\Validator\CronExpression`
-(`dragonmantank/cron-expression`), which refuses an invalid expression and lets an empty value pass. Put it on the
-property of an entity to check it outside the form:
+(`dragonmantank/cron-expression`), which refuses an invalid expression and lets an empty value pass. The field is not
+required by default (as the translated field); with `required: true`, the widget has no None and the type adds
+`NotBlank`, the server refuses an empty value. The constraints added are in the group `Default`: with
+`validation_groups`, give your own in the option `constraints` (`new CronExpression(groups: ['Foo'])`, `new
+NotBlank(groups: ['Foo'])`), the type does not add a second one. Put it on the property of an entity to check it
+outside the form (attribute, YAML or XML):
 
 ```php
 use Lle\CruditBundle\Validator\CronExpression;
@@ -117,14 +121,15 @@ $builder->add('description', GedmoTranslatableType::class, [
 | Name           | Default    | Description                                                           |
 |----------------|------------|-----------------------------------------------------------------------|
 | fields_class   | `TextType` | the type of the input of each locale                                  |
-| fields_options | `[]`       | the options of the input of each locale (`attr`, `constraints`…)      |
+| fields_options | `[]`       | the options of the input of each locale (`attr`, `constraints`…); `label`, `required` and `attr.lang` are set by the type |
 | required       | false      | the default locale must be filled, checked by the server (`NotBlank`) |
 
 The tabs of CruditUiBundle, one per locale, the default one first and shown first (the first one in error after a form
 sent). A tab says the state of its locale ("English · empty", "Deutsch · error"); a star marks the default locale of a
 required field. The label of the field points to the input of the default locale, each input has its `lang` and a
 hidden label "*Label* (*locale*)"; the help of the field (by default on a required field, which locale is required)
-and its error are attached to every input, the errors of a locale stay in its panel. The other locales are optional.
+and its error are attached to every input (when rendered by `form_row`), the errors of a locale stay in its panel, an
+error of the field itself is shown under it (`error_bubbling: false`). The other locales are optional.
 
 The controllers `tabs` and `translatable` of CruditUiBundle must be enabled (`assets/controllers.json`,
 `translatable` in `fetch: lazy`). The project installs and configures the translatable extension of Gedmo

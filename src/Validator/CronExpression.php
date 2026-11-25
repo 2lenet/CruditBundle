@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Lle\CruditBundle\Validator;
 
+use Symfony\Component\Validator\Attribute\HasNamedArguments;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * A cron expression ("30 8 * * 1,4", or a nickname such as "@daily"), checked by dragonmantank/cron-expression. An empty value passes:
- * add NotBlank to require one. Added by CronExpressionType; an entity can also use it on its property.
+ * A cron expression ("30 8 * * 1,4", or a nickname such as "@daily"), checked by dragonmantank/cron-expression. An
+ * empty value passes: add NotBlank to require one. Added by CronExpressionType (group Default: give your own, with its
+ * groups, in the option constraints); an entity can also use it on its property, in attribute, YAML or XML.
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class CronExpression extends Constraint
@@ -24,6 +26,7 @@ class CronExpression extends Constraint
     /**
      * @param string[]|null $groups
      */
+    #[HasNamedArguments]
     public function __construct(?string $message = null, ?array $groups = null, mixed $payload = null)
     {
         parent::__construct(null, $groups, $payload);
