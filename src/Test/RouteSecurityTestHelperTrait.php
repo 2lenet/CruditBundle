@@ -23,9 +23,6 @@ use Symfony\Component\Security\Http\AccessMapInterface;
  */
 trait RouteSecurityTestHelperTrait
 {
-    private const string DEFAULT_LOGIN_PATTERN = '#/(?:login|connect|oauth|sso|auth)(?:[/?_-]|$)#i';
-    private const array DENIED_STATUS_CODES = [401, 403];
-
     public function testEveryRouteIsProtected(): void
     {
         $violations = $this->buildRouteSecurityAnalyzer()->analyze(
@@ -69,7 +66,6 @@ trait RouteSecurityTestHelperTrait
         $client = static::createClient();
         $client->disableReboot();
 
-        $pathsByRoute = array_column($entries, 'path', 'route');
         $reached = [];
         $untestable = [];
         $usedAnonymousExclusions = [];
@@ -82,24 +78,28 @@ trait RouteSecurityTestHelperTrait
             foreach ($entry['httpMethods'] as $httpMethod) {
                 $client->request($httpMethod, $entry['samplePath']);
                 $response = $client->getResponse();
+                $outcome = $analyzer->classifyAnonymousResponse(
+                    $entry,
+                    $client->getRequest()->attributes->get('_route'),
+                    $response->getStatusCode(),
+                    $response->headers->get('Location'),
+                    $this->readRouteSecurityConstant('ANONYMOUS_LOGIN_PATTERN')[0] ?? null,
+                );
 
-                $matchedRoute = $client->getRequest()->attributes->get('_route');
-                if ($matchedRoute !== $entry['route']) {
-                    $usedAnonymousExclusions = array_merge($usedAnonymousExclusions, $anonymousPatterns);
-                    $isShadowed = ($pathsByRoute[$matchedRoute] ?? null) === $entry['path'];
-                    if (!$isShadowed && $anonymousPatterns === []) {
+                if ($outcome === RouteSecurityAnalyzer::OUTCOME_DENIED) {
+                    continue;
+                }
+
+                $usedAnonymousExclusions = array_merge($usedAnonymousExclusions, $anonymousPatterns);
+                if ($outcome === RouteSecurityAnalyzer::OUTCOME_UNTESTABLE) {
+                    if ($anonymousPatterns === []) {
                         $untestable[$entry['route']] = $entry['samplePath'];
                     }
 
                     continue 2;
                 }
 
-                if ($this->isAnonymousDenial($response->getStatusCode(), $response->headers->get('Location'))) {
-                    continue;
-                }
-
-                $usedAnonymousExclusions = array_merge($usedAnonymousExclusions, $anonymousPatterns);
-                if ($anonymousPatterns === []) {
+                if ($outcome === RouteSecurityAnalyzer::OUTCOME_REACHED && $anonymousPatterns === []) {
                     $reached[] = sprintf(
                         '- %s  %s %s  [%s]  anonymous → %d',
                         $entry['route'],
@@ -170,18 +170,6 @@ trait RouteSecurityTestHelperTrait
             static fn (Request $request): bool => $firewallMap->getFirewallConfig($request) !== null,
             $this->readRouteSecurityConstant('ROUTE_SAMPLE_PARAMETERS'),
         );
-    }
-
-    private function isAnonymousDenial(int $statusCode, ?string $location): bool
-    {
-        if (in_array($statusCode, self::DENIED_STATUS_CODES, true)) {
-            return true;
-        }
-
-        $constants = $this->readRouteSecurityConstant('ANONYMOUS_LOGIN_PATTERN');
-        $pattern = $constants[0] ?? self::DEFAULT_LOGIN_PATTERN;
-
-        return $statusCode >= 300 && $statusCode < 400 && $location !== null && preg_match($pattern, $location) === 1;
     }
 
     /**

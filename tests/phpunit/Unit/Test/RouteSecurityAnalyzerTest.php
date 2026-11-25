@@ -510,4 +510,69 @@ class RouteSecurityAnalyzerTest extends TestCase
         self::assertSame('/fr/0190a1b2-0000-0000-0000-000000000000', $entries[0]['samplePath']);
         self::assertSame('/fr/x', $entries[1]['samplePath']);
     }
+
+    /**
+     * @return iterable<string, array{string|null, int, string|null, string}>
+     */
+    public static function anonymousResponseProvider(): iterable
+    {
+        yield 'denied with 401' => ['x_any', 401, null, RouteSecurityAnalyzer::OUTCOME_DENIED];
+        yield 'denied with 403' => ['x_any', 403, null, RouteSecurityAnalyzer::OUTCOME_DENIED];
+        yield 'redirect to the login page' => ['x_any', 302, '/login', RouteSecurityAnalyzer::OUTCOME_DENIED];
+        yield 'redirect to a login segment with a query' => [
+            'x_any',
+            302,
+            'https://host/connect?next=/x',
+            RouteSecurityAnalyzer::OUTCOME_DENIED,
+        ];
+        yield 'redirect to /authors is not a login' => [
+            'x_any',
+            302,
+            '/authors/1',
+            RouteSecurityAnalyzer::OUTCOME_REACHED,
+        ];
+        yield 'redirect without location' => ['x_any', 302, null, RouteSecurityAnalyzer::OUTCOME_REACHED];
+        yield 'served' => ['x_any', 200, null, RouteSecurityAnalyzer::OUTCOME_REACHED];
+        yield 'not found after the firewall' => ['x_any', 404, null, RouteSecurityAnalyzer::OUTCOME_REACHED];
+        yield 'shadowed by a route with the same path' => ['x_get', 200, null, RouteSecurityAnalyzer::OUTCOME_SHADOWED];
+        yield 'matched by an unrelated route' => ['other', 200, null, RouteSecurityAnalyzer::OUTCOME_UNTESTABLE];
+        yield 'matched by no route' => [null, 404, null, RouteSecurityAnalyzer::OUTCOME_UNTESTABLE];
+    }
+
+    #[DataProvider('anonymousResponseProvider')]
+    public function testClassifyAnonymousResponse(
+        ?string $matchedRoute,
+        int $statusCode,
+        ?string $location,
+        string $expected,
+    ): void {
+        $routes = new RouteCollection();
+        $routes->add('x_get', $this->routeOn('/x', $this->sample('unguarded'), ['GET']));
+        $routes->add('x_any', $this->routeTo('/x', $this->sample('unguarded')));
+        $routes->add('other', $this->routeTo('/other', $this->sample('unguarded')));
+        $analyzer = $this->buildAnalyzer($routes);
+        $entry = $analyzer->inspect()[1];
+
+        self::assertSame('x_any', $entry['route']);
+        $outcome = $analyzer->classifyAnonymousResponse($entry, $matchedRoute, $statusCode, $location);
+
+        self::assertSame($expected, $outcome);
+    }
+
+    public function testClassifyAnonymousResponseWithACustomLoginPattern(): void
+    {
+        $routes = new RouteCollection();
+        $routes->add('x_any', $this->routeTo('/x', $this->sample('unguarded')));
+        $analyzer = $this->buildAnalyzer($routes);
+        $entry = $analyzer->inspect()[0];
+
+        self::assertSame(
+            RouteSecurityAnalyzer::OUTCOME_DENIED,
+            $analyzer->classifyAnonymousResponse($entry, 'x_any', 302, '/signin', '#/signin$#'),
+        );
+        self::assertSame(
+            RouteSecurityAnalyzer::OUTCOME_REACHED,
+            $analyzer->classifyAnonymousResponse($entry, 'x_any', 302, '/login', '#/signin$#'),
+        );
+    }
 }

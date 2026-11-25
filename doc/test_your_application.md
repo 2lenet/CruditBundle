@@ -74,10 +74,17 @@ done in a service or a listener, a `catch` that swallows the `AccessDeniedExcept
 (`if (isGranted(...)) { ... } else { throw ... }`) or a guard that redirects instead of denying
 (`if (!isGranted(...)) { return $this->redirectToRoute(...); }`): exclude the route and say why.
 
+An early `return` is not followed either: a check placed after `if ($request->isXmlHttpRequest()) { return
+$this->json($data); }` still counts, although that branch skips it. Detecting it would reject Crudit's `show`,
+`edit` and `delete`, which redirect when the resource is not found before checking the right.
+
 Routes without `_controller` (handled by the firewall, like a logout) and routes whose name starts with `_`
 (profiler, wdt...) are ignored. Routes declared in config with `RedirectController` or `TemplateController`
-(a redirect of `/`, for example) are reported like any other: add them to `EXCLUDED_ROUTES`. A controller that cannot be resolved to a class and a method (closure,
-`service.id:method`) is reported, since nothing can be checked.
+(a redirect of `/`, for example) are reported like any other: list them in `ROLE_USER_ROUTES` or
+`PUBLIC_ROUTES`, depending on who may reach them, to keep the typed safety net.
+
+A controller that cannot be resolved to a class and a method (closure, `service.id:method`) is reported,
+since nothing can be checked.
 
 ### The anonymous test
 
@@ -122,16 +129,31 @@ class RouteSecurityTest extends WebTestCase
 All constants are optional and accept `fnmatch` globs:
 
 - `EXCLUDED_ROUTES` matches the route name, `EXCLUDED_CONTROLLERS` the fully qualified controller class name.
-  Both also skip the anonymous test.
+  Both also skip the anonymous test (no request is sent).
 - `PUBLIC_ROUTES` and `ROLE_USER_ROUTES` are typed on purpose: if a route listed in `ROLE_USER_ROUTES` becomes
-  public, the test fails instead of staying silent. `PUBLIC_ROUTES` also skips the anonymous test.
+  public, the test fails instead of staying silent. `PUBLIC_ROUTES` also skips the anonymous test (no request
+  is sent).
 - `ROUTE_SAMPLE_PARAMETERS` gives the anonymous test its placeholder values, by route name glob, the last
   matching entry winning: `['*' => ['uuid' => '0190a1b2-...'], 'app_blog_*' => ['slug' => 'hello']]`.
-- `ANONYMOUS_EXCLUDED_ROUTES` skips the anonymous test only (public in `access_control` but guarded in the
-  controller, which answers 404 before its check when the sample id does not exist, or a route no sample
-  path can reach). It is checked too: an entry that no anonymous request reaches any more fails the test.
+- `ANONYMOUS_EXCLUDED_ROUTES` is not reported by the anonymous test (requests are still sent, POST, PUT and
+  DELETE included, so a stale entry can be detected). Use it for a route public in `access_control` but
+  guarded in the controller, which answers 404 before its check when the sample id does not exist, or for a
+  route no sample path can reach. An entry that no anonymous request reaches any more fails the test.
 - `ANONYMOUS_LOGIN_PATTERN` is the regex a redirect `Location` must match to count as a redirect to the login
   page (default: a path segment starting with `login`, `connect`, `oauth`, `sso` or `auth`).
+
+### Known gaps in Crudit
+
+`TraitCrudController::autocomplete()` has no right check, and `workflowTransition()` only checks inside
+`if ($item && $transition)`. Every Crudit controller exposes both, so the first run reports two routes per
+CRUD. Until they are fixed, list them as open to any logged in user:
+
+```php
+public const ROLE_USER_ROUTES = ['*_autocomplete', '*_workflowtransition'];
+```
+
+These are the typed lists, so once a route gets a real check it no longer matches and the test fails
+on its own, asking you to remove the entry.
 
 ## Filter Test
 

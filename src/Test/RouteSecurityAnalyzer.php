@@ -19,6 +19,13 @@ class RouteSecurityAnalyzer
     public const string REASON_NO_FIREWALL = 'outside any firewall (security: false or no firewall covers it)';
     public const string REASON_ROLE_USER = 'ROLE_USER only, no right check';
 
+    public const string OUTCOME_DENIED = 'denied';
+    public const string OUTCOME_REACHED = 'reached';
+    public const string OUTCOME_SHADOWED = 'shadowed';
+    public const string OUTCOME_UNTESTABLE = 'untestable';
+
+    private const array DENIED_STATUS_CODES = [401, 403];
+    private const string DEFAULT_LOGIN_PATTERN = '#/(?:login|connect|oauth|sso|auth)(?:[/?_-]|$)#i';
     private const array PUBLIC_REASONS = [self::REASON_PUBLIC, self::REASON_NO_FIREWALL];
     private const array PUBLIC_ATTRIBUTES = ['PUBLIC_ACCESS', 'IS_AUTHENTICATED_ANONYMOUSLY'];
     private const array ALL_HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
@@ -203,6 +210,35 @@ class RouteSecurityAnalyzer
                 $entry['reason'] === self::REASON_ROLE_USER
                 && $this->findMatchingPatterns($entry['route'], $roleUserRoutes) !== []
             );
+    }
+
+    /**
+     * Tells what an anonymous request to the sample path of an entry says about that entry.
+     * Routing runs before the firewall, so the route that answered must be the one under test; a route hidden
+     * by another route with the same path is never served, and is no reason to skip its other HTTP methods.
+     *
+     * @param array{route: string, path: string} $entry
+     * @return self::OUTCOME_*
+     */
+    public function classifyAnonymousResponse(
+        array $entry,
+        mixed $matchedRoute,
+        int $statusCode,
+        ?string $location,
+        ?string $loginPattern = null,
+    ): string {
+        if ($matchedRoute !== $entry['route']) {
+            $matched = is_string($matchedRoute) ? $this->routes->get($matchedRoute) : null;
+
+            return $matched?->getPath() === $entry['path'] ? self::OUTCOME_SHADOWED : self::OUTCOME_UNTESTABLE;
+        }
+
+        $isLoginRedirect = $statusCode >= 300 && $statusCode < 400 && $location !== null
+            && preg_match($loginPattern ?? self::DEFAULT_LOGIN_PATTERN, $location) === 1;
+
+        return in_array($statusCode, self::DENIED_STATUS_CODES, true) || $isLoginRedirect
+            ? self::OUTCOME_DENIED
+            : self::OUTCOME_REACHED;
     }
 
     /**
