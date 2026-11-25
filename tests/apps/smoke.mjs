@@ -1162,6 +1162,54 @@ for (const [dark, rtl] of [[true, false], [false, true]]) {
     await page.close();
 }
 ok('record: header, alert, sections, keyboard, columns, phone');
+// ---------- Tabs of a record (lot 3.3.b): the component Tabs of CruditUiBundle under the sections, the tab with a role
+// nobody has not rendered, the arrows, the tab in the address (?tab=, replaceState) kept by a reload, a form in a tab
+// that comes back to it once saved, no horizontal scroll on a phone.
+page = await open(1440, '/client/');
+const clientPath = await page.$eval('main a[href*="/client/show/"]', (a) => a.getAttribute('href'));
+await page.goto(base + clientPath, {waitUntil: 'networkidle0'});
+const tabState = () => page.evaluate(() => ({
+    tabs: [...document.querySelectorAll('.crudit-show-tabs [role="tab"]')].map((t) => [t.textContent.trim().replace(/\s+\d+$/, ''), t.getAttribute('aria-selected')]),
+    shown: [...document.querySelectorAll('.crudit-show-tabs [role="tabpanel"]:not([hidden])')].map((p) => p.id.replace(/^.*-panel-/, '')),
+    tab: new URL(location.href).searchParams.get('tab'),
+    focus: document.activeElement?.getAttribute('role'),
+}));
+let tabsNow = await tabState();
+assert.deepEqual(tabsNow.tabs, [['Tags', 'true'], ['Notes', 'false']], `tabs: the tabs granted, the first selected (${JSON.stringify(tabsNow)})`);
+assert.equal(await page.$eval('.crudit-show-tabs [role="tablist"]', (l) => l.getAttribute('aria-label')), 'Related information');
+await page.click('.crudit-show-tabs [role="tab"]:nth-child(2)');
+await page.waitForFunction(() => new URL(location.href).searchParams.get('tab') === 'notes', {timeout: 3000}).catch(() => null);
+tabsNow = await tabState();
+assert.deepEqual([tabsNow.shown, tabsNow.tab], [['notes'], 'notes'], `tabs: a click does not select the tab or write it in the address (${JSON.stringify(tabsNow)})`);
+await page.keyboard.press('ArrowLeft');
+tabsNow = await tabState();
+assert.deepEqual([tabsNow.shown, tabsNow.tab, tabsNow.focus], [['tags'], 'tags', 'tab'], `tabs: the arrows (${JSON.stringify(tabsNow)})`);
+await page.keyboard.press('End');
+await page.reload({waitUntil: 'networkidle0'});
+tabsNow = await tabState();
+assert.deepEqual([tabsNow.shown, tabsNow.tabs[1][1]], [['notes'], 'true'], `tabs: a reload does not keep the tab (${JSON.stringify(tabsNow)})`);
+await shot(page, 'record-tabs');
+await axe(page, 'record with tabs');
+// A form in a tab: saved, back to its tab
+await page.$eval('.crudit-show-tabs [role="tabpanel"]:not([hidden]) textarea', (t) => { t.value = 'Smoke notes'; });
+await Promise.all([
+    page.waitForNavigation({waitUntil: 'networkidle0'}),
+    page.$eval('.crudit-show-tabs [role="tabpanel"]:not([hidden]) form', (f) => f.requestSubmit()),
+]);
+tabsNow = await tabState();
+assert.deepEqual([tabsNow.shown, tabsNow.tab], [['notes'], 'notes'], `tabs: a form saved does not come back to its tab (${JSON.stringify(tabsNow)})`);
+assert.equal(await page.$eval('.crudit-show-tabs [role="tabpanel"]:not([hidden]) textarea', (t) => t.value), 'Smoke notes');
+await page.setViewport({width: 360, height: 800});
+await new Promise((r) => setTimeout(r, 200));
+assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'tabs: no horizontal scroll on a phone');
+await axe(page, 'record with tabs at 360');
+await page.close();
+for (const [dark, rtl] of [[true, false], [false, true]]) {
+    page = await open(1440, clientPath, {dark, rtl});
+    await axe(page, `record with tabs${dark ? ', dark' : ''}${rtl ? ', right to left' : ''}`);
+    await page.close();
+}
+ok('tabs: granted, arrows, address, reload, form back to its tab, phone');
 // ---------- Form (lot 3.2.a): the theme of Crudit imposed (the application declares bootstrap_5_layout), the grid of
 // 4 columns then the section of 2, one column on a phone, a field of 2 columns in a narrow grid, the help of a field,
 // the switch, axe on the form in light, in dark and right to left.

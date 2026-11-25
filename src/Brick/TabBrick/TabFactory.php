@@ -5,12 +5,19 @@ declare(strict_types=1);
 namespace Lle\CruditBundle\Brick\TabBrick;
 
 use Lle\CruditBundle\Brick\AbstractBasicBrickFactory;
+use Lle\CruditBundle\Brick\FormBrick\FormConfig;
 use Lle\CruditBundle\Builder\BrickBuilder;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Resolver\ResourceResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
+/**
+ * The tabs of a record: only the tabs granted (their role, checked here: the bricks of a tab not granted are not built,
+ * its form is not bound) and shown (displayIf), each with its counter computed on the record. A form of a tab knows
+ * its tab, to come back to it once saved.
+ */
 class TabFactory extends AbstractBasicBrickFactory
 {
     private BrickBuilder $brickBuilder;
@@ -19,6 +26,7 @@ class TabFactory extends AbstractBasicBrickFactory
         ResourceResolver $resourceResolver,
         RequestStack $requestStack,
         BrickBuilder $brickBuilder,
+        private AuthorizationCheckerInterface $authorizationChecker,
     ) {
         $this->brickBuilder = $brickBuilder;
         parent::__construct($resourceResolver, $requestStack);
@@ -33,20 +41,29 @@ class TabFactory extends AbstractBasicBrickFactory
     {
         $tabs = [];
         if ($brickConfigurator instanceof TabConfig) {
-            foreach ($brickConfigurator->getTabs() as $k => $tab) {
-                if ($tab->isDisplayed($this->getResource($brickConfigurator))) {
-                    $tabs[$k] = new TabView($tab->getLabel());
-                    $tabs[$k]->setRole($tab->getRole());
-                    foreach ($tab->getBricks() as $brickConfig) {
-                        $tabs[$k]->add(
-                            $this->brickBuilder->buildBrick(
-                                $brickConfigurator->getCrudConfig(),
-                                $brickConfigurator->getPageKey(),
-                                $brickConfig
-                            )
-                        );
-                    }
+            $resource = $this->getResource($brickConfigurator);
+            foreach ($brickConfigurator->getTabs() as $tab) {
+                $role = $tab->getRole();
+                if ((null !== $role && !$this->authorizationChecker->isGranted($role)) || !$tab->isDisplayed($resource)) {
+                    continue;
                 }
+                $id = (string) $tab->getId();
+                $view = (new TabView($tab->getLabel(), $id))
+                    ->setRole($role)
+                    ->setCount($tab->getCount($resource));
+                foreach ($tab->getBricks() as $brickConfig) {
+                    if ($brickConfig instanceof FormConfig) {
+                        $brickConfig->setTab($id);
+                    }
+                    $view->add(
+                        $this->brickBuilder->buildBrick(
+                            $brickConfigurator->getCrudConfig(),
+                            $brickConfigurator->getPageKey(),
+                            $brickConfig
+                        )
+                    );
+                }
+                $tabs[] = $view;
             }
         }
         $view = new BrickView($brickConfigurator);

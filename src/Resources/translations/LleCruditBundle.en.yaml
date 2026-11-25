@@ -126,6 +126,7 @@ crudit:
         created_by: "Created on %date% by %author%"
         updated: "modified on %date%"
         updated_by: "modified on %date% by %author%"
+        tabs: "Related information"
 
     workflow:
         change: ", change the status"

@@ -33,6 +33,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [The pager: one, below the table; the controller `pager`; `_pager.html.twig` and `items-per-page` gone](#the-pager-lot-31d) *(lot 3.1.d)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
    - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
+   - [The tabs of a record: the component Tabs, the tab in the address (`?tab=`, no more `#id`), roles checked by the server, a counter, a form back to its tab](#the-tabs-of-a-record-lot-33b) *(lot 3.3.b)*
    - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*; lists with search instead of Tom Select, `disable_tom_select` removed, the controller `combobox` to enable *(lot 3.2.c)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
@@ -1325,6 +1326,38 @@ card, `dl.row` nor collapse; the label is above the value. See [doc/crud.md](doc
   `getShowHighlights()`,
   `getShowSubtitle()`, `getShowAlert()`, `isShowStatusInHeader()`): a class that implements it without extending
   `AbstractCrudConfig` has to add them.
+
+### The tabs of a record *(lot 3.3.b)*
+
+The tabs (`getTabs()`, `TabConfig`, `brick/tab/index.html.twig`) are the component `Tabs` of CruditUiBundle, under
+the sections of the record: ARIA pattern (`aria-selected`, arrows, Home, End), they wrap on a phone instead of
+scrolling, in a section named by a hidden heading "Related information" (new key `crudit.show.tabs`). No more
+Bootstrap (`nav-tabs`, `data-bs-toggle="tab"`, `tab-content`, `tab-pane`), and the stylesheet
+`sb-admin/css/components/_tab.scss` is removed. See [doc/tabs.md](doc/tabs.md).
+
+- **Enable the controller `tabs`** of `@2lenet/crudit-ui-bundle` in your `assets/controllers.json` (without it, the tab
+  chosen by the server is shown, the others cannot be opened).
+- **The tab is in the address as `?tab=<id>`**, read by the server and kept up to date when a tab is chosen (without a
+  new entry in the history): a reload or a shared link opens the same tab. **`#<id>` is no longer read** (the script
+  of sb-admin that did it is no longer loaded): change your links and bookmarks to `?tab=<id>`. The pager and the
+  sorting of a sublist keep its tab with `?tab=`; a delete from a sublist goes back to the tab it was in (no more
+  `#<entity>s`).
+- **The id of a tab** is its label without `tab.`, in lower case ASCII, any other character than a letter, a digit, `_`
+  or `-` replaced by `_` (`tab.history` is still `history`, `tab.Pièces jointes` gives `pieces_jointes`), `_2` after an
+  id already taken. Give your own with `Tab::setId()` or the argument `id` of `TabConfig::add()` / `adds()`.
+- **The role of a tab is checked by the server** (it was by the template only): the bricks of a tab refused are not
+  built, its form is not bound by a POST, its counter not computed. As before, a tab refused is not shown.
+- **New, a counter after the label** ("Parts 3"), computed on the record: `Tab::setCount(fn (Client $c) => …)` or the
+  argument `count`. `getTabs()` accepts a `Tab` as a value for it. The badge filled by a script of the sublist is gone
+  (the sublist fills the counter in lot 3.3.c).
+- **A form in a tab comes back to its tab** once saved: when its redirect goes to the record (`getPath(SHOW)` in
+  `setSuccessRedirectPath()`, or `getAfterEditPath()`), `?tab=<id>` is added, unless the path gives a `tab`. It came
+  back to the first tab.
+- **An override** of `brick/tab/index.html.twig` reads `view.config.tabs`: only the tabs granted and shown, each with
+  `id`, `label` (not translated), `count` and `views`.
+- **Not changed**: `getTabs()` (`['tab.x' => brick | bricks]`), `TabConfig::add()` / `adds()` / `addTab()`, the role
+  generated (`ROLE_<CRUD>_TAB_<LABEL>`), `setDisplayIf()`. `setDisplayIfByRequest()` on a tab is still not read (as in
+  1.x); on a brick it is.
 
 ### Workflows *(lot 3.4.c)*
 

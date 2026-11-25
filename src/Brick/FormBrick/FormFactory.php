@@ -10,6 +10,7 @@ use Lle\CruditBundle\Brick\BrickResponse\RedirectBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponse\StatusBrickResponse;
 use Lle\CruditBundle\Brick\BrickResponseCollector;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
+use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Dto\BrickView;
 use Lle\CruditBundle\Exception\CruditException;
 use Lle\CruditBundle\Resolver\ResourceResolver;
@@ -187,27 +188,36 @@ class FormFactory extends AbstractBasicBrickFactory
 
     private function getRedirectPath(FormConfig $brickConfig, mixed $resource): string
     {
-        if ($successRedirectPath = $brickConfig->getSuccessRedirectPath()) {
-            return $this->urlGenerator->generate(
-                $successRedirectPath->getRoute(),
-                array_merge(
-                    ['id' => $resource->getId()],
-                    $successRedirectPath->getParams()
-                )
-            );
-        }
-
-        if ($afterEditPath = $brickConfig->getCrudConfig()->getAfterEditPath()) {
-            return $this->urlGenerator->generate(
-                $afterEditPath->getRoute(),
-                array_merge(
-                    ['id' => $resource->getId()],
-                    $afterEditPath->getParams()
-                )
-            );
+        foreach ([$brickConfig->getSuccessRedirectPath(), $brickConfig->getCrudConfig()->getAfterEditPath()] as $path) {
+            if (null !== $path) {
+                return $this->urlGenerator->generate(
+                    $path->getRoute(),
+                    $this->withTab($brickConfig, $path->getRoute(), array_merge(['id' => $resource->getId()], $path->getParams()))
+                );
+            }
         }
 
         return $this->navigationStack->peek()
             ?? $this->urlGenerator->generate($brickConfig->getCrudConfig()->getPath()->getRoute());
+    }
+
+    /**
+     * A form in a tab of the record, redirected to the record: back to its tab (?tab=<id>), unless the path gives one.
+     *
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
+     */
+    private function withTab(FormConfig $brickConfig, string $route, array $params): array
+    {
+        $tab = $brickConfig->getTab();
+        if (null === $tab || isset($params['tab'])) {
+            return $params;
+        }
+        if ($route !== $brickConfig->getCrudConfig()->getPath(CrudConfigInterface::SHOW)->getRoute()) {
+            return $params;
+        }
+
+        return [...$params, 'tab' => $tab];
     }
 }

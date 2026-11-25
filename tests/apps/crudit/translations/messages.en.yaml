@@ -75,6 +75,8 @@ modal:
             archive_inactive: "Archive all the inactive clients?"
             batch_archive: "Archive the selected clients?"
 client:
+    tags:
+        none: "No tag"
     form:
         title: "Details"
     priority:
@@ -136,3 +138,7 @@ field:
     description: "Description"
     internalnote: "Internal note"
     updatedby: "Modified by"
+tab:
+    tags: "Tags"
+    notes: "Notes"
+    accounting: "Accounting"

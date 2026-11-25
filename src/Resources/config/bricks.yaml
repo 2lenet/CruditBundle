@@ -17,7 +17,7 @@ services:
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\TabBrick\TabFactory:
-        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder']
+        arguments: ['@Lle\CruditBundle\Resolver\ResourceResolver', '@request_stack', '@Lle\CruditBundle\Builder\BrickBuilder', '@security.authorization_checker']
         tags: ['crudit.brick']
 
     Lle\CruditBundle\Brick\TitleBrick\TitleFactory:
