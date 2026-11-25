@@ -23,6 +23,7 @@ class RouteSecurityAnalyzer
     private const array PUBLIC_ATTRIBUTES = ['PUBLIC_ACCESS', 'IS_AUTHENTICATED_ANONYMOUSLY'];
     private const array ALL_HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
     private const array DENY_CALLS = ['denyAccessUnlessGranted', 'denyUnlessAccessGranted'];
+    private const array STATEMENT_END_TOKENS = [';', '{', '}'];
     private const array TRANSPARENT_TOKENS = [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
     private const array CHAIN_TOKENS = [
         T_WHITESPACE,
@@ -36,9 +37,13 @@ class RouteSecurityAnalyzer
     private const string THIS_VARIABLE = '$this';
     private const string ROLE_USER = 'ROLE_USER';
     private const string AUTHENTICATED_PREFIX = 'IS_AUTHENTICATED';
-    private const string TRIVIAL_CALL_PATTERN = '/^\w+\(\s*[\'"](?:ROLE_USER|PUBLIC_ACCESS|IS_AUTHENTICATED\w*)[\'"]/';
-    private const string TRIVIAL_EXPRESSION_PATTERN = '/^\s*is_granted\(\s*'
-        . '[\'"](?:ROLE_USER|PUBLIC_ACCESS|IS_AUTHENTICATED\w*)[\'"]\s*\)\s*$/';
+    private const string TRIVIAL_ROLE = 'ROLE_USER|PUBLIC_ACCESS|IS_AUTHENTICATED\w*';
+    private const string TRIVIAL_CALL_PATTERN = '/^\w+\(\s*(?:[\'"](?:' . self::TRIVIAL_ROLE . ')[\'"]'
+        . '|[\w\\\\]+::(?:' . self::TRIVIAL_ROLE . ')\b)/';
+    private const string EXPRESSION_ROLE_PATTERN = '/^\s*is_granted\(\s*[\'"]([^\'"]+)[\'"]\s*\)\s*$/';
+    private const string EXPRESSION_AUTHENTICATED_PATTERN = '/^\s*'
+        . '(?:is_authenticated|is_fully_authenticated|is_remember_me)\(\)\s*$/';
+    private const string AUTHENTICATED_LABEL = 'IS_AUTHENTICATED';
     private const string NEGATED_GUARD_PATTERN = '/^isGranted\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)\s*\)\s*\{?'
         . '[^;}]*?(?:\bthrow\b|createAccessDeniedException|AccessDenied\w*|HTTP_FORBIDDEN|\b403\b)/s';
     private const string PLACEHOLDER_PATTERN = '/\{!?(\w+)\}/';
@@ -52,11 +57,13 @@ class RouteSecurityAnalyzer
 
     /**
      * @param Closure(Request): bool|null $hasFirewall tells whether a firewall covers the request
+     * @param array<string, array<string, string>> $sampleParameters placeholder values by route name glob
      */
     public function __construct(
         protected RouteCollection $routes,
         protected AccessMapInterface $accessMap,
         protected ?Closure $hasFirewall = null,
+        protected array $sampleParameters = [],
     ) {
     }
 
@@ -84,12 +91,12 @@ class RouteSecurityAnalyzer
 
             $target = $this->resolveController($route);
             $httpMethods = $this->listHttpMethods($route);
-            [$reason, $httpMethod] = $this->findViolation($route, $httpMethods, $target);
+            [$reason, $httpMethod] = $this->findViolation($name, $route, $httpMethods, $target);
 
             $entries[] = [
                 'route' => $name,
                 'path' => $route->getPath(),
-                'samplePath' => $this->buildSamplePath($route),
+                'samplePath' => $this->buildSamplePath($name, $route),
                 'httpMethods' => $httpMethods,
                 'controller' => $target === null
                     ? $this->describeUnresolvedController($controller)
@@ -284,17 +291,27 @@ class RouteSecurityAnalyzer
         return $route->getMethods() === [] ? self::ALL_HTTP_METHODS : array_values($route->getMethods());
     }
 
-    private function buildSamplePath(Route $route): string
+    private function buildSamplePath(string $routeName, Route $route): string
     {
         return preg_replace_callback(
             self::PLACEHOLDER_PATTERN,
-            fn (array $matches) => $this->buildPlaceholderValue($route, $matches[1]),
+            fn (array $matches) => $this->buildPlaceholderValue($routeName, $route, $matches[1]),
             $route->getPath(),
         ) ?? $route->getPath();
     }
 
-    private function buildPlaceholderValue(Route $route, string $name): string
+    private function buildPlaceholderValue(string $routeName, Route $route, string $name): string
     {
+        $configured = null;
+        foreach ($this->sampleParameters as $pattern => $values) {
+            if (isset($values[$name]) && fnmatch($pattern, $routeName, FNM_NOESCAPE)) {
+                $configured = $values[$name];
+            }
+        }
+        if ($configured !== null) {
+            return $configured;
+        }
+
         $default = $route->getDefault($name);
         if (is_scalar($default) && $default !== '') {
             return (string) $default;
@@ -313,14 +330,14 @@ class RouteSecurityAnalyzer
      * @param array{0: class-string, 1: string}|null $target
      * @return array{0: string|null, 1: string|null} the reason and the HTTP method concerned
      */
-    private function findViolation(Route $route, array $httpMethods, ?array $target): array
+    private function findViolation(string $routeName, Route $route, array $httpMethods, ?array $target): array
     {
         if ($target !== null && $this->hasRealCheck(new ReflectionClass($target[0]), $target[1])) {
             return [null, null];
         }
 
         foreach ($httpMethods as $httpMethod) {
-            $reason = $this->findReasonForHttpMethod($route, $httpMethod);
+            $reason = $this->findReasonForHttpMethod($routeName, $route, $httpMethod);
             if ($reason !== null) {
                 return [$reason, $httpMethod];
             }
@@ -329,9 +346,9 @@ class RouteSecurityAnalyzer
         return [null, null];
     }
 
-    private function findReasonForHttpMethod(Route $route, string $httpMethod): ?string
+    private function findReasonForHttpMethod(string $routeName, Route $route, string $httpMethod): ?string
     {
-        $request = Request::create($this->buildSamplePath($route), $httpMethod);
+        $request = Request::create($this->buildSamplePath($routeName, $route), $httpMethod);
 
         if ($this->hasFirewall !== null && !($this->hasFirewall)($request)) {
             return self::REASON_NO_FIREWALL;
@@ -346,23 +363,32 @@ class RouteSecurityAnalyzer
             return null;
         }
 
-        $labels = array_map(fn (mixed $attribute) => (string) $attribute, $attributes);
+        $labels = array_map(fn (mixed $attribute) => $this->toLabel($attribute), $attributes);
 
         return array_diff($labels, self::PUBLIC_ATTRIBUTES) === [] ? self::REASON_PUBLIC : self::REASON_ROLE_USER;
     }
 
     private function isTrivialAttribute(mixed $attribute): bool
     {
-        if ($attribute instanceof Stringable) {
-            return preg_match(self::TRIVIAL_EXPRESSION_PATTERN, (string) $attribute) === 1;
+        $label = $this->toLabel($attribute);
+
+        return $label === self::ROLE_USER
+            || in_array($label, self::PUBLIC_ATTRIBUTES, true)
+            || str_starts_with($label, self::AUTHENTICATED_PREFIX);
+    }
+
+    private function toLabel(mixed $attribute): string
+    {
+        if (!is_string($attribute) && !$attribute instanceof Stringable) {
+            return '';
         }
 
-        return is_string($attribute)
-            && (
-                $attribute === self::ROLE_USER
-                || in_array($attribute, self::PUBLIC_ATTRIBUTES, true)
-                || str_starts_with($attribute, self::AUTHENTICATED_PREFIX)
-            );
+        $text = (string) $attribute;
+        if (preg_match(self::EXPRESSION_ROLE_PATTERN, $text, $matches) === 1) {
+            return $matches[1];
+        }
+
+        return preg_match(self::EXPRESSION_AUTHENTICATED_PATTERN, $text) === 1 ? self::AUTHENTICATED_LABEL : $text;
     }
 
     /**
@@ -436,7 +462,7 @@ class RouteSecurityAnalyzer
             if ($this->isGate($name, $call, $tokens, $index)) {
                 return true;
             }
-            if ($this->isCalledOnThis($tokens, $index)) {
+            if ($this->isCalledOnThis($tokens, $index) && $this->startsStatement($tokens, $index)) {
                 $helpers[] = $name;
             }
         }
@@ -460,11 +486,11 @@ class RouteSecurityAnalyzer
         }
 
         if (in_array($name, self::DENY_CALLS, true)) {
-            return true;
+            return $this->startsStatement($tokens, $index);
         }
 
         return $name === self::IS_GRANTED_CALL
-            && $this->isNegated($tokens, $index)
+            && $this->isNegatedIfCondition($tokens, $index)
             && preg_match(self::NEGATED_GUARD_PATTERN, $call) === 1;
     }
 
@@ -511,18 +537,55 @@ class RouteSecurityAnalyzer
     }
 
     /**
+     * A call only runs for sure when it opens a statement: not after a condition, an operator or an arrow.
+     *
      * @param array<int, mixed> $tokens
      */
-    private function isNegated(array $tokens, int $index): bool
+    private function startsStatement(array $tokens, int $index): bool
     {
-        for ($previous = $index - 1; $previous >= 0; $previous--) {
-            $token = $tokens[$previous];
-            if (!is_array($token) || !in_array($token[0], self::CHAIN_TOKENS, true)) {
-                return $token === '!';
-            }
+        $before = $this->findPreviousSignificant($tokens, $this->findChainStart($tokens, $index));
+
+        return $before !== null && in_array($tokens[$before], self::STATEMENT_END_TOKENS, true);
+    }
+
+    /**
+     * Matches `if (!$this->isGranted(...` at the beginning of a statement.
+     *
+     * @param array<int, mixed> $tokens
+     */
+    private function isNegatedIfCondition(array $tokens, int $index): bool
+    {
+        $negation = $this->findPreviousSignificant($tokens, $this->findChainStart($tokens, $index));
+        $parenthesis = $negation === null ? null : $this->findPreviousSignificant($tokens, $negation);
+        $keyword = $parenthesis === null ? null : $this->findPreviousSignificant($tokens, $parenthesis);
+        if ($negation === null || $keyword === null || $tokens[$negation] !== '!' || $tokens[$parenthesis] !== '(') {
+            return false;
         }
 
-        return false;
+        return is_array($tokens[$keyword])
+            && $tokens[$keyword][0] === T_IF
+            && $this->startsStatement($tokens, $keyword);
+    }
+
+    private function isChainToken(mixed $token): bool
+    {
+        return is_array($token) && in_array($token[0], self::CHAIN_TOKENS, true);
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function findChainStart(array $tokens, int $index): int
+    {
+        $start = $index;
+        while ($start > 0 && $this->isChainToken($tokens[$start - 1])) {
+            $start--;
+        }
+        while (is_array($tokens[$start]) && $tokens[$start][0] === T_WHITESPACE) {
+            $start++;
+        }
+
+        return $start;
     }
 
     /**

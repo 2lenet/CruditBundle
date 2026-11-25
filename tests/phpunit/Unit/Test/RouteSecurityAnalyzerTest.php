@@ -48,6 +48,12 @@ class RouteSecurityAnalyzerTest extends TestCase
                     str_starts_with($path, '/images') => [['ROLE_ADMIN'], null],
                     str_starts_with($path, '/postopen') && $request->isMethod('POST') => [['PUBLIC_ACCESS'], null],
                     str_starts_with($path, '/postopen') => [['ROLE_ADMIN'], null],
+                    str_starts_with($path, '/expr-auth') => [[$this->expression('is_fully_authenticated()')], null],
+                    str_starts_with($path, '/expr-remember') => [[$this->expression('is_remember_me()')], null],
+                    str_starts_with($path, '/expr-public') => [
+                        [$this->expression("is_granted('PUBLIC_ACCESS')")],
+                        null,
+                    ],
                     str_starts_with($path, '/expr-trivial') => [[$this->expression("is_granted('ROLE_USER')")], null],
                     str_starts_with($path, '/expr-admin') => [[$this->expression("is_granted('ROLE_ADMIN')")], null],
                     str_starts_with($path, '/nofirewall') => [null, null],
@@ -121,6 +127,30 @@ class RouteSecurityAnalyzerTest extends TestCase
         ];
         yield 'negated isGranted without denial' => [
             $sample . 'negatedWithoutDenial',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check in a never called arrow function' => [
+            $sample . 'checkInsideNeverCalledArrowFunction',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check in an if without braces' => [
+            $sample . 'checkInIfWithoutBraces',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check behind a short circuit' => [
+            $sample . 'checkBehindShortCircuit',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check behind a ternary' => [
+            $sample . 'checkBehindTernary',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check against a ROLE_USER constant' => [
+            $sample . 'trivialConstantCheck',
+            RouteSecurityAnalyzer::REASON_ROLE_USER,
+        ];
+        yield 'check against an authenticated voter constant' => [
+            $sample . 'trivialVoterConstantCheck',
             RouteSecurityAnalyzer::REASON_ROLE_USER,
         ];
         yield 'check at the top of a try block' => [$sample . 'guardedInsideTry', null];
@@ -242,12 +272,23 @@ class RouteSecurityAnalyzerTest extends TestCase
     {
         $routes = new RouteCollection();
         $routes->add('trivial', $this->routeTo('/expr-trivial/a', $this->sample('unguarded')));
+        $routes->add('auth', $this->routeTo('/expr-auth/a', $this->sample('unguarded')));
+        $routes->add('remember', $this->routeTo('/expr-remember/a', $this->sample('unguarded')));
+        $routes->add('public', $this->routeTo('/expr-public/a', $this->sample('unguarded')));
         $routes->add('real', $this->routeTo('/expr-admin/a', $this->sample('unguarded')));
 
         $violations = $this->buildAnalyzer($routes)->analyze();
 
-        self::assertSame(['trivial'], array_column($violations, 'route'));
-        self::assertSame(RouteSecurityAnalyzer::REASON_ROLE_USER, $violations[0]['reason']);
+        self::assertSame(['trivial', 'auth', 'remember', 'public'], array_column($violations, 'route'));
+        self::assertSame(
+            [
+                RouteSecurityAnalyzer::REASON_ROLE_USER,
+                RouteSecurityAnalyzer::REASON_ROLE_USER,
+                RouteSecurityAnalyzer::REASON_ROLE_USER,
+                RouteSecurityAnalyzer::REASON_PUBLIC,
+            ],
+            array_column($violations, 'reason'),
+        );
     }
 
     public function testExcludedRoutesByGlob(): void
@@ -449,5 +490,24 @@ class RouteSecurityAnalyzerTest extends TestCase
 
         self::assertSame(['app_*', 'app_api_a'], $analyzer->findMatchingPatterns('app_api_a', $patterns));
         self::assertSame([], $analyzer->findMatchingPatterns('other', ['app_*']));
+    }
+
+    public function testSampleParametersOverrideDefaultsAndRequirements(): void
+    {
+        $routes = new RouteCollection();
+        $uuid = ['uuid' => '[0-9a-f-]{36}'];
+        $routes->add('by_uuid', $this->routeOn('/fr/{uuid}', $this->sample('unguarded'), [], $uuid));
+        $routes->add('by_slug', $this->routeOn('/{slug}/x', $this->sample('unguarded')));
+        $analyzer = new RouteSecurityAnalyzer(
+            $routes,
+            $this->buildAccessMap(),
+            null,
+            ['by_uuid' => ['uuid' => '0190a1b2-0000-0000-0000-000000000000'], '*' => ['slug' => 'fr']],
+        );
+
+        $entries = $analyzer->inspect();
+
+        self::assertSame('/fr/0190a1b2-0000-0000-0000-000000000000', $entries[0]['samplePath']);
+        self::assertSame('/fr/x', $entries[1]['samplePath']);
     }
 }

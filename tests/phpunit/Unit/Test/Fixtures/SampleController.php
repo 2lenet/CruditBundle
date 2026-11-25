@@ -4,11 +4,14 @@ namespace phpunit\Unit\Test\Fixtures;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class SampleController extends AbstractController
 {
+    private const string ROLE_USER = 'ROLE_USER';
+
     #[IsGranted('ROLE_ADMIN')]
     public function guardedByAttribute(): Response
     {
@@ -105,6 +108,49 @@ class SampleController extends AbstractController
         return new Response($extra);
     }
 
+    public function checkInsideNeverCalledArrowFunction(): Response
+    {
+        $check = fn () => $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        return new Response(gettype($check));
+    }
+
+    public function checkInIfWithoutBraces(): Response
+    {
+        // phpcs:ignore Generic.ControlStructures.InlineControlStructure -- the point of this fixture
+        if (random_int(0, 1) === 1) $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        return new Response();
+    }
+
+    public function checkBehindShortCircuit(): Response
+    {
+        random_int(0, 1) === 1 && $this->checkAccessAndReturnTrue();
+
+        return new Response();
+    }
+
+    public function checkBehindTernary(): Response
+    {
+        random_int(0, 1) === 1 ? $this->checkAccessAndReturnTrue() : null;
+
+        return new Response();
+    }
+
+    public function trivialConstantCheck(): Response
+    {
+        $this->denyAccessUnlessGranted(self::ROLE_USER);
+
+        return new Response();
+    }
+
+    public function trivialVoterConstantCheck(): Response
+    {
+        $this->denyAccessUnlessGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY);
+
+        return new Response();
+    }
+
     public function conditionalCheck(): Response
     {
         if (random_int(0, 1) === 1) {
@@ -156,6 +202,13 @@ class SampleController extends AbstractController
         $this->loopA();
 
         return new Response();
+    }
+
+    private function checkAccessAndReturnTrue(): bool
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        return true;
     }
 
     private function checkAccess(): void

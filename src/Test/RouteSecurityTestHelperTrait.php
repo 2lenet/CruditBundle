@@ -12,7 +12,10 @@ use Symfony\Component\Security\Http\AccessMapInterface;
  *  - EXCLUDED_ROUTES / EXCLUDED_CONTROLLERS : right check done elsewhere (service, listener...);
  *  - PUBLIC_ROUTES : public on purpose, only excuse a route that really is public;
  *  - ROLE_USER_ROUTES : open to any logged in user, only excuse a route that really is ROLE_USER only;
- *  - ANONYMOUS_EXCLUDED_ROUTES : skipped by the anonymous test only (public in access_control, guarded in code);
+ *  - ANONYMOUS_EXCLUDED_ROUTES : skipped by the anonymous test only (public in access_control, guarded in code,
+ *    or that no sample path can reach);
+ *  - ROUTE_SAMPLE_PARAMETERS : placeholder values by route name glob, for the anonymous test
+ *    (['*' => ['uuid' => '0190...'], 'app_blog_*' => ['slug' => 'hello']]);
  *  - ANONYMOUS_LOGIN_PATTERN : regex a redirect Location must match to count as a login redirect
  *    (default: a path segment starting with login, connect, oauth, sso or auth).
  *
@@ -66,6 +69,7 @@ trait RouteSecurityTestHelperTrait
         $client = static::createClient();
         $client->disableReboot();
 
+        $pathsByRoute = array_column($entries, 'path', 'route');
         $reached = [];
         $untestable = [];
         $usedAnonymousExclusions = [];
@@ -79,9 +83,13 @@ trait RouteSecurityTestHelperTrait
                 $client->request($httpMethod, $entry['samplePath']);
                 $response = $client->getResponse();
 
-                if ($client->getRequest()->attributes->get('_route') !== $entry['route']) {
-                    $untestable[$entry['route']] = $entry['samplePath'];
+                $matchedRoute = $client->getRequest()->attributes->get('_route');
+                if ($matchedRoute !== $entry['route']) {
                     $usedAnonymousExclusions = array_merge($usedAnonymousExclusions, $anonymousPatterns);
+                    $isShadowed = ($pathsByRoute[$matchedRoute] ?? null) === $entry['path'];
+                    if (!$isShadowed && $anonymousPatterns === []) {
+                        $untestable[$entry['route']] = $entry['samplePath'];
+                    }
 
                     continue 2;
                 }
@@ -120,9 +128,7 @@ trait RouteSecurityTestHelperTrait
             . implode("\n- ", $unusedAnonymousExclusions) . $untestableReport,
         );
 
-        if ($untestable !== []) {
-            self::markTestIncomplete(ltrim($untestableReport));
-        }
+        self::assertSame([], $untestable, ltrim($untestableReport));
     }
 
     /**
@@ -140,7 +146,9 @@ trait RouteSecurityTestHelperTrait
         }
 
         return sprintf(
-            "\n\n%d route(s) could not be tested anonymously (the sample path does not resolve to the route):\n%s",
+            "\n\n%d route(s) could not be tested anonymously (the sample path does not resolve to the route)."
+            . " Give the placeholders a value in ROUTE_SAMPLE_PARAMETERS, or list the route in"
+            . " ANONYMOUS_EXCLUDED_ROUTES:\n%s",
             count($untestable),
             implode("\n", $lines),
         );
@@ -160,6 +168,7 @@ trait RouteSecurityTestHelperTrait
             $router->getRouteCollection(),
             $accessMap,
             static fn (Request $request): bool => $firewallMap->getFirewallConfig($request) !== null,
+            $this->readRouteSecurityConstant('ROUTE_SAMPLE_PARAMETERS'),
         );
     }
 
@@ -176,7 +185,7 @@ trait RouteSecurityTestHelperTrait
     }
 
     /**
-     * @return string[]
+     * @return array<mixed>
      */
     private function readRouteSecurityConstant(string $name): array
     {
