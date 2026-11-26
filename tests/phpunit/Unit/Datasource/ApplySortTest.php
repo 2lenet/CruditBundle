@@ -81,7 +81,64 @@ class ApplySortTest extends TestCase
         self::assertSame(['b' => 0, 'a' => 1], $this->positions(['b', 'a']));
     }
 
-    /** @param array<string, int|null> $positions */
+    public function testStringPositionsAreReadAsIntegers(): void
+    {
+        // A bigint hydrated by DBAL 3, a decimal or a getter may return the position as a string.
+        $this->givenItems(['a' => '3', 'b' => '1']);
+
+        $this->datasource()->applySort(['a', 'b'], self::SORT_FIELD);
+
+        self::assertSame(['a' => 1, 'b' => 3], $this->positions(['a', 'b']));
+    }
+
+    public function testShiftedDuplicateSkipsHiddenPositions(): void
+    {
+        $this->givenItems(['a' => 2, 'b' => 2, 'c' => 3]);
+
+        $this->datasource()->applySort(['b', 'a'], self::SORT_FIELD);
+
+        self::assertSame(['b' => 2, 'a' => 4, 'c' => 3], $this->positions(['b', 'a', 'c']));
+    }
+
+    public function testShiftedNullPositionSkipsHiddenPositions(): void
+    {
+        $this->givenItems(['a' => 3, 'b' => null, 'c' => 7, 'd' => 8]);
+
+        $this->datasource()->applySort(['b', 'c', 'a'], self::SORT_FIELD);
+
+        self::assertSame(['b' => 3, 'c' => 7, 'a' => 9, 'd' => 8], $this->positions(['b', 'c', 'a', 'd']));
+    }
+
+    public function testNullPositionsSkipHiddenPositions(): void
+    {
+        // Freshly created rows without a position, reordered in a filtered list.
+        $this->givenItems(['x' => 0, 'y' => 1, 'a' => null, 'b' => null]);
+
+        $this->datasource()->applySort(['b', 'a'], self::SORT_FIELD);
+
+        self::assertSame(['b' => 2, 'a' => 3, 'x' => 0, 'y' => 1], $this->positions(['b', 'a', 'x', 'y']));
+    }
+
+    public function testHiddenPositionsAreNotLoadedWhenNoShiftIsNeeded(): void
+    {
+        $this->givenItems(['a' => 0, 'b' => 1, 'c' => 2]);
+        $datasource = $this->datasource();
+
+        $datasource->applySort(['b', 'a'], self::SORT_FIELD);
+
+        self::assertSame(0, $datasource->hiddenPositionsLoads);
+    }
+
+    public function testDuplicatedIdIsSortedOnce(): void
+    {
+        $this->givenItems(['a' => 0, 'b' => 1]);
+
+        $this->datasource()->applySort(['b', 'a', 'b'], self::SORT_FIELD);
+
+        self::assertSame(['b' => 0, 'a' => 1], $this->positions(['b', 'a']));
+    }
+
+    /** @param array<string, int|string|null> $positions */
     private function givenItems(array $positions): void
     {
         foreach ($positions as $id => $position) {
@@ -106,6 +163,7 @@ class ApplySortTest extends TestCase
         return $positions;
     }
 
+    /** @return AbstractDoctrineDatasource&object{hiddenPositionsLoads: int} */
     private function datasource(): AbstractDoctrineDatasource
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -116,6 +174,8 @@ class ApplySortTest extends TestCase
         $filterState = $this->createMock(FilterState::class);
 
         return new class ($entityManager, $filterState, $items) extends AbstractDoctrineDatasource {
+            public int $hiddenPositionsLoads = 0;
+
             /** @param array<string, \stdClass> $items */
             public function __construct(
                 EntityManagerInterface $entityManager,
@@ -133,6 +193,20 @@ class ApplySortTest extends TestCase
             public function get($id): ?object
             {
                 return $this->items[$id] ?? null;
+            }
+
+            protected function findHiddenPositions(array $ids, string $sortField): array
+            {
+                ++$this->hiddenPositionsLoads;
+
+                $hiddenPositions = [];
+                foreach ($this->items as $id => $item) {
+                    if (!in_array($id, $ids, true) && $item->$sortField !== null) {
+                        $hiddenPositions[] = (int) $item->$sortField;
+                    }
+                }
+
+                return $hiddenPositions;
             }
         };
     }

@@ -646,12 +646,14 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
 
     /**
      * The list may be filtered or paginated: only the displayed rows are received. They swap the positions
-     * they already held among themselves, so the hidden rows keep theirs and no duplicate is introduced.
+     * they already held among themselves, so the hidden rows keep theirs. Empty or duplicated positions are
+     * shifted onto values that no hidden row holds.
      */
     public function applySort(array $ids, string $sortField): void
     {
         $accessor = PropertyAccess::createPropertyAccessor();
 
+        $ids = array_values(array_unique($ids));
         $entities = [];
         foreach ($ids as $id) {
             $entity = $this->get($id);
@@ -661,11 +663,19 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         }
 
         $currentPositions = array_map(
-            static fn (object $entity): ?int => $accessor->getValue($entity, $sortField),
+            static function (object $entity) use ($accessor, $sortField): ?int {
+                $position = $accessor->getValue($entity, $sortField);
+
+                return $position === null ? null : (int)$position;
+            },
             $entities
         );
 
-        foreach ($this->distributePositions($currentPositions) as $index => $position) {
+        $hiddenPositions = self::hasEmptyOrDuplicatedPositions($currentPositions)
+            ? $this->findHiddenPositions($ids, $sortField)
+            : [];
+
+        foreach (self::distributePositions($currentPositions, $hiddenPositions) as $index => $position) {
             $accessor->setValue($entities[$index], $sortField, $position);
         }
 
@@ -673,14 +683,49 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
     }
 
     /**
-     * Sorted, strictly increasing positions taken from the current ones. Empty positions come last and
-     * duplicates are shifted, so that every row ends up with a distinct value.
+     * Positions held by the rows that are not displayed, i.e. not in $ids.
      *
-     * @param array<int, int|null> $currentPositions
+     * @param array<int, int|string> $ids
      *
      * @return int[]
      */
-    private function distributePositions(array $currentPositions): array
+    protected function findHiddenPositions(array $ids, string $sortField): array
+    {
+        /** @var EntityRepository $repository */
+        $repository = $this->getRepository();
+        $field = 'root.' . $sortField;
+
+        $rows = $repository->createQueryBuilder('root')
+            ->select('DISTINCT ' . $field . ' AS position')
+            ->where('root.id NOT IN (:ids)')
+            ->andWhere($field . ' IS NOT NULL')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map('intval', array_column($rows, 'position'));
+    }
+
+    /** @param array<int, int|null> $currentPositions */
+    private static function hasEmptyOrDuplicatedPositions(array $currentPositions): bool
+    {
+        $knownPositions = array_filter($currentPositions, static fn (?int $position): bool => $position !== null);
+
+        return count($knownPositions) < count($currentPositions)
+            || count(array_unique($knownPositions)) < count($knownPositions);
+    }
+
+    /**
+     * Sorted, strictly increasing positions taken from the current ones. Empty positions come last and
+     * duplicates are shifted onto the next value that no hidden row holds, so that every row ends up with
+     * a distinct value.
+     *
+     * @param array<int, int|null> $currentPositions
+     * @param int[] $hiddenPositions
+     *
+     * @return int[]
+     */
+    private static function distributePositions(array $currentPositions, array $hiddenPositions): array
     {
         $knownPositions = array_values(array_filter(
             $currentPositions,
@@ -688,14 +733,17 @@ abstract class AbstractDoctrineDatasource implements DatasourceInterface, Groupe
         ));
         sort($knownPositions);
 
+        $occupiedPositions = array_flip($hiddenPositions);
         $positions = [];
         $previousPosition = null;
         foreach (array_keys($currentPositions) as $index) {
             $position = $knownPositions[$index] ?? null;
-            if ($previousPosition !== null && ($position === null || $position <= $previousPosition)) {
-                $position = $previousPosition + 1;
+            if ($position === null || ($previousPosition !== null && $position <= $previousPosition)) {
+                $position = $previousPosition === null ? 0 : $previousPosition + 1;
+                while (isset($occupiedPositions[$position])) {
+                    ++$position;
+                }
             }
-            $position ??= 0;
             $positions[] = $position;
             $previousPosition = $position;
         }
