@@ -25,9 +25,6 @@ jobs:
                     version: 2
                     args: --profile --ignore-platform-reqs
 
-            -   name: "Generate PDF fonts"
-                run: php vendor/tecnickcom/tc-lib-pdf-font/util/build_fonts.php
-
             -   name: "Run PHPUnit"
                 uses: php-actions/phpunit@v4
                 with:

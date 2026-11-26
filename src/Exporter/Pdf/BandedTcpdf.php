@@ -8,7 +8,6 @@ class BandedTcpdf extends Tcpdf
 {
     private const SIDES = ['left' => 'L', 'center' => 'C', 'right' => 'R'];
     private const DEFAULT_SIZE = 'medium';
-    private const BAND_OFFSET = 8.0;
     private const BAND_HEIGHT = 6.0;
 
     // CSS font-size keywords (the format the crud configs already use), converted to points.
@@ -25,10 +24,18 @@ class BandedTcpdf extends Tcpdf
     /**
      * @param array<string, string> $headerFooter
      */
-    public function __construct(private readonly array $headerFooter, bool $compress = true)
-    {
+    public function __construct(
+        private readonly array $headerFooter,
+        private readonly string $fontFamily = 'helvetica',
+        bool $compress = true,
+    ) {
         parent::__construct(compress: $compress);
         $this->enableDefaultPageContent(false);
+    }
+
+    public static function getBandY(float $margin): float
+    {
+        return max(0.0, ($margin - self::BAND_HEIGHT) / 2);
     }
 
     // The total of pages is only known once the body is rendered, so the bands are added last.
@@ -41,9 +48,17 @@ class BandedTcpdf extends Tcpdf
         $pageCount = count($this->page->getPages());
         foreach (range(0, $pageCount - 1) as $pageId) {
             $page = $this->page->getPage($pageId);
-            $this->page->addContent($this->getBand('header', $pageId, $pageCount, self::BAND_OFFSET), $pageId);
             $this->page->addContent(
-                $this->getBand('footer', $pageId, $pageCount, $page['height'] - self::BAND_OFFSET - self::BAND_HEIGHT),
+                $this->getBand('header', $pageId, $pageCount, self::getBandY($page['margin']['PT'])),
+                $pageId
+            );
+            $this->page->addContent(
+                $this->getBand(
+                    'footer',
+                    $pageId,
+                    $pageCount,
+                    $page['height'] - $page['margin']['PB'] + self::getBandY($page['margin']['PB'])
+                ),
                 $pageId
             );
         }
@@ -61,7 +76,7 @@ class BandedTcpdf extends Tcpdf
             if ($text !== '') {
                 $size = self::SIZES[$this->headerFooter['size-' . $band . '-' . $side] ?? self::DEFAULT_SIZE]
                     ?? self::SIZES[self::DEFAULT_SIZE];
-                $font = $this->font->insert($this->pon, 'helvetica', '', $size);
+                $font = $this->font->insert($this->pon, $this->fontFamily, '', $size);
                 $text = str_replace(
                     [PdfWriter::PAGE_NUMBER_PLACEHOLDER, PdfWriter::PAGE_COUNT_PLACEHOLDER],
                     [(string)($pageId + 1), (string)$pageCount],

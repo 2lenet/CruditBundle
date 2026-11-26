@@ -118,20 +118,16 @@ class PdfExporter extends AbstractExporter
 
     protected function formatField(FieldView $field, string $value, array $pdfParams): string
     {
+        if ($this->isBoolean($field)) {
+            return $this->formatBoolean($field);
+        }
+
         if ($value === '') {
             return '';
         }
 
         if ($this->isCurrency($field->getField())) {
             return $this->formatCurrency($field);
-        }
-
-        if ($this->isBoolean($field)) {
-            return $this->translator->trans(
-                $value ? 'crudit.boolean.yes' : 'crudit.boolean.no',
-                [],
-                'LleCruditBundle'
-            );
         }
 
         if ($this->isNumeric($field) && is_numeric($value)) {
@@ -144,6 +140,20 @@ class PdfExporter extends AbstractExporter
         }
 
         return $value;
+    }
+
+    protected function formatBoolean(FieldView $field): string
+    {
+        $rawValue = $field->getRawValue();
+        if ($rawValue === null || $rawValue === '') {
+            return '';
+        }
+
+        return $this->translator->trans(
+            $rawValue ? 'crudit.boolean.yes' : 'crudit.boolean.no',
+            [],
+            'LleCruditBundle'
+        );
     }
 
     protected function formatCurrency(FieldView $field): string

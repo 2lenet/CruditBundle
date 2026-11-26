@@ -2,6 +2,7 @@
 
 namespace phpunit\Unit\Exporter;
 
+use Lle\CruditBundle\Exporter\Pdf\BandedTcpdf;
 use Lle\CruditBundle\Exporter\Pdf\PdfWriter;
 use PHPUnit\Framework\TestCase;
 
@@ -117,6 +118,50 @@ class PdfExporterTest extends TestCase
 
         self::assertGreaterThan($landscape[1], $portrait[1]);
         self::assertLessThan($landscape[0], $portrait[0]);
+    }
+
+    public function testBandIsCenteredInTheMargin(): void
+    {
+        self::assertEqualsWithDelta(7.0, BandedTcpdf::getBandY(20.0), 0.001);
+        self::assertSame(0.0, BandedTcpdf::getBandY(2.0));
+    }
+
+    public function testLayoutKeepsEveryHeaderWordWhole(): void
+    {
+        $layout = (new PdfWriter([]))->getLayout(['Id', 'Intitulécolonne'], [['1', 'x']], null, 200.0);
+
+        self::assertGreaterThan($layout['widths'][0], $layout['widths'][1]);
+        self::assertEqualsWithDelta(100.0, array_sum($layout['widths']), 0.1);
+    }
+
+    public function testLayoutCapsAVeryLongColumn(): void
+    {
+        $layout = (new PdfWriter([]))->getLayout(
+            ['A', 'Url'],
+            [['x', str_repeat('u', 500)]],
+            null,
+            200.0
+        );
+
+        self::assertLessThan(95.0, $layout['widths'][1]);
+    }
+
+    public function testLayoutShrinksTheFontOfAWideTable(): void
+    {
+        $headers = array_map(static fn(int $column): string => 'Intitulé ' . $column, range(1, 15));
+        $wide = (new PdfWriter([]))->getLayout($headers, [array_fill(0, 15, 'valeur assez longue')], null, 190.0);
+        $narrow = (new PdfWriter([]))->getLayout(['A', 'B'], [['x', 'y']], null, 190.0);
+
+        self::assertLessThan($narrow['fontSize'], $wide['fontSize']);
+        self::assertGreaterThanOrEqual(5.0, $wide['fontSize']);
+    }
+
+    public function testDataRowsHaveNoZebraOnTheFirstRow(): void
+    {
+        $zebra = '0.909804 0.909804 0.909804 rg';
+
+        self::assertSame(0, substr_count($this->generatePdf(1, [], false), $zebra));
+        self::assertSame(2, substr_count($this->generatePdf(2, [], false), $zebra));
     }
 
     private function generatePdf(

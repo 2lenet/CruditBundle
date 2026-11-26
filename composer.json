@@ -46,11 +46,11 @@
         "symfony/translation": "^7.0 || ^8.0",
         "symfony/workflow": "^7.0 || ^8.0",
         "symfony/yaml": "^7.0 || ^8.0",
+        "tecnickcom/tc-lib-pdf": "^8.85",
         "twig/markdown-extra": "^3.3",
         "twig/extra-bundle": "^3.3",
         "twig/intl-extra": "^3.3",
-        "vich/uploader-bundle": "^1.19 || ^2.0",
-        "tecnickcom/tc-lib-pdf": "^8"
+        "vich/uploader-bundle": "^1.19 || ^2.0"
     },
     "require-dev": {
         "ergebnis/phpstan-rules": "^2.1",
