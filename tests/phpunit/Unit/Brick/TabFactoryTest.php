@@ -55,7 +55,6 @@ class TabFactoryTest extends TestCase
         $config = TabConfig::new()->add('tab.request', TemplateConfig::new(['template' => 'request.html.twig']), displayIfByRequest: fn (?Request $request): bool => $request?->query->has('all') ?? false);
 
         self::assertSame([], $this->tabs($config, [], (object) [], $built));
-        $config = TabConfig::new()->add('tab.request', TemplateConfig::new(['template' => 'request.html.twig']), displayIfByRequest: fn (?Request $request): bool => $request?->query->has('all') ?? false);
         self::assertCount(1, $this->tabs($config, [], (object) [], $built, ['all' => '1']));
     }
 
