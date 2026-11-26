@@ -143,7 +143,7 @@ class PdfExporterTest extends TestCase
     {
         return preg_replace_callback(
             '/<([0-9A-Fa-f]+)>\s*Tj/',
-            static fn(array $match): string => '(' . mb_convert_encoding(hex2bin($match[1]), 'UTF-8', 'UTF-16BE') . ') Tj',
+            static fn(array $match): string => '(' . mb_convert_encoding((string)hex2bin($match[1]), 'UTF-8', 'UTF-16BE') . ') Tj',
             $pdf
         ) ?? $pdf;
     }
@@ -151,7 +151,10 @@ class PdfExporterTest extends TestCase
     /** @return array{float, float} */
     private function mediaBox(string $pdf): array
     {
-        preg_match('/\/MediaBox\s*\[\s*0(?:\.0+)?\s+0(?:\.0+)?\s+([\d.]+)\s+([\d.]+)\s*\]/', $pdf, $match);
+        self::assertSame(
+            1,
+            preg_match('/\/MediaBox\s*\[\s*0(?:\.0+)?\s+0(?:\.0+)?\s+([\d.]+)\s+([\d.]+)\s*\]/', $pdf, $match)
+        );
 
         return [(float)$match[1], (float)$match[2]];
     }
