@@ -1,16 +1,9 @@
 {% if view.role is not defined or not view.role or is_granted(view.role) %}
     <div class="card shadow mb-4">
         <div class="card-header py-1">
+            {#- In a tab, its links keep it in the address (?tab=<id>); its counter: Tab::setCount() (lot 3.3.b) -#}
             {% if tab is defined %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") with { tab: tab } %}
-                <script>
-                    window.addEventListener('load', function () {
-                        var badge = document.getElementById("{{ tab.id }}-badge");
-                        if (!badge.textContent) {
-                            badge.textContent = "{{ view.config.datasource_params.count }}";
-                        }
-                    });
-                </script>
             {% else %}
                 {% include("@LleCrudit/brick/list_items/_pager.html.twig") %}
             {% endif %}
@@ -50,7 +43,7 @@
                                                 {% set merge_params = merge_params|merge({((view.config.name|lower)~'_sort_order'): 'desc'}) %}
                                             {% endif %}
                                             {% set parameters = app.request.query.all()|merge(merge_params) %}
-                                            {% set url = app.request.pathinfo ~ "?" ~ (parameters|url_encode) ~ (tab is defined ? '#' ~ tab.id) %}
+                                            {% set url = app.request.pathinfo ~ "?" ~ ((tab is defined ? parameters|merge({tab: tab.id}) : parameters)|url_encode) %}
                                             {% if field.info is defined and field.info %}
                                                 <i
                                                     class="fas fa-info-circle"

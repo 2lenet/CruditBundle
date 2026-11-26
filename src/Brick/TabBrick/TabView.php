@@ -6,17 +6,20 @@ namespace Lle\CruditBundle\Brick\TabBrick;
 
 use Lle\CruditBundle\Dto\BrickView;
 
+/**
+ * A tab as rendered: its id, its label, its counter and the views of its bricks (only the tabs granted and shown).
+ */
 class TabView
 {
     /** @var BrickView[] */
-    private array $bricks;
-    private string $label;
+    private array $bricks = [];
     private ?string $role = null;
+    private ?int $count = null;
 
-    public function __construct(string $label)
-    {
-        $this->label = $label;
-        $this->bricks = [];
+    public function __construct(
+        private string $label,
+        private string $id,
+    ) {
     }
 
     public function setLabel(string $label): self
@@ -46,7 +49,19 @@ class TabView
 
     public function getId(): string
     {
-        return str_replace('tab.', '', $this->getLabel());
+        return $this->id;
+    }
+
+    public function getCount(): ?int
+    {
+        return $this->count;
+    }
+
+    public function setCount(?int $count): self
+    {
+        $this->count = $count;
+
+        return $this;
     }
 
     public function getRole(): ?string

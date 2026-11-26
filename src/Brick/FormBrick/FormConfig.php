@@ -40,6 +40,9 @@ class FormConfig extends AbstractBrickConfig
     /** Most fields on a line of this form (1 to 4), null: those of the CRUD (`getFormColumns()`) */
     protected ?int $columns = null;
 
+    /** The tab of the record the form is in (set by TabFactory): the redirect to the record comes back to it */
+    private ?string $tab = null;
+
     public static function new(array $options = []): self
     {
         return new self($options);
@@ -193,6 +196,21 @@ class FormConfig extends AbstractBrickConfig
         $this->columns = $columns;
 
         return $this;
+    }
+
+    /**
+     * @internal set by TabFactory
+     */
+    public function setTab(?string $tab): self
+    {
+        $this->tab = $tab;
+
+        return $this;
+    }
+
+    public function getTab(): ?string
+    {
+        return $this->tab;
     }
 
     public function getColumns(): ?int

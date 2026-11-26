@@ -129,14 +129,32 @@ trait TraitCrudController
                     if (str_contains($backUrl, '/' . $entityName . '/')) {
                         return $this->redirectToRoute($this->config->getRootRoute() . '_index');
                     } else {
-                        // If we're in a sublist, add the sublist anchor to the url so that it remains in the correct sublist after deletion
-                        return $this->redirect($backUrl . '#' . $matches[1] . 's');
+                        // From a sublist: back to the record, in the tab it was in (?tab=<id> of the page sent from)
+                        return $this->redirect(self::withTabOf($request, $backUrl));
                     }
                 }
             }
         }
 
         return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+    }
+
+    /**
+     * The address of the record with the tab of the page the request comes from (its Referer, the address kept up to
+     * date by the tabs: ?tab=<id>), when it is the same record.
+     */
+    private static function withTabOf(Request $request, string $backUrl): string
+    {
+        $referer = (string) $request->headers->get('referer');
+        parse_str((string) parse_url($referer, \PHP_URL_QUERY), $query);
+        $tab = $query['tab'] ?? null;
+        if (!\is_string($tab) || '' === $tab || parse_url($referer, \PHP_URL_PATH) !== parse_url($backUrl, \PHP_URL_PATH)) {
+            return $backUrl;
+        }
+        parse_str((string) parse_url($backUrl, \PHP_URL_QUERY), $backQuery);
+        $path = (string) strtok($backUrl, '?#');
+
+        return $path . '?' . http_build_query([...$backQuery, 'tab' => $tab]);
     }
 
     #[Route('/sort', methods: ['POST'])]

@@ -1,71 +1,38 @@
-<div class="nav-tabs-custom">
-    <ul class="nav nav-tabs" role="tablist">
-        {% set active = false %}
-        {% for tab in view.config.tabs %}
-            {% if tab.role == null or is_granted(tab.role) %}
-                <li class="nav-item " role="presentation">
-                    <a
-                        class="nav-link
-                            {% if (
-                            (not active and not tab.role)
-                            or (
-                            not active
-                            and (tab.role and is_granted(tab.role))
-                            and not app.request.query.has('tab')
-                            or app.request.query.get('tab') == tab.id
-                            )
-                            ) %}
-                            {% set active = true %}
-                            active
-                            {% endif %} position-relative"
-                        data-bs-toggle="tab"
-                        href="#{{ tab.id }}"
-                        role="tab" type="button">
-                        <span id="{{ tab.id }}-badge" class="badge rounded-pill bg-primary"></span>
-                        {{ tab.label|trans(domain=view.config.translation_domain) }}
-
-                    </a>
-                </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-
-    <div class="tab-content">
-        {% set active = false %}
-        {% for tab in view.config.tabs %}
-            {% if tab.role == null or is_granted(tab.role) %}
-                <div
-                    id="{{ tab.id }}"
-                    role="tabpanel"
-                    class="tab-pane fade
-                        {% if (
-                        (not active and not tab.role)
-                        or (
-                        not active
-                        and (tab.role and is_granted(tab.role))
-                        and not app.request.query.has('tab')
-                        or app.request.query.get('tab') == tab.id
-                        )
-                        ) %}
-                        {% set active = true %}
-                            show active
-                        {% endif %}">
-                    {% for view in tab.views %}
-                        {% set resource = null %}
-                        {% if view.data.resource.resource is defined and view.data.resource.resource %}
-                            {% set resource = view.data.resource.resource %}
-                        {% elseif view.data.entity is defined and view.data.entity %}
-                            {% set resource = view.data.entity %}
-                        {% elseif view.data.resource is defined and view.data.resource %}
-                            {% set resource = view.data.resource %}
-                        {% endif %}
-
-                        {% if view.isDisplayed(resource) and view.isDisplayedByRequest(app.request) %}
-                            {% include view.indexTemplate with { 'view': view, 'tab': tab } only %}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-</div>
+{#
+ # The tabs of a record (TabBrick, lot 3.3.b), under its sections: the component Tabs of CruditUiBundle (ARIA pattern,
+ # arrows, Home, End; they wrap on a phone), under a hidden heading "Related information" (to reach them by the headings;
+ # the section has no name: it would be read a third time, after the heading and the list of tabs). Only the tabs
+ # granted and shown are in view.config.tabs (TabFactory). The tab is in the address, ?tab=<id>: read by the server,
+ # kept by the controller; the panels are given as values (content), the list of tabs comes from the configuration.
+ #}
+{%- set name = 'crudit.show.tabs'|trans(domain: 'LleCruditBundle') -%}
+{%- set tabs = [] -%}
+{%- for tab in view.config.tabs -%}
+    {%- set content -%}
+        {%- for brick_view in tab.views -%}
+            {%- set resource = null -%}
+            {%- if brick_view.data.resource.resource is defined and brick_view.data.resource.resource -%}
+                {%- set resource = brick_view.data.resource.resource -%}
+            {%- elseif brick_view.data.entity is defined and brick_view.data.entity -%}
+                {%- set resource = brick_view.data.entity -%}
+            {%- elseif brick_view.data.resource is defined and brick_view.data.resource -%}
+                {%- set resource = brick_view.data.resource -%}
+            {%- endif -%}
+            {%- if brick_view.isDisplayed(resource) and brick_view.isDisplayedByRequest(app.request) -%}
+                {{- include(brick_view.indexTemplate, {view: brick_view, tab: tab}, with_context: false) -}}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endset -%}
+    {%- set tabs = tabs|merge([{
+        id: tab.id,
+        label: tab.label|trans(domain: view.config.translation_domain),
+        count: tab.count,
+        content: content,
+    }]) -%}
+{%- endfor -%}
+{%- if tabs is not empty -%}
+    <section class="crudit-show-tabs">
+        <h2 class="crudit-ui-visually-hidden">{{ name }}</h2>
+        <twig:LleCruditUi:Tabs id="{{ view.id ~ '-tabs' }}" label="{{ name }}" urlParam="tab" :tabs="tabs"/>
+    </section>
+{%- endif -%}

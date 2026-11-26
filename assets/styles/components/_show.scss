@@ -163,3 +163,8 @@
         grid-column: span 3;
     }
 }
+
+// The tabs of a record, under its sections (TabBrick, lot 3.3.b): the component Tabs of CruditUiBundle
+.crudit-show-tabs {
+    margin-block-start: var(--space-4);
+}

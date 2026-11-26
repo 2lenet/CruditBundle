@@ -10,6 +10,7 @@ use Lle\CruditBundle\Brick\HistoryBrick\HistoryConfig;
 use Lle\CruditBundle\Brick\LinksBrick\LinksConfig;
 use Lle\CruditBundle\Brick\ListBrick\ListConfig;
 use Lle\CruditBundle\Brick\ShowBrick\ShowConfig;
+use Lle\CruditBundle\Brick\TabBrick\Tab;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
@@ -305,23 +306,22 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         if ($tabs) {
             $tabConf = TabConfig::new();
 
-            // additional tabs
-            foreach ($tabs as $label => $bricks) {
-                if (!is_array($bricks)) {
-                    $bricks = [$bricks];
-                }
+            // additional tabs: a brick, a list of bricks, or a Tab (its id, its counter…). For a Tab, its label gives
+            // its roles as its id: the key is only an index.
+            foreach ($tabs as $key => $bricks) {
+                $tab = $bricks instanceof Tab ? $bricks : Tab::new((string) $key, is_array($bricks) ? $bricks : [$bricks]);
+                $label = $tab->getLabel();
 
                 if ($this->mustGenerateDefaultRole()) {
-                    foreach ($bricks as $brick) {
+                    foreach ($tab->getBricks() as $brick) {
                         if (!$brick->getRole()) {
                             $brick->setRole($this->getRoleBrick($brick, $label));
                         }
                     }
-
-                    $tabConf->adds($label, $bricks, $this->getRoleTab($label));
-                } else {
-                    $tabConf->adds($label, $bricks);
+                    $tab->setRole($tab->getRole() ?? $this->getRoleTab($label));
                 }
+
+                $tabConf->addTab($tab);
             }
 
             return $tabConf;

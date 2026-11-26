@@ -9,8 +9,13 @@ use App\Entity\Client;
 use App\Enum\Priority;
 use App\Form\ClientBatchType;
 use App\Form\ClientEditType;
+use App\Form\ClientNotesType;
 use App\Form\ClientType;
+use App\Security\AllowAllVoter;
 use Lle\CruditBundle\Brick\FormBrick\FormConfig;
+use Lle\CruditBundle\Brick\SublistBrick\SublistConfig;
+use Lle\CruditBundle\Brick\TabBrick\Tab;
+use Lle\CruditBundle\Brick\TemplateBrick\TemplateConfig;
 use Lle\CruditBundle\Contracts\CrudConfigInterface;
 use Lle\CruditBundle\Crud\AbstractCrudConfig;
 use Lle\CruditBundle\Dto\Action\DropdownAction;
@@ -172,6 +177,25 @@ class ClientCrudConfig extends AbstractCrudConfig
         }
 
         return $bricks;
+    }
+
+    /**
+     * The tabs of the record (lot 3.3.b): a free content with a counter, a form (back to its tab once saved), a
+     * sublist (the clients it referred: its pager and its sorting keep the tab), a tab with a role nobody has
+     * (AllowAllVoter::NOBODY: not rendered).
+     */
+    public function getTabs(): array
+    {
+        return [
+            'tab.tags' => Tab::new('tab.tags', [TemplateConfig::new(['template' => 'client/_tab_tags.html.twig'])])
+                ->setCount(fn (Client $client): int => \count($client->getTags() ?? [])),
+            'tab.notes' => FormConfig::new()
+                ->setForm(ClientNotesType::class)
+                ->setSuccessRedirectPath($this->getPath(CrudConfigInterface::SHOW)),
+            'tab.referred' => SublistConfig::new('referrer', $this)->setFields([Field::new('name'), Field::new('email')]),
+            'tab.accounting' => Tab::new('tab.accounting', [TemplateConfig::new(['template' => 'client/_tab_accounting.html.twig'])])
+                ->setRole(AllowAllVoter::NOBODY),
+        ];
     }
 
     public function getRootRoute(): string

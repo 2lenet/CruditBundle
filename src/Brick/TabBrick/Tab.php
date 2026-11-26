@@ -7,12 +7,22 @@ namespace Lle\CruditBundle\Brick\TabBrick;
 use Lle\CruditBundle\Contracts\BrickConfigInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * A tab of a record (TabConfig): its label, its bricks, its role (a tab without the role is not rendered), a condition,
+ * its id (in the address, ?tab=<id>: given by TabConfig from the label when not set) and a counter after its label,
+ * computed on the record ("Parts 3").
+ */
 class Tab
 {
     /** @var BrickConfigInterface[] */
     private array $bricks;
 
     private string $label;
+
+    private ?string $id = null;
+
+    /** @var callable|null fn (object $resource): ?int */
+    private $count = null;
 
     private ?string $role = null;
 
@@ -56,6 +66,40 @@ class Tab
     public function getBricks(): array
     {
         return $this->bricks;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * The id of the tab in the address (?tab=<id>) and in the ids of the page: letters, digits, _ and -.
+     */
+    public function setId(?string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * A counter after the label, computed on the record: fn (object $resource): ?int (null: no counter).
+     */
+    public function setCount(?callable $count): self
+    {
+        $this->count = $count;
+
+        return $this;
+    }
+
+    public function getCount(?object $resource): ?int
+    {
+        if (null === $this->count || null === $resource) {
+            return null;
+        }
+
+        return ($this->count)($resource);
     }
 
     public function getRole(): ?string

@@ -1,0 +1,9 @@
+{#- A tab with a free content (TemplateConfig), its counter given by Tab::setCount() (lot 3.3.b) -#}
+{%- set tags = resource.resource.tags ?? [] -%}
+{%- if tags is empty -%}
+    <p>{{ 'client.tags.none'|trans }}</p>
+{%- else -%}
+    <ul class="client-tags">
+        {%- for tag in tags %}<li>{{ tag is iterable ? tag|json_encode : tag }}</li>{% endfor -%}
+    </ul>
+{%- endif -%}
