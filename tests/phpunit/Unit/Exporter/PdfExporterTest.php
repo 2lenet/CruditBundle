@@ -2,6 +2,7 @@
 
 namespace phpunit\Unit\Exporter;
 
+use Lle\CruditBundle\Exception\ExporterException;
 use Lle\CruditBundle\Exporter\Pdf\BandedTcpdf;
 use Lle\CruditBundle\Exporter\Pdf\PdfWriter;
 use PHPUnit\Framework\TestCase;
@@ -61,6 +62,14 @@ class PdfExporterTest extends TestCase
             'html' => ['<b>R&D</b>'],
             'percent' => ['100% done'],
         ];
+    }
+
+    public function testMissingFontRaisesExplicitException(): void
+    {
+        $this->expectException(ExporterException::class);
+        $this->expectExceptionMessage('K_PATH_FONTS');
+
+        (new PdfWriter(['font' => 'nosuchfont']))->write(['A'], [['1']], null, ['left']);
     }
 
     public function testNoBlankFirstPage(): void

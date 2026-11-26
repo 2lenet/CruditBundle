@@ -2,6 +2,7 @@
 
 namespace Lle\CruditBundle\Exporter\Pdf;
 
+use Lle\CruditBundle\Exception\ExporterException;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
 class PdfWriter
@@ -42,9 +43,9 @@ class PdfWriter
      */
     public function write(array $headers, array $rows, ?array $totals, array $alignments): string
     {
-        $this->defineFontPath();
-
         $font = (string)($this->params['font'] ?? self::DEFAULT_FONT);
+        $this->defineFontPath();
+        $this->assertFontAvailable($font);
         $pdf = new BandedTcpdf($this->params['header-footer'] ?? [], $font, $this->compress);
         $pdf->setTitle((string)($this->params['title'] ?? ''));
 
@@ -143,6 +144,27 @@ class PdfWriter
         if (!defined('K_PATH_FONTS')) {
             define('K_PATH_FONTS', dirname(__DIR__, 2) . '/Resources/fonts');
         }
+    }
+
+    // K_PATH_FONTS is a process-wide constant that the classic TCPDF library also defines, with
+    // its own font format: whichever loads first wins, so fail with a clear message here.
+    private function assertFontAvailable(string $font): void
+    {
+        $directory = (string)constant('K_PATH_FONTS');
+        $file = strtolower($font) . '.json';
+        $candidates = [$directory . '/' . $file, ...(glob($directory . '/*/' . $file) ?: [])];
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return;
+            }
+        }
+
+        throw new ExporterException(sprintf(
+            'PDF font "%s" not found: K_PATH_FONTS is already defined as "%s" (probably by tecnickcom/tcpdf) and contains no %s.',
+            $font,
+            $directory,
+            $file
+        ));
     }
 
     /**
