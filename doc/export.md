@@ -168,6 +168,11 @@ Helvetica only covers the Western European characters (WinAnsi): accents and `â‚
 `K_PATH_FONTS` to the directory holding it before the first export, and select it with the `font` key of the
 PDF params (`$params['font'] = 'dejavusans';`).
 
+`K_PATH_FONTS` is a process-wide constant, also defined by the classic `tecnickcom/tcpdf` library with its own
+font format. If the application uses both, define `K_PATH_FONTS` yourself (to a directory containing the fonts
+Crudit needs) before either is loaded; otherwise the first one loaded wins and the other breaks. Crudit raises an
+`ExporterException` when the constant points to a directory without the requested font.
+
 #### Layout and memory
 
 The columns are sized from their content: each one is as wide as its longest value (capped at 40 characters, so a

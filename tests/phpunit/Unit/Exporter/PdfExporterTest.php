@@ -67,7 +67,7 @@ class PdfExporterTest extends TestCase
     public function testMissingFontRaisesExplicitException(): void
     {
         $this->expectException(ExporterException::class);
-        $this->expectExceptionMessage('K_PATH_FONTS');
+        $this->expectExceptionMessage('not shipped with the bundle');
 
         (new PdfWriter(['font' => 'nosuchfont']))->write(['A'], [['1']], null, ['left']);
     }

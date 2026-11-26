@@ -142,21 +142,33 @@ class PdfWriter
     private function defineFontPath(): void
     {
         if (!defined('K_PATH_FONTS')) {
-            define('K_PATH_FONTS', dirname(__DIR__, 2) . '/Resources/fonts');
+            define('K_PATH_FONTS', self::bundleFontPath());
         }
+    }
+
+    private static function bundleFontPath(): string
+    {
+        return dirname(__DIR__, 2) . '/Resources/fonts';
     }
 
     // K_PATH_FONTS is a process-wide constant that the classic TCPDF library also defines, with
     // its own font format: whichever loads first wins, so fail with a clear message here.
     private function assertFontAvailable(string $font): void
     {
-        $directory = (string)constant('K_PATH_FONTS');
+        $directory = rtrim((string)constant('K_PATH_FONTS'), '/\\');
         $file = strtolower($font) . '.json';
         $candidates = [$directory . '/' . $file, ...(glob($directory . '/*/' . $file) ?: [])];
         foreach ($candidates as $candidate) {
             if (is_file($candidate)) {
                 return;
             }
+        }
+
+        if ($directory === rtrim(self::bundleFontPath(), '/\\')) {
+            throw new ExporterException(sprintf(
+                'PDF font "%s" is not shipped with the bundle (only Helvetica is): generate it and define K_PATH_FONTS before the first export, see doc/export.md.',
+                $font
+            ));
         }
 
         throw new ExporterException(sprintf(
