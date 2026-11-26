@@ -148,7 +148,39 @@ The default values are:
 ];
 ```
 
-The PDF is rendered with [Dompdf](https://github.com/dompdf/dompdf). In the header and footer values,
-`{PAGENO}` is replaced by the current page number and `{nbpg}` by the total number of pages.
+The PDF is rendered with [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) (the successor of TCPDF),
+directly from the exported rows: PhpSpreadsheet is not involved. In the header and footer values,
+`{PAGENO}` is replaced by the current page number and `{nbpg}` by the total number of pages. The values are
+written as plain text, and the `size-*` keys accept the CSS keywords `xx-small` to `xx-large`.
 
-To customize the values, check the [PhpSpreadsheet documentation](https://phpspreadsheet.readthedocs.io/en/latest/),
+`paper_size` (PhpSpreadsheet `PageSetup::PAPERSIZE_*` constants: A3, A4, A5, Letter and Legal are supported),
+`orientation` and the `margin-*` keys (in inches) keep their meaning.
+
+#### Fonts
+
+tc-lib-pdf needs its fonts to be generated once. Add the generation to the `composer.json` of the application:
+
+```json
+{
+    "scripts": {
+        "tc-lib-pdf-fonts": [
+            "@php vendor/tecnickcom/tc-lib-pdf-font/util/build_fonts.php"
+        ],
+        "post-install-cmd": ["@tc-lib-pdf-fonts"],
+        "post-update-cmd": ["@tc-lib-pdf-fonts"]
+    }
+}
+```
+
+The fonts are written to `vendor/tecnickcom/tc-lib-pdf-font/target/fonts` (about 40 MB, a few seconds). To keep
+them elsewhere, define `K_PATH_FONTS` before the first export. Without fonts the export throws an
+`ExporterException` naming this command.
+
+### Upgrade note: PdfExporter rewritten on tc-lib-pdf
+
+`mpdf/mpdf` (GPL) and `dompdf/dompdf` are no longer dependencies of the bundle; PDFs are rendered with
+`tecnickcom/tc-lib-pdf` (LGPL). An application that uses mPDF directly must require it itself.
+`PdfExporter::getHeaderAndFooter()`, `pageSetup()`, `getNumberDecimalFormat()` and the
+`setEditHtmlCallback()` injection no longer exist: header and footer values are passed to
+`Lle\CruditBundle\Exporter\Pdf\PdfWriter` and written as plain text, so HTML in those values is no longer
+interpreted. The font is Helvetica instead of Arial, so exported PDFs look slightly different.

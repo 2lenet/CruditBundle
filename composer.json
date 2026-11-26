@@ -25,7 +25,6 @@
         "doctrine/doctrine-bundle": "^2.0 || ^3.0",
         "doctrine/orm": "^2.6,>=2.6.3 || ^3.0",
         "doctrine/persistence": "^2.0 || ^3.0 || ^4.0",
-        "dompdf/dompdf": "^3.0",
         "ezyang/htmlpurifier": "^4.14",
         "friendsofsymfony/ckeditor-bundle": "^2.7",
         "friendsofsymfony/jsrouting-bundle": "^3.0",
@@ -50,7 +49,8 @@
         "twig/markdown-extra": "^3.3",
         "twig/extra-bundle": "^3.3",
         "twig/intl-extra": "^3.3",
-        "vich/uploader-bundle": "^1.19 || ^2.0"
+        "vich/uploader-bundle": "^1.19 || ^2.0",
+        "tecnickcom/tc-lib-pdf": "^8"
     },
     "require-dev": {
         "ergebnis/phpstan-rules": "^2.1",

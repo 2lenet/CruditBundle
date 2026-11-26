@@ -2,12 +2,8 @@
 
 namespace phpunit\Unit\Exporter;
 
-use Lle\CruditBundle\Exporter\Pdf\PageCountDompdf;
 use Lle\CruditBundle\Exporter\Pdf\PdfWriter;
-use Lle\CruditBundle\Exporter\PdfExporter;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PHPUnit\Framework\TestCase;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporterTest extends TestCase
 {
@@ -20,49 +16,39 @@ class PdfExporterTest extends TestCase
         'footer-right' => 'No filter',
     ];
 
-    public function testHeaderAndFooterCallbackInjectsFixedHeaderAndFooter(): void
+    public function testHeaderAndFooterAreWrittenOnEveryPage(): void
     {
-        $html = $this->generateHtml();
+        $pdf = $this->generatePdf(150);
 
-        self::assertMatchesRegularExpression('/<header id="crudit-pdf-header"[^>]*position:\s*fixed/', $html);
-        self::assertMatchesRegularExpression('/<footer id="crudit-pdf-footer"[^>]*position:\s*fixed/', $html);
-        self::assertStringNotContainsString('htmlpageheader', $html);
-        foreach (self::HEADER_FOOTER as $key => $value) {
-            if ($key !== 'header-right') {
-                self::assertStringContainsString($value, $html);
-            }
+        $pageCount = $this->countPages($pdf);
+        self::assertGreaterThan(1, $pageCount);
+        foreach (['Establishment', 'Payment list', 'Exported by dev', 'Crudit', 'No filter'] as $value) {
+            self::assertSame($pageCount, substr_count($pdf, '(' . $value . ')'), $value);
         }
     }
 
-    public function testHeaderAndFooterCallbackDropsTheNamedPageSoDompdfAppliesTheMargins(): void
+    public function testPageNumberAndTotalAreSubstituted(): void
     {
-        $html = $this->generateHtml();
+        $pdf = $this->generatePdf(150);
 
-        self::assertStringNotContainsString('@page page0', $html);
-        self::assertStringContainsString('@page {', $html);
-    }
-
-    public function testPageNumberPlaceholderBecomesACssCounterAndTotalIsLeftToTheWriter(): void
-    {
-        $html = $this->generateHtml();
-
-        self::assertStringNotContainsString('{PAGENO}', $html);
-        self::assertStringContainsString('class="crudit-pdf-page-number"', $html);
-        self::assertStringContainsString('counter(page)', $html);
-        self::assertStringContainsString(PageCountDompdf::PAGE_COUNT_PLACEHOLDER, $html);
+        $pageCount = $this->countPages($pdf);
+        self::assertStringContainsString('(Page 1 of ' . $pageCount . ')', $pdf);
+        self::assertStringContainsString('(Page ' . $pageCount . ' of ' . $pageCount . ')', $pdf);
+        self::assertStringNotContainsString('{nbpg}', $pdf);
+        self::assertStringNotContainsString('{PAGENO}', $pdf);
     }
 
     /**
      * Header and footer values come from the crud config, so they can hold any character and
-     * must reach the document untouched, whatever a regex replacement would make of them.
+     * must reach the document untouched.
      *
      * @dataProvider provideSpecialCharacters
      */
-    public function testHeaderAndFooterCallbackKeepsSpecialCharacters(string $value): void
+    public function testHeaderAndFooterValuesAreWrittenVerbatim(string $value): void
     {
-        $html = $this->generateHtml(['header-left' => $value]);
+        $pdf = $this->generatePdf(3, ['header-left' => $value]);
 
-        self::assertStringContainsString($value, $html);
+        self::assertStringContainsString('(' . addcslashes($value, '\\()') . ')', $pdf);
     }
 
     /** @return array<string, array{string}> */
@@ -70,101 +56,108 @@ class PdfExporterTest extends TestCase
     {
         return [
             'backslash' => ['C:\\exports\\2026'],
-            'backslash followed by a digit' => ['Filter \\1 enabled'],
-            'dollar followed by a digit' => ['Amount $1 net'],
-            'double backslash' => ['a\\\\b'],
-            'ampersand' => ['Durand & Sons'],
+            'dollar and digit' => ['Total $1 ($2)'],
+            'html' => ['<b>R&D</b>'],
+            'percent' => ['100% done'],
         ];
     }
 
-    /**
-     * PhpSpreadsheet styles `div + div` with a page break: a header or footer written as a <div>
-     * right before the sheet would push the table onto the second page, leaving the first blank.
-     */
-    public function testHeaderAndFooterDoNotAddABlankFirstPage(): void
+    public function testNoBlankFirstPage(): void
     {
-        $path = $this->savePdf(3);
-
-        self::assertSame(1, preg_match_all('/\/Type\s*\/Page\b/', (string)file_get_contents($path)));
-        unlink($path);
+        self::assertSame(1, $this->countPages($this->generatePdf(3)));
     }
 
-    public function testSavedPdfIsAValidPdfWithTheTotalPageCountSubstituted(): void
+    public function testSavedPdfIsAValidPdf(): void
     {
-        $path = $this->savePdf(300);
-
-        self::assertStringStartsWith('%PDF', (string)file_get_contents($path));
-        unlink($path);
+        self::assertStringStartsWith('%PDF', $this->generatePdf(3));
     }
 
-    public function testWriterReplacesThePageCountPlaceholderOnceRendered(): void
+    public function testWithoutHeaderAndFooterNothingIsWritten(): void
     {
-        $dompdf = new PageCountDompdf();
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->loadHtml(
-            '<html><body style="font-family: Helvetica;"><div style="position: fixed; top: 0;">total {nbpg}</div>'
-            . str_repeat('<p style="page-break-after: always;">page</p>', 3)
-            . '</body></html>'
+        $pdf = $this->generatePdf(3, [], false);
+
+        self::assertStringNotContainsString('(Establishment)', $pdf);
+        self::assertStringNotContainsString('(Crudit)', $pdf);
+    }
+
+    public function testSmallFontSizeIsApplied(): void
+    {
+        $pdf = $this->generatePdf(3, ['size-footer-right' => 'xx-small']);
+
+        self::assertMatchesRegularExpression('/\s6(\.0+)? Tf/', $pdf);
+        self::assertMatchesRegularExpression('/\s10(\.0+)? Tf/', $pdf);
+    }
+
+    public function testCellValuesAreWrittenAndEscaped(): void
+    {
+        $pdf = $this->generatePdf(1, [], false, [['<b>R&D</b> é', '12,5']]);
+
+        self::assertStringContainsString('<b>R&D</b>', $this->decode($pdf));
+    }
+
+    public function testHeadersAreRepeatedOnEveryPage(): void
+    {
+        $pdf = $this->generatePdf(150, [], false);
+
+        self::assertSame($this->countPages($pdf), substr_count($pdf, '(Column)'));
+    }
+
+    public function testTotalsRowIsWritten(): void
+    {
+        $pdf = $this->generatePdf(3, [], false, null, ['Sum', '42']);
+
+        self::assertStringContainsString('(Sum)', $pdf);
+        self::assertStringContainsString('(42)', $pdf);
+    }
+
+    public function testPortraitIsTallerThanLandscape(): void
+    {
+        $landscape = $this->mediaBox($this->generatePdf(1, [], false));
+        $portrait = $this->mediaBox($this->generatePdf(1, [], false, null, null, ['orientation' => 'portrait']));
+
+        self::assertGreaterThan($landscape[1], $portrait[1]);
+        self::assertLessThan($landscape[0], $portrait[0]);
+    }
+
+    private function generatePdf(
+        int|null $rows,
+        array $override = [],
+        bool $withHeaderFooter = true,
+        ?array $customRows = null,
+        ?array $totals = null,
+        array $params = [],
+    ): string {
+        $data = $customRows ?? array_map(
+            static fn(int $row): array => ['Value ' . $row, (string)$row],
+            range(1, (int)$rows)
         );
-        $dompdf->render();
-
-        $pageCount = $dompdf->getCanvas()->get_page_count();
-        self::assertSame(3, $pageCount);
-        $text = $this->extractPdfText((string)$dompdf->output());
-        self::assertStringContainsString('total 3', $text);
-        self::assertStringNotContainsString('{nbpg}', $text);
-    }
-
-    private function extractPdfText(string $pdf): string
-    {
-        preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $pdf, $streams);
-        $text = '';
-        foreach ($streams[1] as $stream) {
-            $text .= (string)@gzuncompress($stream);
+        $params += ['title' => 'Test'];
+        if ($withHeaderFooter) {
+            $params['header-footer'] = $override + self::HEADER_FOOTER;
         }
 
-        return (string)preg_replace('/\)\s*-?\d+(\.\d+)?\s*\(|\[\(|\)\]\s*TJ|\) Tj/', '', $text);
+        return (new PdfWriter($params, false))->write(['Column', 'Number'], $data, $totals, ['left', 'right']);
     }
 
-    public function testWriterLeavesADocumentWithoutPlaceholderAlone(): void
+    private function decode(string $pdf): string
     {
-        $dompdf = new PageCountDompdf();
-        $dompdf->loadHtml('<html><body><p>hello</p></body></html>');
-        $dompdf->render();
-
-        self::assertSame(1, $dompdf->getCanvas()->get_page_count());
+        return preg_replace_callback(
+            '/<([0-9A-Fa-f]+)>\s*Tj/',
+            static fn(array $match): string => '(' . mb_convert_encoding(hex2bin($match[1]), 'UTF-8', 'UTF-16BE') . ') Tj',
+            $pdf
+        ) ?? $pdf;
     }
 
-    private function savePdf(int $rows): string
+    /** @return array{float, float} */
+    private function mediaBox(string $pdf): array
     {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        for ($row = 1; $row <= $rows; $row++) {
-            $sheet->setCellValue('A' . $row, 'Value ' . $row);
-        }
+        preg_match('/\/MediaBox\s*\[\s*0(?:\.0+)?\s+0(?:\.0+)?\s+([\d.]+)\s+([\d.]+)\s*\]/', $pdf, $match);
 
-        $exporter = new PdfExporter($this->createMock(TranslatorInterface::class));
-        $writer = new PdfWriter($spreadsheet);
-        $writer->setEditHtmlCallback($exporter->getHeaderAndFooter(self::HEADER_FOOTER));
-
-        $path = (string)tempnam(sys_get_temp_dir(), 'pdftest');
-        $writer->save($path);
-
-        return $path;
+        return [(float)$match[1], (float)$match[2]];
     }
 
-    private function generateHtml(array $headerFooter = []): string
+    private function countPages(string $pdf): int
     {
-        $exporter = new PdfExporter($this->createMock(TranslatorInterface::class));
-
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->getActiveSheet()->setCellValue('A1', 'Value');
-
-        $writer = new PdfWriter($spreadsheet);
-        $writer->setEditHtmlCallback(
-            $exporter->getHeaderAndFooter($headerFooter + self::HEADER_FOOTER)
-        );
-
-        return $writer->generateHtmlAll();
+        return (int)preg_match_all('/\/Type\s*\/Page\b/', $pdf);
     }
 }
