@@ -148,4 +148,55 @@ The default values are:
 ];
 ```
 
-To customize the values, check the [PhpSpreadsheet documentation](https://phpspreadsheet.readthedocs.io/en/latest/),
+The PDF is rendered with [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) (the successor of TCPDF),
+directly from the exported rows: PhpSpreadsheet is not involved. In the header and footer values,
+`{PAGENO}` is replaced by the current page number and `{nbpg}` by the total number of pages. The values are
+written as plain text, and the `size-*` keys accept the CSS keywords `xx-small` to `xx-large`.
+
+`paper_size` (PhpSpreadsheet `PageSetup::PAPERSIZE_*` constants: A3, A4, A5, Letter and Legal are supported),
+`orientation` and the `margin-*` keys (in inches) keep their meaning.
+
+#### Fonts
+
+The bundle ships the Helvetica family (about 100 KB, Adobe core font metrics, licence file included) and points
+`K_PATH_FONTS` at it, so nothing has to be installed or generated.
+
+Helvetica only covers the Western European characters (WinAnsi): accents and `€` are fine, but other scripts
+(Polish `ŁŻ`, Cyrillic, Greek...) are replaced by `?`. If your data needs them, generate a Unicode font
+(for instance DejaVu Sans, see the
+[tc-lib-pdf fonts documentation](https://github.com/tecnickcom/tc-lib-pdf/blob/main/doc/FONTS.md)), define
+`K_PATH_FONTS` to the directory holding it before the first export, and select it with the `font` key of the
+PDF params (`$params['font'] = 'dejavusans';`).
+
+`K_PATH_FONTS` is a process-wide constant, also defined by the classic `tecnickcom/tcpdf` library with its own
+font format. If the application uses both, define `K_PATH_FONTS` yourself (to a directory containing the fonts
+Crudit needs) before either is loaded; otherwise the first one loaded wins and the other breaks. Crudit raises an
+`ExporterException` when the constant points to a directory without the requested font.
+
+#### Layout and memory
+
+The columns are sized from their content: each one is as wide as its longest value (capped at 40 characters, so a
+long text or URL cannot take the whole page) and never narrower than the longest word of its header. When the
+table is still too wide for the page, the font shrinks (down to 5 pt) to make it fit, as the former "fit to width"
+did. The header and footer are centered in the top and bottom margins.
+
+The rows and the HTML table are held in memory while the document is built: expect about 20 MB per 1 000 rows.
+With a `memory_limit` of 128M, an export is limited to roughly 6 000 rows.
+
+Compared with the former output, the vertical borders of the data cells are kept, and the zebra striping starts on
+the second data row.
+
+### Upgrade note: PdfExporter rewritten on tc-lib-pdf
+
+`mpdf/mpdf` (GPL) and `dompdf/dompdf` are no longer dependencies of the bundle; PDFs are rendered with
+`tecnickcom/tc-lib-pdf` (LGPL). An application that uses mPDF directly must require it itself.
+
+`PdfExporter` no longer goes through PhpSpreadsheet. Removed: `getHeaderAndFooter()`, `pageSetup()`,
+`getNumberDecimalFormat()`, and the protected `getType()` and `formatParticularFieldType()`; the
+`setEditHtmlCallback()` injection is gone too. A class extending `PdfExporter` that calls or overrides them must be
+adapted: the cell formatting is now done by `formatField()`, `formatBoolean()` and `formatCurrency()`, which return
+strings, and `createWriter()` builds the writer.
+
+Header and footer values are passed to `Lle\CruditBundle\Exporter\Pdf\PdfWriter` and written as plain text, so
+HTML in those values is no longer interpreted. The font is Helvetica instead of Arial, so exported PDFs look
+slightly different.

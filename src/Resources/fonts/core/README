@@ -1,0 +1,12 @@
+# core font files for tc-lib-pdf-font
+
+This folder contains font files and/or font data extracted from:
+https://github.com/tecnickcom/tc-font-core14-afms
+using the "bulk_convert.php" utility in https://github.com/tecnickcom/tc-lib-pdf-font
+
+The original files (if present) have been renamed and compressed using the ZLIB data format (.z files).
+The files contain font metrics converted from the Adobe AFM files, not the AFM files themselves.
+The font files and data are distributed under the terms in the LICENSE file, including any notice and exception stated there.
+For further information please consult the original documentation at the link above.
+
+SPDX-License-Identifier: APAFML

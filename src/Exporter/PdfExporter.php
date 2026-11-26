@@ -5,33 +5,24 @@ namespace Lle\CruditBundle\Exporter;
 use Lle\CruditBundle\Dto\Field\Field;
 use Lle\CruditBundle\Dto\FieldView;
 use Lle\CruditBundle\Dto\ResourceView;
+use Lle\CruditBundle\Exception\ExporterException;
+use Lle\CruditBundle\Exporter\Pdf\PdfWriter;
 use Lle\CruditBundle\Field\BooleanField;
 use Lle\CruditBundle\Field\CurrencyField;
 use Lle\CruditBundle\Field\IntegerField;
 use Lle\CruditBundle\Field\NumberField;
-use Lle\CruditBundle\Exception\ExporterException;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PdfExporter extends AbstractExporter
 {
-    /**
-     * Marker Mpdf::save() looks for to know where the document body starts. Kept as a literal
-     * instead of Mpdf::SIMULATED_BODY_START because that constant only exists since
-     * PhpSpreadsheet 2.0, while this bundle also supports 1.30. On 1.30 the marker is an inert
-     * HTML comment: the writer still falls back to sending the HTML in chunks of 1000 lines,
-     * which keeps the <style> block inside a single WriteHTML() call.
-     */
-    public const SIMULATED_BODY_START = '<!-- simulated body start -->';
-
-    /** Needles rewritten in the HTML produced by the spreadsheet writer. */
-    private const PAGE_DECLARATION = '@page page0 {';
-    private const BODY_TAG = '<body>';
+    private const ALIGN_LEFT = 'left';
+    private const ALIGN_RIGHT = 'right';
+    private const ALIGN_CENTER = 'center';
+    private const DEFAULT_DECIMALS = 2;
+    private const NUMERIC_TYPES = [
+        'bigint', 'smallint', 'float', 'integer', 'decimal', NumberField::class, IntegerField::class,
+    ];
 
     public function __construct(
         protected TranslatorInterface $translator,
@@ -55,120 +46,24 @@ class PdfExporter extends AbstractExporter
 
     public function export(iterable $resources, ExportParams $params, array $totals = []): string
     {
-        $spreadsheet = new Spreadsheet();
-        $this->pageSetup($spreadsheet, $params);
-        $sheet = $spreadsheet->getActiveSheet();
-        $headersAdded = false;
-        $row = 1;
-        $headerRow = $row;
+        $pdfParams = $params->getPdfParams();
         $headers = [];
+        $alignments = [];
+        $rows = [];
 
         /** @var ResourceView $resource */
         foreach ($resources as $resource) {
-            if ($params->getIncludeHeaders() && !$headersAdded) {
+            if ($headers === []) {
                 $headers = $this->getHeaders($resource->getFields());
-                $sheet->getRowDimension($row)->setRowHeight(22);
-                $row++;
-                $headersAdded = true;
             }
 
+            $row = [];
             /** @var FieldView $field */
-            foreach ($resource->getFields() as $j => $field) {
-                $cell = Coordinate::stringFromColumnIndex($j + 1) . $row;
-                $sheet->setCellValueExplicit($cell, $this->getValue($field), $this->getType($field));
-                $sheet->getStyle($cell)->getAlignment()->setVertical('center');
-
-                $this->formatParticularFieldType($sheet, $cell, $field);
-
-                $sheet->getStyle($cell)->getAlignment()->setIndent(1);
-                if ($row & 1) {
-                    $sheet->getStyle($cell)->applyFromArray([
-                        'fill' => [
-                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                            'rotation' => 90,
-                            'startColor' => [
-                                'argb' => 'E8E8E8',
-                            ],
-                            'endColor' => [
-                                'argb' => 'E8E8E8',
-                            ],
-                        ],
-                        'borders' => [
-
-                        ],
-                    ]);
-                }
-                $sheet->getStyle($cell)->applyFromArray([
-                    'borders' => [
-                        'left' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'right' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                ]);
+            foreach ($resource->getFields() as $column => $field) {
+                $row[] = $this->formatField($field, $this->getValue($field), $pdfParams);
+                $alignments[$column] ??= $this->getAlignment($field);
             }
-            $row++;
-        }
-
-        foreach ($headers as $column => $header) {
-            $cell = Coordinate::stringFromColumnIndex($column + 1) . $headerRow;
-            $sheet->getStyle($cell)->applyFromArray([
-                'alignment' => [
-                    'horizontal' => 'center',
-                    'vertical' => 'center',
-                    'wrapText' => true,
-                ],
-                'font' => ['bold' => true,],
-                'borders' => [
-                    'bottom' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
-                    'left' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
-                    'right' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
-                    'top' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,],
-                ],
-            ]);
-            $sheet->setCellValue($cell, $header);
-            if ($totals) {
-                $sheet->getRowDimension($row)->setRowHeight(22);
-                $cell = Coordinate::stringFromColumnIndex($column + 1) . $row;
-                foreach ($totals as $total) {
-                    if ($headers[$column] === $this->translator->trans($total['field']->getField()->getLabel())) {
-                        $sheet->setCellValue($cell, $total['total']);
-                        $this->formatParticularFieldType($sheet, $cell, $total['field']);
-                        $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-                    }
-                }
-                $sheet->getStyle($cell)->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                    ],
-                    'borders' => [
-                        'bottom' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'left' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'right' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                        'top' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'alignment' => [
-                        'vertical' => 'center',
-                        'indent' => 1,
-                        'wrapText' => true,
-                    ],
-                ]);
-            }
-        }
-        $row++;
-
-        foreach ($sheet->getColumnIterator("A", $sheet->getHighestColumn()) as $column) {
-            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            $rows[] = $row;
         }
 
         $path = tempnam(sys_get_temp_dir(), Exporter::PDF);
@@ -176,14 +71,19 @@ class PdfExporter extends AbstractExporter
             throw new ExporterException('Unknown PDF exporter error');
         }
 
-        $writer = new Mpdf($spreadsheet);
-        $pdfParams = $params->getPdfParams();
-        if ($pdfParams['header-footer']) {
-            $writer->setEditHtmlCallback($this->getHeaderAndFooter($pdfParams['header-footer']));
-        }
-        $writer->save($path);
+        file_put_contents($path, $this->createWriter($pdfParams)->write(
+            $params->getIncludeHeaders() ? $headers : [],
+            $rows,
+            $this->getTotalsRow($headers, $totals, $pdfParams),
+            $alignments
+        ));
 
         return $path;
+    }
+
+    protected function createWriter(array $pdfParams): PdfWriter
+    {
+        return new PdfWriter($pdfParams);
     }
 
     protected function getHeaders(array $fields): array
@@ -198,161 +98,124 @@ class PdfExporter extends AbstractExporter
         return $result;
     }
 
-    protected function getType(FieldView $field): string
+    protected function getAlignment(FieldView $field): string
     {
-        if ($field->getRawValue() === null || $field->getRawValue() === "") {
-            return DataType::TYPE_NULL;
+        if ($this->isCurrency($field->getField()) || $this->isNumeric($field)) {
+            return self::ALIGN_RIGHT;
         }
 
-        if ($field->getField()->getTemplate() && $field->getField()->getType() === 'boolean') {
-            $field->getField()->setType('string');
+        return $this->isBoolean($field) ? self::ALIGN_CENTER : self::ALIGN_LEFT;
+    }
+
+    public function getDecimals(Field $field): int
+    {
+        if ($field->getType() === IntegerField::class) {
+            return 0;
         }
 
-        return match ($field->getField()->getType()) {
-            "bigint", "smallint", "float", "integer", "decimal", NumberField::class, IntegerField::class,
-            => DataType::TYPE_NUMERIC,
-            "boolean", BooleanField::class => DataType::TYPE_BOOL,
-            default => DataType::TYPE_STRING,
-        };
+        return $field->getOptions()['decimals'] ?? self::DEFAULT_DECIMALS;
     }
 
-    public function pageSetup(Spreadsheet &$spreadsheet, ExportParams $exportParams): void
+    protected function formatField(FieldView $field, string $value, array $pdfParams): string
     {
-        $params = $exportParams->getPdfParams();
-        $spreadsheet->getProperties()->setTitle($params['title']);
-        $spreadsheet->getActiveSheet()->getPageSetup()->setFitToWidth(1);
-        $spreadsheet->getActiveSheet()->getPageSetup()->setFitToHeight(0);
+        if ($this->isBoolean($field)) {
+            return $this->formatBoolean($field);
+        }
 
-        $spreadsheet->getActiveSheet()->getPageMargins()->setTop($params['margin-top']);
-        $spreadsheet->getActiveSheet()->getPageMargins()->setRight($params['margin-right']);
-        $spreadsheet->getActiveSheet()->getPageMargins()->setLeft($params['margin-left']);
-        $spreadsheet->getActiveSheet()->getPageMargins()->setBottom($params['margin-bottom']);
+        if ($value === '') {
+            return '';
+        }
 
-        $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation($params['orientation']);
-        $spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize($params['paper_size']);
+        if ($this->isCurrency($field->getField())) {
+            return $this->formatCurrency($field);
+        }
 
-        $spreadsheet->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
+        if ($this->isNumeric($field) && is_numeric($value)) {
+            return number_format(
+                (float)$value,
+                $this->getDecimals($field->getField()),
+                $pdfParams['decimal_separator'],
+                $pdfParams['thousands_separator']
+            );
+        }
 
-        \PhpOffice\PhpSpreadsheet\Settings::setLocale($params['locale']);
-        \PhpOffice\PhpSpreadsheet\Shared\StringHelper::setDecimalSeparator($params['decimal_separator']);
-        \PhpOffice\PhpSpreadsheet\Shared\StringHelper::setThousandsSeparator($params['thousands_separator']);
+        return $value;
     }
 
-    public function getHeaderAndFooter(array $params): callable
+    protected function formatBoolean(FieldView $field): string
     {
-        return function (string $html) use ($params): string {
-            $pagerepl = <<<EOF
-                    @page page0 {
-                    odd-header-name: html_myHeader1;
-                    even-header-name: html_myHeader1;
-                    odd-footer-name: html_myFooter2;
-                    even-footer-name: html_myFooter2;                   
-                EOF;
-            // str_replace, not preg_replace: both needles are literals, and the injected header
-            // and footer values are free text from the crud config. As a replacement string,
-            // preg_replace() would read $1, \1 and \\ in them as backreferences and silently
-            // drop part of the value.
-            $html = str_replace(self::PAGE_DECLARATION, $pagerepl, $html);
-            $bodystring = self::BODY_TAG;
-            $topLeft = $params['header-left'] ?? '';
-            $topCenter = $params['header-center'] ?? '';
-            $topRight = $params['header-right'] ?? '';
-            $bottomLeft = $params['footer-left'] ?? '';
-            $bottomCenter = $params['footer-center'] ?? '';
-            $bottomRight = $params['footer-right'] ?? '';
-            $sizeTL = $params['size-header-left'] ?? 'medium';
-            $sizeTC = $params['size-header-center'] ?? 'medium';
-            $sizeTR = $params['size-header-right'] ?? 'medium';
-            $sizeBL = $params['size-footer-left'] ?? 'medium';
-            $sizeBC = $params['size-footer-center'] ?? 'medium';
-            $sizeBR = $params['size-footer-right'] ?? 'medium';
+        $rawValue = $field->getRawValue();
+        if ($rawValue === null || $rawValue === '') {
+            return '';
+        }
 
-            // Rewriting the <body> tag removes the marker Mpdf::save() looks for to locate the
-            // start of the document body. Without it the whole HTML - <head> and <style>
-            // included - is pushed to mPDF one line at a time (PhpSpreadsheet >= 2.0), which
-            // prints the stylesheet as plain text instead of applying it. Closing the injected
-            // block with the marker gives the writer back a split point, so the head and the
-            // page header/footer tags are written in a single WriteHTML() call.
-            $simulatedBodyStart = self::SIMULATED_BODY_START;
-
-            $bodyrepl = <<<EOF
-                    <body style="font-family: 'Arial';">
-                        <htmlpageheader name="myHeader1">
-                            <table width="100%">
-                                <tr>
-                                    <td width="33%" style="font-size: $sizeTL;">$topLeft</td>
-                                    <td width="33%" style="font-size: $sizeTC;" align="center">$topCenter</td>
-                                    <td width="33%" style="text-align: right; font-size: $sizeTR;">$topRight</td>
-                                </tr>
-                            </table>
-                        </htmlpageheader>
-                    
-                        <htmlpagefooter name="myFooter2">
-                            <table width="100%">
-                                <tr>
-                                    <td width="33%" style="font-size: $sizeBL;">$bottomLeft</td>
-                                    <td width="33%" style="font-size: $sizeBC;" align="center">$bottomCenter</td>
-                                    <td width="33%" style="text-align: right; font-size: $sizeBR;">$bottomRight</td>
-                                </tr>
-                            </table>
-                        </htmlpagefooter>
-                        $simulatedBodyStart
-                    EOF;
-
-            return str_replace($bodystring, $bodyrepl, $html);
-        };
+        return $this->translator->trans(
+            $rawValue ? 'crudit.boolean.yes' : 'crudit.boolean.no',
+            [],
+            'LleCruditBundle'
+        );
     }
 
-    public function getNumberDecimalFormat(Field $field): string
+    protected function formatCurrency(FieldView $field): string
     {
         $options = $field->getOptions();
-        $decimalNumber = 2;
-        if (array_key_exists('decimals', $options)) {
-            $decimalNumber = $options['decimals'];
-        }
-        if ($field->getType() === IntegerField::class) {
-            $decimalNumber = 0;
+        $currency = '';
+        if (($options['property'] ?? null) && $field->getResource()) {
+            $currency = $field->getResource();
+            $propertyAccessor = PropertyAccess::createPropertyAccessor();
+            foreach (explode('.', $options['property']) as $property) {
+                $currency = $propertyAccessor->getValue($currency, $property);
+            }
+        } elseif ($options['currency'] ?? null) {
+            $currency = $options['currency'];
         }
 
-        return '#,##0.' . str_repeat('0', $decimalNumber);
+        $amount = $field->getField()->getType() === CurrencyField::class
+            ? $field->getRawValue()
+            : (float)trim($field->getValue() ?? '');
+
+        $formatter = \NumberFormatter::create($options['locale'], \NumberFormatter::CURRENCY);
+
+        return (string)$formatter->formatCurrency((float)$amount, (string)$currency);
     }
 
-    protected function formatParticularFieldType(Worksheet $sheet, string $cell, FieldView $field): void
+    /**
+     * @return string[]|null
+     */
+    protected function getTotalsRow(array $headers, array $totals, array $pdfParams): ?array
     {
-        if ($this->getType($field) === DataType::TYPE_NUMERIC) {
-            $sheet->getStyle($cell)->getNumberFormat()
-                ->setFormatCode($this->getNumberDecimalFormat($field->getField()));
+        if (!$totals) {
+            return null;
         }
-        if ($this->getType($field) === DataType::TYPE_BOOL) {
-            $sheet->getStyle($cell)->getAlignment()->setHorizontal('center');
-        }
-        if ($field->getField()->getType() === CurrencyField::class || $field->getField()->getType() === 'currency') {
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-            $currency = '';
-            if (
-                array_key_exists('property', $field->getOptions())
-                && $field->getOptions()['property']
-                && $field->getResource()
-            ) {
-                $path = explode('.', $field->getOptions()['property']);
-                $object = $field->getResource();
-                foreach ($path as $property) {
-                    $object = $propertyAccessor->getValue($object, $property);
+        $row = array_fill(0, count($headers), '');
+        foreach ($headers as $column => $header) {
+            foreach ($totals as $total) {
+                if ($header === $this->translator->trans($total['field']->getField()->getLabel())) {
+                    $row[$column] = $this->formatField($total['field'], (string)$total['total'], $pdfParams);
                 }
-                $currency = $object;
-            } elseif ($field->getOptions()['currency']) {
-                $currency = $field->getOptions()['currency'];
             }
-            $formatter = \NumberFormatter::create($field->getOptions()['locale'], \NumberFormatter::CURRENCY);
-            $value = $field->getField()->getType() === CurrencyField::class ? $field->getRawValue() : (float)trim($field->getValue() ?? '');
-            $result = $formatter->formatCurrency($value, $currency);
-            $sheet->setCellValueExplicit($cell, $result, $this->getType($field));
-            $sheet->getStyle($cell)->getAlignment()->setHorizontal('right');
         }
 
-        if ($sheet->getStyle($cell)->getAlignment()->getHorizontal() === 'general') {
-            $sheet->getStyle($cell)->getAlignment()->setHorizontal('left')->setIndent(1);
+        return $row;
+    }
+
+    private function isCurrency(Field $field): bool
+    {
+        return $field->getType() === CurrencyField::class || $field->getType() === 'currency';
+    }
+
+    private function isBoolean(FieldView $field): bool
+    {
+        if ($field->getField()->getTemplate() && $field->getField()->getType() === 'boolean') {
+            return false;
         }
+
+        return in_array($field->getField()->getType(), ['boolean', BooleanField::class], true);
+    }
+
+    private function isNumeric(FieldView $field): bool
+    {
+        return in_array($field->getField()->getType(), self::NUMERIC_TYPES, true);
     }
 }
