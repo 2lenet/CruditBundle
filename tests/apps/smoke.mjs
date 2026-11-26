@@ -1175,7 +1175,9 @@ const tabState = () => page.evaluate(() => ({
     focus: document.activeElement?.getAttribute('role'),
 }));
 let tabsNow = await tabState();
-assert.deepEqual(tabsNow.tabs, [['Tags', 'true'], ['Notes', 'false']], `tabs: the tabs granted, the first selected (${JSON.stringify(tabsNow)})`);
+assert.deepEqual(tabsNow.tabs, [['Tags', 'true'], ['Notes', 'false'], ['Referred', 'false']], `tabs: the tabs granted, the first selected (${JSON.stringify(tabsNow)})`);
+// Not a named region (read a third time after the heading and the tablist)
+assert.equal(await page.$eval('.crudit-show-tabs', (s) => s.hasAttribute('aria-labelledby') || s.hasAttribute('aria-label')), false, 'tabs: the section is not a named region');
 assert.equal(await page.$eval('.crudit-show-tabs [role="tablist"]', (l) => l.getAttribute('aria-label')), 'Related information');
 await page.click('.crudit-show-tabs [role="tab"]:nth-child(2)');
 await page.waitForFunction(() => new URL(location.href).searchParams.get('tab') === 'notes', {timeout: 3000}).catch(() => null);
@@ -1187,7 +1189,9 @@ assert.deepEqual([tabsNow.shown, tabsNow.tab, tabsNow.focus], [['tags'], 'tags',
 await page.keyboard.press('End');
 await page.reload({waitUntil: 'networkidle0'});
 tabsNow = await tabState();
-assert.deepEqual([tabsNow.shown, tabsNow.tabs[1][1]], [['notes'], 'true'], `tabs: a reload does not keep the tab (${JSON.stringify(tabsNow)})`);
+assert.deepEqual([tabsNow.shown, tabsNow.tabs[2][1]], [['referred'], 'true'], `tabs: a reload does not keep the tab (${JSON.stringify(tabsNow)})`);
+// The sublist keeps its markup until lot 3.3.c: axe on the tab of the form
+await page.click('.crudit-show-tabs [role="tab"]:nth-child(2)');
 await shot(page, 'record-tabs');
 await axe(page, 'record with tabs');
 // A form in a tab: saved, back to its tab

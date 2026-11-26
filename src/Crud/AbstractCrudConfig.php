@@ -306,9 +306,11 @@ abstract class AbstractCrudConfig implements CrudConfigInterface
         if ($tabs) {
             $tabConf = TabConfig::new();
 
-            // additional tabs: a brick, a list of bricks, or a Tab (its id, its counter…)
-            foreach ($tabs as $label => $bricks) {
-                $tab = $bricks instanceof Tab ? $bricks : Tab::new($label, is_array($bricks) ? $bricks : [$bricks]);
+            // additional tabs: a brick, a list of bricks, or a Tab (its id, its counter…). For a Tab, its label gives
+            // its roles as its id: the key is only an index.
+            foreach ($tabs as $key => $bricks) {
+                $tab = $bricks instanceof Tab ? $bricks : Tab::new((string) $key, is_array($bricks) ? $bricks : [$bricks]);
+                $label = $tab->getLabel();
 
                 if ($this->mustGenerateDefaultRole()) {
                     foreach ($tab->getBricks() as $brick) {

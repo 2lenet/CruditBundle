@@ -28,7 +28,11 @@ already taken. Give your own with `Tab::setId()` (or the argument `id` of `TabCo
 
 ## A counter
 
-A counter after the label ("Parts 3"), computed on the record: give a `Tab` as the value, with `setCount()`.
+A counter after the label ("Parts 3"), computed on the record: give a `Tab` as the value, with `setCount()`. Its
+label (not the key of the array) gives its id and its roles.
+
+The counter is computed at each display of the record, for each tab shown: count without loading a collection. Map
+the association with `fetch: 'EXTRA_LAZY'` (`->count()` is then a `COUNT` query), or count in a repository.
 
 ```php
 use Lle\CruditBundle\Brick\TabBrick\Tab;
@@ -37,6 +41,7 @@ public function getTabs(): array
 {
     return [
         'tab.parts' => Tab::new('tab.parts', [SublistConfig::new('intervention', $this->partCrudConfig)])
+            // #[ORM\OneToMany(…, fetch: 'EXTRA_LAZY')] on parts: a COUNT, the parts are not loaded
             ->setCount(fn (Intervention $intervention): int => $intervention->getParts()->count()),
     ];
 }
@@ -132,8 +137,7 @@ $tabConf->adds('tab.subResource', [
 
 You can add conditions to the tab, using the resource or not, in order to decide whether to display the tab based on the data or the request.
 
-To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request; on a tab, it is
-not read: put it on the bricks of the tab):
+To do this, simply use `setDisplayIf` (for the data) or `setDisplayIfByRequest` (for the request):
 
 ```php
 $tabConf = TabConfig::new();

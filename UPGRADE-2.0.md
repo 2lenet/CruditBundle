@@ -1348,16 +1348,18 @@ Bootstrap (`nav-tabs`, `data-bs-toggle="tab"`, `tab-content`, `tab-pane`), and t
 - **The role of a tab is checked by the server** (it was by the template only): the bricks of a tab refused are not
   built, its form is not bound by a POST, its counter not computed. As before, a tab refused is not shown.
 - **New, a counter after the label** ("Parts 3"), computed on the record: `Tab::setCount(fn (Client $c) => …)` or the
-  argument `count`. `getTabs()` accepts a `Tab` as a value for it. The badge filled by a script of the sublist is gone
+  argument `count`. `getTabs()` accepts a `Tab` as a value for it (its label, not the key, gives its id and its roles).
+  The counter is computed at each display: count without loading a collection (see doc/tabs.md). The badge filled by a script of the sublist is gone
   (the sublist fills the counter in lot 3.3.c).
 - **A form in a tab comes back to its tab** once saved: when its redirect goes to the record (`getPath(SHOW)` in
   `setSuccessRedirectPath()`, or `getAfterEditPath()`), `?tab=<id>` is added, unless the path gives a `tab`. It came
   back to the first tab.
 - **An override** of `brick/tab/index.html.twig` reads `view.config.tabs`: only the tabs granted and shown, each with
   `id`, `label` (not translated), `count` and `views`.
+- **`setDisplayIfByRequest()` on a tab is applied** (the fifth argument of `add()` / `adds()`): it was never read in
+  1.x, the tab was always shown. Check the conditions you gave to a tab.
 - **Not changed**: `getTabs()` (`['tab.x' => brick | bricks]`), `TabConfig::add()` / `adds()` / `addTab()`, the role
-  generated (`ROLE_<CRUD>_TAB_<LABEL>`), `setDisplayIf()`. `setDisplayIfByRequest()` on a tab is still not read (as in
-  1.x); on a brick it is.
+  generated (`ROLE_<CRUD>_TAB_<LABEL>`), `setDisplayIf()`.
 
 ### Workflows *(lot 3.4.c)*
 

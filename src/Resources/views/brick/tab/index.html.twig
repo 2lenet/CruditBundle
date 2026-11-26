@@ -1,25 +1,25 @@
 {#
  # The tabs of a record (TabBrick, lot 3.3.b), under its sections: the component Tabs of CruditUiBundle (ARIA pattern,
- # arrows, Home, End; they wrap on a phone), in a section named by a hidden heading "Related information". Only the tabs
+ # arrows, Home, End; they wrap on a phone), under a hidden heading "Related information" (to reach them by the headings;
+ # the section has no name: it would be read a third time, after the heading and the list of tabs). Only the tabs
  # granted and shown are in view.config.tabs (TabFactory). The tab is in the address, ?tab=<id>: read by the server,
  # kept by the controller; the panels are given as values (content), the list of tabs comes from the configuration.
  #}
-{%- set heading_id = view.id ~ '-heading' -%}
 {%- set name = 'crudit.show.tabs'|trans(domain: 'LleCruditBundle') -%}
 {%- set tabs = [] -%}
 {%- for tab in view.config.tabs -%}
     {%- set content -%}
-        {%- for view in tab.views -%}
+        {%- for brick_view in tab.views -%}
             {%- set resource = null -%}
-            {%- if view.data.resource.resource is defined and view.data.resource.resource -%}
-                {%- set resource = view.data.resource.resource -%}
-            {%- elseif view.data.entity is defined and view.data.entity -%}
-                {%- set resource = view.data.entity -%}
-            {%- elseif view.data.resource is defined and view.data.resource -%}
-                {%- set resource = view.data.resource -%}
+            {%- if brick_view.data.resource.resource is defined and brick_view.data.resource.resource -%}
+                {%- set resource = brick_view.data.resource.resource -%}
+            {%- elseif brick_view.data.entity is defined and brick_view.data.entity -%}
+                {%- set resource = brick_view.data.entity -%}
+            {%- elseif brick_view.data.resource is defined and brick_view.data.resource -%}
+                {%- set resource = brick_view.data.resource -%}
             {%- endif -%}
-            {%- if view.isDisplayed(resource) and view.isDisplayedByRequest(app.request) -%}
-                {{- include(view.indexTemplate, {view: view, tab: tab}, with_context: false) -}}
+            {%- if brick_view.isDisplayed(resource) and brick_view.isDisplayedByRequest(app.request) -%}
+                {{- include(brick_view.indexTemplate, {view: brick_view, tab: tab}, with_context: false) -}}
             {%- endif -%}
         {%- endfor -%}
     {%- endset -%}
@@ -31,8 +31,8 @@
     }]) -%}
 {%- endfor -%}
 {%- if tabs is not empty -%}
-    <section class="crudit-show-tabs" aria-labelledby="{{ heading_id }}">
-        <h2 id="{{ heading_id }}" class="crudit-ui-visually-hidden">{{ name }}</h2>
+    <section class="crudit-show-tabs">
+        <h2 class="crudit-ui-visually-hidden">{{ name }}</h2>
         <twig:LleCruditUi:Tabs id="{{ view.id ~ '-tabs' }}" label="{{ name }}" urlParam="tab" :tabs="tabs"/>
     </section>
 {%- endif -%}

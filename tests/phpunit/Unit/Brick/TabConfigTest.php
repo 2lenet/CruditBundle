@@ -7,8 +7,10 @@ namespace phpunit\Unit\Brick;
 use Lle\CruditBundle\Brick\TabBrick\Tab;
 use Lle\CruditBundle\Brick\TabBrick\TabConfig;
 use Lle\CruditBundle\Brick\TemplateBrick\TemplateConfig;
+use Lle\CruditBundle\Crud\AbstractCrudConfig;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 /**
  * The tabs of a record (lot 3.3.b): ids from the labels, unique, given or computed; the counter.
@@ -49,6 +51,37 @@ class TabConfigTest extends TestCase
         $config = TabConfig::new(['tabs' => [Tab::new('tab.parts'), Tab::new('tab.parts')]]);
 
         self::assertSame(['parts', 'parts_2'], array_map(fn (Tab $tab) => $tab->getId(), $config->getTabs()));
+    }
+
+    public function testATabInGetTabsHasItsRolesFromItsLabelNotFromTheKey(): void
+    {
+        $crud = new class extends AbstractCrudConfig {
+            public function getFields(string $key): array
+            {
+                return [];
+            }
+
+            public function getRootRoute(): string
+            {
+                return 'app_crud';
+            }
+
+            public function getTabs(): array
+            {
+                return [
+                    'tab.x' => Tab::new('tab.y', [TemplateConfig::new(['template' => 'y.html.twig'])]),
+                    'tab.z' => TemplateConfig::new(['template' => 'z.html.twig']),
+                ];
+            }
+        };
+        $crud->setParameterBag(new ParameterBag(['lle_crudit.generate_default_role' => true]));
+
+        $tabs = $crud->getTabConfig()?->getTabs() ?? [];
+
+        self::assertSame(['y', 'z'], array_map(fn (Tab $tab) => $tab->getId(), $tabs));
+        self::assertStringEndsWith('_TAB_Y', (string) $tabs[0]->getRole());
+        self::assertStringEndsWith('_TEMPLATE_Y', (string) $tabs[0]->getBricks()[0]->getRole());
+        self::assertStringEndsWith('_TAB_Z', (string) $tabs[1]->getRole());
     }
 
     public function testTheCounterIsComputedOnTheRecord(): void

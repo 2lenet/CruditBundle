@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * The tabs of a record: only the tabs granted (their role, checked here: the bricks of a tab not granted are not built,
- * its form is not bound) and shown (displayIf), each with its counter computed on the record. A form of a tab knows
+ * its form is not bound) and shown (displayIf, displayIfByRequest), each with its counter computed on the record. A form of a tab knows
  * its tab, to come back to it once saved.
  */
 class TabFactory extends AbstractBasicBrickFactory
@@ -44,7 +44,11 @@ class TabFactory extends AbstractBasicBrickFactory
             $resource = $this->getResource($brickConfigurator);
             foreach ($brickConfigurator->getTabs() as $tab) {
                 $role = $tab->getRole();
-                if ((null !== $role && !$this->authorizationChecker->isGranted($role)) || !$tab->isDisplayed($resource)) {
+                if (
+                    (null !== $role && !$this->authorizationChecker->isGranted($role))
+                    || !$tab->isDisplayed($resource)
+                    || !$tab->isDisplayedByRequest($this->getRequest())
+                ) {
                     continue;
                 }
                 $id = (string) $tab->getId();
@@ -52,6 +56,7 @@ class TabFactory extends AbstractBasicBrickFactory
                     ->setRole($role)
                     ->setCount($tab->getCount($resource));
                 foreach ($tab->getBricks() as $brickConfig) {
+                    // The config is changed: it is built again for each request (getTabs() of the CrudConfig)
                     if ($brickConfig instanceof FormConfig) {
                         $brickConfig->setTab($id);
                     }

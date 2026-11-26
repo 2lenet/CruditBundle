@@ -23,16 +23,17 @@ class TabsTest extends AppTestCase
 
         $section = $crawler->filter('main section.crudit-show-tabs');
         self::assertCount(1, $section);
-        $heading = $section->filter('h2.crudit-ui-visually-hidden');
-        self::assertSame('Related information', $heading->text());
-        self::assertSame($heading->attr('id'), $section->attr('aria-labelledby'));
+        self::assertSame('Related information', $section->filter('h2.crudit-ui-visually-hidden')->text());
+        // Not a named region: "Related information" would be read a third time, after the heading and the tablist
+        self::assertNull($section->attr('aria-labelledby'));
+        self::assertNull($section->attr('aria-label'));
 
         $tabs = $section->filter('.crudit-ui-tabs');
         self::assertSame('tab', $tabs->attr('data-2lenet--crudit-ui-bundle--tabs-url-param-value'));
         self::assertSame('Related information', $tabs->filter('[role="tablist"]')->attr('aria-label'));
         // The tab with a role nobody has is not rendered; the counter after the label
-        self::assertSame(['Tags 2', 'Notes'], $tabs->filter('[role="tab"]')->each(fn (Crawler $tab) => trim($tab->text())));
-        self::assertSame(['true', 'false'], $tabs->filter('[role="tab"]')->each(fn (Crawler $tab) => (string) $tab->attr('aria-selected')));
+        self::assertSame(['Tags 2', 'Notes', 'Referred'], $tabs->filter('[role="tab"]')->each(fn (Crawler $tab) => trim($tab->text())));
+        self::assertSame(['true', 'false', 'false'], $tabs->filter('[role="tab"]')->each(fn (Crawler $tab) => (string) $tab->attr('aria-selected')));
         $id = (string) $tabs->attr('id');
         self::assertSame($id . '-panel-tags', $tabs->filter('[role="tab"]')->first()->attr('aria-controls'));
         // All the panels in the page, the selected one shown: the free content, the form
@@ -48,7 +49,7 @@ class TabsTest extends AppTestCase
     {
         $id = $this->idOf('Bob');
         $crawler = $this->client->request('GET', '/client/show/' . $id . '?tab=notes');
-        self::assertSame(['false', 'true'], $crawler->filter('.crudit-show-tabs [role="tab"]')->each(fn (Crawler $tab) => (string) $tab->attr('aria-selected')));
+        self::assertSame(['false', 'true', 'false'], $crawler->filter('.crudit-show-tabs [role="tab"]')->each(fn (Crawler $tab) => (string) $tab->attr('aria-selected')));
         self::assertSame('Tags 3', trim($crawler->filter('.crudit-show-tabs [role="tab"]')->first()->text()));
 
         // A tab not granted, unknown, or an array in the address: the first one, no error
@@ -74,8 +75,40 @@ class TabsTest extends AppTestCase
         self::assertSame('Call back in March.', $em->find(Client::class, $id)?->getNotes());
     }
 
+    public function testTheLinksOfASublistInATabKeepTheTab(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $bob = $em->getRepository(Client::class)->findOneBy(['name' => 'Bob']);
+        self::assertNotNull($bob);
+        // Alice and 3 more referred by Bob: 2 pages of 2 (client_limit, as the list)
+        foreach (['Dan', 'Eva', 'Fred'] as $name) {
+            $em->persist((new Client())->setName($name)->setEmail(strtolower($name) . '@example.org')->setActive(false)->setReferrer($bob));
+        }
+        $em->flush();
+
+        $crawler = $this->client->request('GET', '/client/show/' . $bob->getId() . '?tab=referred&client_limit=2');
+        self::assertResponseIsSuccessful();
+        $panel = $crawler->filter('.crudit-show-tabs [role="tabpanel"]')->reduce(fn (Crawler $panel) => str_ends_with((string) $panel->attr('id'), '-panel-referred'));
+        self::assertNull($panel->attr('hidden'), 'the tab of the address is shown');
+        $links = array_merge(
+            $panel->filter('.pagination a')->each(fn (Crawler $a) => (string) $a->attr('href')),
+            $panel->filter('thead a')->each(fn (Crawler $a) => (string) $a->attr('href')),
+        );
+        self::assertNotEmpty($panel->filter('.pagination a'), 'a pager: 4 clients, 2 per page');
+        self::assertNotEmpty($panel->filter('thead a'), 'the sorting of the columns');
+        foreach ($links as $href) {
+            parse_str((string) parse_url($href, \PHP_URL_QUERY), $query);
+            self::assertSame('referred', $query['tab'] ?? null, $href);
+            self::assertStringNotContainsString('#', $href);
+        }
+    }
+
     public function testAfterADeleteFromASublistBackToTheTab(): void
     {
+        // By reflection: TraitCrudController::delete() goes back to the record only for the routes app_crudit_*_delete
+        // (controllers in App\Controller\Crudit, as in the projects) and for another entity than the one deleted; the
+        // test application has app_client_delete and a sublist of clients in a client.
         $withTabOf = new \ReflectionMethod(ClientController::class, 'withTabOf');
         $request = static fn (string $referer): Request => new Request(server: ['HTTP_REFERER' => $referer]);
 

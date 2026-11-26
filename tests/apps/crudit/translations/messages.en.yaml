@@ -141,4 +141,5 @@ field:
 tab:
     tags: "Tags"
     notes: "Notes"
+    referred: "Referred"
     accounting: "Accounting"
