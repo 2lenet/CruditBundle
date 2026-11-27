@@ -108,6 +108,7 @@ crudit:
                 bad_request: "Vous essayez de modifer une valeur inexistante."
             delete: "Impossible de supprimer cet objet."
             resource_not_found: "La ressource n'a pas été trouvée."
+            workflow_transition: "Cette transition n'est pas possible."
 
     error:
         generic:

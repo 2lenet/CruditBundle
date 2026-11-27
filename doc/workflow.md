@@ -14,10 +14,23 @@ Note that "workflow" also works.
 ### Roles
 
 The workflows transitions have roles on them.
-The role is generated from this pattern : `ROLE_<CRUDNAME>_WF_<transition>`
+The role is generated from this pattern : `ROLE_<WORKFLOWNAME>_WF_<TRANSITION>`
 
-Example : ROLE_USER_WF_TO_BANNED
+Example : ROLE_COMMANDE_CLIENT_WF_TO_EXPEDIEE for the transition `to_expediee` of the workflow `commande_client`
 > Hyphens `-` are replaced by underscores `_`
+
+The role is checked first, before the resource is loaded.
+The transition must belong to the workflow, and it is applied only on this workflow.
+
+### Several workflows on the same entity
+
+By default, the field uses the first workflow of the entity.
+When the entity has several workflows, set the workflow name on **each** WorkflowField :
+
+```php
+$statut = Field::new("statut", WorkflowField::class)->setOptions(["name" => "commande_client"]);
+$statutRelance = Field::new("statutRelance", WorkflowField::class)->setOptions(["name" => "commande_client_relance"]);
+```
 
 ### Design
 
