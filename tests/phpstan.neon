@@ -13,8 +13,9 @@ parameters:
         - ../tests
     excludePaths:
         - '../src/Resources/skeleton'
-        # uses TraitCrudController, which would make PHPStan analyse the whole trait
+        # use TraitCrudController, which would make PHPStan analyse the whole trait
         - '../tests/phpunit/Unit/Controller/EditdataTest.php'
+        - '../tests/phpunit/Unit/Controller/WorkflowTransitionTest.php'
     ignoreErrors:
         -
             identifier: missingType.iterableValue

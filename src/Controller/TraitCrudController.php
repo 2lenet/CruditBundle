@@ -22,7 +22,9 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException as WorkflowInvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\Transition;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait TraitCrudController
@@ -335,23 +337,39 @@ trait TraitCrudController
     #[Route('/workflow/{id}')]
     public function workflowTransition(Request $request, Registry $wfRegistry, $id): Response
     {
-        $transition = $request->query->get("transition");
-        $workflowName = $request->query->get("name");
+        $transition = $request->query->getString("transition");
+        $workflowName = $request->query->getString("name");
+        if ($transition === '' || $workflowName === '') {
+            throw $this->createNotFoundException();
+        }
+        $this->denyAccessUnlessGranted(
+            "ROLE_" . strtoupper($workflowName) . "_WF_" . str_replace("-", "_", strtoupper($transition))
+        );
+
         $dataSource = $this->config->getDatasource();
         $item = $dataSource->get($id);
+        if (!$item) {
+            $this->addFlash('danger', 'crudit.flash.error.resource_not_found');
 
-        if ($item && $transition) {
-            $roleTransition = str_replace("-", "_", strtoupper($transition));
-            $this->denyAccessUnlessGranted(
-                "ROLE_" . strtoupper($workflowName) . "_WF_" . $roleTransition
-            );
+            return $this->redirectToRoute($this->config->getRootRoute() . "_index");
+        }
 
-            foreach ($wfRegistry->all($item) as $wf) {
-                if ($wf->can($item, $transition)) {
-                    $wf->apply($item, $transition);
-                    $dataSource->save($item);
-                }
-            }
+        try {
+            $workflow = $wfRegistry->get($item, $workflowName);
+        } catch (WorkflowInvalidArgumentException) {
+            throw $this->createNotFoundException();
+        }
+
+        $transitionNames = array_map(fn(Transition $t) => $t->getName(), $workflow->getDefinition()->getTransitions());
+        if (!in_array($transition, $transitionNames, true)) {
+            throw $this->createNotFoundException();
+        }
+
+        if ($workflow->can($item, $transition)) {
+            $workflow->apply($item, $transition);
+            $dataSource->save($item);
+        } else {
+            $this->addFlash('danger', 'crudit.flash.error.workflow_transition');
         }
 
         return $this->redirectToReferrer($request);

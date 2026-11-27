@@ -105,6 +105,7 @@ crudit:
                 bad_request: "Sie versuchen, einen nicht existierenden Wert zu ändern."
             delete: "Dieses Objekt kann nicht gelöscht werden."
             resource_not_found: "Die Ressource wurde nicht gefunden."
+            workflow_transition: "Dieser Übergang ist nicht möglich."
 
     error:
         generic:
