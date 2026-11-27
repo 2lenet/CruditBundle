@@ -4,8 +4,6 @@ namespace Lle\CruditBundle\Form\Type;
 
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -14,63 +12,55 @@ use Vich\UploaderBundle\Handler\UploadHandler;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactory;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
+/**
+ * The file of VichUploaderBundle with the routes of the application: download_route (the link Download) and image_route
+ * (the preview, for private files), generated with the id of the entity that holds the file (the entity of the page, or
+ * its own for a line of a collection or a sub-form). Without id (a line not saved yet), no link from these routes.
+ * Without image_route, the preview is the uri of the storage. The variable filename is the stored name without the
+ * unique part added by the namer ("plan-6b05….pdf" → "plan.pdf"), as in 1.x.
+ */
 class FileType extends VichFileType
 {
     protected UrlGeneratorInterface $urlGenerator;
-    protected ?Request $request;
 
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
         StorageInterface $storage,
         UploadHandler $handler,
         PropertyMappingFactory $factory,
-        RequestStack $requestStack,
         ?PropertyAccessorInterface $propertyAccessor = null,
     ) {
         parent::__construct($storage, $handler, $factory, $propertyAccessor);
 
         $this->urlGenerator = $urlGenerator;
-        $this->request = $requestStack->getMainRequest();
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         parent::buildView($view, $form, $options);
 
-        if ($form->getParent()?->getData() && $this->request && $this->request->attributes->has('id')) {
+        $object = $form->getParent()?->getData();
+        if (!\is_object($object)) {
+            return;
+        }
+
+        $id = $this->propertyAccessor->isReadable($object, 'id') ? $this->propertyAccessor->getValue($object, 'id') : null;
+        if (null !== $id && '' !== $id) {
             if ($options['download_route']) {
-                $url = $this->urlGenerator->generate(
-                    $options['download_route'],
-                    ['id' => $this->request->attributes->get("id")]
-                );
-                $view->vars['download_uri'] = $url;
+                $view->vars['download_uri'] = $this->urlGenerator->generate($options['download_route'], ['id' => $id]);
             }
-
-            /** @var string $filePath */
-            $filePath = $this->resolveUriOption(true, $form->getParent()->getData(), $form);
-
             if ($options['image_route']) {
-                $url = $this->urlGenerator->generate(
-                    $options['image_route'],
-                    ['id' => $this->request->attributes->get('id')]
-                );
-                $view->vars['image_uri'] = $url;
-            } else {
-                $view->vars['image_uri'] = $filePath;
+                $view->vars['image_uri'] = $this->urlGenerator->generate($options['image_route'], ['id' => $id]);
             }
+        }
+        if (!$options['image_route']) {
+            $view->vars['image_uri'] = $this->resolveUriOption(true, $object, $form);
+        }
 
-            if ($filePath) {
-                $filename = substr((string)$filePath, strrpos((string)$filePath, '/') + 1);
-
-                /** @var int $pos */
-                $pos = strrpos($filename, '-');
-
-                $filename = substr($filename, 0, $pos) . '.' . substr(
-                    $filename,
-                    strrpos($filename, '.') + 1,
-                );
-                $view->vars['filename'] = $filename;
-            }
+        // From the mapping, not from the uri of the storage (a signed url ends with a query string)
+        $stored = $this->factory->fromField($object, $this->getFieldName($form))?->getFileName($object);
+        if (\is_string($stored) && '' !== $stored) {
+            $view->vars['filename'] = $this->cleanName($stored);
         }
     }
 
@@ -91,5 +81,20 @@ class FileType extends VichFileType
     public function getBlockPrefix(): string
     {
         return 'crudit_file';
+    }
+
+    /**
+     * The stored name without what follows its last "-" (the unique part of the namer), with its extension.
+     */
+    protected function cleanName(string $stored): string
+    {
+        $filename = basename($stored);
+        $dash = strrpos($filename, '-');
+        $dot = strrpos($filename, '.');
+        if (false === $dash || 0 === $dash) {
+            return $filename;
+        }
+
+        return substr($filename, 0, $dash) . (false === $dot || $dot < $dash ? '' : '.' . substr($filename, $dot + 1));
     }
 }

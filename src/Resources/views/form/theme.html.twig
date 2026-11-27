@@ -123,7 +123,7 @@
         {%- if crudit_download is not empty and crudit_download is not same as(true) and crudit_asset %}{% set crudit_download = asset(crudit_download) %}{% endif -%}
         {#- A preview of an image only, from image_uri (VichImageType, the FileType of Crudit): never the public uri of the
          # storage, which a private mapping or a download_route does not serve -#}
-        {%- set crudit_image = (crudit_file_current.mime_type ?? '') starts with 'image/' or crudit_file_current.uri matches '/\\.(png|jpe?g|gif|svg|webp|avif)$/i' -%}
+        {%- set crudit_image = (crudit_file_current.mime_type ?? '') starts with 'image/' or crudit_file_current.name matches '/\\.(png|jpe?g|gif|svg|webp|avif)$/i' -%}
         {%- set crudit_preview = image_uri|default(null) is not empty and ('vich_image' in block_prefixes or crudit_image)
             ? image_uri : null -%}
         {%- if crudit_preview is not empty and crudit_asset %}{% set crudit_preview = asset(crudit_preview) %}{% endif -%}

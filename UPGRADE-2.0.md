@@ -1032,6 +1032,14 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
   - The option `delete_label` of Vich is no longer used: the buttons "Delete *name*" and "Cancel the deletion" come
     from the translations of CruditUiBundle (`crudit_ui.file.delete`, `crudit_ui.file.cancel_delete`, domain
     `LleCruditUiBundle`); override these keys instead.
+  - The option `download_label` of Vich is no longer used either: the link "Download *name*" comes from
+    `crudit_ui.file.download` (domain `LleCruditUiBundle`); override this key instead.
+  - The `FileType` of Crudit generates `download_route` and `image_route` with the id of the entity that holds the file
+    (read by its property `id`), no longer with the `id` of the request: the same value for a field of the entity of
+    the page, the id of the line for a file in a line of a collection (each line its own file; before, every line
+    pointed to the file of the page), of the object for a sub-form. Without id (a line not saved yet), no link from
+    these routes. Its constructor no longer takes the `RequestStack` (if you extended it). Its variable `filename`
+    comes from the stored name of the mapping, no longer from the uri of the storage.
 - **Enable the controllers** `collection` and `file-drop` in `@2lenet/crudit-ui-bundle` of your
   `assets/controllers.json` (`{"enabled": true, "fetch": "lazy"}`). Without them the lines and the file are shown and
   sent, the buttons do nothing.

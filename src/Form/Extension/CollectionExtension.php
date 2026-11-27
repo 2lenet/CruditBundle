@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\Form\ResolvedFormTypeInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -47,6 +48,8 @@ class CollectionExtension extends AbstractTypeExtension
 
     /**
      * The field of the position must be a hidden field of each line: checked on the prototype, else on the first line.
+     * Checked when the collection is rendered, not when it is built: an empty collection without allow_add (no prototype,
+     * no line) is not checked, a wrong option shows only on a page with a line or the button Add.
      */
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
@@ -55,19 +58,31 @@ class CollectionExtension extends AbstractTypeExtension
             return;
         }
         $prototype = $form->getConfig()->getAttribute('prototype');
-        $entry = $prototype instanceof FormInterface ? $prototype : ($form->all() === [] ? null : array_values($form->all())[0]);
+        $entries = $form->all();
+        $entry = $prototype instanceof FormInterface ? $prototype : (reset($entries) ?: null);
         if (null === $entry) {
             return;
         }
         if (!$entry->has($position)) {
             throw new InvalidConfigurationException(sprintf('The option "sortable" of the collection "%s" names the field "%s", which its entry type "%s" does not have: add a HiddenType "%s" to it.', $form->getName(), $position, $options['entry_type'], $position));
         }
-        $type = $entry->get($position)->getConfig()->getType();
-        for ($hidden = false; null !== $type; $type = $type->getParent()) {
-            $hidden = $hidden || $type->getInnerType() instanceof HiddenType;
-        }
-        if (!$hidden) {
+        if (!$this->isHidden($entry->get($position)->getConfig()->getType())) {
             throw new InvalidConfigurationException(sprintf('The option "sortable" of the collection "%s" names the field "%s", which must be a HiddenType: the position is written by the buttons Move up and Move down.', $form->getName(), $position));
         }
+    }
+
+    /**
+     * A HiddenType, or a type built on it (its parents).
+     */
+    private function isHidden(ResolvedFormTypeInterface $type): bool
+    {
+        while (null !== $type) {
+            if ($type->getInnerType() instanceof HiddenType) {
+                return true;
+            }
+            $type = $type->getParent();
+        }
+
+        return false;
     }
 }

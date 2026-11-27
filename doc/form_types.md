@@ -66,6 +66,10 @@ $builder->add('documentFile', FileType::class, [
 ]);
 ```
 
+The routes get the id of the entity that holds the file (`['id' => $entity->getId()]`): the entity of the page, or the
+line for a `FileType` in a line of a collection (each line links to its own file). A line not saved yet has no id: no
+link from these routes.
+
 For private files (not served by the `uri_prefix` of the mapping), set `image_route` as well as `download_route`:
 without it, the preview of an image comes from the public uri of the storage and is broken (as in 1.x).
 
