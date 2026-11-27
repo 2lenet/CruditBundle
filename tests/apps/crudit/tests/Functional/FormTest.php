@@ -23,7 +23,7 @@ use Twig\Environment;
  * domain, the error of a sub-form laid out field by field. The base types (lot 3.2.b): keyboards of a phone, autofill
  * kept away from the inputs typed in only, counter of characters, format helpers, telephone, colour, segmented
  * control, date in lists, a boolean guessed as a switch. The rich types (lot 3.2.c): an entity and a choice with
- * several answers in a list with search.
+ * several answers in a list with search, collections, the file of Vich.
  */
 class FormTest extends AppTestCase
 {
@@ -250,11 +250,11 @@ class FormTest extends AppTestCase
     {
         $form = $this->editForm();
 
-        // the global themes of the project (FOSCKEditorBundle, VichUploaderBundle) kept after the one of Crudit: the editor, not a bare textarea; the file input of Vich
+        // the global themes of the project (FOSCKEditorBundle, VichUploaderBundle) kept before the one of Crudit: the editor, not a bare textarea; the file of Vich rendered by Crudit
         $editor = $form->filter('textarea#client_presentation');
         self::assertCount(1, $editor);
         self::assertStringContainsString('CKEDITOR.replace("client_presentation"', implode("\n", $form->filter('script')->each(fn (Crawler $script) => $script->text())));
-        self::assertCount(1, $form->filter('.vich-file input[type="file"]#client_attachment_file'));
+        self::assertCount(1, $form->filter('.crudit-ui-file input[type="file"]#client_attachmentFile_file'), 'the file of Vich: the theme of Crudit comes last');
         // Still no Bootstrap (the global theme of the application)
         self::assertCount(0, $form->filter('.form-control, .form-select, .mb-3'));
     }
@@ -408,6 +408,105 @@ class FormTest extends AppTestCase
         self::assertSame([['id' => $this->idOf('Bob'), 'text' => 'Bob']], $data['items']);
         self::assertSame(1, $data['total_count']);
         self::assertSame(20, $data['next_offset']);
+    }
+
+    public function testACollectionOfLinesInAnOrder(): void
+    {
+        $form = $this->editForm();
+
+        $root = $form->filter('#client_contacts');
+        self::assertSame('Contacts', trim($root->closest('fieldset')?->filter('legend')->text() ?? ''));
+        self::assertSame('2lenet--crudit-ui-bundle--collection', $root->attr('data-controller'));
+        self::assertSame('Contact %index%', $root->attr('data-2lenet--crudit-ui-bundle--collection-entry-value'), 'entry_label, translated in the domain of the field');
+        self::assertSame('true', $root->attr('data-2lenet--crudit-ui-bundle--collection-sortable-value'));
+        $lines = $root->filter('ol > li.crudit-ui-collection__row');
+        self::assertSame(['Contact 1', 'Contact 2'], $lines->each(fn (Crawler $line) => $line->attr('aria-label')));
+        self::assertSame('Name, Contact 2', trim($form->filter('label[for="client_contacts_1_name"]')->text()));
+        self::assertSame('hidden', $form->filter('#client_contacts_1_position')->attr('type'));
+        self::assertSame('2', $form->filter('#client_contacts_1_position')->attr('value'));
+        self::assertSame(['Move up: Contact 2', 'Move down: Contact 2', 'Remove: Contact 2'], $lines->eq(1)->filter('.crudit-ui-collection__actions button .crudit-ui-visually-hidden')->each(fn (Crawler $text) => $text->text()));
+        self::assertSame('Add: Contacts', $root->filter('.crudit-ui-collection__add')->attr('aria-label'));
+        self::assertStringContainsString('client[contacts][__name__][name]', $root->filter('template')->html());
+
+        // Without allow_add, allow_delete nor sortable: the lines only, a line of one field named by its line
+        $languages = $form->filter('#client_languages');
+        self::assertCount(0, $languages->filter('button, template'));
+        self::assertSame('Line 2', $form->filter('label[for="client_languages_1"]')->text());
+    }
+
+    public function testTheErrorOfALineOfACollection(): void
+    {
+        $crawler = $this->client->request('GET', '/client/edit/' . $this->idOf('Alice'));
+        $form = $crawler->filter('main form')->form();
+        $form->setValues(['client[contacts][1][name]' => '']);
+        $crawler = $this->client->submit($form);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame('true', $crawler->filter('#client_contacts_1_name')->attr('aria-invalid'));
+        self::assertCount(1, $crawler->filter('li[aria-label="Contact 2"] #client_contacts_1_name_error'));
+    }
+
+    public function testAnOrderOnAFieldThatIsNotHiddenIsRefused(): void
+    {
+        $this->expectException(\Symfony\Component\Form\Exception\InvalidConfigurationException::class);
+        $this->formFactory()->create(FormType::class)
+            ->add('contacts', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, ['entry_type' => \App\Form\ContactLineType::class, 'allow_add' => true, 'sortable' => 'name'])
+            ->createView();
+    }
+
+    public function testTheFileAlreadySentOfVich(): void
+    {
+        $this->attachTo('Alice');
+        $form = $this->editForm();
+
+        $label = $form->filter('label[for="client_attachmentFile_file"]');
+        self::assertSame('Attachment', trim($label->text()), 'the label points to the input');
+        $input = $form->filter('.crudit-ui-file__zone > input[type="file"]#client_attachmentFile_file');
+        self::assertSame('client[attachmentFile][file]', $input->attr('name'));
+        self::assertSame('client_attachmentFile_help', $input->attr('aria-describedby'));
+        $current = $form->filter('.crudit-ui-file__list > li');
+        self::assertCount(1, $current);
+        self::assertSame('front of the shop.svg', $current->filter('.crudit-ui-file__label')->text(), 'the original name kept by the mapping');
+        self::assertSame('1 KB · current file', $current->filter('.crudit-ui-file__size')->text());
+        // No preview for a VichFileType: its public uri may not be served (a private mapping, a download_route)
+        self::assertCount(0, $current->filter('img'));
+        self::assertSame('/uploads/clients/front-6745a1b2c3d4e.svg', $current->filter('a[download]')->attr('href'));
+        self::assertSame('Delete front of the shop.svg', $current->filter('[data-2lenet--crudit-ui-bundle--file-drop-target="delete"] .crudit-ui-visually-hidden')->text());
+        self::assertSame('1', $current->filter('input[type="checkbox"][hidden][name="client[attachmentFile][delete]"]')->attr('value'));
+        self::assertCount(0, $form->filter('.vich-file, label[for="client_attachmentFile_delete"]'), 'the checkbox of Vich is not shown again');
+
+        // Without file: no list, no checkbox
+        $crawler = $this->client->request('GET', '/client/edit/' . $this->idOf('Bob'));
+        self::assertCount(0, $crawler->filter('.crudit-ui-file__list > li, input[name="client[attachmentFile][delete]"]'));
+    }
+
+    public function testTheFileAskedToBeDeletedIsDeleted(): void
+    {
+        $this->attachTo('Alice');
+        $crawler = $this->client->request('GET', '/client/edit/' . $this->idOf('Alice'));
+        $form = $crawler->filter('main form')->form();
+        // The button Delete checks the hidden checkbox
+        $form['client[attachmentFile][delete]']->tick();
+        $this->client->submit($form);
+
+        self::assertResponseRedirects();
+        self::assertNull($this->entity('Alice')->getAttachmentName());
+    }
+
+    private function attachTo(string $name): void
+    {
+        $front = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3"><rect width="4" height="3"/></svg>';
+        (new \Symfony\Component\Filesystem\Filesystem())->dumpFile(static::getContainer()->getParameter('kernel.project_dir') . '/public/uploads/clients/front-6745a1b2c3d4e.svg', $front);
+        $client = $this->entity($name)
+            ->setAttachmentName('front-6745a1b2c3d4e.svg')
+            ->setAttachmentOriginalName('front of the shop.svg')
+            ->setAttachmentMimeType('image/svg+xml')
+            ->setAttachmentSize(\strlen($front));
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->flush();
+        $em->clear();
+        unset($client);
     }
 
     private function entity(string $name): Client

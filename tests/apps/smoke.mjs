@@ -1350,6 +1350,48 @@ for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
 }
 ok('form: rich types (list with search, from the server or the page)');
 
+// ---------- Collection and file (lot 3.2.c): the contacts added, moved and removed with their buttons, sent in the order
+// of the page with their positions; a file chosen is listed with its size; the form is saved with them.
+for (const [width, rtl] of [[1440, false], [1280, true], [360, false]]) {
+    page = await open(width, '/client/new', {rtl});
+    const contacts = () => page.$$eval('#client_contacts > ol > li', (rows) => rows.map((row) => [
+        row.getAttribute('aria-label'),
+        row.querySelector('input[name$="[name]"]').value,
+        row.querySelector('input[name$="[position]"]').value,
+    ]));
+    assert.deepEqual(await contacts(), [['Contact 1', 'Léa Martin', '1'], ['Contact 2', 'Hugo Bernard', '2']], `the lines of the collection at ${width}`);
+    await page.$eval('#client_contacts', (root) => root.scrollIntoView({block: 'center'}));
+    await page.click('#client_contacts .crudit-ui-collection__add');
+    assert.equal(await page.evaluate(() => document.activeElement?.name), 'client[contacts][2][name]', 'the focus is not on the first field of the line added');
+    await page.keyboard.type('Inès Petit');
+    await page.click('#client_contacts > ol > li:nth-child(3) [data-crudit-ui-collection-up]');
+    assert.equal(await page.evaluate(() => document.activeElement?.closest('li')?.getAttribute('aria-label')), 'Contact 2', 'the focus does not follow the line moved');
+    await page.click('#client_contacts > ol > li:nth-child(1) [data-crudit-ui-collection-remove]');
+    assert.deepEqual(await contacts(), [['Contact 1', 'Inès Petit', '1'], ['Contact 2', 'Hugo Bernard', '2']], 'the lines are not renamed or their positions not written');
+    // Sent in the order of the page, each line with its position (the keys of the lines do not change)
+    const sent = await page.$eval('main form.crudit-form__form', (form) => [...new FormData(form).entries()]
+        .filter(([name]) => name.startsWith('client[contacts]') && !name.endsWith('[phone]'))
+        .map(([name, value]) => `${name}=${value}`));
+    assert.deepEqual(sent, ['client[contacts][2][name]=Inès Petit', 'client[contacts][2][position]=1', 'client[contacts][1][name]=Hugo Bernard', 'client[contacts][1][position]=2']);
+
+    await page.setInputFiles('#client_attachmentFile_file', {name: 'plan.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(2048)});
+    assert.deepEqual(
+        await page.$$eval('.crudit-ui-file:has(#client_attachmentFile_file) .crudit-ui-file__list > li', (lines) => lines.map((line) => [line.querySelector('.crudit-ui-file__label').textContent, line.querySelector('.crudit-ui-file__size').textContent])),
+        [['plan.pdf', '2 KB']],
+        'the file chosen is not listed with its size',
+    );
+    await axeOn(page, 'main form', `collection and file at ${width}${rtl ? ', RTL' : ''}`);
+    await shot(page, 'form-collection-file');
+    if (width === 1440) {
+        await page.click('#client_name', {clickCount: 3});
+        await page.keyboard.type('Client with a file');
+        await Promise.all([page.waitForNavigation({waitUntil: 'networkidle0'}), page.click('main form button[type="submit"]')]);
+        assert.ok(await page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows.some((row) => row.textContent.includes('Client with a file'))), `the form with a collection and a file is not saved (${page.url()})`);
+    }
+    await page.close();
+}
+ok('form: collection and file');
+
 // ---------- Filters (lot 3.1.e): the bar, the panel, the chips; the state is kept by the server (session)
 const rowsOf = (page) => page.$$eval('main tbody tr.crudit-ui-table__row', (rows) => rows.length);
 const filterNav = async (page, action) => {

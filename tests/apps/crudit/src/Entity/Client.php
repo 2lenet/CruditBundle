@@ -7,8 +7,11 @@ namespace App\Entity;
 use App\Enum\Priority;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity]
+#[Vich\Uploadable]
 class Client
 {
     #[ORM\Id]
@@ -68,6 +71,26 @@ class Client
     /** @var list<string>|null the channels of contact: a ChoiceField of several values */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $channels = null;
+
+    /** A file sent with VichUploaderBundle (lot 3.2.c): the mapping keeps its size, type and original name */
+    #[Vich\UploadableField(mapping: 'client_attachment', fileNameProperty: 'attachmentName', size: 'attachmentSize', mimeType: 'attachmentMimeType', originalName: 'attachmentOriginalName')]
+    private ?File $attachmentFile = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attachmentName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $attachmentSize = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $attachmentMimeType = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attachmentOriginalName = null;
+
+    /** Changed with the file: Doctrine sees a change when only a file is sent, and Vich stores it */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $attachmentUpdatedAt = null;
 
     public function __construct()
     {
@@ -283,6 +306,69 @@ class Client
     public function setChannels(?array $channels): self
     {
         $this->channels = $channels;
+
+        return $this;
+    }
+
+    public function getAttachmentFile(): ?File
+    {
+        return $this->attachmentFile;
+    }
+
+    public function setAttachmentFile(?File $attachmentFile): self
+    {
+        $this->attachmentFile = $attachmentFile;
+        if (null !== $attachmentFile) {
+            $this->attachmentUpdatedAt = new \DateTime();
+        }
+
+        return $this;
+    }
+
+    public function getAttachmentName(): ?string
+    {
+        return $this->attachmentName;
+    }
+
+    public function setAttachmentName(?string $attachmentName): self
+    {
+        $this->attachmentName = $attachmentName;
+
+        return $this;
+    }
+
+    public function getAttachmentSize(): ?int
+    {
+        return $this->attachmentSize;
+    }
+
+    public function setAttachmentSize(?int $attachmentSize): self
+    {
+        $this->attachmentSize = $attachmentSize;
+
+        return $this;
+    }
+
+    public function getAttachmentMimeType(): ?string
+    {
+        return $this->attachmentMimeType;
+    }
+
+    public function setAttachmentMimeType(?string $attachmentMimeType): self
+    {
+        $this->attachmentMimeType = $attachmentMimeType;
+
+        return $this;
+    }
+
+    public function getAttachmentOriginalName(): ?string
+    {
+        return $this->attachmentOriginalName;
+    }
+
+    public function setAttachmentOriginalName(?string $attachmentOriginalName): self
+    {
+        $this->attachmentOriginalName = $attachmentOriginalName;
 
         return $this;
     }

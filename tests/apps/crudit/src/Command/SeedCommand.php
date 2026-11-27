@@ -12,12 +12,19 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(name: 'app:seed', description: 'Creates the schema and a few clients (the test application has no migration)')]
 class SeedCommand extends Command
 {
-    public function __construct(private readonly EntityManagerInterface $em)
-    {
+    private const FRONT = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48"><rect width="64" height="48" fill="#dbeafe"/><rect x="10" y="18" width="44" height="26" fill="#1e40af"/><rect x="26" y="28" width="12" height="16" fill="#fff"/></svg>';
+
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        #[Autowire('%kernel.project_dir%')]
+        private readonly string $projectDir,
+    ) {
         parent::__construct();
     }
 
@@ -48,6 +55,16 @@ class SeedCommand extends Command
                     ->setStatus($statuses[$i % 3])
                     ->setBlocked(0 === $i % 3)
                     ->setTags(['vip', sprintf('zone %d', $i % 4)]);
+            }
+            // The file already sent of the client 1 (lot 3.2.c): an image, its size and original name kept by Vich
+            if (1 === $i) {
+                $directory = $this->projectDir . '/public/uploads/clients';
+                (new Filesystem())->dumpFile($directory . '/front-6745a1b2c3d4e.svg', self::FRONT);
+                $client
+                    ->setAttachmentName('front-6745a1b2c3d4e.svg')
+                    ->setAttachmentOriginalName('front of the shop.svg')
+                    ->setAttachmentMimeType('image/svg+xml')
+                    ->setAttachmentSize(\strlen(self::FRONT));
             }
             $this->em->persist($client);
         }

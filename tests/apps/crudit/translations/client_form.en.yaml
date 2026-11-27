@@ -5,3 +5,13 @@ more:
 presentation:
     label: "Presentation"
     tooltip: "A few lines shown to the team"
+attachment:
+    label: "Attachment"
+    help: "A document or a photo of the shop"
+contacts:
+    label: "Contacts"
+    entry: "Contact %index%"
+    name: "Name"
+    phone: "Phone"
+languages:
+    label: "Languages"

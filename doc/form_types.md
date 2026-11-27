@@ -44,9 +44,20 @@ $builder->add('country', CountryType::class, ['combobox' => true]);
 
 ### FileType
 
-The `Lle\CruditBundle\Form\Type\FileType` allows you to create a file input with an interface to show or delete the current file.
+A file of VichUploaderBundle (`VichFileType`, `VichImageType`) or the `Lle\CruditBundle\Form\Type\FileType` is the file
+of CruditUiBundle: a drop zone covered by the true input (a click opens the picker, a file dropped on it is chosen), the
+file chosen listed with its size and a preview for an image. The file already sent shows its name, its size, a preview
+for an image (`VichImageType`, the `FileType` of Crudit; not `VichFileType`, whose public uri may not be served), a
+link "Download" and, with `allow_delete`, a button "Delete *name*" (it checks the checkbox `delete` of Vich, hidden;
+"Cancel the deletion" puts it back). Its name is the original name and its size the one kept by the mapping, when it
+keeps them:
 
-Here's a working example:
+```php
+#[Vich\UploadableField(mapping: 'documents', fileNameProperty: 'documentName', size: 'documentSize', originalName: 'documentOriginalName', mimeType: 'documentMimeType')]
+private ?File $documentFile = null;
+```
+
+The `FileType` of Crudit adds its own routes:
 ```php
 $builder->add('documentFile', FileType::class, [
     'allow_delete' => true,
@@ -54,6 +65,15 @@ $builder->add('documentFile', FileType::class, [
     'image_route' => 'app_crudit_entity_downloadthumbnail', // Your own route to get the file (or the thumbnail)
 ]);
 ```
+
+The routes get the id of the entity that holds the file (`['id' => $entity->getId()]`): the entity of the page, or the
+line for a `FileType` in a line of a collection (each line links to its own file). A line not saved yet has no id: no
+link from these routes.
+
+For private files (not served by the `uri_prefix` of the mapping), set `image_route` as well as `download_route`:
+without it, the preview of an image comes from the public uri of the storage and is broken (as in 1.x).
+
+One file per field. Enable the controller `file-drop` of CruditUiBundle (`assets/controllers.json`).
 
 ### Markdown
 
@@ -118,9 +138,12 @@ numbers, Italian ones (`+39`) for instance, are displayed unformatted.
 
 ### CollectionType
 
-Crudit works with CollectionType, but you need to do configure some things on your side.
+In the forms of Crudit, nothing to configure: the bricks impose the theme of Crudit (`@LleCrudit/form/theme.html.twig`),
+and a collection is the one of CruditUiBundle: a list of lines named "Line 1", "Line 2"…, each field saying its line to
+screen readers, the buttons "Add" (`allow_add`) and "Remove" (`allow_delete`). On a wide screen the fields of a line are
+side by side, their labels on the first line only. Enable the controller `collection` of CruditUiBundle
+(`assets/controllers.json`).
 
-In the forms of Crudit, nothing to configure: the bricks impose the theme of Crudit (`@LleCrudit/form/theme.html.twig`).
 Here's a working example:
 ```php
 // in parent form OrderType.php
@@ -130,22 +153,28 @@ $builder->add('lines', CollectionType::class, [
     'allow_add' => true,
     'allow_delete' => true,
     'by_reference' => false,
-    'prototype_name' => '__etape_name__', // not required unless you use multiple CollectionType
+    'prototype_name' => '__line_name__', // not required unless you nest CollectionTypes
+    'entry_label' => 'field.line', // "Line %index%" by default: "Piece %index%", in the domain of the field
+    'sortable' => 'position', // buttons Move up and Move down; the field of the position of a line
 ]);
 
 // in subform LineType.php
-$builder->add('ordre', ItemType::class, [
-    'label' => 'field.item',
-    'row_attr' => [
-        'class' => 'col-1',
-    ]
-]);
+$builder
+    ->add('item', ItemType::class, ['label' => 'field.item'])
+    ->add('quantity', IntegerType::class, ['label' => 'field.quantity'])
+    ->add('position', HiddenType::class);
+
+// in the entity Order
+#[ORM\OneToMany(targetEntity: Line::class, mappedBy: 'order', cascade: ['persist'], orphanRemoval: true)]
+#[ORM\OrderBy(['position' => 'ASC'])]
+private Collection $lines;
 ```
 
 What matters :
 * by_reference is **NECESSARY** because otherwise Doctrine won't be able to track changes in collection, resulting in deletions that don't happen.
 * prototype_name is necessary when you nest CollectionTypes (a CollectionType inside another CollectionType)
-* use row_attr with Bootstrap columns to size the fields, to get a satisfying result
+* `sortable` names a `HiddenType` of the entry type (else an `InvalidConfigurationException`): 1, 2, 3… are written in
+  it each time the lines change. The order is kept only if the entity reads its lines in this order (`#[ORM\OrderBy]`).
 
 ## Layout of a form
 

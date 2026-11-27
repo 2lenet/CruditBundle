@@ -33,7 +33,7 @@ Bootstrap classes that Crudit 1.x used to provide: upgrade both, or load Bootstr
    - [The pager: one, below the table; the controller `pager`; `_pager.html.twig` and `items-per-page` gone](#the-pager-lot-31d) *(lot 3.1.d)*
    - [Check your field templates: block `value`, no Bootstrap, `barCssClass` and `tableCssClass` removed](#7-template-overrides) *(lot 3.4.a)*
    - [The record: `number_cards_per_row` removed, `span` instead of the classes of Bootstrap (removed options seen only when the page is shown), the status and the dates in the header, `getShowAlert()`, `getShowNumberFieldGroupsOpened()` counts the groups only](#the-record-lot-33a) *(lot 3.3.a)*
-   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*; lists with search instead of Tom Select, `disable_tom_select` removed, the controller `combobox` to enable *(lot 3.2.c)*
+   - [Forms: the theme of Crudit is imposed, widths by `span`, columns by `form_columns`, a form with errors is answered by a 422](#forms-lot-32a) *(lot 3.2.a)*; lists with search instead of Tom Select, `disable_tom_select` removed, collections (`sortable`, `entry_label`) and files of Vich, the controllers `combobox`, `collection` and `file-drop` to enable *(lot 3.2.c)*
 8. [Review your JavaScript](#8-javascript) *(lots 1.1, 3.2)*
 9. [Check the other 2LE bundles you use](#9-other-bundles) *(lot 5.8)*
 10. [Languages, dates and numbers](#10-languages-dates-and-numbers) *(lot 1.4)*
@@ -989,8 +989,61 @@ widgets of FOSCKEditor and Vich, and the blocks of your own types, still work. T
     (`{"enabled": true, "fetch": "lazy"}`: loaded on the pages that have one). JavaScript is needed to change a choice.
   - Your styles of `.ts-control`, `.ts-dropdown`, `.entity-select` or `.choice-tom-select` no longer apply: the classes
     are `crudit-ui-combobox__*`.
-- Not yet migrated (they still have Bootstrap classes): the collection (`collection_widget`), the file, the translated
-  field and the cron expression *(lot 3.2.c)*.
+- **Collections** *(lot 3.2.c)*: a `CollectionType` is rendered by CruditUiBundle (docs/forms.md, "Collection"): a list
+  of lines, each named ("Line 2") and numbered, each field saying its line to screen readers ("Quantity, Line 2"); on a
+  wide screen the fields of a line side by side, their labels on the first line only. The buttons are named after the
+  line: "Add" (`allow_add`), "Remove: Line 2" (`allow_delete`); the focus is moved after each action and the change is
+  told to screen readers. The card, the `<hr>`, the classes `crudit-collection-add` and `crudit-collection-ignore` and
+  the button with a bin of `sb-admin/js/form_collection.js` (removed) are gone.
+  - New option **`sortable`**: the name of the field of the position of a line, a `HiddenType` of the entry type (else
+    an `InvalidConfigurationException`). The lines get the buttons "Move up" and "Move down", and 1, 2, 3… are written
+    in this field each time the lines change. **The order is kept only if your entity reads its lines in this order**:
+    `#[ORM\OrderBy(['position' => 'ASC'])]` on the relation.
+
+    ```php
+    $builder->add('lines', CollectionType::class, [
+        'entry_type' => InvoiceLineType::class, // with ->add('position', HiddenType::class)
+        'allow_add' => true,
+        'allow_delete' => true,
+        'by_reference' => false,
+        'sortable' => 'position',
+        'entry_label' => 'invoice.line', // "Line %index%" in the domain of the field
+    ]);
+    ```
+
+  - New option **`entry_label`**: the name of a line, with `%index%` ("Piece %index%"), translated in the domain of the
+    field; "Line %index%" by default.
+  - A line added takes the index after the greatest one: the names of the fields stay unique after a removal.
+  - Your own `collection_widget` (a theme of the project) still wins; a script that clicked `.crudit-collection-add`
+    clicks `.crudit-ui-collection__add`.
+- **Files** *(lot 3.2.c)*: a file of VichUploaderBundle (`VichFileType`, `VichImageType`, the `FileType` of Crudit) and a
+  `FileType` of Symfony are rendered by CruditUiBundle (docs/forms.md, "File"): a drop zone covered by the true input (a
+  click opens the picker, a file dropped is chosen), the file chosen listed with its size and a preview for an image, a
+  button to remove it. The file already sent: its name (the original name when the mapping keeps it, `originalName`),
+  its size (when the mapping keeps it, `size`), a preview for an image (`VichImageType`, the `FileType` of Crudit; not
+  `VichFileType`, whose public uri may not be served), a link "Download", and, with `allow_delete`, a
+  button "Delete *name*" that checks the checkbox `delete` of Vich, hidden (a button "Cancel the deletion" puts it
+  back). The label of the field points to the input.
+  - The theme of Crudit now renders the blocks `vich_file_widget` and `vich_image_widget`: the markup of Vich (`.vich-file`,
+    `.vich-image`, the checkbox "Delete" shown) no longer appears in a form of Crudit. `form/_file_widget.html.twig` and
+    `sb-admin/css/components/forms/_input-file.scss` are removed (with the variables `$input-file-image-preview-maxheight`,
+    `$input-file-checkbox-margin`).
+  - Several files in one field (the mockup) are not done: one file per field, as Vich.
+  - The option `delete_label` of Vich is no longer used: the buttons "Delete *name*" and "Cancel the deletion" come
+    from the translations of CruditUiBundle (`crudit_ui.file.delete`, `crudit_ui.file.cancel_delete`, domain
+    `LleCruditUiBundle`); override these keys instead.
+  - The option `download_label` of Vich is no longer used either: the link "Download *name*" comes from
+    `crudit_ui.file.download` (domain `LleCruditUiBundle`); override this key instead.
+  - The `FileType` of Crudit generates `download_route` and `image_route` with the id of the entity that holds the file
+    (read by its property `id`), no longer with the `id` of the request: the same value for a field of the entity of
+    the page, the id of the line for a file in a line of a collection (each line its own file; before, every line
+    pointed to the file of the page), of the object for a sub-form. Without id (a line not saved yet), no link from
+    these routes. Its constructor no longer takes the `RequestStack` (if you extended it). Its variable `filename`
+    comes from the stored name of the mapping, no longer from the uri of the storage.
+- **Enable the controllers** `collection` and `file-drop` in `@2lenet/crudit-ui-bundle` of your
+  `assets/controllers.json` (`{"enabled": true, "fetch": "lazy"}`). Without them the lines and the file are shown and
+  sent, the buttons do nothing.
+- Not yet migrated (they still have Bootstrap classes): the translated field and the cron expression *(lot 3.2.c)*.
 
 ### Batch actions *(lot 3.1.c)*
 
@@ -1402,6 +1455,8 @@ The state of an element (`WorkflowField`, `field/workflow.html.twig`) is a `Stat
   `@LleCruditUi/form/_combobox.html.twig` (its header gives the values) instead of calling `initTomSelect()`.
 - New controller `combobox` (lists with search, lot 3.2.c): enable it in `@2lenet/crudit-ui-bundle` of your
   `assets/controllers.json` (`fetch: lazy`).
+- New controllers `collection` and `file-drop` (collections and files, lot 3.2.c): enable them the same way.
+  `sb-admin/js/form_collection.js` is removed: a collection needs no call, also in a modal or a Turbo frame.
 - `tom-select` is no longer a dependency of Crudit's `package.json`: declare it in yours if you still use it.
 - Tom Select, CKEditor and EasyMDE are replaced by in-house components. HTML already saved by
   CKEditor is read as is. FOSCKEditorBundle is no longer needed.

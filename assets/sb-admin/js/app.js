@@ -6,7 +6,6 @@ import './form';
 import './scroll-to-top';
 import './sidebar';
 import './tag';
-import './form_collection';
 import './ckeditor';
 import './sortable';
 import * as bootstrap from 'bootstrap';
