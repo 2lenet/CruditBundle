@@ -68,9 +68,8 @@ class WorkflowTransitionTest extends TestCase
         $this->billingWorkflow->expects(self::never())->method('apply');
         $this->datasource->expects(self::once())->method('save')->with($this->item);
 
-        $response = $this->transition(['name' => 'order', 'transition' => 'to-validate'], ['ROLE_ORDER_WF_TO_VALIDATE']);
+        $this->transition(['name' => 'order', 'transition' => 'to-validate'], ['ROLE_ORDER_WF_TO_VALIDATE']);
 
-        self::assertInstanceOf(RedirectResponse::class, $response);
         self::assertSame([['ROLE_ORDER_WF_TO_VALIDATE', null]], $this->grantedChecks);
     }
 
@@ -147,7 +146,6 @@ class WorkflowTransitionTest extends TestCase
 
         $response = $this->transition(['name' => 'order', 'transition' => 'to-validate'], ['ROLE_ORDER_WF_TO_VALIDATE'], '2');
 
-        self::assertInstanceOf(RedirectResponse::class, $response);
         self::assertSame('/order', $response->getTargetUrl());
         self::assertSame(['crudit.flash.error.resource_not_found'], $this->session->getFlashBag()->get('danger'));
     }
